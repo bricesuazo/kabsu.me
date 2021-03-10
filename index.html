@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <meta name="viewport" content="width=1024">
+    <title>Brice Suazo | Motion Designer, Computer Science Student.</title>
+    <link rel="icon" href="/img/BS - Icon.png">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/606e36a389.js" crossorigin="anonymous"></script>
+    <style>
+        html {
+            align-items: center;
+            text-align: center;
+            scroll-behavior: smooth;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            color: #E8F1F2;
+        }
+        h1{
+            font-size: 40px;
+        }
+        h2 {
+            font-size: 30px;
+            padding-top: 100px;
+            padding-bottom: 25px;
+        }
+        header{
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, .3);
+            position: fixed;
+            top: 0;
+            width: 100%;
+        }
+        header a {
+            position: relative;
+            left: 5%;
+            font-size: 25px;
+            text-decoration: none;
+            font-weight: 700;
+            float: left;
+            text-align: left;
+            padding: 20px 0;
+        }
+        header ul {
+            position: absolute;
+            display: inline-flex;
+            float: right;
+            list-style-type: none;
+            right: 5%;
+        }
+        header ul a {
+            padding: 20px 10px;
+            text-decoration: none;
+            font-size: 20px;
+        }
+        header li {
+            font-size: 15px;
+            padding: 7px 20px;
+            border-radius: 20px;
+            background-color: #003459;
+            float: right;
+        }
+        .imgBrice{
+            border-radius: 50%;
+        }
+        .divHome{
+            font-size: 24px;
+            padding: 18vh;
+            background-color: #00171F;
+        }
+        .divHome h1{
+            padding-top: 25px;
+            font-size: 75px;
+        }
+        .divHome p{
+            font-size: 20px;
+            padding: 20px 0;
+        }
+        .divWorks{
+            background-color: #003459;
+            padding-bottom: 50px;
+        }
+        .videos {
+            display: contents;
+            width: 75%;
+        }
+        .divSocials{
+            padding: 14vh;
+            background-color: #00171F;
+        }
+        .social-icons{
+            padding: 0;
+            margin: 0;
+        }
+        .social-icons ul {
+            display: block;
+        }
+        .social-icons ul li { 
+            font-size: 50px;
+            list-style: none;
+            margin: 0px 50px;
+            text-align: center;
+        }
+
+
+        input[type=text], [type=email], select, textarea {
+            color: black;
+            width: 90%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            resize: vertical;
+            
+        }
+
+        input[type=submit] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        .container {
+            text-align: left;
+            border-radius: 5px;
+            background-color: white;
+            padding: 10px;
+        }
+        .column {
+            box-sizing: border-box;
+            float: left;
+            width: 50%;
+            padding: 20px;
+        }
+        form{
+            text-align: left;
+            float: left;
+        }
+        .row{
+            background-color: #003459;
+            padding: 7vh 0;
+        }
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        @media screen and (max-width: 600px) {
+            .column, input[type=submit] {
+                width: 100%;
+                margin-top: 0;
+            }
+        }
+
+        .footer-distributed{
+            background-color: #00171F;
+            box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.12);
+            box-sizing: border-box;
+            width: 100%;
+            text-align: left;
+            font: bold 16px sans-serif;
+            padding: 55px 50px;
+        }
+        .footer-distributed .footer-left,
+        .footer-distributed .footer-center,
+        .footer-distributed .footer-right{
+            display: inline-block;
+            vertical-align: top;
+        }
+        .footer-distributed .footer-left{
+            width: 40%;
+        }
+        .footer-distributed h3{
+            color:  #ffffff;
+            font: bold 36px 'Montserrat';
+            margin: 0;
+        }
+        .footer-distributed .footer-links{
+            font-weight: 300;
+            color:  #ffffff;
+            margin: 20px -10px 12px;
+            padding: 0;
+        }
+        .footer-distributed .footer-links a{
+            display:inline-block;
+            line-height: 1.8;
+            text-decoration: none;
+            color:  inherit;
+            padding: 0 10px;
+        }
+        .footer-distributed .footer-company-name{
+            color:  #8f9296;
+            font-size: 14px;
+            font-weight: normal;
+            margin: 0;
+        }
+        .footer-distributed .footer-center{
+            width: 35%;
+        }
+        .footer-distributed .footer-center i{
+            background-color:  #003459;
+            color: #ffffff;
+            font-size: 25px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 42px;
+            margin: 10px 15px;
+            vertical-align: middle;
+        }
+        .footer-distributed .footer-center i.fa-envelope{
+            font-size: 17px;
+            line-height: 38px;
+        }
+        .footer-distributed .footer-center p{
+            display: inline-block;
+            color: #ffffff;
+            vertical-align: middle;
+            margin:0;
+        }
+        .footer-distributed .footer-center p span{
+            display:block;
+            font-weight: normal;
+            font-size:14px;
+            line-height:2;
+        }
+        .footer-distributed .footer-center p a{
+            color:  #5383d3;
+            text-decoration: none;;
+        }
+        .footer-distributed .footer-right{
+            width: 20%;
+        }
+        .footer-distributed .footer-company-about{
+            line-height: 20px;
+            color:  #92999f;
+            font-size: 13px;
+            font-weight: normal;
+            margin: 0;
+        }
+        .footer-distributed .footer-company-about span{
+            display: block;
+            color:  #ffffff;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .footer-distributed .footer-icons{
+            margin-top: 25px;
+        }
+        .footer-distributed .footer-icons a{
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            background-color:  #003459;
+            border-radius: 2px;
+            font-size: 20px;
+            color: #ffffff;
+            text-align: center;
+            line-height: 35px;
+            margin-right: 3px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<header>
+    <a href="#">Brice Suazo</a>
+    <ul>
+        <a href="#home"><li>Home</li></a>
+        <a href="#works"><li>Works</li></a>
+        <a href="#socials"><li>Socials</li></a>
+        <a href="#contact"><li>Contact</li></a>
+    </ul>
+</header>
+    <body>
+        
+        <audio autoplay>
+            <source src="/music/important-music.mp3"  type="audio/ogg">
+           Your browser does not support the audio element.
+        </audio>
+
+        <div id="home" class = divHome>
+            <img class=imgBrice src="/img/brice img.jpg" width=320>
+            <h1>Brice Suazo</h1>
+            <p> Hi, I'm Brice Suazo. I love making and editing videos.<br>
+                I also like to exercise my logical thinking by solving challenges using coding.<br>
+                I am aspiring Full Stack developer and Software Engineer.
+            </p>
+        </div>
+        
+        <div id="works" class = divWorks>
+            <h2>Some of my works in my YouTube Channel.</h2>
+            <div class="videos">
+                <iframe style="padding: 10px;" width="560" height="315" src="https://www.youtube.com/embed/NHPSkWtNthk?controls=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe style="padding: 10px;" width="560" height="315" src="https://www.youtube.com/embed/Km0jB8Ni64A?controls=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe style="padding: 10px;" width="560" height="315" src="https://www.youtube.com/embed/Hyd-eVLhKpQ?controls=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe style="padding: 10px;" width="560" height="315" src="https://www.youtube.com/embed/Kg8q7b5M6C8?controls=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+        <div id="socials" class= divSocials>
+            <h2>My social media accounts.</h2>
+            <div class="social-icons">
+                <ul>
+                <li><a href="mailto: contact@bricesuazo.com"><i class="fas fa-envelope"></i></a></li>
+                <li><a href="https://www.youtube.com/BriceSuazo/" target="_blank"><i class="fab fa-youtube"></i></a></li>
+                <li><a href="https://www.facebook.com/BriceSuazo/" target="_blank"><i class="fab fa-facebook"></i></a></li>
+                <li><a href="https://www.instagram.com/Brice_Suazo/" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                <li><a href="https://www.twitter.com/Brice_Suazo/" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                <li><a href="https://www.linkedin.com/in/BriceSuazo/" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+                <li><a href="https://www.github.com/BriceSuazo/" target="_blank"><i class="fab fa-github"></i></a></li>
+                </ul>
+                </div>
+        </div>
+
+        <div id="contact" class="row">
+            <h2>Contact me.</h2>
+            <div class="column">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15462.92016756582!2d120.87711673072535!3d14.327107339632743!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33962ad0f567e2e3%3A0x7b271ba148278f81!2sPasong%20Kawayan%20II%2C%20Cavite!5e0!3m2!1sen!2sph!4v1615354030961!5m2!1sen!2sph" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+            <div class="column">
+              <form action="#">
+                <label for="name">Name</label>
+                <input type="text" name="name" placeholder="Your name..">
+                <label for="country">Email</label>
+                <input type="email" name="email" placeholder="Your email..">
+                <label for="name">Subject</label>
+                <input type="text" name="subject" placeholder="Subject..">
+                <label for="subject">Message</label>
+                <textarea name="message" placeholder="Write something.." style="height:150px"></textarea>
+                <input type="submit" value="Submit">
+              </form>
+            </div>
+          </div>
+
+        <footer class="footer-distributed">
+			<div class="footer-left">
+				<h3>Brice <span>Suazo</span></h3>
+				<p class="footer-links">
+					<a href="#home">Home</a>
+					<a href="#works">Works</a>
+					<a href="#socials">Socials</a>
+					<a href="#contact">Contact</a>
+				</p>
+				<p class="footer-company-name">Brice Suazo | BSCS 1-2 <br> &copy; 2021</p>
+			</div>
+			<div class="footer-center">
+				<div>
+					<i class="fa fa-map-marker"></i>
+					<p><span>Pasong Kawayan II</span> General Trias, Cavite</p>
+				</div>
+				<div>
+					<i class="fa fa-phone"></i>
+					<p>+63 961 7196 607</p>
+				</div>
+				<div>
+					<i class="fa fa-envelope"></i>
+					<p><a href="mailto: contact@bricesuazo.com"><span class="__cf_email__">contact@bricesuazo.com</span></a></p>
+				</div>
+			</div>
+			<div class="footer-right">
+				<p class="footer-company-about">
+					<span>NOTE</span>
+					This is just an Activity 1 submission in subject ITEC50B.
+				</p>
+				<div class="footer-icons">
+					<a href="https://www.youtube.com/BriceSuazo"><i class="fa fa-youtube"></i></a>
+					<a href="https://www.facebook.com/BriceSuazo"><i class="fa fa-facebook"></i></a>
+					<a href="https://www.twitter.com/Brice_Suazo"><i class="fa fa-twitter"></i></a>
+					<a href="https://www.instagram.com/Brice_Suazo"><i class="fa fa-instagram"></i></a>
+					<a href="https://www.linkedin.com/in/BriceSuazo"><i class="fa fa-linkedin"></i></a>
+					<a href="https://www.github.com/BriceSuazo"><i class="fa fa-github"></i></a>
+				</div>
+			</div>
+		</footer>
+    </body>
+</html>
