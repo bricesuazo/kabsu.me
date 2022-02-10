@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "./static/css/main.3b6410ad.css",
+    "main.js": "./static/js/main.b9a251ed.js",
+    "static/media/cvsu-logo.png": "./static/media/cvsu-logo.03356793e6cfb8479949.png",
+    "index.html": "./index.html",
+    "main.3b6410ad.css.map": "./static/css/main.3b6410ad.css.map",
+    "main.b9a251ed.js.map": "./static/js/main.b9a251ed.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.3b6410ad.css",
+    "static/js/main.b9a251ed.js"
+  ]
+}
