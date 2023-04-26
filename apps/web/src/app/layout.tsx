@@ -1,9 +1,16 @@
+import "./globals.css";
 import ClientProviders from "./client-providers";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <ClientProviders>
-      <div>layout{children}</div>
-    </ClientProviders>
+    <html lang="en">
+      <body>
+        <ClientProviders>{children}</ClientProviders>
+      </body>
+    </html>
   );
 }
