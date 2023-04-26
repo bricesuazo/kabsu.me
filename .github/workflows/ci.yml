@@ -15,8 +15,7 @@ env:
 
 jobs:
   build-lint:
-    env:
-      DATABASE_URL: file:./db.sqlite
+    env: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_Ym9sZC1nb2xkZmlzaC05Ny5jbGVyay5hY2NvdW50cy5kZXYk
     runs-on: ubuntu-latest
 
     steps:
