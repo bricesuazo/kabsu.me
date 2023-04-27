@@ -45,11 +45,7 @@ export default function SignInScreen() {
         />
       </View>
 
-      <TouchableOpacity
-        onPress={() => {
-          void (async () => await onSignInPress())();
-        }}
-      >
+      <TouchableOpacity onPress={void onSignInPress()}>
         <Text>Sign in</Text>
       </TouchableOpacity>
     </View>

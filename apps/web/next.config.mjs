@@ -8,7 +8,7 @@
 const config = {
   reactStrictMode: true,
   /** Enables hot reloading for local packages without a build step */
-  transpilePackages: ["@cvsudotme/api", "@cvsudotme/auth", "@cvsudotme/db"],
+  transpilePackages: ["@cvsudotme/api", "@cvsudotme/db"],
   experimental: {
     appDir: true,
   },

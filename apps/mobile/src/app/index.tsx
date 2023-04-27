@@ -4,7 +4,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { SignedIn, SignedOut } from "@clerk/clerk-expo";
 
 import { api } from "~/utils/api";
-import SignInScreen from "~/components/SignIn";
+// import SignInScreen from "~/components/SignIn";
+import SignInWithOAuth from "~/components/SignInWithOAuth";
 import { SignOut } from "~/components/SignOut";
 
 const Index = () => {
@@ -17,7 +18,8 @@ const Index = () => {
         <SignOut />
       </SignedIn>
       <SignedOut>
-        <SignInScreen />
+        <SignInWithOAuth />
+        {/* <SignInScreen /> */}
       </SignedOut>
       <Text>
         Message:{" "}

@@ -15,7 +15,6 @@
   "dependencies": {
     "@clerk/nextjs": "^4.16.4",
     "@cvsudotme/api": "^0.1.0",
-    "@cvsudotme/auth": "^0.1.0",
     "@cvsudotme/db": "^0.1.0",
     "@cvsudotme/tailwind-config": "^0.1.0",
     "@t3-oss/env-nextjs": "^0.2.1",

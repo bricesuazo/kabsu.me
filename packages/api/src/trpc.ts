@@ -1,3 +1,7 @@
+import type {
+  SignedInAuthObject,
+  SignedOutAuthObject,
+} from "@clerk/nextjs/api";
 import { getAuth } from "@clerk/nextjs/server";
 /**
  * YOU PROBABLY DON'T NEED TO EDIT THIS FILE, UNLESS:
@@ -13,10 +17,6 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import {
-  type SignedInAuthObject,
-  type SignedOutAuthObject,
-} from "@cvsudotme/auth";
 import { db } from "@cvsudotme/db";
 
 /**

@@ -158,9 +158,6 @@ importers:
       '@cvsudotme/api':
         specifier: ^0.1.0
         version: link:../../packages/api
-      '@cvsudotme/auth':
-        specifier: ^0.1.0
-        version: link:../../packages/auth
       '@cvsudotme/db':
         specifier: ^0.1.0
         version: link:../../packages/db
@@ -243,9 +240,6 @@ importers:
 
   packages/api:
     dependencies:
-      '@cvsudotme/auth':
-        specifier: ^0.1.0
-        version: link:../auth
       '@cvsudotme/db':
         specifier: ^0.1.0
         version: link:../db
@@ -261,31 +255,6 @@ importers:
       zod:
         specifier: ^3.21.4
         version: 3.21.4
-    devDependencies:
-      '@cvsudotme/eslint-config':
-        specifier: ^0.1.0
-        version: link:../config/eslint
-      eslint:
-        specifier: ^8.38.0
-        version: 8.38.0
-      typescript:
-        specifier: ^5.0.4
-        version: 5.0.4
-
-  packages/auth:
-    dependencies:
-      '@clerk/nextjs':
-        specifier: ^4.16.4
-        version: 4.16.4(next@13.3.1)(react-dom@18.2.0)(react@18.2.0)
-      next:
-        specifier: ^13.3.1
-        version: 13.3.1(@babel/core@7.21.4)(react-dom@18.2.0)(react@18.2.0)
-      react:
-        specifier: 18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: 18.2.0
-        version: 18.2.0(react@18.2.0)
     devDependencies:
       '@cvsudotme/eslint-config':
         specifier: ^0.1.0
