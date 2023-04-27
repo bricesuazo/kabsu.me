@@ -20,8 +20,8 @@ const RootLayout = () => {
     >
       <TRPCProvider>
         <SafeAreaProvider>
-          <StatusBar />
           <Stack />
+          <StatusBar />
         </SafeAreaProvider>
       </TRPCProvider>
     </ClerkProvider>

@@ -1,9 +1,10 @@
 import React from "react";
 import Constants from "expo-constants";
 import { useAuth } from "@clerk/clerk-expo";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
+import { getQueryClient } from "@trpc/react-query/shared";
 import superjson from "superjson";
 
 import { type AppRouter } from "@cvsudotme/api";
@@ -48,7 +49,19 @@ export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { getToken } = useAuth();
-  const [queryClient] = React.useState(() => new QueryClient());
+  const queryClient = getQueryClient({
+    queryClientConfig: {
+      defaultOptions: {
+        queries: {
+          refetchOnWindowFocus: false,
+          refetchInterval: false,
+          retry: false,
+          cacheTime: Infinity,
+          staleTime: Infinity,
+        },
+      },
+    },
+  });
   const [trpcClient] = React.useState(() =>
     api.createClient({
       transformer: superjson,

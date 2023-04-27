@@ -23,18 +23,18 @@ const Index = () => {
       </SignedOut>
       <Text>
         Message:{" "}
-        {!message.data
-          ? "No message"
-          : message.isLoading
+        {message.isLoading
           ? "Loading..."
+          : !message.data
+          ? "No message"
           : message.data}
       </Text>
       <Text>
         Secret Message:{" "}
-        {!secretMessage.data
-          ? "No secret Message"
-          : secretMessage.isLoading
+        {secretMessage.isLoading
           ? "Loading..."
+          : !secretMessage.data
+          ? "No secret Message"
           : secretMessage.data}
       </Text>
     </SafeAreaView>
