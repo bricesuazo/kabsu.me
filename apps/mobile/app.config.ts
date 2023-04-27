@@ -1,8 +1,8 @@
 import type { ExpoConfig } from "@expo/config";
 
 const defineConfig = (): ExpoConfig => ({
-  name: "expo",
-  slug: "expo",
+  name: "CvSU.me",
+  slug: "cvsudotme",
   scheme: "expo",
   version: "1.0.0",
   orientation: "portrait",
