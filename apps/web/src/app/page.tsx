@@ -13,6 +13,10 @@ import ClientFetch from "./client-fetch";
 export const metadata: Metadata = {
   title: "CvSU.me - Social Media for Cavite State University",
   description: "Social Media for Cavite State University",
+  openGraph: {
+    title: "CvSU.me - Social Media for Cavite State University",
+    description: "Social Media for Cavite State University",
+  },
 };
 
 export default async function Page() {

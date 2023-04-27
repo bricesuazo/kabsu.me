@@ -47,6 +47,7 @@
     "DB_HOST",
     "DB_USERNAME",
     "DB_PASSWORD",
-    "DB_URL"
+    "DB_URL",
+    "PORT"
   ]
 }
