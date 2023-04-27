@@ -1,4 +1,6 @@
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react";
+
 import ClientProviders from "./client-providers";
 
 export default function RootLayout({
@@ -10,6 +12,7 @@ export default function RootLayout({
     <html lang="en">
       <ClientProviders>
         <body>{children}</body>
+        <Analytics />
       </ClientProviders>
     </html>
   );
