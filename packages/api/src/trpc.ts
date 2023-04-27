@@ -8,12 +8,11 @@
  */
 
 import { TRPCError, initTRPC } from "@trpc/server";
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import {
-  getAuth,
+  auth,
   type SignedInAuthObject,
   type SignedOutAuthObject,
 } from "@cvsudotme/auth";
@@ -53,8 +52,8 @@ export const createInnerTRPCContext = ({ auth }: AuthContextProps) => {
  * process every request that goes through your tRPC endpoint
  * @link https://trpc.io/docs/context
  */
-export const createTRPCContext = (opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({ auth: getAuth(opts.req) });
+export const createTRPCContext = () => {
+  return createInnerTRPCContext({ auth: auth() });
 };
 
 /**

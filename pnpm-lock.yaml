@@ -143,6 +143,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@clerk/nextjs':
+        specifier: ^4.16.4
+        version: 4.16.4(next@13.3.1)(react-dom@18.2.0)(react@18.2.0)
       '@cvsudotme/api':
         specifier: ^0.1.0
         version: link:../../packages/api
@@ -257,8 +260,8 @@ importers:
   packages/auth:
     dependencies:
       '@clerk/nextjs':
-        specifier: ^4.11.0
-        version: 4.11.0(next@13.3.1)(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^4.16.4
+        version: 4.16.4(next@13.3.1)(react-dom@18.2.0)(react@18.2.0)
       next:
         specifier: ^13.3.1
         version: 13.3.1(@babel/core@7.21.4)(react-dom@18.2.0)(react@18.2.0)
@@ -1678,20 +1681,6 @@ packages:
       tslib: 2.4.1
     dev: false
 
-  /@clerk/backend@0.9.1:
-    resolution: {integrity: sha512-iEmNL0/J6Ii+lzMTzjqzVmiORNEyre6CI5lxXfLdX50tTYycsZZYl3GeayNahFRpKcGE9zWZ+KOWz/F0cGwiwQ==}
-    engines: {node: '>=14'}
-    dependencies:
-      '@clerk/types': 3.35.3
-      '@peculiar/webcrypto': 1.4.1
-      '@types/node': 16.18.6
-      deepmerge: 4.2.2
-      node-fetch-native: 1.0.1
-      rfc4648: 1.5.2
-      snakecase-keys: 5.4.4
-      tslib: 2.4.1
-    dev: false
-
   /@clerk/clerk-react@4.15.3(react@18.2.0):
     resolution: {integrity: sha512-ZR7MyQyPHWBY0CpdWsvwY4FbtAxTWKjJXH9LFhOHhNc/R7YOv1nUWu1nWsxwBzNxt9Z6QSJRyXYwpSjoUHHJJw==}
     engines: {node: '>=14'}
@@ -1720,15 +1709,15 @@ packages:
       tslib: 2.4.1
     dev: false
 
-  /@clerk/nextjs@4.11.0(next@13.3.1)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-XT0kZb8zUYSlu0TRUVt7rsJzkbwiXcm6+j8v3EQy5mMxe/d+wKUIn8CUnNzxvaeOp+qAmljio24WFNC/7Vgr+A==}
+  /@clerk/nextjs@4.16.4(next@13.3.1)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-Fr6CKrMJQmBaYN55E7/dn8mmSIWaET8eLZvdmIqEEDrNheG0jtMsEd7SIvYONTupnZ+o1S2pcWyn6SZ/hcSnZQ==}
     engines: {node: '>=14'}
     peerDependencies:
       next: '>=10'
       react: ^17.0.2 || ^18.0.0-0
       react-dom: ^17.0.2 || ^18.0.0-0
     dependencies:
-      '@clerk/backend': 0.9.1
+      '@clerk/backend': 0.17.2
       '@clerk/clerk-react': 4.15.3(react@18.2.0)
       '@clerk/clerk-sdk-node': 4.8.6
       '@clerk/types': 3.35.3
@@ -9763,10 +9752,6 @@ packages:
   /reusify@1.0.4:
     resolution: {integrity: sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==}
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
-
-  /rfc4648@1.5.2:
-    resolution: {integrity: sha512-tLOizhR6YGovrEBLatX1sdcuhoSCXddw3mqNVAcKxGJ+J0hFeJ+SjeWCv5UPA/WU3YzWPPuCVYgXBKZUPGpKtg==}
-    dev: false
 
   /rimraf@2.2.8:
     resolution: {integrity: sha512-R5KMKHnPAQaZMqLOsyuyUmcIjSeDm+73eoqQpaXA7AZ22BL+6C+1mcUscgOsNd8WVlJuvlgAPsegcx7pjlV0Dg==}
