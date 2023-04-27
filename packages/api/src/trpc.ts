@@ -1,3 +1,4 @@
+import { getAuth } from "@clerk/nextjs/server";
 /**
  * YOU PROBABLY DON'T NEED TO EDIT THIS FILE, UNLESS:
  * 1. You want to modify request context (see Part 1)
@@ -8,11 +9,11 @@
  */
 
 import { TRPCError, initTRPC } from "@trpc/server";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import {
-  auth,
   type SignedInAuthObject,
   type SignedOutAuthObject,
 } from "@cvsudotme/auth";
@@ -27,7 +28,7 @@ import { db } from "@cvsudotme/db";
  * processing a request
  *
  */
-type AuthContextProps = {
+type CreateContextOptions = {
   auth: SignedInAuthObject | SignedOutAuthObject;
 };
 
@@ -40,9 +41,9 @@ type AuthContextProps = {
  * - trpc's `createSSGHelpers` where we don't have req/res
  * @see https://create.t3.gg/en/usage/trpc#-servertrpccontextts
  */
-export const createInnerTRPCContext = ({ auth }: AuthContextProps) => {
+export const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
-    auth,
+    auth: opts.auth,
     db,
   };
 };
@@ -52,8 +53,11 @@ export const createInnerTRPCContext = ({ auth }: AuthContextProps) => {
  * process every request that goes through your tRPC endpoint
  * @link https://trpc.io/docs/context
  */
-export const createTRPCContext = () => {
-  return createInnerTRPCContext({ auth: auth() });
+export const createTRPCContext = (opts: CreateNextContextOptions) => {
+  const auth = getAuth(opts.req);
+  return createInnerTRPCContext({
+    auth,
+  });
 };
 
 /**
