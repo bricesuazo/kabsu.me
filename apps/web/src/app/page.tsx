@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center gap-4 bg-[#476930] text-white">
+    <main className="grid h-56 place-items-center">
       <p className="text-2xl font-bold">Under Maintenance</p>
-    </div>
+    </main>
   );
 }

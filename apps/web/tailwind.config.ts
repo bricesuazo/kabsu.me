@@ -1,5 +1,6 @@
-import baseConfig from "@cvsudotme/tailwind-config";
 import type { Config } from "tailwindcss";
+
+import baseConfig from "@cvsudotme/tailwind-config";
 
 export default {
   content: ["./src/**/*.tsx"],

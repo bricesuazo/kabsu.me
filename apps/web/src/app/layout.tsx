@@ -1,18 +1,20 @@
 import "./globals.css";
 import Header from "@/components/Header";
+import { getCurrentScheme } from "@/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/react";
 
 import ClientProviders from "./ClientProviders";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const scheme = await getCurrentScheme();
   return (
-    <ClerkProvider>
-      <html lang="en">
+    <html lang="en" className={scheme === "dark" ? "dark" : ""}>
+      <ClerkProvider>
         <ClientProviders>
           <body>
             <Header />
@@ -20,7 +22,7 @@ export default function RootLayout({
           </body>
           <Analytics />
         </ClientProviders>
-      </html>
-    </ClerkProvider>
+      </ClerkProvider>
+    </html>
   );
 }
