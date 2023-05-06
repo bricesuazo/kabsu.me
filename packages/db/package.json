@@ -11,11 +11,12 @@
   },
   "dependencies": {
     "@planetscale/database": "^1.7.0",
-    "drizzle-orm": "^0.23.13"
+    "drizzle-orm": "^0.25.4",
+    "mysql2": "^3.3.0"
   },
   "devDependencies": {
     "dotenv-cli": "^7.2.1",
-    "drizzle-kit": "0.17.1-5df459e",
+    "drizzle-kit": "0.17.6",
     "typescript": "^5.0.4"
   }
 }

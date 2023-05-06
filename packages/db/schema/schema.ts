@@ -1,10 +1,10 @@
 import {
+  mysqlTable,
   serial,
   text,
   timestamp,
   varchar,
-} from "drizzle-orm/mysql-core/columns";
-import { mysqlTable } from "drizzle-orm/mysql-core/table";
+} from "drizzle-orm/mysql-core";
 
 export const notes = mysqlTable("notes", {
   id: serial("id").primaryKey(),

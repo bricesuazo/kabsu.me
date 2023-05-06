@@ -1,7 +1,7 @@
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 
-import ClientProviders from "./client-providers";
+import ClientProviders from "./Providers";
 
 export default function RootLayout({
   children,
