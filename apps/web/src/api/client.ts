@@ -1,14 +1,13 @@
 "use client";
 
+import {
+  createHydrateClient,
+  createTRPCNextBeta,
+} from "@/trpc/next-layout/client";
 import { httpBatchLink, loggerLink } from "@trpc/client";
 import superjson from "superjson";
 
 import { type AppRouter } from "@cvsudotme/api";
-
-import {
-  createHydrateClient,
-  createTRPCNextBeta,
-} from "~/@trpc/next-layout/client";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url

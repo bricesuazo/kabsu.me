@@ -4,7 +4,7 @@ import superjson from "superjson";
 import { appRouter, createInnerTRPCContext } from "@cvsudotme/api";
 
 import "server-only";
-import { createTRPCNextLayout } from "~/@trpc/next-layout/server";
+import { createTRPCNextLayout } from "@/trpc/next-layout/server";
 
 export const api = createTRPCNextLayout({
   router: appRouter,

@@ -1,10 +1,9 @@
 import { type NextRequest } from "next/server";
+import { env } from "@/env.mjs";
 import { getAuth } from "@clerk/nextjs/server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { appRouter, createInnerTRPCContext } from "@cvsudotme/api";
-
-import { env } from "~/env.mjs";
 
 export default function handler(req: NextRequest) {
   return fetchRequestHandler({

@@ -1,7 +1,9 @@
 import "./globals.css";
+import Header from "@/components/Header";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/react";
 
-import ClientProviders from "./Providers";
+import ClientProviders from "./ClientProviders";
 
 export default function RootLayout({
   children,
@@ -9,11 +11,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <ClientProviders>
-        <body>{children}</body>
-        <Analytics />
-      </ClientProviders>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <ClientProviders>
+          <body>
+            <Header />
+            {children}
+          </body>
+          <Analytics />
+        </ClientProviders>
+      </html>
+    </ClerkProvider>
   );
 }
