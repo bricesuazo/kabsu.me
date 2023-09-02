@@ -1,12 +1,10 @@
-import type { IncomingHttpHeaders } from "http";
-import type { NextApiRequest, NextApiResponse } from "next";
-import type { WebhookRequiredHeaders } from "svix";
 import type { WebhookEvent } from "@clerk/nextjs/server";
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { clerkClient } from "@clerk/nextjs/server";
 
 const webhookSecret: string = process.env.WEBHOOK_SECRET || "";
 
@@ -51,14 +49,20 @@ export async function POST(req: Request) {
   if (eventType === "user.created") {
     console.log(`User ${id} was ${eventType}`);
 
+    const username =
+      evt.data.username ??
+      evt.data.email_addresses[0].email_address.split("@")[0];
+
+    await clerkClient.users.updateUser(id, {
+      username,
+    });
+
     const usersInDB = await db.query.users.findMany();
 
     await db.insert(users).values({
       id,
       user_number: usersInDB.length + 1,
-      username:
-        evt.data.username ??
-        evt.data.email_addresses[0].email_address.split("@")[0],
+      username,
     });
   } else if (eventType === "user.deleted") {
     console.log(`User ${id} was ${eventType}`);
@@ -72,13 +76,18 @@ export async function POST(req: Request) {
   } else if (eventType === "user.updated") {
     console.log(`User ${id} was ${eventType}`);
 
-    await db
+    const username =
+      evt.data.username ??
+      evt.data.email_addresses[0].email_address.split("@")[0];
 
+    await clerkClient.users.updateUser(id, {
+      username,
+    });
+
+    await db
       .update(users)
       .set({
-        username:
-          evt.data.username ??
-          evt.data.email_addresses[0].email_address.split("@")[0],
+        username,
       })
       .where(eq(users.id, id));
   } else {

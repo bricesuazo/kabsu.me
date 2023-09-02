@@ -11,6 +11,7 @@ export default async function Posts() {
       user: true,
     },
   });
+
   return (
     <div>
       {posts.map((post) => (
