@@ -72,15 +72,15 @@ export async function POST(req: Request) {
       where: eq(users.id, id),
     });
 
-    if (!user) return new Response("Error occured", { status: 400 });
+    if (user) {
+      await db.insert(deleted_users).values({
+        id: user.id,
+        user_number: user.user_number,
+        username: user.username,
+      });
 
-    await db.insert(deleted_users).values({
-      id: user.id,
-      user_number: user.user_number,
-      username: user.username,
-    });
-
-    await db.delete(users).where(eq(users.id, id));
+      await db.delete(users).where(eq(users.id, id));
+    }
   } else if (eventType === "user.updated") {
     console.log(`User ${id} was ${eventType}`);
 

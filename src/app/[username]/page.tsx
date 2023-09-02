@@ -10,7 +10,6 @@ export default async function UserPage({
   const user = await db.query.users.findFirst({
     where: (user, { eq }) => eq(user.username, username),
   });
-  console.log("🚀 ~ file: page.tsx:13 ~ user:", user);
 
   if (!user) notFound();
 
