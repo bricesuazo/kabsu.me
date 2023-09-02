@@ -18,11 +18,19 @@ const created_at = timestamp("created_at").defaultNow().notNull();
 const updated_at = timestamp("updated_at").defaultNow().onUpdateNow().notNull();
 const deleted_at = timestamp("deleted_at");
 
-export const users = mysqlTable("users", {
+export const deleted_users = mysqlTable("deleted_users", {
   id: varchar("id", { length: 256 }).primaryKey().unique().notNull(),
   user_number: int("user_number").notNull().default(0),
   username: text("username").notNull(),
-  deleted_at,
+
+  created_at,
+});
+export const users = mysqlTable("users", {
+  id: varchar("id", { length: 256 }).primaryKey().unique().notNull(),
+  user_number: int("user_number").notNull().default(0),
+  username: varchar("username", { length: 256 }).unique().notNull(),
+
+  created_at,
 });
 export const posts = mysqlTable("posts", {
   id,

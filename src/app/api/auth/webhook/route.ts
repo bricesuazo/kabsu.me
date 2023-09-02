@@ -2,7 +2,7 @@ import type { WebhookEvent } from "@clerk/nextjs/server";
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { db } from "@/db";
-import { users } from "@/db/schema";
+import { deleted_users, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { clerkClient } from "@clerk/nextjs/server";
 
@@ -58,21 +58,29 @@ export async function POST(req: Request) {
     });
 
     const usersInDB = await db.query.users.findMany();
+    const deletedUsersInDB = await db.query.deleted_users.findMany();
 
     await db.insert(users).values({
       id,
-      user_number: usersInDB.length + 1,
+      user_number: usersInDB.length + deletedUsersInDB.length + 1,
       username,
     });
   } else if (eventType === "user.deleted") {
     console.log(`User ${id} was ${eventType}`);
 
-    await db
-      .update(users)
-      .set({
-        deleted_at: new Date(),
-      })
-      .where(eq(users.id, id));
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, id),
+    });
+
+    if (!user) return new Response("Error occured", { status: 400 });
+
+    await db.insert(deleted_users).values({
+      id: user.id,
+      user_number: user.user_number,
+      username: user.username,
+    });
+
+    await db.delete(users).where(eq(users.id, id));
   } else if (eventType === "user.updated") {
     console.log(`User ${id} was ${eventType}`);
 
