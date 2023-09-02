@@ -5,6 +5,7 @@ import {
   longtext,
   timestamp,
   int,
+  text,
 } from "drizzle-orm/mysql-core";
 import { nanoid } from "nanoid";
 
@@ -20,6 +21,8 @@ const deleted_at = timestamp("deleted_at");
 export const users = mysqlTable("users", {
   id: varchar("id", { length: 256 }).primaryKey().unique().notNull(),
   user_number: int("user_number").notNull().default(0),
+  username: text("username").notNull(),
+  deleted_at,
 });
 export const posts = mysqlTable("posts", {
   id,
