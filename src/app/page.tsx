@@ -19,11 +19,7 @@ export default async function Home() {
           </header>
 
           <main>
-            <h2 className="text-2xl font-bold">
-              Greetings, @
-              {user.username ??
-                user.emailAddresses[0].emailAddress.split("@")[0]}
-            </h2>
+            <h2 className="text-2xl font-bold">Greetings, @{user.username}</h2>
 
             <PostForm />
 

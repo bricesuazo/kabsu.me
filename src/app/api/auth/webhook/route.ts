@@ -80,16 +80,20 @@ export async function POST(req: Request) {
       evt.data.username ??
       evt.data.email_addresses[0].email_address.split("@")[0];
 
-    await clerkClient.users.updateUser(id, {
-      username,
-    });
+    const user = await clerkClient.users.getUser(id);
 
-    await db
-      .update(users)
-      .set({
+    if (user.username !== username) {
+      await clerkClient.users.updateUser(id, {
         username,
-      })
-      .where(eq(users.id, id));
+      });
+
+      await db
+        .update(users)
+        .set({
+          username,
+        })
+        .where(eq(users.id, id));
+    }
   } else {
     console.log(`User ${id} was ${eventType}`);
   }
