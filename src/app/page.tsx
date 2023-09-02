@@ -18,7 +18,7 @@ export default async function Home() {
 
           <PostForm />
 
-          <Suspense fallback="Loadinsaassdasg...">
+          <Suspense fallback="Loading...">
             <Posts />
           </Suspense>
         </>

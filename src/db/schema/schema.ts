@@ -21,15 +21,12 @@ const deleted_at = timestamp("deleted_at");
 export const deleted_users = mysqlTable("deleted_users", {
   id: varchar("id", { length: 256 }).primaryKey().unique().notNull(),
   user_number: int("user_number").notNull().default(0),
-  username: text("username").notNull(),
 
   created_at,
 });
 export const users = mysqlTable("users", {
   id: varchar("id", { length: 256 }).primaryKey().unique().notNull(),
   user_number: int("user_number").notNull().default(0),
-  username: varchar("username", { length: 256 }).unique().notNull(),
-  image_url: varchar("image_url", { length: 256 }),
 
   created_at,
 });

@@ -1,5 +1,6 @@
 import Post from "@/components/post";
 import { db } from "@/db";
+import { clerkClient } from "@clerk/nextjs";
 import { isNull } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
@@ -8,9 +9,11 @@ export default async function UserPage({
 }: {
   params: { username: string };
 }) {
-  const user = await db.query.users.findFirst({
-    where: (user, { eq }) => eq(user.username, username),
+  const users = await clerkClient.users.getUserList({
+    username: [username],
   });
+
+  const user = users[0];
 
   if (!user) notFound();
 
@@ -22,10 +25,21 @@ export default async function UserPage({
     },
   });
 
+  const usersFromPosts = await clerkClient.users.getUserList({
+    userId: posts.map((post) => post.user.id),
+  });
+
   return (
     <div>
       {posts.map((post) => (
-        <Post key={post.id} post={post} userId={user.id} />
+        <Post
+          key={post.id}
+          post={{
+            ...post,
+            user: usersFromPosts.find((user) => user.id === post.user.id)!,
+          }}
+          userId={user.id}
+        />
       ))}
     </div>
   );

@@ -63,7 +63,6 @@ export async function POST(req: Request) {
     await db.insert(users).values({
       id,
       user_number: usersInDB.length + deletedUsersInDB.length + 1,
-      username,
     });
   } else if (eventType === "user.deleted") {
     console.log(`User ${id} was ${eventType}`);
@@ -76,41 +75,40 @@ export async function POST(req: Request) {
       await db.insert(deleted_users).values({
         id: user.id,
         user_number: user.user_number,
-        username: user.username,
       });
 
       await db.delete(users).where(eq(users.id, id));
     }
-  } else if (eventType === "user.updated") {
-    console.log(`User ${id} was ${eventType}`);
+    // } else if (eventType === "user.updated") {
+    //   console.log(`User ${id} was ${eventType}`);
 
-    const username =
-      evt.data.username ??
-      evt.data.email_addresses[0].email_address.split("@")[0];
+    //   const username =
+    //     evt.data.username ??
+    //     evt.data.email_addresses[0].email_address.split("@")[0];
 
-    const user = await clerkClient.users.getUser(id);
+    //   const user = await clerkClient.users.getUser(id);
 
-    if (user.imageUrl !== evt.data.image_url) {
-      await db
-        .update(users)
-        .set({
-          image_url: evt.data.image_url,
-        })
-        .where(eq(users.id, id));
-    }
+    //   if (user.imageUrl !== evt.data.image_url) {
+    //     await db
+    //       .update(users)
+    //       .set({
+    //         image_url: evt.data.image_url,
+    //       })
+    //       .where(eq(users.id, id));
+    //   }
 
-    if (user.username !== username) {
-      await clerkClient.users.updateUser(id, {
-        username,
-      });
+    //   if (user.username !== username) {
+    //     await clerkClient.users.updateUser(id, {
+    //       username,
+    //     });
 
-      await db
-        .update(users)
-        .set({
-          username,
-        })
-        .where(eq(users.id, id));
-    }
+    //     await db
+    //       .update(users)
+    //       .set({
+    //         username,
+    //       })
+    //       .where(eq(users.id, id));
+    //   }
   } else {
     console.log(`User ${id} was ${eventType}`);
   }

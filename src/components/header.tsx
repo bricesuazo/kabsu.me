@@ -11,7 +11,12 @@ export default function Header() {
       </Button>
       <div className="flex items-center gap-x-2">
         <ToggleTheme />
-        <UserButton afterSignOutUrl="/" />
+        <UserButton
+          afterSignOutUrl="/"
+          signInUrl="/"
+          afterSwitchSessionUrl="/"
+          afterMultiSessionSingleSignOutUrl="/"
+        />
       </div>
     </header>
   );

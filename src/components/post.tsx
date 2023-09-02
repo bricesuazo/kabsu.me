@@ -1,6 +1,6 @@
 "use client";
 
-import type { Post, User } from "@/db/schema";
+import type { Post } from "@/db/schema";
 import moment from "moment";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -17,6 +17,7 @@ import { MoreVertical } from "lucide-react";
 import { useState } from "react";
 import DeletePost from "./delete-post";
 import UpdatePost from "./update-post";
+import { User } from "@clerk/nextjs/server";
 
 export default function Post({
   post,

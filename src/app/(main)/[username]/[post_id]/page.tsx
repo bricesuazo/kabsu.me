@@ -1,4 +1,5 @@
 import { db } from "@/db";
+import { clerkClient } from "@clerk/nextjs";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -16,10 +17,12 @@ export default async function PostPage({
 
   if (!post) notFound();
 
+  const user = await clerkClient.users.getUser(post.user.id);
+
   return (
     <div className="container">
       <h1>{post.post}</h1>
-      <Link href={`/${post.user.username}`}>{post.user.username}</Link>
+      <Link href={`/${user.username}`}>{user.username}</Link>
     </div>
   );
 }

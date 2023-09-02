@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { isNull } from "drizzle-orm";
 import Post from "./post";
-import { auth } from "@clerk/nextjs";
+import { auth, clerkClient } from "@clerk/nextjs";
 
 export default async function Posts() {
   const { userId } = auth();
@@ -13,10 +13,21 @@ export default async function Posts() {
     },
   });
 
+  const usersFromPosts = await clerkClient.users.getUserList({
+    userId: posts.map((post) => post.user.id),
+  });
+
   return (
     <div className="flex flex-col">
       {posts.map((post) => (
-        <Post key={post.id} post={post} userId={userId} />
+        <Post
+          key={post.id}
+          post={{
+            ...post,
+            user: usersFromPosts.find((user) => user.id === post.user.id)!,
+          }}
+          userId={userId}
+        />
       ))}
     </div>
   );
