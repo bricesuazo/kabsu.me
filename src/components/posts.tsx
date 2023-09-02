@@ -1,7 +1,6 @@
 import { db } from "@/db";
 import { isNull } from "drizzle-orm";
-import moment from "moment";
-import Link from "next/link";
+import Post from "./post";
 
 export default async function Posts() {
   const posts = await db.query.posts.findMany({
@@ -13,12 +12,9 @@ export default async function Posts() {
   });
 
   return (
-    <div>
+    <div className="flex flex-col">
       {posts.map((post) => (
-        <Link href={`/${post.user.username}/${post.id}`} key={post.id}>
-          <h2>{post.post}</h2>
-          <p>{moment(post.created_at).fromNow()}</p>
-        </Link>
+        <Post key={post.id} post={post} />
       ))}
     </div>
   );

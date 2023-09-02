@@ -1,4 +1,5 @@
 import { db } from "@/db";
+import moment from "moment";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -17,14 +18,13 @@ export default async function UserPage({
     where: (post, { eq }) => eq(post.user_id, user.id),
     orderBy: (post, { asc }) => [asc(post.created_at)],
   });
-  console.log("🚀 ~ file: page.tsx:20 ~ posts:", posts);
 
   return (
     <div>
-      {username}
       {posts.map((post) => (
         <div key={post.id}>
           <h1>{post.post}</h1>
+          <p>{moment(post.created_at).fromNow()}</p>
           <Link href={`/${user.username}`}>{user.username}</Link>
         </div>
       ))}
