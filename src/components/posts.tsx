@@ -1,8 +1,10 @@
 import { db } from "@/db";
 import { isNull } from "drizzle-orm";
 import Post from "./post";
+import { auth } from "@clerk/nextjs";
 
 export default async function Posts() {
+  const { userId } = auth();
   const posts = await db.query.posts.findMany({
     where: (post) => isNull(post.deleted_at),
     orderBy: (post, { desc }) => desc(post.created_at),
@@ -14,7 +16,7 @@ export default async function Posts() {
   return (
     <div className="flex flex-col">
       {posts.map((post) => (
-        <Post key={post.id} post={post} />
+        <Post key={post.id} post={post} userId={userId} />
       ))}
     </div>
   );
