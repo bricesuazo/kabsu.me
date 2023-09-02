@@ -116,6 +116,9 @@ dependencies:
   date-fns:
     specifier: ^2.30.0
     version: registry.npmjs.org/date-fns@2.30.0
+  dotenv:
+    specifier: ^16.3.1
+    version: registry.npmjs.org/dotenv@16.3.1
   drizzle-orm:
     specifier: ^0.28.5
     version: registry.npmjs.org/drizzle-orm@0.28.5(@planetscale/database@1.11.0)
@@ -169,6 +172,12 @@ devDependencies:
   drizzle-kit:
     specifier: ^0.19.13
     version: registry.npmjs.org/drizzle-kit@0.19.13
+  prettier:
+    specifier: ^3.0.3
+    version: registry.npmjs.org/prettier@3.0.3
+  prettier-plugin-tailwindcss:
+    specifier: ^0.5.4
+    version: registry.npmjs.org/prettier-plugin-tailwindcss@0.5.4(prettier@3.0.3)
 
 packages:
 
@@ -3414,6 +3423,13 @@ packages:
       tslib: registry.npmjs.org/tslib@2.6.2
     dev: false
 
+  registry.npmjs.org/dotenv@16.3.1:
+    resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/dotenv/-/dotenv-16.3.1.tgz}
+    name: dotenv
+    version: 16.3.1
+    engines: {node: '>=12'}
+    dev: false
+
   registry.npmjs.org/dreamopt@0.8.0:
     resolution: {integrity: sha512-vyJTp8+mC+G+5dfgsY+r3ckxlz+QMX40VjPQsZc5gxVAxLmi64TBoVkP54A/pRAXMXsbu2GMMBrZPxNv23waMg==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/dreamopt/-/dreamopt-0.8.0.tgz}
     name: dreamopt
@@ -5465,6 +5481,72 @@ packages:
     version: 1.2.1
     engines: {node: '>= 0.8.0'}
     dev: false
+
+  registry.npmjs.org/prettier-plugin-tailwindcss@0.5.4(prettier@3.0.3):
+    resolution: {integrity: sha512-QZzzB1bID6qPsKHTeA9qPo1APmmxfFrA5DD3LQ+vbTmAnY40eJI7t9Q1ocqel2EKMWNPLJqdTDWZj1hKYgqSgg==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/prettier-plugin-tailwindcss/-/prettier-plugin-tailwindcss-0.5.4.tgz}
+    id: registry.npmjs.org/prettier-plugin-tailwindcss/0.5.4
+    name: prettier-plugin-tailwindcss
+    version: 0.5.4
+    engines: {node: '>=14.21.3'}
+    peerDependencies:
+      '@ianvs/prettier-plugin-sort-imports': '*'
+      '@prettier/plugin-pug': '*'
+      '@shopify/prettier-plugin-liquid': '*'
+      '@shufo/prettier-plugin-blade': '*'
+      '@trivago/prettier-plugin-sort-imports': '*'
+      prettier: ^3.0
+      prettier-plugin-astro: '*'
+      prettier-plugin-css-order: '*'
+      prettier-plugin-import-sort: '*'
+      prettier-plugin-jsdoc: '*'
+      prettier-plugin-marko: '*'
+      prettier-plugin-organize-attributes: '*'
+      prettier-plugin-organize-imports: '*'
+      prettier-plugin-style-order: '*'
+      prettier-plugin-svelte: '*'
+      prettier-plugin-twig-melody: '*'
+    peerDependenciesMeta:
+      '@ianvs/prettier-plugin-sort-imports':
+        optional: true
+      '@prettier/plugin-pug':
+        optional: true
+      '@shopify/prettier-plugin-liquid':
+        optional: true
+      '@shufo/prettier-plugin-blade':
+        optional: true
+      '@trivago/prettier-plugin-sort-imports':
+        optional: true
+      prettier-plugin-astro:
+        optional: true
+      prettier-plugin-css-order:
+        optional: true
+      prettier-plugin-import-sort:
+        optional: true
+      prettier-plugin-jsdoc:
+        optional: true
+      prettier-plugin-marko:
+        optional: true
+      prettier-plugin-organize-attributes:
+        optional: true
+      prettier-plugin-organize-imports:
+        optional: true
+      prettier-plugin-style-order:
+        optional: true
+      prettier-plugin-svelte:
+        optional: true
+      prettier-plugin-twig-melody:
+        optional: true
+    dependencies:
+      prettier: registry.npmjs.org/prettier@3.0.3
+    dev: true
+
+  registry.npmjs.org/prettier@3.0.3:
+    resolution: {integrity: sha512-L/4pUDMxcNa8R/EthV08Zt42WBO4h1rarVtK0K+QJG0X187OLo7l699jWw0GKuwzkPQ//jMFA/8Xm6Fh3J/DAg==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/prettier/-/prettier-3.0.3.tgz}
+    name: prettier
+    version: 3.0.3
+    engines: {node: '>=14'}
+    hasBin: true
+    dev: true
 
   registry.npmjs.org/prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz}

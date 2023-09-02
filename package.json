@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:generate": "drizzle-kit generate:mysql",
+    "db:push": "drizzle-kit push:mysql",
+    "db:pull": "drizzle-kit introspect:mysql",
+    "db:studio": "drizzle-kit studio --port 3001 --verbose"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.23.3",
@@ -46,6 +50,7 @@
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
     "date-fns": "^2.30.0",
+    "dotenv": "^16.3.1",
     "drizzle-orm": "^0.28.5",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
@@ -64,6 +69,8 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
-    "drizzle-kit": "^0.19.13"
+    "drizzle-kit": "^0.19.13",
+    "prettier": "^3.0.3",
+    "prettier-plugin-tailwindcss": "^0.5.4"
   }
 }
