@@ -1,14 +1,17 @@
-import { UserButton, auth } from "@clerk/nextjs";
+import { UserButton, auth, currentUser } from "@clerk/nextjs";
 import Auth from "@/components/auth";
 import { ToggleTheme } from "@/components/toggle-theme";
+import PostForm from "@/components/post-form";
+import Posts from "@/components/posts";
+import { Suspense } from "react";
 
-export default function Home() {
-  const { userId } = auth();
+export default async function Home() {
+  const user = await currentUser();
 
   return (
     <div className="container">
       <ToggleTheme />
-      {userId ? (
+      {user ? (
         <div>
           <header className="flex items-center justify-between">
             <h1>CvSU.me</h1>
@@ -16,10 +19,17 @@ export default function Home() {
           </header>
 
           <main>
-            <h2 className="text-2xl font-bold">Welcome to CvSU.me</h2>
-            <p className="text-gray-600">
-              This is a social media for Cavite State University.
-            </p>
+            <h2 className="text-2xl font-bold">
+              Greetings, @
+              {user.username ??
+                user.emailAddresses[0].emailAddress.split("@")[0]}
+            </h2>
+
+            <PostForm />
+
+            <Suspense fallback="Loading...">
+              <Posts />
+            </Suspense>
           </main>
         </div>
       ) : (
