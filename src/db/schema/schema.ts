@@ -14,8 +14,8 @@ const id = varchar("id", { length: 256 })
   .notNull()
   .unique()
   .$defaultFn(() => nanoid());
-const created_at = timestamp("created_at").defaultNow().notNull();
-const updated_at = timestamp("updated_at").defaultNow().onUpdateNow().notNull();
+const created_at = timestamp("created_at").notNull().defaultNow();
+const updated_at = timestamp("updated_at").notNull().defaultNow().onUpdateNow();
 const deleted_at = timestamp("deleted_at");
 
 export const deleted_users = mysqlTable("deleted_users", {
@@ -29,6 +29,7 @@ export const users = mysqlTable("users", {
   id: varchar("id", { length: 256 }).primaryKey().unique().notNull(),
   user_number: int("user_number").notNull().default(0),
   username: varchar("username", { length: 256 }).unique().notNull(),
+  image_url: varchar("image_url", { length: 256 }),
 
   created_at,
 });

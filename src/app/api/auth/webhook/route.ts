@@ -90,6 +90,15 @@ export async function POST(req: Request) {
 
     const user = await clerkClient.users.getUser(id);
 
+    if (user.imageUrl !== evt.data.image_url) {
+      await db
+        .update(users)
+        .set({
+          image_url: evt.data.image_url,
+        })
+        .where(eq(users.id, id));
+    }
+
     if (user.username !== username) {
       await clerkClient.users.updateUser(id, {
         username,
