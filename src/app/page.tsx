@@ -10,8 +10,17 @@ export default function Home() {
       <ToggleTheme />
       {userId ? (
         <div>
-          <h1>Welcome to CvSU.me</h1>
-          <UserButton afterSignOutUrl="/" />
+          <header className="flex items-center justify-between">
+            <h1>CvSU.me</h1>
+            <UserButton afterSignOutUrl="/" />
+          </header>
+
+          <main>
+            <h2 className="text-2xl font-bold">Welcome to CvSU.me</h2>
+            <p className="text-gray-600">
+              This is a social media for Cavite State University.
+            </p>
+          </main>
         </div>
       ) : (
         <div>

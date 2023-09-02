@@ -25,11 +25,11 @@ export default function Auth() {
       disabled={!isLoaded || isLoading}
     >
       {isLoading ? (
-        <Icons.spinner className="h-4 w-4 animate-spin mr-2" />
+        <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
       ) : (
-        <Icons.google className="h-4 w-4 mr-2" />
+        <Icons.google className="mr-2 h-4 w-4" />
       )}
-      Sign in with Google
+      Sign in with CvSU Account
     </Button>
   );
 }
