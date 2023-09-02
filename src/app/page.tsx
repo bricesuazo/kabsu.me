@@ -1,5 +1,6 @@
+import Auth from "@/components/auth";
 import { ToggleTheme } from "@/components/toggle-theme";
-import { SignIn, UserButton, auth } from "@clerk/nextjs";
+import { UserButton, auth } from "@clerk/nextjs";
 
 export default function Home() {
   const { userId } = auth();
@@ -13,7 +14,9 @@ export default function Home() {
           <UserButton afterSignOutUrl="/" />
         </div>
       ) : (
-        <SignIn routing="hash" />
+        <div>
+          <Auth />
+        </div>
       )}
     </div>
   );
