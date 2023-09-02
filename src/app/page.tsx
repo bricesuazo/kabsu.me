@@ -1,12 +1,11 @@
-import { auth } from "@clerk/nextjs";
+import { SignIn, auth } from "@clerk/nextjs";
 
 export default function Home() {
   const { userId } = auth();
   if (!userId)
     return (
       <div className="container">
-        <h1>Home</h1>
-        <p>Not logged in.</p>
+        <SignIn routing="hash" />
       </div>
     );
 
