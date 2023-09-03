@@ -7,11 +7,11 @@ import { auth } from "@clerk/nextjs";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-export async function createPost({ post }: CreatePostSchema) {
+export async function createPost({ content }: CreatePostSchema) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
-  await db.insert(posts).values({ post, user_id: userId });
+  await db.insert(posts).values({ content, user_id: userId });
 
   revalidatePath("/");
 }
@@ -34,7 +34,7 @@ export async function deletePost({ post_id }: { post_id: string }) {
   revalidatePath("/");
 }
 
-export async function updatePost({ post, post_id }: UpdatePostSchema) {
+export async function updatePost({ content, post_id }: UpdatePostSchema) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
@@ -47,7 +47,7 @@ export async function updatePost({ post, post_id }: UpdatePostSchema) {
 
   await db
     .update(posts)
-    .set({ post })
+    .set({ content })
     .where(and(eq(posts.id, post_id), eq(posts.user_id, userId)));
 
   revalidatePath("/");

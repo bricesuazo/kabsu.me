@@ -92,7 +92,7 @@ export default function Post({
           )}
         </div>
 
-        <p>{post.post}</p>
+        <p>{post.content}</p>
       </div>
     </>
   );

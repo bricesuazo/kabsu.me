@@ -21,7 +21,7 @@ export default async function PostPage({
 
   return (
     <div className="container">
-      <h1>{post.post}</h1>
+      <h1>{post.content}</h1>
       <Link href={`/${user.username}`}>{user.username}</Link>
     </div>
   );

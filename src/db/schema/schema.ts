@@ -33,7 +33,7 @@ export const users = mysqlTable("users", {
 export const posts = mysqlTable("posts", {
   id,
   user_id: varchar("user_id", { length: 256 }).notNull(),
-  post: longtext("post").notNull(),
+  content: longtext("content").notNull(),
 
   created_at,
   updated_at,

@@ -21,7 +21,7 @@ export default function PostForm() {
   const form = useForm<CreatePostSchema>({
     resolver: zodResolver(createPostSchema),
     defaultValues: {
-      post: "",
+      content: "",
     },
   });
 
@@ -36,7 +36,7 @@ export default function PostForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="post"
+          name="content"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Post</FormLabel>

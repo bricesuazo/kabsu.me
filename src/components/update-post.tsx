@@ -37,7 +37,7 @@ export default function UpdatePost({
   const form = useForm<UpdatePostSchema>({
     resolver: zodResolver(updatePostSchema),
     defaultValues: {
-      post: post.post,
+      content: post.content,
       post_id: post.id,
     },
   });
@@ -45,11 +45,11 @@ export default function UpdatePost({
   useEffect(() => {
     if (open) {
       form.reset({
-        post: post.post,
+        content: post.content,
         post_id: post.id,
       });
     }
-  }, [open, form, post.post, post.id]);
+  }, [open, form, post.content, post.id]);
 
   async function onSubmit(values: UpdatePostSchema) {
     if (!form.formState.isDirty) return;
@@ -71,7 +71,7 @@ export default function UpdatePost({
 
             <FormField
               control={form.control}
-              name="post"
+              name="content"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Post</FormLabel>
