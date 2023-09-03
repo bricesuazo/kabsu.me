@@ -28,6 +28,7 @@ import {
   CommandItem,
 } from "./ui/command";
 import { cn } from "@/lib/utils";
+import { addProgramToUserMetadata } from "@/actions/user";
 
 export default function AuthForm({
   data,
@@ -61,9 +62,9 @@ export default function AuthForm({
   });
 
   const form2Schema = z.object({
-    college_id: z.string().nonempty().optional(),
-    department_id: z.string().nonempty().optional(),
-    program_id: z.string().nonempty().optional(),
+    college_id: z.string().nonempty(),
+    department_id: z.string().nonempty(),
+    program_id: z.string().nonempty(),
   });
 
   const form1 = useForm<z.infer<typeof form1Schema>>({
@@ -204,14 +205,10 @@ export default function AuthForm({
                 actionCompleteRedirectUrl: "/",
               });
 
-              await clerkClient.users.updateUserMetadata(
-                new_user.createdUserId ?? "",
-                {
-                  publicMetadata: {
-                    program_id: values.program_id,
-                  },
-                },
-              );
+              await addProgramToUserMetadata({
+                userId: new_user.createdUserId ?? "",
+                program_id: values.program_id,
+              });
 
               setActive({
                 session: signUp.createdSessionId ?? "",

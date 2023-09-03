@@ -1,4 +1,5 @@
 import Post from "@/components/post";
+import { Badge } from "@/components/ui/badge";
 import { db } from "@/db";
 import { clerkClient } from "@clerk/nextjs";
 import { isNull } from "drizzle-orm";
@@ -29,8 +30,29 @@ export default async function UserPage({
     userId: posts.map((post) => post.user.id),
   });
 
+  const program = await db.query.programs.findFirst({
+    where: (program, { eq }) =>
+      eq(program.id, user.publicMetadata.program_id as string),
+    with: {
+      department: {
+        with: {
+          college: true,
+        },
+      },
+    },
+  });
+
   return (
     <div>
+      {program && (
+        <div className="flex items-center gap-x-2">
+          <Badge>{program.department.college.slug.toUpperCase()}</Badge>
+          <Badge variant="outline">
+            {program.department.slug.toUpperCase()}
+          </Badge>
+          <Badge variant="outline">{program.slug.toUpperCase()}</Badge>
+        </div>
+      )}
       {posts.map((post) => (
         <Post
           key={post.id}
