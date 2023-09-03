@@ -1,0 +1,106 @@
+"use client";
+
+import { User } from "@clerk/nextjs/server";
+import { Pencil } from "lucide-react";
+import { useState } from "react";
+import { Textarea } from "./ui/textarea";
+import { Button } from "./ui/button";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
+import { updateBio } from "@/actions/user";
+import { Icons } from "./icons";
+
+export default function Bio({
+  user,
+  isSameUser,
+}: {
+  user: User;
+  isSameUser: boolean;
+}) {
+  const form = useForm<{
+    bio: string;
+  }>({
+    defaultValues: {
+      bio: (user.publicMetadata.bio as string | undefined) ?? "",
+    },
+  });
+  const [isEditing, setIsEditing] = useState(false);
+
+  if (isSameUser) {
+    return (
+      <div>
+        {isEditing ? (
+          <Form {...form}>
+            <form
+              className="space-y-2"
+              onSubmit={form.handleSubmit(async (data) => {
+                await updateBio({
+                  user_id: user.id,
+                  bio: data.bio,
+                });
+                setIsEditing(false);
+              })}
+            >
+              <FormField
+                control={form.control}
+                name="bio"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Tell us about yourself"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-end gap-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsEditing(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  type="submit"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting && (
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Update
+                </Button>
+              </div>
+            </form>
+          </Form>
+        ) : (
+          <button
+            className="flex items-center gap-x-2"
+            onClick={() => setIsEditing(true)}
+          >
+            <p>
+              {(user.publicMetadata.bio as string | undefined) ?? "No bio yet"}
+            </p>
+            <Pencil size="1rem" />
+          </button>
+        )}
+      </div>
+    );
+  } else {
+    return (
+      <p>{(user.publicMetadata.bio as string | undefined) ?? "No bio yet"}</p>
+    );
+  }
+}
