@@ -44,13 +44,15 @@ export default function Post({
       >
         <div className="flex items-center justify-between">
           <Link href={`/${post.user.username}`} className="flex gap-x-2">
-            <Image
-              src={post.user.imageUrl}
-              alt="Image"
-              width={40}
-              height={40}
-              className="flex-1 rounded-full object-cover"
-            />
+            <div className="">
+              <Image
+                src={post.user.imageUrl}
+                alt="Image"
+                width={40}
+                height={40}
+                className="flex-1 rounded-full object-cover"
+              />
+            </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-x-2">
                 <p>
