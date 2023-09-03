@@ -15,21 +15,24 @@ export default async function Posts() {
   });
 
   const usersFromPosts = await clerkClient.users.getUserList({
-    userId: posts.map((post) => post.user.id),
+    userId: posts.map((post) => post.user && post.user.id),
   });
 
   return (
     <div className="flex flex-col">
-      {posts.map((post) => (
-        <Post
-          key={post.id}
-          post={{
-            ...post,
-            user: usersFromPosts.find((user) => user.id === post.user.id)!,
-          }}
-          userId={userId}
-        />
-      ))}
+      {posts.map((post) => {
+        if (!post.user) return null;
+        return (
+          <Post
+            key={post.id}
+            post={{
+              ...post,
+              user: usersFromPosts.find((user) => user.id === post.user.id)!,
+            }}
+            userId={userId}
+          />
+        );
+      })}
     </div>
   );
 }
