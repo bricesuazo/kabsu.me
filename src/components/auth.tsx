@@ -8,7 +8,7 @@ export default async function Auth() {
   const programs = await db.query.programs.findMany();
 
   return (
-    <Suspense fallback="Loading auth...">
+    <Suspense>
       <AuthForm data={{ colleges, departments, programs }} />
     </Suspense>
   );
