@@ -50,11 +50,12 @@ export default async function UserPage({
     },
   });
 
-  const followers = await db.query.followers.findMany({
-    where: (follower, { eq }) => eq(follower.user_id, user.id),
+  const followers = await db.query.follows.findMany({
+    where: (follow, { eq }) => eq(follow.follower_id, user.id),
   });
-  const following = await db.query.following.findMany({
-    where: (follower, { eq }) => eq(follower.user_id, user.id),
+
+  const following = await db.query.follows.findMany({
+    where: (follow, { eq }) => eq(follow.followee_id, user.id),
   });
 
   return (
@@ -93,7 +94,7 @@ export default async function UserPage({
           <ProfileButton
             isSameUser={userId === user.id}
             isFollower={
-              !!followers.find((follower) => follower.user_id === userId)
+              !!followers.find((follower) => follower.follower_id === userId)
             }
             user_id={user.id}
           />

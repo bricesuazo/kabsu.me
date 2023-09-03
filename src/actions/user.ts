@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { followers, following } from "@/db/schema";
+import { follows } from "@/db/schema";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
@@ -43,14 +43,10 @@ export async function followUser({ user_id }: { user_id: string }) {
 
   if (!userId) throw new Error("User not found");
 
-  await db.insert(followers).values({
-    user_id,
+  await db.insert(follows).values({
     follower_id: userId,
+    followee_id: user_id,
   });
 
-  await db.insert(following).values({
-    user_id: userId,
-    following_id: user_id,
-  });
   revalidatePath("/user/[username]");
 }
