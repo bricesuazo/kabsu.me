@@ -49,7 +49,11 @@ export default function Auth() {
     form.setValue("last_name", signUp.lastName ?? "");
   }, [signUp, isLoadedSignUp, form]);
 
-  if ((!signIn && !isLoadedSignIn) || (!signUp && !isLoadedSignUp))
+  if (
+    (!signIn && !isLoadedSignIn) ||
+    (!signUp && !isLoadedSignUp) ||
+    form.formState.isSubmitted
+  )
     return <Icons.spinner className="animate-spin" />;
 
   if (!signIn.status) {

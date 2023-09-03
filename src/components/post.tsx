@@ -18,6 +18,7 @@ import { useState } from "react";
 import DeletePost from "./delete-post";
 import UpdatePost from "./update-post";
 import { User } from "@clerk/nextjs/server";
+import Image from "next/image";
 
 export default function Post({
   post,
@@ -42,20 +43,27 @@ export default function Post({
         className="cursor-pointer space-y-2 border p-4"
       >
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-x-2">
-            <Button
-              asChild
-              variant="link"
-              className="h-auto p-0"
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
-              <Link href={`/${post.user.username}`}>@{post.user.username}</Link>
-            </Button>
-            <p>·</p>
-            <p className="text-xs">{moment(post.created_at).fromNow()}</p>
-          </div>
+          <Link href={`/${post.user.username}`} className="flex gap-x-2">
+            <Image
+              src={post.user.imageUrl}
+              alt="Image"
+              width={40}
+              height={40}
+              className="flex-1 rounded-full object-cover"
+            />
+            <div className="flex flex-col">
+              <div className="flex items-center gap-x-2">
+                <p>
+                  {post.user.firstName} {post.user.lastName}
+                </p>
+
+                <p className="pointer-events-none select-none">·</p>
+                <p className="text-xs">{moment(post.created_at).fromNow()}</p>
+              </div>
+              <p className="text-sm">@{post.user.username}</p>
+            </div>
+          </Link>
+
           {post.user.id === userId && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

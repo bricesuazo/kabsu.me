@@ -6,7 +6,8 @@ import { auth, clerkClient } from "@clerk/nextjs";
 export default async function Posts() {
   const { userId } = auth();
   const posts = await db.query.posts.findMany({
-    where: (post) => isNull(post.deleted_at),
+    where: (post, { and, eq }) =>
+      and(isNull(post.deleted_at), eq(post.user_id, userId ?? "")),
     orderBy: (post, { desc }) => desc(post.created_at),
     with: {
       user: true,

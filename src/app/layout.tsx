@@ -1,8 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import { ClerkProvider, UserButton, currentUser } from "@clerk/nextjs";
+import { ClerkProvider, UserButton, auth, currentUser } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
+import Header from "@/components/header";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -18,11 +19,14 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: React.PropsWithChildren) {
+  const { userId } = auth();
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body className={font.className}>
           <ThemeProvider attribute="class" defaultTheme="light">
+            <Header userId={userId} />
+
             {children}
           </ThemeProvider>
         </body>
