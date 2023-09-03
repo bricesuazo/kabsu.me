@@ -86,15 +86,14 @@ export default function Bio({
             </form>
           </Form>
         ) : (
-          <button
-            className="flex items-center gap-x-2"
-            onClick={() => setIsEditing(true)}
-          >
-            <p>
-              {(user.publicMetadata.bio as string | undefined) ?? "No bio yet"}
-            </p>
-            <Pencil size="1rem" />
-          </button>
+          <p>
+            {(user.publicMetadata.bio as string | undefined) ?? "No bio yet"}{" "}
+            <span>
+              <button onClick={() => setIsEditing(true)}>
+                <Pencil size="1rem" />
+              </button>
+            </span>
+          </p>
         )}
       </div>
     );

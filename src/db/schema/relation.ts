@@ -3,7 +3,7 @@ import {
   colleges,
   departments,
   followers,
-  followings,
+  following,
   posts,
   programs,
   users,
@@ -12,7 +12,7 @@ import {
 export const usersRelations = relations(users, ({ one, many }) => ({
   posts: many(posts),
   followers: many(followers),
-  followings: many(followings),
+  following: many(following),
 }));
 
 export const followersRelations = relations(followers, ({ one, many }) => ({
@@ -20,11 +20,19 @@ export const followersRelations = relations(followers, ({ one, many }) => ({
     fields: [followers.user_id],
     references: [users.id],
   }),
+  follower: one(users, {
+    fields: [followers.follower_id],
+    references: [users.id],
+  }),
 }));
 
-export const followingsRelations = relations(followings, ({ one, many }) => ({
+export const followingRelations = relations(following, ({ one, many }) => ({
   user: one(users, {
-    fields: [followings.user_id],
+    fields: [following.user_id],
+    references: [users.id],
+  }),
+  following: one(users, {
+    fields: [following.following_id],
     references: [users.id],
   }),
 }));

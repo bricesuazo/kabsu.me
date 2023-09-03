@@ -53,7 +53,7 @@ export default async function UserPage({
   const followers = await db.query.followers.findMany({
     where: (follower, { eq }) => eq(follower.user_id, user.id),
   });
-  const followings = await db.query.followings.findMany({
+  const following = await db.query.following.findMany({
     where: (follower, { eq }) => eq(follower.user_id, user.id),
   });
 
@@ -90,7 +90,13 @@ export default async function UserPage({
 
       <div className="space-y-2">
         <div className="flex items-center gap-x-2">
-          <ProfileButton isSameUser={userId === user.id} />
+          <ProfileButton
+            isSameUser={userId === user.id}
+            isFollower={
+              !!followers.find((follower) => follower.user_id === userId)
+            }
+            user_id={user.id}
+          />
         </div>
 
         <div className="flex items-center gap-x-4">
@@ -102,7 +108,7 @@ export default async function UserPage({
           <p className="pointer-events-none select-none">·</p>
           <Button variant="link" className="p-0" asChild>
             <Link href={`/${user.username}/following`}>
-              {followings.length} following
+              {following.length} following
             </Link>
           </Button>
         </div>
