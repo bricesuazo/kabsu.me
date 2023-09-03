@@ -12,7 +12,7 @@ export default function Home() {
       {userId ? (
         <>
           <PostForm />
-
+          Add styling
           <Suspense fallback="Loading...">
             <Posts />
           </Suspense>
