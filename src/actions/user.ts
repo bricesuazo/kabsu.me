@@ -3,6 +3,7 @@
 import { db } from "@/db";
 import { followees, followers } from "@/db/schema";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function addProgramToUserMetadata({
@@ -52,6 +53,32 @@ export async function followUser({ user_id }: { user_id: string }) {
     follower_id: user_id,
     followee_id: userId,
   });
+
+  revalidatePath("/user/[username]");
+}
+
+export async function unfollowUser({ user_id }: { user_id: string }) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("User not found");
+
+  await db
+    .delete(followers)
+    .where(
+      and(
+        eq(followers.follower_id, userId),
+        eq(followers.followee_id, user_id),
+      ),
+    );
+
+  await db
+    .delete(followees)
+    .where(
+      and(
+        eq(followees.follower_id, user_id),
+        eq(followees.followee_id, userId),
+      ),
+    );
 
   revalidatePath("/user/[username]");
 }

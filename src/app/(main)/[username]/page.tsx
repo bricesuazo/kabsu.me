@@ -1,13 +1,13 @@
 import Post from "@/components/post";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { db } from "@/db";
 import { auth, clerkClient } from "@clerk/nextjs";
 import { isNull } from "drizzle-orm";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import ProfileButton from "@/components/profile-button";
 import Bio from "@/components/bio";
 
@@ -17,6 +17,7 @@ export default async function UserPage({
   params: { username: string };
 }) {
   const { userId } = auth();
+
   const users = await clerkClient.users.getUserList({
     username: [username],
   });
@@ -51,11 +52,11 @@ export default async function UserPage({
   });
 
   const followers = await db.query.followers.findMany({
-    where: (follow, { eq }) => eq(follow.follower_id, user.id),
+    where: (follower, { eq }) => eq(follower.followee_id, user.id),
   });
 
   const followees = await db.query.followees.findMany({
-    where: (follow, { eq }) => eq(follow.followee_id, user.id),
+    where: (followee, { eq }) => eq(followee.followee_id, user.id),
   });
 
   return (

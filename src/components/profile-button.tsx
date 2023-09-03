@@ -4,7 +4,7 @@ import { PenSquare } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { Icons } from "./icons";
-import { followUser } from "@/actions/user";
+import { followUser, unfollowUser } from "@/actions/user";
 
 export default function ProfileButton({
   isSameUser,
@@ -26,12 +26,14 @@ export default function ProfileButton({
 
   return (
     <Button
-      variant={isFollower ? "default" : "secondary"}
+      variant={isFollower ? "secondary" : "default"}
       onClick={async () => {
         setLoading(true);
-        await followUser({
-          user_id,
-        });
+        isFollower
+          ? await unfollowUser({ user_id })
+          : await followUser({
+              user_id,
+            });
         setLoading(false);
       }}
       disabled={loading}
