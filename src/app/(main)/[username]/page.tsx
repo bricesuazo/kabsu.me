@@ -19,7 +19,8 @@ export default async function UserPage({
   if (!user) notFound();
 
   const posts = await db.query.posts.findMany({
-    where: (post) => isNull(post.deleted_at),
+    where: (post, { and, eq }) =>
+      and(isNull(post.deleted_at), eq(post.user_id, user.id)),
     orderBy: (post, { asc }) => [asc(post.created_at)],
     with: {
       user: true,
