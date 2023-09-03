@@ -10,12 +10,19 @@ const font = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
-// export const runtime = "edge";
+export const runtime = "edge";
 // export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "CvSU.me - Social Media for Cavite State University",
+  title: {
+    default: "CvSU.me - Social Media for Cavite State University",
+    template: "%s - CvSU.me",
+  },
   description: "Social Media for Cavite State University",
+  authors: {
+    name: "Brice Suazo",
+    url: "https://bricesuazo.com",
+  },
 };
 
 export default function RootLayout({ children }: React.PropsWithChildren) {

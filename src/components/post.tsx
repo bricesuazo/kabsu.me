@@ -22,10 +22,10 @@ import Image from "next/image";
 
 export default function Post({
   post,
-  userId,
+  isMyPost,
 }: {
   post: Post & { user: User };
-  userId: string | null;
+  isMyPost: boolean;
 }) {
   const router = useRouter();
   const [openDelete, setOpenDelete] = useState(false);
@@ -66,7 +66,7 @@ export default function Post({
             </div>
           </Link>
 
-          {post.user.id === userId && (
+          {isMyPost && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button size="icon" variant="outline">

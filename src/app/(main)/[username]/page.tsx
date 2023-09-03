@@ -7,9 +7,20 @@ import { auth, clerkClient } from "@clerk/nextjs";
 import { isNull } from "drizzle-orm";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import ProfileButton from "@/components/profile-button";
 import Bio from "@/components/bio";
+import type { Metadata } from "next";
+
+export function generateMetadata({
+  params,
+}: {
+  params: { username: string };
+}): Metadata {
+  return {
+    title: `@${params.username}`,
+  };
+}
 
 export default async function UserPage({
   params: { username },
@@ -72,11 +83,11 @@ export default async function UserPage({
               <Badge variant="outline">{program.slug.toUpperCase()}</Badge>
             </div>
           )}
-          <h2 className="text-4xl font-semibold">
-            {user.firstName} {user.lastName}
-          </h2>
+          <h2 className="text-4xl font-semibold">@{user.username}</h2>
 
-          <h4 className="text-xl">@{user.username}</h4>
+          <h4 className="text-xl">
+            {user.firstName} {user.lastName}
+          </h4>
           <Bio user={user} isSameUser={userId === user.id} />
         </div>
         <div className="">
@@ -140,7 +151,7 @@ export default async function UserPage({
             ...post,
             user: usersFromPosts.find((user) => user.id === post.user.id)!,
           }}
-          userId={user.id}
+          isMyPost={userId === post.user.id}
         />
       ))}
     </div>
