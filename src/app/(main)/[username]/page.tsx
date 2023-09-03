@@ -50,11 +50,11 @@ export default async function UserPage({
     },
   });
 
-  const followers = await db.query.follows.findMany({
+  const followers = await db.query.followers.findMany({
     where: (follow, { eq }) => eq(follow.follower_id, user.id),
   });
 
-  const following = await db.query.follows.findMany({
+  const followees = await db.query.followees.findMany({
     where: (follow, { eq }) => eq(follow.followee_id, user.id),
   });
 
@@ -109,7 +109,7 @@ export default async function UserPage({
           <p className="pointer-events-none select-none">·</p>
           <Button variant="link" className="p-0" asChild>
             <Link href={`/${user.username}/following`}>
-              {following.length} following
+              {followees.length} following
             </Link>
           </Button>
         </div>

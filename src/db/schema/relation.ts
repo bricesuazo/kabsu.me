@@ -1,19 +1,41 @@
 import { relations } from "drizzle-orm";
-import { colleges, departments, follows, posts, programs, users } from ".";
+import {
+  colleges,
+  departments,
+  followers,
+  followees,
+  posts,
+  programs,
+  users,
+} from ".";
 
 export const usersRelations = relations(users, ({ one, many }) => ({
   posts: many(posts),
-  follows: many(follows),
+  followers: many(followers),
+  followees: many(followees),
 }));
 
-export const followsRelations = relations(follows, ({ one, many }) => ({
+export const followersRelations = relations(followers, ({ one, many }) => ({
   follower: one(users, {
-    fields: [follows.follower_id],
+    fields: [followers.follower_id],
     references: [users.id],
   }),
+
+  followee: one(followees, {
+    fields: [followers.followee_id],
+    references: [followees.id],
+  }),
+}));
+
+export const followeesRelations = relations(followees, ({ one, many }) => ({
   followee: one(users, {
-    fields: [follows.followee_id],
+    fields: [followees.followee_id],
     references: [users.id],
+  }),
+
+  follower: one(followers, {
+    fields: [followees.follower_id],
+    references: [followers.id],
   }),
 }));
 

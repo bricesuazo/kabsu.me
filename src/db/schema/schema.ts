@@ -30,10 +30,17 @@ export const users = mysqlTable("users", {
 
   created_at,
 });
-export const follows = mysqlTable("follows", {
+export const followers = mysqlTable("followers", {
   id,
   follower_id: varchar("follower_id", { length: 256 }).notNull(),
   followee_id: varchar("followee_id", { length: 256 }).notNull(),
+
+  created_at,
+});
+export const followees = mysqlTable("followees", {
+  id,
+  followee_id: varchar("followee_id", { length: 256 }).notNull(),
+  follower_id: varchar("follower_id", { length: 256 }).notNull(),
 
   created_at,
 });
@@ -100,5 +107,7 @@ export type NewDepartment = typeof departments.$inferInsert;
 // export type NewOrganization = typeof organizations.$inferInsert;
 export type Program = typeof programs.$inferSelect;
 export type NewProgram = typeof programs.$inferInsert;
-export type Follow = typeof follows.$inferSelect;
-export type NewFollow = typeof follows.$inferInsert;
+export type Follower = typeof followers.$inferSelect;
+export type NewFollower = typeof followers.$inferInsert;
+export type Followee = typeof followees.$inferSelect;
+export type NewFollowee = typeof followees.$inferInsert;

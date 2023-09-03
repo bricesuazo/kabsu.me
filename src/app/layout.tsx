@@ -10,8 +10,8 @@ const font = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
-// export const runtime = "edge";
-export const dynamic = "force-dynamic";
+export const runtime = "edge";
+// export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "CvSU.me - Social Media for Cavite State University",

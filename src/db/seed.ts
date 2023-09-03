@@ -1,9 +1,21 @@
-import { colleges, departments, programs } from "./schema";
+import { colleges, departments, programs, users } from "./schema";
 import { SEED_DATA } from "@/lib/constants";
 import { db } from ".";
+import { clerkClient } from "@clerk/nextjs/server";
 
 async function main() {
   await db.transaction(async (trx) => {
+    const usersFromClerk = await clerkClient.users.getUserList();
+
+    await trx.insert(users).values(
+      usersFromClerk.map((user, index) => ({
+        id: user.id,
+        user_number: index + 1,
+      })),
+    );
+
+    console.log("Users inserted!");
+
     await trx.insert(colleges).values(
       SEED_DATA.map((college) => ({
         id: college.id,
