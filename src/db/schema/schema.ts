@@ -1,4 +1,3 @@
-import { relations } from "drizzle-orm";
 import {
   mysqlTable,
   varchar,
@@ -28,6 +27,18 @@ export const deleted_users = mysqlTable("deleted_users", {
 export const users = mysqlTable("users", {
   id: varchar("id", { length: 256 }).primaryKey().unique().notNull(),
   user_number: int("user_number").notNull().default(0),
+
+  created_at,
+});
+export const followers = mysqlTable("followers", {
+  id,
+  user_id: varchar("user_id", { length: 256 }).notNull(),
+
+  created_at,
+});
+export const followings = mysqlTable("followings", {
+  id,
+  user_id: varchar("user_id", { length: 256 }).notNull(),
 
   created_at,
 });
@@ -82,46 +93,6 @@ export const programs = mysqlTable("programs", {
   deleted_at,
 });
 
-export const usersRelations = relations(users, ({ one, many }) => ({
-  posts: many(posts),
-}));
-
-export const postsRelations = relations(posts, ({ one, many }) => ({
-  user: one(users, {
-    fields: [posts.user_id],
-    references: [users.id],
-  }),
-}));
-
-export const collegesRelations = relations(colleges, ({ one, many }) => ({
-  departments: many(departments),
-  // organizations: many(organizations),
-}));
-
-export const departmentsRelations = relations(departments, ({ one, many }) => ({
-  college: one(colleges, {
-    fields: [departments.college_id],
-    references: [colleges.id],
-  }),
-}));
-
-// export const organizationsRelations = relations(
-//   organizations,
-//   ({ one, many }) => ({
-//     department: one(departments, {
-//       fields: [organizations.department_id],
-//       references: [departments.id],
-//     }),
-//   }),
-// );
-
-export const programsRelations = relations(programs, ({ one, many }) => ({
-  department: one(departments, {
-    fields: [programs.department_id],
-    references: [departments.id],
-  }),
-}));
-
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Post = typeof posts.$inferSelect;
@@ -134,3 +105,7 @@ export type NewDepartment = typeof departments.$inferInsert;
 // export type NewOrganization = typeof organizations.$inferInsert;
 export type Program = typeof programs.$inferSelect;
 export type NewProgram = typeof programs.$inferInsert;
+export type Follower = typeof followers.$inferSelect;
+export type NewFollower = typeof followers.$inferInsert;
+export type Following = typeof followings.$inferSelect;
+export type NewFollowing = typeof followings.$inferInsert;
