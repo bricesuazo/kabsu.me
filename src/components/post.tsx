@@ -20,6 +20,12 @@ import UpdatePost from "./update-post";
 import { User } from "@clerk/nextjs/server";
 import Image from "next/image";
 import { Badge } from "./ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
 
 export default function Post({
   post,
@@ -44,7 +50,13 @@ export default function Post({
         className="cursor-pointer space-y-2 border p-4"
       >
         <div className="flex items-center justify-between">
-          <Link href={`/${post.user.username}`} className="flex gap-x-2">
+          <Link
+            href={`/${post.user.username}`}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+            className="flex gap-x-2"
+          >
             <div className="">
               <Image
                 src={post.user.imageUrl}
@@ -55,8 +67,8 @@ export default function Post({
               />
             </div>
             <div className="flex flex-col">
-              <div className="flex items-center gap-x-2">
-                <p>
+              <div className="group flex items-center gap-x-2">
+                <p className="group-hover:underline">
                   {post.user.firstName} {post.user.lastName}{" "}
                   {/* {program && (
                     <div className="flex items-center gap-x-2">
@@ -71,7 +83,20 @@ export default function Post({
                 </p>
 
                 <p className="pointer-events-none select-none">·</p>
-                <p className="text-xs">{moment(post.created_at).fromNow()}</p>
+                <TooltipProvider>
+                  <Tooltip delayDuration={100}>
+                    <TooltipTrigger>
+                      <p className="text-xs">
+                        {moment(post.created_at).fromNow()}
+                      </p>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {moment(post.created_at).format(
+                        "MMMM Do YYYY, h:mm:ss A",
+                      )}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <p className="text-sm">@{post.user.username}</p>
             </div>

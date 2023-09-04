@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Header from "@/components/header";
 import AuthForm from "@/components/auth-form";
+import PostSkeleton from "@/components/post-skeleton";
 
 export function generateMetadata(): Metadata {
   const { userId } = auth();
@@ -24,10 +25,20 @@ export default function Home() {
       {userId ? (
         <>
           <Header userId={userId} />
-          <PostForm />
-          <Suspense fallback="Loading...">
-            <Posts />
-          </Suspense>
+          <div className="space-y-8">
+            <PostForm />
+            <Suspense
+              fallback={
+                <div>
+                  {[0, 1, 2, 3, 4, 5, 6].map((_, i) => (
+                    <PostSkeleton key={i} />
+                  ))}
+                </div>
+              }
+            >
+              <Posts />
+            </Suspense>
+          </div>
         </>
       ) : (
         <>

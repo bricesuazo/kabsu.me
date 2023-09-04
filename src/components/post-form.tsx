@@ -39,7 +39,7 @@ export default function PostForm() {
           name="content"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Post</FormLabel>
+              {/* <FormLabel>Post</FormLabel> */}
               <FormControl>
                 <Textarea placeholder="What's on your mind?" {...field} />
               </FormControl>
