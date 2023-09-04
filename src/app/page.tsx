@@ -4,6 +4,7 @@ import Posts from "@/components/posts";
 import { Suspense } from "react";
 import Auth from "@/components/auth";
 import type { Metadata } from "next";
+import Header from "@/components/header";
 
 export function generateMetadata(): Metadata {
   const { userId } = auth();
@@ -20,6 +21,7 @@ export default function Home() {
 
   return (
     <main className="container">
+      <Header userId={userId} />
       {userId ? (
         <>
           <PostForm />

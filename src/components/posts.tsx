@@ -28,7 +28,9 @@ export default async function Posts() {
             key={post.id}
             post={{
               ...post,
-              user: usersFromPosts.find((user) => user.id === post.user.id)!,
+              user: {
+                ...usersFromPosts.find((user) => user.id === post.user.id)!,
+              },
             }}
             isMyPost={post.user.id === userId}
           />

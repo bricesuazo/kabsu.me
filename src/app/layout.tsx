@@ -1,16 +1,16 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import { ClerkProvider, UserButton, auth, currentUser } from "@clerk/nextjs";
+import { ClerkProvider, auth } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
-import Header from "@/components/header";
+import { cn } from "@/lib/utils";
 
 const font = Poppins({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
-export const runtime = "edge";
+// export const runtime = "edge";
 // export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
@@ -26,14 +26,11 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: React.PropsWithChildren) {
-  const { userId } = auth();
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body className={font.className}>
+        <body className={cn(font.className)}>
           <ThemeProvider attribute="class" defaultTheme="light">
-            <Header userId={userId} />
-
             {children}
           </ThemeProvider>
         </body>

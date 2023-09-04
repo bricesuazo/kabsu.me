@@ -19,6 +19,7 @@ import DeletePost from "./delete-post";
 import UpdatePost from "./update-post";
 import { User } from "@clerk/nextjs/server";
 import Image from "next/image";
+import { Badge } from "./ui/badge";
 
 export default function Post({
   post,
@@ -56,7 +57,17 @@ export default function Post({
             <div className="flex flex-col">
               <div className="flex items-center gap-x-2">
                 <p>
-                  {post.user.firstName} {post.user.lastName}
+                  {post.user.firstName} {post.user.lastName}{" "}
+                  {/* {program && (
+                    <div className="flex items-center gap-x-2">
+                      <Badge>
+                        {program.department.college.slug.toUpperCase()}
+                      </Badge>
+                      <Badge variant="outline">
+                        {program.slug.toUpperCase()}
+                      </Badge>
+                    </div>
+                  )} */}
                 </p>
 
                 <p className="pointer-events-none select-none">·</p>

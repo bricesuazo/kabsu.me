@@ -40,7 +40,7 @@ export default async function UserPage({
   const posts = await db.query.posts.findMany({
     where: (post, { and, eq }) =>
       and(isNull(post.deleted_at), eq(post.user_id, user.id)),
-    orderBy: (post, { asc }) => [asc(post.created_at)],
+    orderBy: (post, { desc }) => desc(post.created_at),
     with: {
       user: true,
     },
@@ -77,9 +77,6 @@ export default async function UserPage({
           {program && (
             <div className="flex items-center gap-x-2">
               <Badge>{program.department.college.slug.toUpperCase()}</Badge>
-              <Badge variant="outline">
-                {program.department.slug.toUpperCase()}
-              </Badge>
               <Badge variant="outline">{program.slug.toUpperCase()}</Badge>
             </div>
           )}
