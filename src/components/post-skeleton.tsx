@@ -2,9 +2,11 @@ import { Skeleton } from "./ui/skeleton";
 
 export default function PostSkeleton() {
   return (
-    <div className="animate-pulse space-y-2 border p-4">
+    <div className="animate-pulse space-y-4 border p-4">
       <div className="flex gap-x-2">
-        <Skeleton className="h-10 w-10 rounded-full" />
+        <div className="w-max">
+          <Skeleton className="h-10 w-10 rounded-full" />
+        </div>
 
         <div className="flex-1">
           <div className="flex items-center gap-x-2">
@@ -15,20 +17,18 @@ export default function PostSkeleton() {
                 width: `${Math.floor(Math.random() * 20 + 25)}%`,
               }}
             />
-            <p className="pointer-events-none animate-pulse select-none text-muted">
-              ·
-            </p>
-            <Skeleton className="h-3 w-32" />
+            <Skeleton className="hidden h-1 w-1 sm:block" />
+            <Skeleton className="hidden h-3 w-32 sm:block" />
           </div>
           <Skeleton
-            className="h-3"
+            className="mt-2 h-3"
             style={{
               width: `${Math.floor(Math.random() * 15 + 15)}%`,
             }}
           />
         </div>
       </div>
-      <div className="space-y-1">
+      <div className="space-y-2">
         {[...Array(Math.floor(Math.random() * 3))].map((_, i) => (
           <Skeleton key={i} className="h-4" />
         ))}

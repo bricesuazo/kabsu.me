@@ -10,13 +10,15 @@ export default function Header({ userId }: { userId: string | null }) {
     <header className="flex items-center justify-between py-4">
       <Button variant="link" size="icon" asChild className="px-0">
         <Link href="/">
-          <Image
-            src="/logo.png"
-            alt=""
-            width={40}
-            height={40}
-            className="object-contain"
-          />
+          <div className="w-max">
+            <Image
+              src="/logo.png"
+              alt=""
+              width={40}
+              height={40}
+              className="object-contain"
+            />
+          </div>
         </Link>
       </Button>
       <Suspense

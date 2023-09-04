@@ -64,7 +64,9 @@ export async function followUser({ user_id }: { user_id: string }) {
     followee_id: userId,
   });
 
-  revalidatePath("/user/[username]");
+  revalidatePath("/[username]");
+  revalidatePath("/[username]/followers");
+  revalidatePath("/[username]/following");
 }
 
 export async function unfollowUser({ user_id }: { user_id: string }) {
@@ -90,5 +92,7 @@ export async function unfollowUser({ user_id }: { user_id: string }) {
       ),
     );
 
-  revalidatePath("/user/[username]");
+  revalidatePath("/[username]");
+  revalidatePath("/[username]/followers");
+  revalidatePath("/[username]/following");
 }

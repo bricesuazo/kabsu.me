@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
+import UserFollows from "@/components/user-follows";
 import { db } from "@/db";
-import { clerkClient } from "@clerk/nextjs";
+import { auth, clerkClient } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -20,6 +21,7 @@ export default async function FollowersPage({
 }: {
   params: { username: string };
 }) {
+  const { userId } = auth();
   const users = await clerkClient.users.getUserList({
     username: [username],
   });
@@ -41,21 +43,22 @@ export default async function FollowersPage({
 
   return (
     <div>
-      <Button asChild variant="outline">
-        <Link href={`/${user.username ?? username}`}>Back</Link>
-      </Button>
       <h1>Followers</h1>
-      <ul>
+      <div>
         {followersUsers.length === 0 ? (
-          <li>No followers yet.</li>
+          <p>No followers yet.</p>
         ) : (
           followersUsers.map((follower) => (
-            <li key={follower.id}>
-              <a href={`/${follower.username}`}>@{follower.username}</a>
-            </li>
+            <UserFollows
+              key={follower.id}
+              user={follower}
+              isFollower={
+                !!followers.find((follower) => follower.follower_id === userId)
+              }
+            />
           ))
         )}
-      </ul>
+      </div>
     </div>
   );
 }

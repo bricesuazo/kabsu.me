@@ -8,9 +8,10 @@ import { isNull } from "drizzle-orm";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ProfileButton from "@/components/profile-button";
+import FollowButton from "@/components/follow-button";
 import Bio from "@/components/bio";
 import type { Metadata } from "next";
+import { PenSquare } from "lucide-react";
 
 export function generateMetadata({
   params,
@@ -71,7 +72,7 @@ export default async function UserPage({
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <div className="flex gap-x-8">
         <div className="flex-1 ">
           {program && (
@@ -100,13 +101,19 @@ export default async function UserPage({
 
       <div className="space-y-2">
         <div className="flex items-center gap-x-2">
-          <ProfileButton
-            isSameUser={userId === user.id}
-            isFollower={
-              !!followers.find((follower) => follower.follower_id === userId)
-            }
-            user_id={user.id}
-          />
+          {userId === user.id ? (
+            <Button variant="default" disabled>
+              <PenSquare size="1rem" className="mr-2" />
+              Edit profile (Soon)
+            </Button>
+          ) : (
+            <FollowButton
+              isFollower={
+                !!followers.find((follower) => follower.follower_id === userId)
+              }
+              user_id={user.id}
+            />
+          )}
         </div>
 
         <div className="flex items-center gap-x-4">
@@ -141,16 +148,18 @@ export default async function UserPage({
         </TabsList>
       </Tabs>
 
-      {posts.map((post) => (
-        <Post
-          key={post.id}
-          post={{
-            ...post,
-            user: usersFromPosts.find((user) => user.id === post.user.id)!,
-          }}
-          isMyPost={userId === post.user.id}
-        />
-      ))}
+      <div className="">
+        {posts.map((post) => (
+          <Post
+            key={post.id}
+            post={{
+              ...post,
+              user: usersFromPosts.find((user) => user.id === post.user.id)!,
+            }}
+            isMyPost={userId === post.user.id}
+          />
+        ))}
+      </div>
     </div>
   );
 }

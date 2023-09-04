@@ -27,6 +27,7 @@ export default function Home() {
           <Header userId={userId} />
           <div className="space-y-8">
             <PostForm />
+
             <Suspense
               fallback={
                 <div>

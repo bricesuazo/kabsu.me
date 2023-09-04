@@ -1,6 +1,5 @@
 "use client";
 
-import { PenSquare } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { Icons } from "./icons";
@@ -17,24 +16,15 @@ import {
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
 
-export default function ProfileButton({
-  isSameUser,
+export default function FollowButton({
   isFollower,
   user_id,
 }: {
-  isSameUser: boolean;
   isFollower: boolean;
   user_id: string;
 }) {
   const [loading, setLoading] = useState(false);
   const [openUnfollow, setOpenUnfollow] = useState(false);
-  if (isSameUser)
-    return (
-      <Button variant="default">
-        <PenSquare size="1rem" className="mr-2" />
-        Edit profile
-      </Button>
-    );
 
   if (isFollower) {
     return (
