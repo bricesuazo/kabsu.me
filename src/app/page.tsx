@@ -2,9 +2,9 @@ import { auth } from "@clerk/nextjs";
 import PostForm from "@/components/post-form";
 import Posts from "@/components/posts";
 import { Suspense } from "react";
-import Auth from "@/components/auth";
 import type { Metadata } from "next";
 import Header from "@/components/header";
+import AuthForm from "@/components/auth-form";
 
 export function generateMetadata(): Metadata {
   const { userId } = auth();
@@ -30,7 +30,10 @@ export default function Home() {
           </Suspense>
         </>
       ) : (
-        <Auth />
+        <>
+          <AuthForm />
+          {/* <Auth /> */}
+        </>
       )}
     </main>
   );

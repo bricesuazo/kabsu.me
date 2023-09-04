@@ -28,7 +28,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Icons } from "./icons";
 
 export default function ProgramAuth({
-  data,
+  // data,
   form1,
 }: {
   form1: {
@@ -36,12 +36,21 @@ export default function ProgramAuth({
     first_name: string;
     last_name: string;
   };
-  data: {
+  // data: {
+  //   colleges: College[];
+  //   departments: Department[];
+  //   programs: Program[];
+  // };
+}) {
+  const data: {
     colleges: College[];
     departments: Department[];
     programs: Program[];
+  } = {
+    colleges: [],
+    departments: [],
+    programs: [],
   };
-}) {
   const { isLoaded, signUp, setActive } = useSignUp();
   const [opens, setOpens] = useState<{
     colleges: boolean;

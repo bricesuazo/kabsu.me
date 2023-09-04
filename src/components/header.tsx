@@ -7,10 +7,16 @@ import Link from "next/link";
 export default async function Header({ userId }: { userId: string | null }) {
   const user = await currentUser();
   return (
-    <header className="container flex items-center justify-between py-4">
+    <header className="flex items-center justify-between py-4">
       <Button variant="link" size="icon" asChild className="px-0">
         <Link href="/">
-          <Image src="/logo.png" alt="" width={40} height={40} />
+          <Image
+            src="/logo.png"
+            alt=""
+            width={40}
+            height={40}
+            className="object-contain"
+          />
         </Link>
       </Button>
       {user && (

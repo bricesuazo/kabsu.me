@@ -9,7 +9,7 @@ export default async function Auth() {
 
   return (
     <Suspense>
-      <AuthForm data={{ colleges, departments, programs }} />
+      {/* <AuthForm data={{ colleges, departments, programs }} /> */}
     </Suspense>
   );
 }
