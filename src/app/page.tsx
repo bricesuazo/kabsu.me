@@ -21,9 +21,9 @@ export default function Home() {
 
   return (
     <main className="container">
-      <Header userId={userId} />
       {userId ? (
         <>
+          <Header userId={userId} />
           <PostForm />
           <Suspense fallback="Loading...">
             <Posts />

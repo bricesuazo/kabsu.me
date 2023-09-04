@@ -21,6 +21,7 @@ import { College, Department, Program } from "@/db/schema";
 
 import ProgramAuth from "./program-auth";
 import Image from "next/image";
+import { ToggleTheme } from "./toggle-theme";
 
 export default function AuthForm(
   {
@@ -64,54 +65,7 @@ export default function AuthForm(
     form1.setValue("last_name", signUp.lastName ?? "");
   }, [signUp, isLoadedSignUp, form1]);
 
-  // if ((!signIn && !isLoadedSignIn) || (!signUp && !isLoadedSignUp))
-  //   return <Icons.spinner className="animate-spin" />;
-
-  if (signIn?.status !== "complete") {
-    return (
-      <div className="space-y-20 py-20">
-        <div className="space-y-4">
-          <Image
-            src="/logo.png"
-            alt="Logo"
-            width={256}
-            height={256}
-            className="mx-auto object-contain"
-          />
-          <h1 className="text-center text-6xl font-bold text-primary">
-            CvSU.me
-          </h1>
-          <h4 className="text-center text-xl [text-wrap:balance]">
-            A social media platform for CvSU students, faculty, and alumni.
-          </h4>
-        </div>
-
-        <div className="flex justify-center">
-          <Button
-            variant="outline"
-            onClick={async () => {
-              if (!isLoadedSignIn) return;
-              setLoading(true);
-
-              await signIn.authenticateWithRedirect({
-                strategy: "oauth_google",
-                redirectUrl: "/sso-callback",
-                redirectUrlComplete: "/",
-              });
-            }}
-            disabled={!isLoadedSignIn || isLoading}
-          >
-            {isLoading ? (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Icons.google className="mr-2 h-4 w-4" />
-            )}
-            Sign in with CvSU Account
-          </Button>
-        </div>
-      </div>
-    );
-  } else if (signUp?.status === "missing_requirements") {
+  if (signUp?.status === "missing_requirements") {
     if (page === 0) {
       return (
         <Form {...form1}>
@@ -188,5 +142,53 @@ export default function AuthForm(
         />
       );
     }
+  } else {
+    return (
+      <div className="space-y-20 py-20">
+        <div className="space-y-4">
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={256}
+            height={256}
+            className="pointer-events-none mx-auto select-none"
+          />
+
+          <h1 className="text-center text-6xl font-bold text-primary">
+            CvSU.me
+          </h1>
+          <h4 className="text-center text-xl [text-wrap:balance]">
+            A social media platform for CvSU students, faculty, and alumni.
+          </h4>
+        </div>
+
+        <div className="flex flex-col items-center justify-center gap-y-4">
+          <Button
+            // variant="outline"
+            onClick={async () => {
+              if (!isLoadedSignIn) return;
+              setLoading(true);
+
+              await signIn.authenticateWithRedirect({
+                strategy: "oauth_google",
+                redirectUrl: "/sso-callback",
+                redirectUrlComplete: "/",
+              });
+
+              setLoading(false);
+            }}
+            disabled={!isLoadedSignIn || isLoading}
+          >
+            {isLoading ? (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Icons.google className="mr-2 h-4 w-4" />
+            )}
+            Sign in with CvSU Account
+          </Button>
+          <ToggleTheme />
+        </div>
+      </div>
+    );
   }
 }
