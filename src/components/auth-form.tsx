@@ -17,23 +17,12 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-import { College, Department, Program } from "@/db/schema";
 
 import ProgramAuth from "./program-auth";
 import Image from "next/image";
 import { ToggleTheme } from "./toggle-theme";
 
-export default function AuthForm(
-  {
-    //   data,
-    // }: {
-    //   data: {
-    //     colleges: College[];
-    //     departments: Department[];
-    //     programs: Program[];
-    //   };
-  },
-) {
+export default function AuthForm({}) {
   const [page, setPage] = useState(0);
   const [isLoading, setLoading] = useState(false);
   const { isLoaded: isLoadedSignIn, signIn } = useSignIn();
@@ -135,12 +124,7 @@ export default function AuthForm(
         </Form>
       );
     } else {
-      return (
-        <ProgramAuth
-          // data={data}
-          form1={form1.getValues()}
-        />
-      );
+      return <ProgramAuth form1={form1.getValues()} />;
     }
   } else {
     return (

@@ -96,3 +96,13 @@ export async function unfollowUser({ user_id }: { user_id: string }) {
   revalidatePath("/[username]/followers");
   revalidatePath("/[username]/following");
 }
+
+export async function getProgramForAuth() {
+  const colleges = await db.query.colleges.findMany();
+  const programs = await db.query.programs.findMany();
+
+  return {
+    colleges,
+    programs,
+  };
+}

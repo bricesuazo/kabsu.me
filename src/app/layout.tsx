@@ -4,6 +4,7 @@ import { Poppins } from "next/font/google";
 import { ClerkProvider, auth } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
+import QueryProvider from "@/components/query-provider";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -30,9 +31,11 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body className={cn(font.className)}>
-          <ThemeProvider attribute="class" defaultTheme="light">
-            {children}
-          </ThemeProvider>
+          <QueryProvider>
+            <ThemeProvider attribute="class" defaultTheme="light">
+              {children}
+            </ThemeProvider>
+          </QueryProvider>
         </body>
       </html>
     </ClerkProvider>

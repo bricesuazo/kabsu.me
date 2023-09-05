@@ -13,33 +13,18 @@ const COLLEGES = [
   },
 ];
 
-const DEPARTMENTS = [
-  {
-    id: "fB86_dqHElEgCRwoZfqNh",
-    name: "Department of Information Technology",
-    slug: "dit",
-    college_id: "iwJ169yJSp8YWdW7SQvmJ",
-  },
-  {
-    id: "qJ8qx0lwNTtVZcZpBFjAK",
-    name: "Department of Electrical Engineering",
-    slug: "dee",
-    college_id: "iwJ169yJSp8YWdW7SQvmJ",
-  },
-];
-
 const PROGRAMS = [
   {
     id: "Orpo4Wsq9Z5UuFjVN8qxj",
     name: "Bachelor of Science in Information Technology",
     slug: "bsit",
-    department_id: "fB86_dqHElEgCRwoZfqNh",
+    college_id: "iwJ169yJSp8YWdW7SQvmJ",
   },
   {
     id: "VHShXyNIG041O-4GHKcXK",
     name: "Bachelor of Science in Computer Science",
     slug: "bscs",
-    department_id: "fB86_dqHElEgCRwoZfqNh",
+    college_id: "iwJ169yJSp8YWdW7SQvmJ",
   },
 ];
 
@@ -51,29 +36,16 @@ export const SEED_DATA = COLLEGES.map((college) => {
     name: college.name,
     slug: college.slug,
 
-    departments: DEPARTMENTS.filter(
-      (department) => department.college_id === college.id,
-    ).map((department) => {
-      const department_id = nanoid();
+    programs: PROGRAMS.filter(
+      (program) => program.college_id === college.id,
+    ).map((program) => {
+      const program_id = nanoid();
 
       return {
-        id: department.id,
-        name: department.name,
-        slug: department.slug,
-        college_id: department.college_id,
-
-        programs: PROGRAMS.filter(
-          (program) => program.department_id === department.id,
-        ).map((program) => {
-          const program_id = nanoid();
-
-          return {
-            id: program.id,
-            name: program.name,
-            slug: program.slug,
-            department_id: program.department_id,
-          };
-        }),
+        id: program.id,
+        name: program.name,
+        slug: program.slug,
+        college_id: program.college_id,
       };
     }),
   };

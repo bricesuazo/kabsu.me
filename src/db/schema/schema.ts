@@ -62,17 +62,6 @@ export const colleges = mysqlTable("colleges", {
   updated_at,
   deleted_at,
 });
-export const departments = mysqlTable("departments", {
-  id,
-  name: text("name").notNull(),
-  slug,
-
-  college_id: varchar("college_id", { length: 256 }).notNull(),
-
-  created_at,
-  updated_at,
-  deleted_at,
-});
 // export const organizations = mysqlTable("organizations", {
 //   id,
 //   name: text("name").notNull(),
@@ -88,7 +77,7 @@ export const programs = mysqlTable("programs", {
   name: text("name").notNull(),
   slug,
 
-  department_id: varchar("department_id", { length: 256 }).notNull(),
+  college_id: varchar("college_id", { length: 256 }).notNull(),
 
   created_at,
   updated_at,
@@ -101,8 +90,6 @@ export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;
 export type College = typeof colleges.$inferSelect;
 export type NewCollege = typeof colleges.$inferInsert;
-export type Department = typeof departments.$inferSelect;
-export type NewDepartment = typeof departments.$inferInsert;
 // export type Organization = typeof organizations.$inferSelect;
 // export type NewOrganization = typeof organizations.$inferInsert;
 export type Program = typeof programs.$inferSelect;

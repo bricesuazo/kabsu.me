@@ -55,11 +55,7 @@ export default async function UserPage({
     where: (program, { eq }) =>
       eq(program.id, user.publicMetadata.program_id as string),
     with: {
-      department: {
-        with: {
-          college: true,
-        },
-      },
+      college: true,
     },
   });
 
@@ -77,7 +73,7 @@ export default async function UserPage({
         <div className="flex-1 ">
           {program && (
             <div className="flex items-center gap-x-2">
-              <Badge>{program.department.college.slug.toUpperCase()}</Badge>
+              <Badge>{program.college.slug.toUpperCase()}</Badge>
               <Badge variant="outline">{program.slug.toUpperCase()}</Badge>
             </div>
           )}
