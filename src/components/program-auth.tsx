@@ -127,6 +127,7 @@ export default function ProgramAuth({
                       key={type}
                       onClick={() => {
                         form2.setValue("type", type);
+                        form2.trigger("type");
                       }}
                       className="w-full flex-1"
                       type="button"
@@ -194,65 +195,69 @@ export default function ProgramAuth({
             render={({ field }) => (
               <FormItem className="flex w-full flex-1 flex-col">
                 <FormLabel>College</FormLabel>
-                <Popover
-                  open={opens.colleges}
-                  onOpenChange={(open) =>
-                    setOpens((prev) => ({ ...prev, colleges: open }))
-                  }
-                >
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={opens.colleges}
-                      className={cn(
-                        "flex-1 justify-between",
-                        !field.value && "text-muted-foreground",
-                      )}
-                    >
-                      {field.value
-                        ? data.colleges
-                            .find((college) => college.id === field.value)
-                            ?.slug.toUpperCase()
-                        : "Select college"}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0">
-                    <Command>
-                      <CommandInput placeholder="Search college..." />
-                      <CommandEmpty>No college.</CommandEmpty>
-                      <CommandGroup>
-                        {data.colleges.map((college) => (
-                          <CommandItem
-                            key={college.id}
-                            value={`${
-                              college.name
-                            } (${college.slug.toUpperCase()})`}
-                            onSelect={() => {
-                              form2.setValue("college_id", college.id);
-                              setOpens((prev) => ({
-                                ...prev,
-                                colleges: false,
-                              }));
-                            }}
-                            className="line-clamp-1"
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                college.id === field.value
-                                  ? "opacity-100"
-                                  : "opacity-0",
-                              )}
-                            />
-                            {college.name} ({college.slug.toUpperCase()})
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+                <FormControl>
+                  <Popover
+                    open={opens.colleges}
+                    onOpenChange={(open) =>
+                      setOpens((prev) => ({ ...prev, colleges: open }))
+                    }
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={opens.colleges}
+                        className={cn(
+                          "flex-1 justify-between",
+                          !field.value && "text-muted-foreground",
+                        )}
+                      >
+                        {field.value
+                          ? data.colleges
+                              .find((college) => college.id === field.value)
+                              ?.slug.toUpperCase()
+                          : "Select college"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[200px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Search college..." />
+                        <CommandEmpty>No college.</CommandEmpty>
+                        <CommandGroup>
+                          {data.colleges.map((college) => (
+                            <CommandItem
+                              key={college.id}
+                              value={`${
+                                college.name
+                              } (${college.slug.toUpperCase()})`}
+                              onSelect={() => {
+                                form2.setValue("college_id", college.id);
+                                form2.trigger("college_id");
+                                setOpens((prev) => ({
+                                  ...prev,
+                                  colleges: false,
+                                }));
+                              }}
+                              className="line-clamp-1"
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  college.id === field.value
+                                    ? "opacity-100"
+                                    : "opacity-0",
+                                )}
+                              />
+                              {college.name} ({college.slug.toUpperCase()})
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </FormControl>
+
                 <FormMessage />
               </FormItem>
             )}
@@ -264,68 +269,71 @@ export default function ProgramAuth({
             render={({ field }) => (
               <FormItem className="flex w-full flex-1 flex-col">
                 <FormLabel>Program</FormLabel>
-                <Popover
-                  open={opens.programs}
-                  onOpenChange={(open) =>
-                    setOpens((prev) => ({ ...prev, programs: open }))
-                  }
-                >
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={opens.programs}
-                      className="justify-between"
-                      disabled={!form2.getValues("college_id")}
-                    >
-                      {field.value
-                        ? data.programs
-                            .find((program) => program.id === field.value)
-                            ?.slug.toUpperCase()
-                        : "Select program..."}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0">
-                    <Command>
-                      <CommandInput placeholder="Search program..." />
-                      <CommandEmpty>No program.</CommandEmpty>
-                      <CommandGroup>
-                        {data.programs
-                          .filter(
-                            (program) =>
-                              program.college_id ===
-                              form2.getValues("college_id"),
-                          )
-                          .map((program) => (
-                            <CommandItem
-                              key={program.id}
-                              value={`${
-                                program.name
-                              } (${program.slug.toUpperCase()})`}
-                              onSelect={() => {
-                                form2.setValue("program_id", program.id);
-                                setOpens((prev) => ({
-                                  ...prev,
-                                  programs: false,
-                                }));
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  field.value === program.id
-                                    ? "opacity-100"
-                                    : "opacity-0",
-                                )}
-                              />
-                              {program.name} ({program.slug.toUpperCase()})
-                            </CommandItem>
-                          ))}
-                      </CommandGroup>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+                <FormControl>
+                  <Popover
+                    open={opens.programs}
+                    onOpenChange={(open) =>
+                      setOpens((prev) => ({ ...prev, programs: open }))
+                    }
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={opens.programs}
+                        className="justify-between"
+                        disabled={!form2.getValues("college_id")}
+                      >
+                        {field.value
+                          ? data.programs
+                              .find((program) => program.id === field.value)
+                              ?.slug.toUpperCase()
+                          : "Select program..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[200px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Search program..." />
+                        <CommandEmpty>No program.</CommandEmpty>
+                        <CommandGroup>
+                          {data.programs
+                            .filter(
+                              (program) =>
+                                program.college_id ===
+                                form2.getValues("college_id"),
+                            )
+                            .map((program) => (
+                              <CommandItem
+                                key={program.id}
+                                value={`${
+                                  program.name
+                                } (${program.slug.toUpperCase()})`}
+                                onSelect={() => {
+                                  form2.setValue("program_id", program.id);
+                                  form2.trigger("program_id");
+                                  setOpens((prev) => ({
+                                    ...prev,
+                                    programs: false,
+                                  }));
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    field.value === program.id
+                                      ? "opacity-100"
+                                      : "opacity-0",
+                                  )}
+                                />
+                                {program.name} ({program.slug.toUpperCase()})
+                              </CommandItem>
+                            ))}
+                        </CommandGroup>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

@@ -117,5 +117,5 @@ export async function isUsernameExists({ username }: { username: string }) {
 
   const user = users[0];
 
-  return !!user;
+  return !!user || users.length > 0;
 }
