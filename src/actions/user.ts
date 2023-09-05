@@ -9,13 +9,16 @@ import { revalidatePath } from "next/cache";
 export async function addProgramToUserMetadata({
   userId,
   program_id,
+  type,
 }: {
   userId: string;
   program_id: string;
+  type: string;
 }) {
   await clerkClient.users.updateUserMetadata(userId, {
     publicMetadata: {
       program_id,
+      type,
     },
   });
 }
@@ -105,4 +108,14 @@ export async function getProgramForAuth() {
     colleges,
     programs,
   };
+}
+
+export async function isUsernameExists({ username }: { username: string }) {
+  const users = await clerkClient.users.getUserList({
+    username: [username],
+  });
+
+  const user = users[0];
+
+  return !!user;
 }

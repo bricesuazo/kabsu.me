@@ -8,6 +8,8 @@ import {
 } from "drizzle-orm/mysql-core";
 import { nanoid } from "nanoid";
 
+export const ACCOUNT_TYPE = ["student", "faculty", "alumni"] as const;
+
 const id = varchar("id", { length: 256 })
   .primaryKey()
   .notNull()
