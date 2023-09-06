@@ -23,6 +23,8 @@ import Image from "next/image";
 import { ToggleTheme } from "./toggle-theme";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getProgramForAuth, isUsernameExists } from "@/actions/user";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { AlertCircle } from "lucide-react";
 
 export default function AuthForm() {
   const { data } = useQuery({
@@ -235,6 +237,26 @@ export default function AuthForm() {
             )}
             Sign in with CvSU Account
           </Button>
+
+          {signIn?.firstFactorVerification.error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>
+                {signIn.firstFactorVerification.error.message}
+              </AlertTitle>
+              <AlertDescription>
+                {signIn?.firstFactorVerification.error?.code ===
+                  "not_allowed_access" && (
+                  <>
+                    Please use your CvSU account.
+                    <br />
+                  </>
+                )}{" "}
+                {signIn.firstFactorVerification.error.longMessage}
+              </AlertDescription>
+            </Alert>
+          )}
+
           <ToggleTheme />
         </div>
       </div>
