@@ -2,6 +2,7 @@ import { User } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 import FollowButton from "./follow-button";
+import { auth } from "@clerk/nextjs";
 
 export default function UserFollows({
   user,
@@ -10,6 +11,7 @@ export default function UserFollows({
   user: User;
   isFollower: boolean;
 }) {
+  const { userId } = auth();
   return (
     <div className="space-y-2">
       <div className="flex gap-x-2">
@@ -34,7 +36,10 @@ export default function UserFollows({
               {user.firstName} {user.lastName}
             </p>
           </div>
-          <FollowButton user_id={user.id} isFollower={isFollower} />
+
+          {user.id !== userId && (
+            <FollowButton user_id={user.id} isFollower={isFollower} />
+          )}
         </div>
       </div>
 

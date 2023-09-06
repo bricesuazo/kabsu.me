@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { db } from "@/db";
 import { auth, clerkClient } from "@clerk/nextjs";
-import { isNull } from "drizzle-orm";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -39,7 +38,7 @@ export default async function UserPage({
   if (!user) notFound();
 
   const posts = await db.query.posts.findMany({
-    where: (post, { and, eq }) =>
+    where: (post, { and, eq, isNull }) =>
       and(isNull(post.deleted_at), eq(post.user_id, user.id)),
     orderBy: (post, { desc }) => desc(post.created_at),
     with: {

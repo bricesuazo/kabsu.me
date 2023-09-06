@@ -53,7 +53,7 @@ export default async function FollowersPage({
               key={follower.id}
               user={follower}
               isFollower={
-                !!followers.find((follower) => follower.follower_id === userId)
+                !followers.find((follower) => follower.follower_id === userId)
               }
             />
           ))

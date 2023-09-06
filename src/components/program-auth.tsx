@@ -65,7 +65,7 @@ export default function ProgramAuth({
   });
   const form2Schema = z.object({
     type: z.enum(ACCOUNT_TYPE, {
-      required_error: "Account type is required.",
+      required_error: "Role is required.",
     }),
     college_id: z
       .string({
@@ -135,6 +135,7 @@ export default function ProgramAuth({
                         }}
                         className="w-full flex-1"
                         type="button"
+                        disabled={form2.formState.isSubmitting}
                       >
                         <Card
                           className={cn(
@@ -216,6 +217,7 @@ export default function ProgramAuth({
                             "flex-1 justify-between",
                             !field.value && "text-muted-foreground",
                           )}
+                          disabled={form2.formState.isSubmitting}
                         >
                           {field.value
                             ? data.colleges
@@ -237,6 +239,12 @@ export default function ProgramAuth({
                                   college.name
                                 } (${college.slug.toUpperCase()})`}
                                 onSelect={() => {
+                                  if (
+                                    form2.getValues("college_id") !== college.id
+                                  ) {
+                                    form2.setValue("program_id", "");
+                                  }
+
                                   form2.setValue("college_id", college.id);
                                   form2.trigger("college_id");
                                   setOpens((prev) => ({
@@ -289,7 +297,10 @@ export default function ProgramAuth({
                           role="combobox"
                           aria-expanded={opens.programs}
                           className="justify-between"
-                          disabled={!form2.getValues("college_id")}
+                          disabled={
+                            !form2.getValues("college_id") ||
+                            form2.formState.isSubmitting
+                          }
                         >
                           {field.value
                             ? data.programs
@@ -354,6 +365,7 @@ export default function ProgramAuth({
               <Button
                 variant="outline"
                 onClick={() => setPage((prev) => prev - 1)}
+                disabled={form2.formState.isSubmitting}
               >
                 Back
               </Button>

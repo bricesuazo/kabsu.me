@@ -1,3 +1,3 @@
 export default function UserLoading() {
-  return <div>Loading...</div>;
+  return <div>Username Loading...</div>;
 }

@@ -14,7 +14,7 @@
     "db:seed": "dotenv -e .env tsx ./src/db/seed.ts"
   },
   "dependencies": {
-    "@clerk/nextjs": "^4.23.3",
+    "@clerk/nextjs": "^4.23.5",
     "@hookform/resolvers": "^3.3.1",
     "@planetscale/database": "^1.11.0",
     "@radix-ui/react-accordion": "^1.1.2",
@@ -54,7 +54,7 @@
     "cmdk": "^0.2.0",
     "date-fns": "^2.30.0",
     "dotenv": "^16.3.1",
-    "drizzle-orm": "^0.28.5",
+    "drizzle-orm": "^0.28.6",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
     "lucide-react": "^0.274.0",
@@ -67,8 +67,8 @@
     "react": "18.2.0",
     "react-day-picker": "^8.8.1",
     "react-dom": "18.2.0",
-    "react-hook-form": "^7.46.0",
-    "svix": "^1.10.0",
+    "react-hook-form": "^7.46.1",
+    "svix": "^1.11.0",
     "tailwind-merge": "^1.14.0",
     "tailwindcss": "3.3.3",
     "tailwindcss-animate": "^1.0.7",

@@ -116,13 +116,13 @@ export default function AuthForm() {
                 <FormField
                   control={form1.control}
                   name="username"
-                  disabled={form1.formState.isSubmitting}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Username</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="bricesuazo"
+                          disabled={form1.formState.isSubmitting}
                           {...field}
                           value={field.value}
                           onChange={(e) => {
@@ -143,12 +143,15 @@ export default function AuthForm() {
                   <FormField
                     control={form1.control}
                     name="first_name"
-                    disabled={form1.formState.isSubmitting}
                     render={({ field }) => (
                       <FormItem className="flex-1">
                         <FormLabel>First name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Brice" {...field} />
+                          <Input
+                            placeholder="Brice"
+                            {...field}
+                            disabled={form1.formState.isSubmitting}
+                          />
                         </FormControl>
                         <FormDescription>
                           This is how your name will appear on your posts.
@@ -160,12 +163,15 @@ export default function AuthForm() {
                   <FormField
                     control={form1.control}
                     name="last_name"
-                    disabled={form1.formState.isSubmitting}
                     render={({ field }) => (
                       <FormItem className="flex-1">
                         <FormLabel>Last name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Suazo" {...field} />
+                          <Input
+                            placeholder="Suazo"
+                            {...field}
+                            disabled={form1.formState.isSubmitting}
+                          />
                         </FormControl>
                         <FormDescription>
                           This is how your name will appear on your posts.

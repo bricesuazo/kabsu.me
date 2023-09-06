@@ -68,7 +68,7 @@ export async function POST(req: Request) {
     console.log(`User ${id} was ${eventType}`);
 
     const user = await db.query.users.findFirst({
-      where: eq(users.id, id),
+      where: (user, { eq }) => eq(user.id, id),
     });
 
     if (user) {

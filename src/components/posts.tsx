@@ -1,5 +1,4 @@
 import { db } from "@/db";
-import { isNull } from "drizzle-orm";
 import Post from "./post";
 import { auth, clerkClient } from "@clerk/nextjs";
 
@@ -7,7 +6,7 @@ export default async function Posts() {
   const { userId } = auth();
 
   const posts = await db.query.posts.findMany({
-    where: (post, { and, eq }) =>
+    where: (post, { and, eq, isNull }) =>
       and(isNull(post.deleted_at), eq(post.user_id, userId ?? "")),
     orderBy: (post, { desc }) => desc(post.created_at),
     with: {
