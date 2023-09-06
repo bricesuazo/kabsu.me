@@ -83,6 +83,9 @@ export default function AuthForm() {
     return (
       <div className="space-y-8 py-20">
         <div className="">
+          <div className="flex justify-center">
+            <ToggleTheme />
+          </div>
           <h1 className="text-center text-4xl font-bold">
             Welcome to <span className="text-primary">CvSU.me</span>
           </h1>
@@ -91,96 +94,101 @@ export default function AuthForm() {
           </h4>
         </div>
         {page === 0 ? (
-          <Form {...form1}>
-            <form
-              onSubmit={form1.handleSubmit(async (values) => {
-                const isUsernameExists = await mutateAsync({
-                  username: values.username,
-                });
-
-                if (isUsernameExists) {
-                  form1.setError("username", {
-                    type: "manual",
-                    message: "Username is already taken.",
+          <>
+            <Form {...form1}>
+              <form
+                onSubmit={form1.handleSubmit(async (values) => {
+                  const isUsernameExists = await mutateAsync({
+                    username: values.username,
                   });
-                  return;
-                }
-                setPage(1);
-              })}
-              className="space-y-8"
-            >
-              <FormField
-                control={form1.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="bricesuazo"
-                        {...field}
-                        value={field.value}
-                        onChange={(e) => {
-                          field.onChange(e.target.value.toLowerCase());
-                        }}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Must be unique and contain only letters, numbers, and
-                      underscores.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
-              <div className="flex items-center gap-x-2">
-                <FormField
-                  control={form1.control}
-                  name="first_name"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>First name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Brice" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        This is how your name will appear on your posts.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form1.control}
-                  name="last_name"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Last name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Suazo" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        This is how your name will appear on your posts.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <Button
-                variant="outline"
-                type="submit"
-                disabled={form1.formState.isSubmitting}
+                  if (isUsernameExists) {
+                    form1.setError("username", {
+                      type: "manual",
+                      message: "Username is already taken.",
+                    });
+                    return;
+                  }
+                  setPage(1);
+                })}
+                className="space-y-8"
               >
-                {form1.formState.isSubmitting && (
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Next
-              </Button>
-            </form>
-          </Form>
+                <FormField
+                  control={form1.control}
+                  name="username"
+                  disabled={form1.formState.isSubmitting}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="bricesuazo"
+                          {...field}
+                          value={field.value}
+                          onChange={(e) => {
+                            field.onChange(e.target.value.toLowerCase());
+                          }}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Must be unique and contain only letters, numbers, and
+                        underscores.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex items-center gap-x-2">
+                  <FormField
+                    control={form1.control}
+                    name="first_name"
+                    disabled={form1.formState.isSubmitting}
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel>First name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Brice" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          This is how your name will appear on your posts.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form1.control}
+                    name="last_name"
+                    disabled={form1.formState.isSubmitting}
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel>Last name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Suazo" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          This is how your name will appear on your posts.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <Button
+                  variant="outline"
+                  type="submit"
+                  disabled={form1.formState.isSubmitting}
+                >
+                  {form1.formState.isSubmitting && (
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Next
+                </Button>
+              </form>
+            </Form>
+          </>
         ) : (
           data && (
             <ProgramAuth
