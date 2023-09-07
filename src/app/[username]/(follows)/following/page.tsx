@@ -1,9 +1,7 @@
-import { Button } from "@/components/ui/button";
 import UserFollows from "@/components/user-follows";
 import { db } from "@/db";
 import { auth, clerkClient } from "@clerk/nextjs";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export function generateMetadata({

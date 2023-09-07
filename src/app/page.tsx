@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import Header from "@/components/header";
 import AuthForm from "@/components/auth-form";
 import PostSkeleton from "@/components/post-skeleton";
+import PostTypeTab from "@/components/post-type-tab";
 
 export function generateMetadata(): Metadata {
   const { userId } = auth();
@@ -17,7 +18,11 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default function Home() {
+export default function Home({
+  searchParams: { tab },
+}: {
+  searchParams: { tab?: "all" | "program" };
+}) {
   const { userId } = auth();
 
   return (
@@ -28,6 +33,8 @@ export default function Home() {
           <div className="space-y-8">
             <PostForm />
 
+            <PostTypeTab />
+
             <Suspense
               fallback={
                 <div>
@@ -37,7 +44,7 @@ export default function Home() {
                 </div>
               }
             >
-              <Posts />
+              <Posts tab={tab} />
             </Suspense>
           </div>
         </>

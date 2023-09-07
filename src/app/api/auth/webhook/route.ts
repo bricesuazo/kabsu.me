@@ -63,6 +63,8 @@ export async function POST(req: Request) {
     await db.insert(users).values({
       id,
       user_number: usersInDB.length + deletedUsersInDB.length + 1,
+      program_id: "",
+      type: "student",
     });
   } else if (eventType === "user.deleted") {
     console.log(`User ${id} was ${eventType}`);

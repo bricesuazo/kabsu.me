@@ -5,6 +5,7 @@ import {
   timestamp,
   int,
   text,
+  mysqlEnum,
 } from "drizzle-orm/mysql-core";
 import { nanoid } from "nanoid";
 
@@ -29,6 +30,10 @@ export const deleted_users = mysqlTable("deleted_users", {
 export const users = mysqlTable("users", {
   id: varchar("id", { length: 256 }).primaryKey().unique().notNull(),
   user_number: int("user_number").notNull().default(0),
+
+  program_id: varchar("program_id", { length: 256 }).notNull(),
+  bio: longtext("bio"),
+  type: mysqlEnum("type", ACCOUNT_TYPE).notNull(),
 
   created_at,
 });

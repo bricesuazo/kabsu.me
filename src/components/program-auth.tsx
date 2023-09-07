@@ -16,7 +16,7 @@ import {
   CommandItem,
 } from "./ui/command";
 import { cn } from "@/lib/utils";
-import { addProgramToUserMetadata, getProgramForAuth } from "@/actions/user";
+import { addProgramToUserMetadata } from "@/actions/user";
 import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";

@@ -1,4 +1,4 @@
-import { User } from "@clerk/nextjs/server";
+import type { User } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 import FollowButton from "./follow-button";

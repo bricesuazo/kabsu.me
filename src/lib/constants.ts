@@ -50,3 +50,21 @@ export const SEED_DATA = COLLEGES.map((college) => {
     }),
   };
 });
+
+export const POST_TYPE_TABS: {
+  id: "all" | "program" | "following";
+  name: string;
+}[] = [
+  {
+    id: "all",
+    name: "All",
+  },
+  {
+    id: "program",
+    name: "Program",
+  },
+  {
+    id: "following",
+    name: "Following",
+  },
+];

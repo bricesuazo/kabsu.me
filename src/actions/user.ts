@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { followees, followers } from "@/db/schema";
+import { ACCOUNT_TYPE, followees, followers, users } from "@/db/schema";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -13,14 +13,15 @@ export async function addProgramToUserMetadata({
 }: {
   userId: string;
   program_id: string;
-  type: string;
+  type: (typeof ACCOUNT_TYPE)[number];
 }) {
-  await clerkClient.users.updateUserMetadata(userId, {
-    publicMetadata: {
+  await db
+    .update(users)
+    .set({
       program_id,
       type,
-    },
-  });
+    })
+    .where(eq(users.id, userId));
 }
 
 export async function updateBio({
@@ -34,11 +35,7 @@ export async function updateBio({
 
   if (!userId || userId !== user_id) throw new Error("User not found");
 
-  await clerkClient.users.updateUserMetadata(user_id, {
-    publicMetadata: {
-      bio,
-    },
-  });
+  await db.update(users).set({ bio }).where(eq(users.id, userId));
   revalidatePath("/user/[username]");
 }
 

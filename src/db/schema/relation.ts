@@ -2,6 +2,10 @@ import { relations } from "drizzle-orm";
 import { colleges, followers, followees, posts, programs, users } from ".";
 
 export const usersRelations = relations(users, ({ one, many }) => ({
+  programs: one(programs, {
+    fields: [users.program_id],
+    references: [programs.id],
+  }),
   posts: many(posts),
   followers: many(followers),
   followees: many(followees),

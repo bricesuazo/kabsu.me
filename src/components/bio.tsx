@@ -1,19 +1,12 @@
 "use client";
 
-import { User } from "@clerk/nextjs/server";
+import { User } from "@/db/schema";
 import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { updateBio } from "@/actions/user";
 import { Icons } from "./icons";
 
@@ -28,7 +21,7 @@ export default function Bio({
     bio: string;
   }>({
     defaultValues: {
-      bio: (user.publicMetadata.bio as string | undefined) ?? "",
+      bio: user.bio ?? "",
     },
   });
   const [isEditing, setIsEditing] = useState(false);
@@ -87,7 +80,7 @@ export default function Bio({
           </Form>
         ) : (
           <p>
-            {(user.publicMetadata.bio as string | undefined) ?? "No bio yet"}{" "}
+            {user.bio ?? "No bio yet"}{" "}
             <span>
               <button onClick={() => setIsEditing(true)}>
                 <Pencil size="1rem" />
@@ -98,8 +91,6 @@ export default function Bio({
       </div>
     );
   } else {
-    return (
-      <p>{(user.publicMetadata.bio as string | undefined) ?? "No bio yet"}</p>
-    );
+    return <p>{user.bio ?? "No bio yet"}</p>;
   }
 }

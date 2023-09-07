@@ -37,6 +37,12 @@ export default async function UserPage({
 
   if (!user) notFound();
 
+  const userFromDB = await db.query.users.findFirst({
+    where: (user, { eq }) => eq(user.id, user.id),
+  });
+
+  if (!userFromDB) notFound();
+
   const posts = await db.query.posts.findMany({
     where: (post, { and, eq, isNull }) =>
       and(isNull(post.deleted_at), eq(post.user_id, user.id)),
@@ -51,8 +57,7 @@ export default async function UserPage({
   });
 
   const program = await db.query.programs.findFirst({
-    where: (program, { eq }) =>
-      eq(program.id, user.publicMetadata.program_id as string),
+    where: (program, { eq }) => eq(program.id, userFromDB.program_id),
     with: {
       college: true,
     },
@@ -81,7 +86,7 @@ export default async function UserPage({
           <h4 className="text-xl">
             {user.firstName} {user.lastName}
           </h4>
-          <Bio user={user} isSameUser={userId === user.id} />
+          <Bio user={userFromDB} isSameUser={userId === user.id} />
         </div>
         <div className="">
           <Image
