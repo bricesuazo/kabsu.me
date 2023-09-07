@@ -30,7 +30,7 @@ export default function FollowButton({
     return (
       <AlertDialog open={openUnfollow} onOpenChange={setOpenUnfollow}>
         <AlertDialogTrigger asChild>
-          <Button>Following</Button>
+          <Button variant="outline">Following</Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>

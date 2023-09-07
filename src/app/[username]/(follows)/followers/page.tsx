@@ -1,9 +1,7 @@
-import { Button } from "@/components/ui/button";
 import UserFollows from "@/components/user-follows";
 import { db } from "@/db";
 import { auth, clerkClient } from "@clerk/nextjs";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export function generateMetadata({
@@ -22,6 +20,9 @@ export default async function FollowersPage({
   params: { username: string };
 }) {
   const { userId } = auth();
+
+  if (!userId) notFound();
+
   const users = await clerkClient.users.getUserList({
     username: [username],
   });
@@ -32,6 +33,14 @@ export default async function FollowersPage({
 
   const followers = await db.query.followers.findMany({
     where: (follower, { eq }) => eq(follower.followee_id, user.id),
+  });
+
+  const isFollower = await db.query.followees.findFirst({
+    where: (followee, { eq, and, not }) =>
+      and(
+        eq(followee.followee_id, user.id),
+        not(eq(followee.follower_id, userId)),
+      ),
   });
 
   const followersUsers =
@@ -46,15 +55,13 @@ export default async function FollowersPage({
       <h1>Followers</h1>
       <div>
         {followersUsers.length === 0 ? (
-          <p>No followers yet.</p>
+          <p>No followees yet.</p>
         ) : (
           followersUsers.map((follower) => (
             <UserFollows
               key={follower.id}
               user={follower}
-              isFollower={
-                !followers.find((follower) => follower.follower_id === userId)
-              }
+              isFollower={!!isFollower}
             />
           ))
         )}

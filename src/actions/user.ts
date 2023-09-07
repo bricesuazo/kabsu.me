@@ -49,10 +49,7 @@ export async function followUser({ user_id }: { user_id: string }) {
 
   const isAlreadyFollowing = await db.query.followers.findFirst({
     where: (follower, { and, eq }) =>
-      and(
-        eq(followers.follower_id, userId),
-        eq(followers.followee_id, user_id),
-      ),
+      and(eq(follower.follower_id, userId), eq(follower.followee_id, user_id)),
   });
 
   if (isAlreadyFollowing) throw new Error("Already following user");
