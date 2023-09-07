@@ -30,13 +30,14 @@ async function main() {
 
     console.log("Programs inserted!");
 
-    const usersFromClerk = await clerkClient.users.getUserList();
+    const usersFromDB = await db.query.users.findMany();
 
     await trx.insert(users).values(
-      usersFromClerk.map((user, index) => ({
+      usersFromDB.map((user, index) => ({
         id: user.id,
         user_number: index + 1,
         program_id: "VHShXyNIG041O-4GHKcXK",
+        type: user.type,
       })),
     );
   });
