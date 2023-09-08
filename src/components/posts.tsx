@@ -1,7 +1,13 @@
 import { db } from "@/db";
 import Post from "./post";
 import { auth, clerkClient } from "@clerk/nextjs";
-import type { Post as PostType } from "@/db/schema";
+import type {
+  College,
+  Followee,
+  Follower,
+  Post as PostType,
+  User,
+} from "@/db/schema";
 import { notFound } from "next/navigation";
 
 export default async function Posts({
@@ -22,26 +28,92 @@ export default async function Posts({
   });
 
   if (!user) notFound();
-  console.log("🚀 ~ file: posts.tsx:21 ~ Posts ~ user:", user);
 
-  const following = await db.query.followers.findMany({
-    where: (follower, { eq }) => eq(follower.follower_id, userId),
+  const following: Follower[] = !tab
+    ? await db.query.followers.findMany({
+        where: (follower, { eq }) => eq(follower.follower_id, userId),
+      })
+    : [];
+
+  const usersInPrograms: User[] =
+    tab === "program"
+      ? await db.query.users.findMany({
+          where: (userInDB, { eq }) => eq(userInDB.program_id, user.program_id),
+        })
+      : [];
+
+  // TODO: optimize this
+  const myCollege = await db.query.programs.findFirst({
+    where: (program, { eq }) => eq(program.id, user.program_id),
+    with: {
+      college: true,
+    },
   });
-  console.log("🚀 ~ file: posts.tsx:25 ~ Posts ~ following:", following);
+
+  if (!myCollege) notFound();
+
+  const colleges = await db.query.programs.findMany({
+    where: (program, { eq }) => eq(program.college_id, myCollege.college_id),
+  });
+
+  const usersInColleges: User[] =
+    tab === "college" && colleges.length > 0
+      ? await db.query.users.findMany({
+          where: (userInDB, { inArray }) =>
+            inArray(
+              userInDB.program_id,
+              colleges.map((c) => c.id),
+            ),
+        })
+      : [];
 
   const posts = await db.query.posts.findMany({
     where: (post, { or, and, eq, isNull, inArray }) => {
-      if (!tab)
+      if (!tab) {
+        console.log("🚀 ~ file: posts.tsx:71 ~ following:", following);
+        return and(
+          isNull(post.deleted_at),
+          or(
+            following.length > 0
+              ? inArray(
+                  post.user_id,
+                  following.map((f) => f.followee_id),
+                )
+              : undefined,
+            eq(post.user_id, userId),
+          ),
+        );
+      }
+
+      if (tab === "program") {
         return or(
           and(
             isNull(post.deleted_at),
-            inArray(
-              post.user_id,
-              following.map((f) => f.followee_id),
-            ),
+            usersInPrograms.length > 0
+              ? inArray(
+                  post.user_id,
+                  usersInPrograms.map((f) => f.id),
+                )
+              : undefined,
           ),
           eq(post.user_id, userId),
         );
+      }
+
+      if (tab === "college") {
+        return or(
+          and(
+            isNull(post.deleted_at),
+            usersInPrograms.length > 0
+              ? inArray(
+                  post.user_id,
+                  usersInColleges.map((f) => f.id),
+                )
+              : undefined,
+          ),
+          eq(post.user_id, userId),
+        );
+      }
 
       if (tab === "all") return isNull(post.deleted_at);
     },

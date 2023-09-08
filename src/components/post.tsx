@@ -127,9 +127,9 @@ export default function Post({
               >
                 <DropdownMenuLabel>Post</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setOpenUpdate(true)}>
+                {/* <DropdownMenuItem onClick={() => setOpenUpdate(true)}>
                   Edit
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuItem
                   className="!text-red-500"
                   onClick={() => setOpenDelete(true)}
