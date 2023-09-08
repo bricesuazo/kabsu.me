@@ -70,17 +70,18 @@ export default function Post({
               <div className="group flex items-center gap-x-2">
                 <p className="line-clamp-1 group-hover:underline">
                   {post.user.firstName} {post.user.lastName}{" "}
-                  {/* {program && (
-                    <div className="flex items-center gap-x-2">
-                      <Badge>
-                        {program.department.college.slug.toUpperCase()}
-                      </Badge>
-                      <Badge variant="outline">
-                        {program.slug.toUpperCase()}
-                      </Badge>
-                    </div>
-                  )} */}
                 </p>
+                <div className="flex items-center gap-x-1">
+                  <Badge className="hidden sm:block">
+                    {post.user.program.college.slug.toUpperCase()}
+                  </Badge>
+                  <Badge variant="outline" className="hidden sm:block">
+                    {post.user.program.slug.toUpperCase()}
+                  </Badge>
+                  <Badge className="sm:hidden">
+                    {post.user.program.slug.toUpperCase()}
+                  </Badge>
+                </div>
                 <p className="pointer-events-none hidden select-none sm:block">
                   ·
                 </p>
