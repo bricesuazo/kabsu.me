@@ -10,7 +10,7 @@ export default function PostTypeTab() {
 
   return (
     <Tabs
-      defaultValue={searchParams.get("tab") ?? POST_TYPE_TABS[2].id}
+      defaultValue={searchParams.get("tab") ?? POST_TYPE_TABS[3].id}
       onValueChange={(value) =>
         router.push(value !== "following" ? `/?tab=${value}` : "/")
       }

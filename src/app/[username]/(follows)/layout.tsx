@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export default async function FollowsLayout({
+export default function FollowsLayout({
   children,
   params: { username },
 }: React.PropsWithChildren<{
