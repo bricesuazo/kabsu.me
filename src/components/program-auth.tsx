@@ -16,7 +16,7 @@ import {
   CommandItem,
 } from "./ui/command";
 import { cn } from "@/lib/utils";
-import { addProgramToUserMetadata } from "@/actions/user";
+import { signUpUser } from "@/actions/user";
 import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -103,7 +103,7 @@ export default function ProgramAuth({
               actionCompleteRedirectUrl: "/",
             });
 
-            await addProgramToUserMetadata({
+            await signUpUser({
               userId: new_user.createdUserId ?? "",
               program_id: values.program_id,
               type: values.type ?? "",

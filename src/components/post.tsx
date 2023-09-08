@@ -1,6 +1,6 @@
 "use client";
 
-import type { Post } from "@/db/schema";
+import type { College, Post, Program } from "@/db/schema";
 import moment from "moment";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -31,7 +31,7 @@ export default function Post({
   post,
   isMyPost,
 }: {
-  post: Post & { user: User };
+  post: Post & { user: User & { program: Program & { college: College } } };
   isMyPost: boolean;
 }) {
   const router = useRouter();
@@ -40,7 +40,7 @@ export default function Post({
 
   return (
     <>
-      <UpdatePost open={openUpdate} setOpen={setOpenUpdate} post={post} />
+      {/* <UpdatePost open={openUpdate} setOpen={setOpenUpdate} post={post} /> */}
       <DeletePost open={openDelete} setOpen={setOpenDelete} post_id={post.id} />
       <div
         onClick={(e) => {

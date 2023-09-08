@@ -39,6 +39,10 @@ export default async function UserPage({
 
   const userFromDB = await db.query.users.findFirst({
     where: (user, { eq }) => eq(user.id, user.id),
+
+    with: {
+      program: { with: { college: true } },
+    },
   });
 
   if (!userFromDB) notFound();
@@ -48,19 +52,16 @@ export default async function UserPage({
       and(isNull(post.deleted_at), eq(post.user_id, user.id)),
     orderBy: (post, { desc }) => desc(post.created_at),
     with: {
-      user: true,
+      user: {
+        with: {
+          program: { with: { college: true } },
+        },
+      },
     },
   });
 
   const usersFromPosts = await clerkClient.users.getUserList({
     userId: posts.map((post) => post.user.id),
-  });
-
-  const program = await db.query.programs.findFirst({
-    where: (program, { eq }) => eq(program.id, userFromDB.program_id),
-    with: {
-      college: true,
-    },
   });
 
   const followers = await db.query.followers.findMany({
@@ -75,12 +76,13 @@ export default async function UserPage({
     <div className="space-y-4">
       <div className="flex gap-x-8">
         <div className="flex-1 ">
-          {program && (
-            <div className="flex items-center gap-x-2">
-              <Badge>{program.college.slug.toUpperCase()}</Badge>
-              <Badge variant="outline">{program.slug.toUpperCase()}</Badge>
-            </div>
-          )}
+          <div className="flex items-center gap-x-2">
+            <Badge>{userFromDB.program.college.slug.toUpperCase()}</Badge>
+            <Badge variant="outline">
+              {userFromDB.program.slug.toUpperCase()}
+            </Badge>
+          </div>
+
           <h2 className="text-4xl font-semibold">@{user.username}</h2>
 
           <h4 className="text-xl">
@@ -154,7 +156,10 @@ export default async function UserPage({
             key={post.id}
             post={{
               ...post,
-              user: usersFromPosts.find((user) => user.id === post.user.id)!,
+              user: {
+                ...usersFromPosts.find((user) => user.id === post.user.id)!,
+                ...post.user,
+              },
             }}
             isMyPost={userId === post.user.id}
           />

@@ -2,7 +2,7 @@
 
 import { POST_TYPE_TABS } from "@/lib/constants";
 import { db } from "@/db";
-import { Follower, Post, posts, User } from "@/db/schema";
+import { College, Follower, Post, posts, Program, User } from "@/db/schema";
 import { CreatePostSchema, UpdatePostSchema } from "@/zod-schema/post";
 import { auth } from "@clerk/nextjs";
 import { and, eq } from "drizzle-orm";
@@ -20,7 +20,9 @@ export async function getPosts({
 
   if (!userId) throw new Error("Unauthorized");
 
-  let posts: (Post & { user: User })[] = [];
+  let posts: (Post & {
+    user: User & { program: Program & { college: College } };
+  })[] = [];
 
   if (type === "all") {
     posts = await db.query.posts.findMany({
@@ -31,7 +33,15 @@ export async function getPosts({
       offset: (page - 1) * 10,
 
       with: {
-        user: true,
+        user: {
+          with: {
+            program: {
+              with: {
+                college: true,
+              },
+            },
+          },
+        },
       },
     });
   } else if (type === "program") {
@@ -39,7 +49,7 @@ export async function getPosts({
       where: (user, { eq }) => eq(user.id, userId),
       orderBy: (post, { desc }) => desc(post.created_at),
       with: {
-        programs: true,
+        program: true,
       },
     });
 
@@ -67,15 +77,26 @@ export async function getPosts({
       limit: 10,
       offset: (page - 1) * 10,
       with: {
-        user: true,
+        user: {
+          with: {
+            program: {
+              with: {
+                college: true,
+              },
+            },
+          },
+        },
       },
     });
   } else if (type === "college") {
     const user = await db.query.users.findFirst({
       where: (user, { eq }) => eq(user.id, userId),
-      orderBy: (post, { desc }) => desc(post.created_at),
       with: {
-        programs: true,
+        program: {
+          with: {
+            college: true,
+          },
+        },
       },
     });
 
@@ -85,17 +106,9 @@ export async function getPosts({
       where: (userInDB, { eq }) => eq(userInDB.program_id, user.program_id),
     });
 
-    const myCollege = await db.query.programs.findFirst({
-      where: (program, { eq }) => eq(program.id, user.program_id),
-      with: {
-        college: true,
-      },
-    });
-
-    if (!myCollege) throw new Error("College not found");
-
     const colleges = await db.query.programs.findMany({
-      where: (program, { eq }) => eq(program.college_id, myCollege.college_id),
+      where: (program, { eq }) =>
+        eq(program.college_id, user.program.college_id),
     });
 
     const usersInColleges: User[] =
@@ -127,15 +140,26 @@ export async function getPosts({
       offset: (page - 1) * 10,
       orderBy: (post, { desc }) => desc(post.created_at),
       with: {
-        user: true,
+        user: {
+          with: {
+            program: {
+              with: {
+                college: true,
+              },
+            },
+          },
+        },
       },
     });
   } else if (type === "following") {
     const user = await db.query.users.findFirst({
       where: (user, { eq }) => eq(user.id, userId),
-      orderBy: (post, { desc }) => desc(post.created_at),
       with: {
-        programs: true,
+        program: {
+          with: {
+            college: true,
+          },
+        },
       },
     });
 
@@ -144,15 +168,6 @@ export async function getPosts({
     const following: Follower[] = await db.query.followers.findMany({
       where: (follower, { eq }) => eq(follower.follower_id, userId),
     });
-
-    const myCollege = await db.query.programs.findFirst({
-      where: (program, { eq }) => eq(program.id, user.program_id),
-      with: {
-        college: true,
-      },
-    });
-
-    if (!myCollege) throw new Error("College not found");
 
     posts = await db.query.posts.findMany({
       where: (post, { or, and, eq, isNull, inArray }) =>
@@ -173,7 +188,15 @@ export async function getPosts({
       offset: (page - 1) * 10,
       orderBy: (post, { desc }) => desc(post.created_at),
       with: {
-        user: true,
+        user: {
+          with: {
+            program: {
+              with: {
+                college: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -186,6 +209,7 @@ export async function getPosts({
     ...post,
     user: {
       ...usersFromPosts.find((user) => user.id === post.user.id)!,
+      ...post.user,
     },
   }));
 }

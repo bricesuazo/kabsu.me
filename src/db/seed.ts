@@ -5,7 +5,16 @@ import { clerkClient } from "@clerk/nextjs/server";
 
 async function main() {
   await db.transaction(async (trx) => {
-    console.log("Users inserted!");
+    // const usersFromClerk = await clerkClient.users.getUserList();
+    // usersFromClerk.length !== 0 &&
+    //   (await trx.insert(users).values(
+    //     usersFromClerk.map((user, index) => ({
+    //       id: user.id,
+    //       user_number: index + 1,
+    //       program_id: "VHShXyNIG041O-4GHKcXK",
+    //       type: "student",
+    //     })),
+    //   ));
 
     await trx.insert(colleges).values(
       SEED_DATA.map((college) => ({
@@ -32,14 +41,17 @@ async function main() {
 
     const usersFromDB = await db.query.users.findMany();
 
-    await trx.insert(users).values(
-      usersFromDB.map((user, index) => ({
-        id: user.id,
-        user_number: index + 1,
-        program_id: "VHShXyNIG041O-4GHKcXK",
-        type: user.type,
-      })),
-    );
+    usersFromDB.length !== 0 &&
+      (await trx.insert(users).values(
+        usersFromDB.map((user, index) => ({
+          id: user.id,
+          user_number: index + 1,
+          program_id: "VHShXyNIG041O-4GHKcXK",
+          type: user.type,
+        })),
+      ));
+
+    console.log("Users inserted!");
   });
 
   console.log("Done seeding!");

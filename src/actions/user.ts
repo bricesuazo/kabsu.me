@@ -6,7 +6,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-export async function addProgramToUserMetadata({
+export async function signUpUser({
   userId,
   program_id,
   type,
@@ -15,13 +15,27 @@ export async function addProgramToUserMetadata({
   program_id: string;
   type: (typeof ACCOUNT_TYPE)[number];
 }) {
-  await db
-    .update(users)
-    .set({
-      program_id,
-      type,
-    })
-    .where(eq(users.id, userId));
+  const usersFromDB = await db.query.users.findMany();
+  await db.insert(users).values({
+    id: userId,
+    program_id,
+    type,
+    user_number: usersFromDB.length,
+  });
+
+  // await db
+  //   .update(users)
+  //   .set({
+  //     program_id,
+  //     type,
+  //   })
+  //   .where(eq(users.id, userId));
+  // await clerkClient.users.updateUserMetadata(userId, {
+  //   publicMetadata: {
+  //     program_id,
+  //     type,
+  //   },
+  // });
 }
 
 export async function updateBio({
