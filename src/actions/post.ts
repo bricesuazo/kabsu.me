@@ -1,11 +1,194 @@
 "use server";
 
+import { POST_TYPE_TABS } from "@/lib/constants";
 import { db } from "@/db";
-import { posts } from "@/db/schema";
+import { Follower, Post, posts, User } from "@/db/schema";
 import { CreatePostSchema, UpdatePostSchema } from "@/zod-schema/post";
 import { auth } from "@clerk/nextjs";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { clerkClient } from "@clerk/nextjs/server";
+
+export async function getPosts({
+  type,
+  page,
+}: {
+  type: (typeof POST_TYPE_TABS)[number]["id"];
+  page: number;
+}) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("Unauthorized");
+
+  let posts: (Post & { user: User })[] = [];
+
+  if (type === "all") {
+    posts = await db.query.posts.findMany({
+      where: (post, { isNull }) => isNull(post.deleted_at),
+
+      orderBy: (post, { desc }) => desc(post.created_at),
+      limit: 10,
+      offset: (page - 1) * 10,
+
+      with: {
+        user: true,
+      },
+    });
+  } else if (type === "program") {
+    const user = await db.query.users.findFirst({
+      where: (user, { eq }) => eq(user.id, userId),
+      orderBy: (post, { desc }) => desc(post.created_at),
+      with: {
+        programs: true,
+      },
+    });
+
+    if (!user) throw new Error("User not found");
+
+    const usersInPrograms: User[] = await db.query.users.findMany({
+      where: (userInDB, { eq }) => eq(userInDB.program_id, user.program_id),
+    });
+
+    posts = await db.query.posts.findMany({
+      where: (post, { or, and, eq, isNull, inArray }) =>
+        or(
+          and(
+            isNull(post.deleted_at),
+            usersInPrograms.length > 0
+              ? inArray(
+                  post.user_id,
+                  usersInPrograms.map((f) => f.id),
+                )
+              : undefined,
+          ),
+          eq(post.user_id, userId),
+        ),
+      orderBy: (post, { desc }) => desc(post.created_at),
+      limit: 10,
+      offset: (page - 1) * 10,
+      with: {
+        user: true,
+      },
+    });
+  } else if (type === "college") {
+    const user = await db.query.users.findFirst({
+      where: (user, { eq }) => eq(user.id, userId),
+      orderBy: (post, { desc }) => desc(post.created_at),
+      with: {
+        programs: true,
+      },
+    });
+
+    if (!user) throw new Error("User not found");
+
+    const usersInPrograms: User[] = await db.query.users.findMany({
+      where: (userInDB, { eq }) => eq(userInDB.program_id, user.program_id),
+    });
+
+    const myCollege = await db.query.programs.findFirst({
+      where: (program, { eq }) => eq(program.id, user.program_id),
+      with: {
+        college: true,
+      },
+    });
+
+    if (!myCollege) throw new Error("College not found");
+
+    const colleges = await db.query.programs.findMany({
+      where: (program, { eq }) => eq(program.college_id, myCollege.college_id),
+    });
+
+    const usersInColleges: User[] =
+      colleges.length > 0
+        ? await db.query.users.findMany({
+            where: (userInDB, { inArray }) =>
+              inArray(
+                userInDB.program_id,
+                colleges.map((c) => c.id),
+              ),
+          })
+        : [];
+
+    posts = await db.query.posts.findMany({
+      where: (post, { or, and, eq, isNull, inArray }) =>
+        or(
+          and(
+            isNull(post.deleted_at),
+            usersInPrograms.length > 0
+              ? inArray(
+                  post.user_id,
+                  usersInColleges.map((f) => f.id),
+                )
+              : undefined,
+          ),
+          eq(post.user_id, userId),
+        ),
+      limit: 10,
+      offset: (page - 1) * 10,
+      orderBy: (post, { desc }) => desc(post.created_at),
+      with: {
+        user: true,
+      },
+    });
+  } else if (type === "following") {
+    const user = await db.query.users.findFirst({
+      where: (user, { eq }) => eq(user.id, userId),
+      orderBy: (post, { desc }) => desc(post.created_at),
+      with: {
+        programs: true,
+      },
+    });
+
+    if (!user) throw new Error("User not found");
+
+    const following: Follower[] = await db.query.followers.findMany({
+      where: (follower, { eq }) => eq(follower.follower_id, userId),
+    });
+
+    const myCollege = await db.query.programs.findFirst({
+      where: (program, { eq }) => eq(program.id, user.program_id),
+      with: {
+        college: true,
+      },
+    });
+
+    if (!myCollege) throw new Error("College not found");
+
+    posts = await db.query.posts.findMany({
+      where: (post, { or, and, eq, isNull, inArray }) =>
+        and(
+          isNull(post.deleted_at),
+          or(
+            following.length > 0
+              ? inArray(
+                  post.user_id,
+                  following.map((f) => f.followee_id),
+                )
+              : undefined,
+            eq(post.user_id, userId),
+          ),
+        ),
+
+      limit: 10,
+      offset: (page - 1) * 10,
+      orderBy: (post, { desc }) => desc(post.created_at),
+      with: {
+        user: true,
+      },
+    });
+  }
+
+  const usersFromPosts = await clerkClient.users.getUserList({
+    userId: posts.map((post) => post.user && post.user.id),
+  });
+
+  return posts.map((post) => ({
+    ...post,
+    user: {
+      ...usersFromPosts.find((user) => user.id === post.user.id)!,
+    },
+  }));
+}
 
 export async function createPost({ content }: CreatePostSchema) {
   const { userId } = auth();

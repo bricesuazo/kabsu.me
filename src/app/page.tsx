@@ -21,7 +21,7 @@ export function generateMetadata(): Metadata {
 export default function Home({
   searchParams: { tab },
 }: {
-  searchParams: { tab?: "all" | "program" };
+  searchParams: { tab?: "all" | "program" | "college" };
 }) {
   const { userId } = auth();
 
@@ -44,7 +44,7 @@ export default function Home({
                 </div>
               }
             >
-              <Posts tab={tab} />
+              <Posts tab={!tab ? "following" : tab} />
             </Suspense>
           </div>
         </>
