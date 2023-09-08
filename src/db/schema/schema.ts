@@ -37,6 +37,25 @@ export const users = mysqlTable("users", {
 
   created_at,
 });
+export const likes = mysqlTable("likes", {
+  id,
+  user_id: varchar("user_id", { length: 256 }).notNull(),
+  post_id: varchar("post_id", { length: 256 }).notNull(),
+
+  created_at,
+});
+export const comments = mysqlTable("comments", {
+  id,
+  user_id: varchar("user_id", { length: 256 }).notNull(),
+  post_id: varchar("post_id", { length: 256 }).notNull(),
+  content: longtext("content").notNull(),
+  thread_id: varchar("thread_id", { length: 256 }),
+
+  created_at,
+  updated_at,
+  deleted_at,
+});
+
 export const followers = mysqlTable("followers", {
   id,
   follower_id: varchar("follower_id", { length: 256 }).notNull(),
