@@ -109,10 +109,12 @@ export async function unfollowUser({ user_id }: { user_id: string }) {
 }
 
 export async function getProgramForAuth() {
+  const campuses = await db.query.campuses.findMany();
   const colleges = await db.query.colleges.findMany();
   const programs = await db.query.programs.findMany();
 
   return {
+    campuses,
     colleges,
     programs,
   };

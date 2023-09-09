@@ -62,12 +62,11 @@ export default function AuthForm() {
   const form1 = useForm<z.infer<typeof form1Schema>>({
     resolver: zodResolver(form1Schema),
     defaultValues: {
-      username: "",
+      username: signUp?.emailAddress?.split("@")[0].replace(".", "-") ?? "",
       first_name: signUp?.firstName ?? "",
       last_name: signUp?.lastName ?? "",
     },
   });
-
   useEffect(() => {
     if (!signUp) return;
 
@@ -75,6 +74,10 @@ export default function AuthForm() {
 
     if (!isLoadedSignUp) return;
 
+    form1.setValue(
+      "username",
+      signUp.emailAddress?.split("@")[0].replace(".", "-") ?? "",
+    );
     form1.setValue("first_name", signUp.firstName ?? "");
     form1.setValue("last_name", signUp.lastName ?? "");
   }, [signUp, isLoadedSignUp, form1]);
@@ -92,6 +95,9 @@ export default function AuthForm() {
           <h4 className="text-center text-muted-foreground">
             Fill out the form below to continue.
           </h4>
+          <p className="text-center text-sm text-muted-foreground">
+            {signUp?.emailAddress}
+          </p>
         </div>
         {page === 0 ? (
           <>

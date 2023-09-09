@@ -33,7 +33,7 @@ import { useSignUp } from "@clerk/nextjs";
 import { Button } from "./ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Icons } from "./icons";
-import { ACCOUNT_TYPE, College, Program } from "@/db/schema";
+import { ACCOUNT_TYPE, Campus, College, Program } from "@/db/schema";
 import { Card, CardFooter, CardHeader } from "./ui/card";
 import { Label } from "./ui/label";
 
@@ -49,6 +49,7 @@ export default function ProgramAuth({
     last_name: string;
   };
   data: {
+    campuses: Campus[];
     colleges: College[];
     programs: Program[];
   };
@@ -57,9 +58,11 @@ export default function ProgramAuth({
 }) {
   const { isLoaded, signUp, setActive } = useSignUp();
   const [opens, setOpens] = useState<{
+    campuses: boolean;
     colleges: boolean;
     programs: boolean;
   }>({
+    campuses: false,
     colleges: false,
     programs: false,
   });
@@ -67,6 +70,13 @@ export default function ProgramAuth({
     type: z.enum(ACCOUNT_TYPE, {
       required_error: "Role is required.",
     }),
+    campus_id: z
+      .string({
+        required_error: "Campus is required.",
+      })
+      .nonempty({
+        message: "Campus is required.",
+      }),
     college_id: z
       .string({
         required_error: "College is required.",
@@ -81,6 +91,7 @@ export default function ProgramAuth({
   const form2 = useForm<z.infer<typeof form2Schema>>({
     resolver: zodResolver(form2Schema),
     defaultValues: {
+      campus_id: "",
       college_id: "",
       program_id: "",
     },
@@ -196,8 +207,91 @@ export default function ProgramAuth({
           <div className="flex flex-col items-center gap-4 sm:flex-row">
             <FormField
               control={form2.control}
-              name="college_id"
+              name="campus_id"
               disabled={!form2.getValues("type")}
+              render={({ field }) => (
+                <FormItem className="flex w-full flex-1 flex-col">
+                  <FormLabel>Campus</FormLabel>
+                  <FormControl>
+                    <Popover
+                      open={opens.campuses}
+                      onOpenChange={(open) =>
+                        setOpens((prev) => ({ ...prev, campuses: open }))
+                      }
+                    >
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={opens.campuses}
+                          className={cn(
+                            "flex-1 justify-between",
+                            !field.value && "text-muted-foreground",
+                          )}
+                          disabled={form2.formState.isSubmitting}
+                        >
+                          {field.value
+                            ? data.campuses
+                                .find((campus) => campus.id === field.value)
+                                ?.slug.toUpperCase()
+                            : "Select campus"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[200px] p-0">
+                        <Command>
+                          <CommandInput placeholder="Search campus..." />
+                          <CommandEmpty>No campus.</CommandEmpty>
+                          <CommandGroup>
+                            {data.campuses.map((campus) => (
+                              <CommandItem
+                                key={campus.id}
+                                value={`${
+                                  campus.name
+                                } (${campus.slug.toUpperCase()})`}
+                                onSelect={() => {
+                                  if (
+                                    form2.getValues("campus_id") !== campus.id
+                                  ) {
+                                    form2.setValue("college_id", "");
+                                    form2.setValue("program_id", "");
+                                  }
+
+                                  form2.setValue("campus_id", campus.id);
+                                  form2.trigger("campus_id");
+                                  setOpens((prev) => ({
+                                    ...prev,
+                                    campuses: false,
+                                  }));
+                                }}
+                                className="line-clamp-1"
+                              >
+                                <div>
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      campus.id === field.value
+                                        ? "opacity-100"
+                                        : "opacity-0",
+                                    )}
+                                  />
+                                </div>
+                                {campus.name} ({campus.slug.toUpperCase()})
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form2.control}
+              name="college_id"
               render={({ field }) => (
                 <FormItem className="flex w-full flex-1 flex-col">
                   <FormLabel>College</FormLabel>
@@ -217,7 +311,10 @@ export default function ProgramAuth({
                             "flex-1 justify-between",
                             !field.value && "text-muted-foreground",
                           )}
-                          disabled={form2.formState.isSubmitting}
+                          disabled={
+                            form2.formState.isSubmitting ||
+                            !form2.getValues("campus_id")
+                          }
                         >
                           {field.value
                             ? data.colleges
@@ -232,41 +329,48 @@ export default function ProgramAuth({
                           <CommandInput placeholder="Search college..." />
                           <CommandEmpty>No college.</CommandEmpty>
                           <CommandGroup>
-                            {data.colleges.map((college) => (
-                              <CommandItem
-                                key={college.id}
-                                value={`${
-                                  college.name
-                                } (${college.slug.toUpperCase()})`}
-                                onSelect={() => {
-                                  if (
-                                    form2.getValues("college_id") !== college.id
-                                  ) {
-                                    form2.setValue("program_id", "");
-                                  }
+                            {data.colleges
+                              .filter(
+                                (college) =>
+                                  college.campus_id ===
+                                  form2.getValues("campus_id"),
+                              )
+                              .map((college) => (
+                                <CommandItem
+                                  key={college.id}
+                                  value={`${
+                                    college.name
+                                  } (${college.slug.toUpperCase()})`}
+                                  onSelect={() => {
+                                    if (
+                                      form2.getValues("college_id") !==
+                                      college.id
+                                    ) {
+                                      form2.setValue("program_id", "");
+                                    }
 
-                                  form2.setValue("college_id", college.id);
-                                  form2.trigger("college_id");
-                                  setOpens((prev) => ({
-                                    ...prev,
-                                    colleges: false,
-                                  }));
-                                }}
-                                className="line-clamp-1"
-                              >
-                                <div>
-                                  <Check
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      college.id === field.value
-                                        ? "opacity-100"
-                                        : "opacity-0",
-                                    )}
-                                  />
-                                </div>
-                                {college.name} ({college.slug.toUpperCase()})
-                              </CommandItem>
-                            ))}
+                                    form2.setValue("college_id", college.id);
+                                    form2.trigger("college_id");
+                                    setOpens((prev) => ({
+                                      ...prev,
+                                      colleges: false,
+                                    }));
+                                  }}
+                                  className="line-clamp-1"
+                                >
+                                  <div>
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        college.id === field.value
+                                          ? "opacity-100"
+                                          : "opacity-0",
+                                      )}
+                                    />
+                                  </div>
+                                  {college.name} ({college.slug.toUpperCase()})
+                                </CommandItem>
+                              ))}
                           </CommandGroup>
                         </Command>
                       </PopoverContent>
