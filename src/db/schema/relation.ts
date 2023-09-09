@@ -8,6 +8,7 @@ import {
   users,
   likes,
   comments,
+  campuses,
 } from ".";
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -76,8 +77,12 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
   }),
 }));
 
+export const campusesRelations = relations(campuses, ({ one, many }) => ({}));
 export const collegesRelations = relations(colleges, ({ one, many }) => ({
-  // organizations: many(organizations),
+  campus: one(campuses, {
+    fields: [colleges.campus_id],
+    references: [campuses.id],
+  }),
 }));
 
 // export const organizationsRelations = relations(

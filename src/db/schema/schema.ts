@@ -79,7 +79,7 @@ export const posts = mysqlTable("posts", {
   updated_at,
   deleted_at,
 });
-export const colleges = mysqlTable("colleges", {
+export const campuses = mysqlTable("campuses", {
   id,
   name: text("name").notNull(),
   slug,
@@ -88,16 +88,16 @@ export const colleges = mysqlTable("colleges", {
   updated_at,
   deleted_at,
 });
-// export const organizations = mysqlTable("organizations", {
-//   id,
-//   name: text("name").notNull(),
+export const colleges = mysqlTable("colleges", {
+  id,
+  name: text("name").notNull(),
+  slug,
+  campus_id: varchar("campus_id", { length: 256 }).notNull(),
 
-//   department_id: varchar("department_id", { length: 256 }).notNull(),
-
-//   created_at,
-//   updated_at,
-//   deleted_at,
-// });
+  created_at,
+  updated_at,
+  deleted_at,
+});
 export const programs = mysqlTable("programs", {
   id,
   name: text("name").notNull(),

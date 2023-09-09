@@ -1,4 +1,4 @@
-import { colleges, programs, users } from "./schema";
+import { campuses, colleges, programs, users } from "./schema";
 import { SEED_DATA } from "@/lib/constants";
 import { db } from ".";
 import { clerkClient } from "@clerk/nextjs/server";
@@ -16,24 +16,39 @@ async function main() {
     //     })),
     //   ));
 
-    await trx.insert(colleges).values(
-      SEED_DATA.map((college) => ({
-        id: college.id,
-        name: college.name,
-        slug: college.slug,
+    await trx.insert(campuses).values(
+      SEED_DATA.map((campus) => ({
+        id: campus.id,
+        name: campus.name,
+        slug: campus.slug,
       })),
+    );
+
+    console.log("Campuses inserted!");
+
+    await trx.insert(colleges).values(
+      SEED_DATA.flatMap((campus) =>
+        campus.colleges.map((college) => ({
+          id: college.id,
+          name: college.name,
+          slug: college.slug,
+          campus_id: college.campus_id,
+        })),
+      ),
     );
 
     console.log("Colleges inserted!");
 
     await trx.insert(programs).values(
-      SEED_DATA.flatMap((college) =>
-        college.programs.map((program) => ({
-          id: program.id,
-          name: program.name,
-          slug: program.slug,
-          college_id: program.college_id,
-        })),
+      SEED_DATA.flatMap((campus) =>
+        campus.colleges.flatMap((college) =>
+          college.programs.map((program) => ({
+            id: program.id,
+            name: program.name,
+            slug: program.slug,
+            college_id: program.college_id,
+          })),
+        ),
       ),
     );
 
