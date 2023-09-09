@@ -16,7 +16,7 @@ import {
 import { Album, Briefcase, GraduationCap, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import DeletePost from "./delete-post";
-import UpdatePost from "./update-post";
+// import UpdatePost from "./update-post";
 import { User } from "@clerk/nextjs/server";
 import Image from "next/image";
 import { Badge } from "./ui/badge";
@@ -36,7 +36,7 @@ export default function Post({
 }) {
   const router = useRouter();
   const [openDelete, setOpenDelete] = useState(false);
-  const [openUpdate, setOpenUpdate] = useState(false);
+  // const [openUpdate, setOpenUpdate] = useState(false);
 
   return (
     <>
