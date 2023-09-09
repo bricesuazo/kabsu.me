@@ -1,3 +1,4 @@
+import { POST_TYPE } from "@/db/schema";
 import { nanoid } from "nanoid";
 
 const CAMPUSES = [
@@ -72,7 +73,7 @@ export const SEED_DATA = CAMPUSES.map((campus) => {
 });
 
 export const POST_TYPE_TABS: {
-  id: "all" | "campus" | "program" | "college" | "following";
+  id: (typeof POST_TYPE)[number];
   name: string;
 }[] = [
   {

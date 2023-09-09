@@ -10,6 +10,13 @@ import {
 import { nanoid } from "nanoid";
 
 export const ACCOUNT_TYPE = ["student", "faculty", "alumni"] as const;
+export const POST_TYPE = [
+  "all",
+  "campus",
+  "program",
+  "college",
+  "following",
+] as const;
 
 const id = varchar("id", { length: 256 })
   .primaryKey()
@@ -74,6 +81,7 @@ export const posts = mysqlTable("posts", {
   id,
   user_id: varchar("user_id", { length: 256 }).notNull(),
   content: longtext("content").notNull(),
+  type: mysqlEnum("type", POST_TYPE).default("following").notNull(),
 
   created_at,
   updated_at,

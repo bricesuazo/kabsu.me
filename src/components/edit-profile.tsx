@@ -26,6 +26,7 @@ import { AlertDialogHeader } from "./ui/alert-dialog";
 import { useEffect, useState } from "react";
 import { User as UserFromClerk } from "@clerk/nextjs/server";
 import { Input } from "./ui/input";
+import { toast } from "./ui/use-toast";
 
 export default function EditProfile({
   userFromDB,
@@ -81,6 +82,10 @@ export default function EditProfile({
               await updateBio({
                 user_id: userFromDB.id,
                 bio: data.bio,
+              });
+              toast({
+                title: "Profile updated",
+                description: "Your profile has been updated.",
               });
               setOpen(false);
             })}

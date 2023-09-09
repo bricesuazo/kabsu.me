@@ -12,6 +12,7 @@ import {
 import { Button } from "./ui/button";
 import { deletePost } from "@/actions/post";
 import { Icons } from "./icons";
+import { toast } from "./ui/use-toast";
 
 export default function DeletePost({
   open,
@@ -43,6 +44,10 @@ export default function DeletePost({
               await deletePost({ post_id });
               setLoading(false);
               setOpen(false);
+              toast({
+                title: "Post deleted",
+                description: "Your post has been deleted.",
+              });
             }}
             disabled={loading}
           >

@@ -64,19 +64,30 @@ export default async function UserPage({
 
   return (
     <div className="">
-      {posts.map((post) => (
-        <Post
-          key={post.id}
-          post={{
-            ...post,
-            user: {
-              ...usersFromPosts.find((user) => user.id === post.user.id)!,
-              ...post.user,
-            },
-          }}
-          isMyPost={userId === post.user.id}
-        />
-      ))}
+      {posts.length === 0 ? (
+        <div>
+          <div className="text-center">
+            <div className="text-2xl font-semibold">No posts yet</div>
+            <div className="mt-2 text-gray-500">
+              When @{user.username} posts something, it will show up here.
+            </div>
+          </div>
+        </div>
+      ) : (
+        posts.map((post) => (
+          <Post
+            key={post.id}
+            post={{
+              ...post,
+              user: {
+                ...usersFromPosts.find((user) => user.id === post.user.id)!,
+                ...post.user,
+              },
+            }}
+            isMyPost={userId === post.user.id}
+          />
+        ))
+      )}
     </div>
   );
 }
