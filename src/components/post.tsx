@@ -82,35 +82,35 @@ export default function Post({
                   </p>
                   <div className="flex items-center gap-x-1">
                     {/* {(() => {
-                    switch (post.user.type) {
-                      case "student":
-                        return <Album />;
-                      case "alumni":
-                        return <Briefcase />;
-                      case "faculty":
-                        return <GraduationCap />;
-                      default:
-                        return null;
-                    }
-                  })()} */}
-                    <Tooltip>
-                      <TooltipTrigger asChild>
+                      switch (post.user.type) {
+                        case "student":
+                          return <Album />;
+                        case "alumni":
+                          return <Briefcase />;
+                        case "faculty":
+                          return <GraduationCap />;
+                        default:
+                          return null;
+                      }
+                    })()} */}
+                    <Tooltip delayDuration={250}>
+                      <TooltipTrigger>
                         <Badge>
                           {post.user.program.college.campus.slug.toUpperCase()}
                         </Badge>
                       </TooltipTrigger>
-                      <TooltipContent className="w-60">
-                        {post.user.program.college.name}
+                      <TooltipContent className="max-w-[12rem]">
+                        {post.user.program.college.campus.name}
                       </TooltipContent>
                     </Tooltip>
 
-                    <Tooltip>
-                      <TooltipTrigger asChild>
+                    <Tooltip delayDuration={250}>
+                      <TooltipTrigger>
                         <Badge variant="outline">
                           {post.user.program.slug.toUpperCase()}
                         </Badge>
                       </TooltipTrigger>
-                      <TooltipContent className="w-60">
+                      <TooltipContent className="max-w-[12rem]">
                         {post.user.program.name}
                       </TooltipContent>
                     </Tooltip>
@@ -119,7 +119,7 @@ export default function Post({
                     ·
                   </p>
                   <div className="hidden sm:block">
-                    <Tooltip delayDuration={100}>
+                    <Tooltip delayDuration={250}>
                       <TooltipTrigger>
                         <p className="text-xs">
                           {moment(post.created_at).fromNow()}

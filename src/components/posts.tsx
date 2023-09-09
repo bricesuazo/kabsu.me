@@ -22,19 +22,22 @@ export default async function Posts({
         <div className="flex justify-center p-8">
           There are no posts to show.
         </div>
-      ) : posts.length > 0 ? (
-        posts.map((post) => {
-          if (!post.user) return null;
-          return (
-            <Post
-              key={post.id}
-              post={post}
-              isMyPost={post.user.id === userId}
-            />
-          );
-        })
       ) : (
-        <LoadMorePost type={tab} userId={userId} />
+        posts.length > 0 && (
+          <>
+            {posts.map((post) => {
+              if (!post.user) return null;
+              return (
+                <Post
+                  key={post.id}
+                  post={post}
+                  isMyPost={post.user.id === userId}
+                />
+              );
+            })}
+            <LoadMorePost type={tab} userId={userId} />
+          </>
+        )
       )}
     </div>
   );

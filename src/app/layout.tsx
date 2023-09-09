@@ -5,6 +5,7 @@ import { ClerkProvider, auth } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import QueryProvider from "@/components/query-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -33,7 +34,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
         <body className={cn(font.className)}>
           <QueryProvider>
             <ThemeProvider attribute="class" defaultTheme="light">
-              {children}
+              <TooltipProvider>{children}</TooltipProvider>
             </ThemeProvider>
           </QueryProvider>
         </body>

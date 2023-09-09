@@ -110,15 +110,7 @@ export async function getPosts({
     const user = await db.query.users.findFirst({
       where: (user, { eq }) => eq(user.id, userId),
       with: {
-        program: {
-          with: {
-            college: {
-              with: {
-                campus: true,
-              },
-            },
-          },
-        },
+        program: true,
       },
     });
 
@@ -177,6 +169,73 @@ export async function getPosts({
         },
       },
     });
+    // } else if (type === "campus") {
+    //   const user = await db.query.users.findFirst({
+    //     where: (user, { eq }) => eq(user.id, userId),
+    //     with: {
+    //       program: {
+    //         with: {
+    //           college: true,
+    //         },
+    //       },
+    //     },
+    //   });
+
+    //   if (!user) throw new Error("User not found");
+
+    //   const usersInPrograms: User[] = await db.query.users.findMany({
+    //     where: (userInDB, { eq }) => eq(userInDB.program_id, user.program_id),
+    //   });
+
+    //   const colleges = await db.query.programs.findMany({
+    //     where: (program, { eq }) =>
+    //       eq(program.college_id, user.program.college_id),
+    //   });
+
+    //   const usersInColleges: User[] =
+    //     colleges.length > 0
+    //       ? await db.query.users.findMany({
+    //           where: (userInDB, { inArray }) =>
+    //             inArray(
+    //               userInDB.program_id,
+    //               colleges.map((c) => c.id),
+    //             ),
+    //         })
+    //       : [];
+
+    //   posts = await db.query.posts.findMany({
+    //     where: (post, { or, and, eq, isNull, inArray }) =>
+    //       or(
+    //         and(
+    //           isNull(post.deleted_at),
+    //           usersInPrograms.length > 0
+    //             ? inArray(
+    //                 post.user_id,
+    //                 usersInColleges.map((f) => f.id),
+    //               )
+    //             : undefined,
+    //         ),
+    //         eq(post.user_id, userId),
+    //       ),
+    //     limit: 10,
+    //     offset: (page - 1) * 10,
+    //     orderBy: (post, { desc }) => desc(post.created_at),
+    //     with: {
+    //       user: {
+    //         with: {
+    //           program: {
+    //             with: {
+    //               college: {
+    //                 with: {
+    //                   campus: true,
+    //                 },
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   });
   } else if (type === "following") {
     const user = await db.query.users.findFirst({
       where: (user, { eq }) => eq(user.id, userId),

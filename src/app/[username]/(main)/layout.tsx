@@ -57,7 +57,7 @@ export default async function ProfileLayout({
           <div className="flex gap-x-8">
             <div className="flex-1 ">
               <div className="flex items-center gap-x-2">
-                <Tooltip delayDuration={0}>
+                <Tooltip delayDuration={250}>
                   {(() => {
                     if (userFromDB.type === "student") {
                       return (
@@ -90,8 +90,8 @@ export default async function ProfileLayout({
                   })()}
                 </Tooltip>
 
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger>
                     <Badge>
                       {userFromDB.program.college.campus.slug.toUpperCase()}
                     </Badge>
@@ -101,8 +101,8 @@ export default async function ProfileLayout({
                   </TooltipContent>
                 </Tooltip>
 
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger>
                     <Badge variant="outline">
                       {userFromDB.program.slug.toUpperCase()}
                     </Badge>
@@ -121,7 +121,7 @@ export default async function ProfileLayout({
                 {userFromClerk.firstName} {userFromClerk.lastName}
               </h4>
 
-              <p>{userFromDB.bio ?? "No bio yet"}</p>
+              <p>{userFromDB.bio}</p>
             </div>
             <div className="">
               <Image
@@ -176,10 +176,10 @@ export default async function ProfileLayout({
               <TabsTrigger value="posts" className="w-full">
                 Posts
               </TabsTrigger>
-              <TabsTrigger value="replies" className="w-full">
+              <TabsTrigger value="replies" className="w-full" disabled>
                 Replies
               </TabsTrigger>
-              <TabsTrigger value="likes" className="w-full">
+              <TabsTrigger value="likes" className="w-full" disabled>
                 Likes
               </TabsTrigger>
             </TabsList>

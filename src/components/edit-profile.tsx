@@ -88,6 +88,7 @@ export default function EditProfile({
             <FormField
               control={form.control}
               name="username"
+              disabled
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
@@ -104,6 +105,7 @@ export default function EditProfile({
               <FormField
                 control={form.control}
                 name="firstName"
+                disabled
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormLabel>
@@ -119,6 +121,7 @@ export default function EditProfile({
               <FormField
                 control={form.control}
                 name="lastName"
+                disabled
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormLabel>
