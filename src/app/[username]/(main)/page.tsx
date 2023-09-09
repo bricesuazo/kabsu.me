@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { auth, clerkClient } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { LoadMoreUserPost } from "@/components/load-more-my-post";
 
 export function generateMetadata({
   params,
@@ -74,19 +75,22 @@ export default async function UserPage({
           </div>
         </div>
       ) : (
-        posts.map((post) => (
-          <Post
-            key={post.id}
-            post={{
-              ...post,
-              user: {
-                ...usersFromPosts.find((user) => user.id === post.user.id)!,
-                ...post.user,
-              },
-            }}
-            isMyPost={userId === post.user.id}
-          />
-        ))
+        <>
+          {posts.map((post) => (
+            <Post
+              key={post.id}
+              post={{
+                ...post,
+                user: {
+                  ...usersFromPosts.find((user) => user.id === post.user.id)!,
+                  ...post.user,
+                },
+              }}
+              isMyPost={userId === post.user.id}
+            />
+          ))}
+          <LoadMoreUserPost user_id={user.id} />
+        </>
       )}
     </div>
   );

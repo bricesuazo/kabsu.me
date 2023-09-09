@@ -354,3 +354,49 @@ export async function updatePost({ content, post_id }: UpdatePostSchema) {
 
   revalidatePath("/");
 }
+
+export async function getUserPosts({
+  page,
+  user_id,
+}: {
+  page: number;
+  user_id: string;
+}) {
+  const posts = await db.query.posts.findMany({
+    where: (post, { and, eq, isNull }) =>
+      and(isNull(post.deleted_at), eq(post.user_id, user_id)),
+
+    limit: 10,
+    offset: (page - 1) * 10,
+    orderBy: (post, { desc }) => desc(post.created_at),
+    with: {
+      user: {
+        with: {
+          program: {
+            with: {
+              college: {
+                with: {
+                  campus: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const usersFromPosts = await clerkClient.users.getUserList({
+    userId: posts.map((post) => post.user && post.user.id),
+  });
+
+  const returnPosts = posts.map((post) => ({
+    ...post,
+    user: {
+      ...post.user,
+      ...usersFromPosts.find((user) => user.id === post.user.id)!,
+    },
+  }));
+
+  return returnPosts;
+}
