@@ -1,6 +1,6 @@
 "use client";
 
-import type { College, Post, Program } from "@/db/schema";
+import type { Campus, College, Post, Program } from "@/db/schema";
 import moment from "moment";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -31,7 +31,11 @@ export default function Post({
   post,
   isMyPost,
 }: {
-  post: Post & { user: User & { program: Program & { college: College } } };
+  post: Post & {
+    user: User & {
+      program: Program & { college: College & { campus: Campus } };
+    };
+  };
   isMyPost: boolean;
 }) {
   const router = useRouter();
@@ -92,7 +96,7 @@ export default function Post({
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Badge>
-                          {post.user.program.college.slug.toUpperCase()}
+                          {post.user.program.college.campus.slug.toUpperCase()}
                         </Badge>
                       </TooltipTrigger>
                       <TooltipContent className="w-60">

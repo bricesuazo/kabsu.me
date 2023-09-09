@@ -2,7 +2,15 @@
 
 import { POST_TYPE_TABS } from "@/lib/constants";
 import { db } from "@/db";
-import { College, Follower, Post, posts, Program, User } from "@/db/schema";
+import {
+  Campus,
+  College,
+  Follower,
+  Post,
+  posts,
+  Program,
+  User,
+} from "@/db/schema";
 import { CreatePostSchema, UpdatePostSchema } from "@/zod-schema/post";
 import { auth } from "@clerk/nextjs";
 import { and, eq } from "drizzle-orm";
@@ -21,7 +29,9 @@ export async function getPosts({
   if (!userId) throw new Error("Unauthorized");
 
   let posts: (Post & {
-    user: User & { program: Program & { college: College } };
+    user: User & {
+      program: Program & { college: College & { campus: Campus } };
+    };
   })[] = [];
 
   if (type === "all") {
@@ -37,7 +47,11 @@ export async function getPosts({
           with: {
             program: {
               with: {
-                college: true,
+                college: {
+                  with: {
+                    campus: true,
+                  },
+                },
               },
             },
           },
@@ -81,7 +95,11 @@ export async function getPosts({
           with: {
             program: {
               with: {
-                college: true,
+                college: {
+                  with: {
+                    campus: true,
+                  },
+                },
               },
             },
           },
@@ -94,7 +112,11 @@ export async function getPosts({
       with: {
         program: {
           with: {
-            college: true,
+            college: {
+              with: {
+                campus: true,
+              },
+            },
           },
         },
       },
@@ -144,7 +166,11 @@ export async function getPosts({
           with: {
             program: {
               with: {
-                college: true,
+                college: {
+                  with: {
+                    campus: true,
+                  },
+                },
               },
             },
           },
@@ -157,7 +183,11 @@ export async function getPosts({
       with: {
         program: {
           with: {
-            college: true,
+            college: {
+              with: {
+                campus: true,
+              },
+            },
           },
         },
       },
@@ -192,7 +222,11 @@ export async function getPosts({
           with: {
             program: {
               with: {
-                college: true,
+                college: {
+                  with: {
+                    campus: true,
+                  },
+                },
               },
             },
           },
@@ -205,13 +239,15 @@ export async function getPosts({
     userId: posts.map((post) => post.user && post.user.id),
   });
 
-  return posts.map((post) => ({
+  const returnPosts = posts.map((post) => ({
     ...post,
     user: {
-      ...usersFromPosts.find((user) => user.id === post.user.id)!,
       ...post.user,
+      ...usersFromPosts.find((user) => user.id === post.user.id)!,
     },
   }));
+
+  return returnPosts;
 }
 
 export async function createPost({ content }: CreatePostSchema) {

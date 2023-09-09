@@ -36,7 +36,7 @@ export default async function ProfileLayout({
     where: (user, { eq }) => eq(user.id, userFromClerk.id),
 
     with: {
-      program: { with: { college: true } },
+      program: { with: { college: { with: { campus: true } } } },
     },
   });
 
@@ -90,24 +90,24 @@ export default async function ProfileLayout({
                   })()}
                 </Tooltip>
 
-                <Tooltip>
+                <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
                     <Badge>
-                      {userFromDB.program.college.slug.toUpperCase()}
+                      {userFromDB.program.college.campus.slug.toUpperCase()}
                     </Badge>
                   </TooltipTrigger>
-                  <TooltipContent className="w-60">
-                    {userFromDB.program.college.name}
+                  <TooltipContent className="max-w-60">
+                    {userFromDB.program.college.campus.name}
                   </TooltipContent>
                 </Tooltip>
 
-                <Tooltip>
+                <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
                     <Badge variant="outline">
                       {userFromDB.program.slug.toUpperCase()}
                     </Badge>
                   </TooltipTrigger>
-                  <TooltipContent className="w-60">
+                  <TooltipContent className="max-w-60">
                     {userFromDB.program.name}
                   </TooltipContent>
                 </Tooltip>

@@ -46,7 +46,13 @@ export default async function UserPage({
     with: {
       user: {
         with: {
-          program: { with: { college: true } },
+          program: {
+            with: {
+              college: {
+                with: { campus: true },
+              },
+            },
+          },
         },
       },
     },

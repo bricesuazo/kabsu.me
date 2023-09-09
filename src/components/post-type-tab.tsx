@@ -3,7 +3,7 @@
 import { POST_TYPE_TABS } from "@/lib/constants";
 import { TabsList, Tabs, TabsTrigger, TabsContent } from "./ui/tabs";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Component, School, UserCheck2, Users2 } from "lucide-react";
+import { Component, School, School2, UserCheck2, Users2 } from "lucide-react";
 
 export default function PostTypeTab() {
   const searchParams = useSearchParams();
@@ -11,7 +11,7 @@ export default function PostTypeTab() {
 
   return (
     <Tabs
-      defaultValue={searchParams.get("tab") ?? POST_TYPE_TABS[3].id}
+      defaultValue={searchParams.get("tab") ?? POST_TYPE_TABS[4].id}
       onValueChange={(value) =>
         router.push(value !== "following" ? `/?tab=${value}` : "/")
       }
@@ -25,6 +25,8 @@ export default function PostTypeTab() {
                 switch (tab.id) {
                   case "all":
                     return <School size="1.25rem" />;
+                  case "campus":
+                    return <School2 size="1.25rem" />;
                   case "program":
                     return <Users2 size="1.25rem" />;
                   case "college":

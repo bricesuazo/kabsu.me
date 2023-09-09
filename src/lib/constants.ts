@@ -72,12 +72,16 @@ export const SEED_DATA = CAMPUSES.map((campus) => {
 });
 
 export const POST_TYPE_TABS: {
-  id: "all" | "program" | "college" | "following";
+  id: "all" | "campus" | "program" | "college" | "following";
   name: string;
 }[] = [
   {
     id: "all",
     name: "CvSU",
+  },
+  {
+    id: "campus",
+    name: "My Campus",
   },
   {
     id: "college",
