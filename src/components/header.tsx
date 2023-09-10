@@ -19,8 +19,18 @@ import {
   MenubarTrigger,
 } from "./ui/menubar";
 import { useTheme } from "next-themes";
-import { Bell, Check, LogOut, Moon, Sun } from "lucide-react";
+import { Bell, Check, LogOut, Menu, Moon, Sun } from "lucide-react";
 import { Icons } from "./icons";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { ScrollArea } from "./ui/scroll-area";
 
 export default function Header() {
   // { userId }: { userId: string | null }
@@ -31,6 +41,21 @@ export default function Header() {
   const [open, setOpen] = useState("");
   return (
     <header className="flex items-center justify-between py-4">
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <Menu size="1rem" className="" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left">
+          <SheetHeader>
+            <SheetTitle>Test</SheetTitle>
+            <SheetDescription>
+              I still don`&apos;t know what to put here :)
+            </SheetDescription>
+          </SheetHeader>
+        </SheetContent>
+      </Sheet>
       <Button variant="link" size="icon" asChild className="px-0">
         <Link href="/">
           <div className="w-max">
@@ -46,14 +71,31 @@ export default function Header() {
       </Button>
 
       <div className="flex items-center gap-x-2">
-        <Button
-          size="icon"
-          variant="ghost"
-          className="h-9 w-9 rounded-full"
-          disabled
-        >
-          <Bell size="1rem" className="" />
-        </Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-9 w-9 rounded-full"
+            >
+              <Bell size="1rem" className="" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="">
+            <ScrollArea className="h-80 ">
+              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+                <div key={i} className="flex items-center gap-x-2 p-2">
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <div className="flex flex-col gap-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-3 w-16" />
+                  </div>
+                </div>
+              ))}
+            </ScrollArea>
+          </PopoverContent>
+        </Popover>
+
         {!isLoaded ? (
           <Skeleton className="m-1 h-8 w-8 rounded-full" />
         ) : (
@@ -86,7 +128,7 @@ export default function Header() {
                       {user?.username ? `@${user?.username}` : "My profile"}
                     </Link>
                   </MenubarItem>
-                  <MenubarItem asChild onClick={() => setOpen("")} disabled>
+                  <MenubarItem asChild onClick={() => setOpen("")}>
                     <Link href="/account">Account Settings</Link>
                   </MenubarItem>
 

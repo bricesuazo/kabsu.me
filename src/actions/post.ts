@@ -107,10 +107,10 @@ export async function getPosts({
                   usersInColleges.map((f) => f.id),
                 )
               : undefined,
+            eq(post.user_id, userId),
+            eq(post.type, "college"),
+            eq(post.type, "program"),
           ),
-          eq(post.user_id, userId),
-          eq(post.type, "college"),
-          eq(post.type, "program"),
         ),
       limit: 10,
       offset: (page - 1) * 10,
@@ -215,19 +215,18 @@ export async function getPosts({
 
     posts = await db.query.posts.findMany({
       where: (post, { or, and, eq, isNull, inArray }) =>
-        or(
-          and(
-            isNull(post.deleted_at),
-            usersInPrograms.length > 0
-              ? inArray(
-                  post.user_id,
-                  usersInPrograms.map((f) => f.id),
-                )
-              : undefined,
-          ),
+        and(
+          isNull(post.deleted_at),
+          usersInPrograms.length > 0
+            ? inArray(
+                post.user_id,
+                usersInPrograms.map((f) => f.id),
+              )
+            : undefined,
           eq(post.type, "program"),
           eq(post.user_id, userId),
         ),
+
       orderBy: (post, { desc }) => desc(post.created_at),
       limit: 10,
       offset: (page - 1) * 10,
