@@ -22,13 +22,13 @@ import { useTheme } from "next-themes";
 import { Bell, Check, LogOut, Moon, Sun } from "lucide-react";
 import { Icons } from "./icons";
 
-export default function Header({ userId }: { userId: string | null }) {
+export default function Header() {
+  // { userId }: { userId: string | null }
   const { isLoaded, user, isSignedIn } = useUser();
   const { setTheme } = useTheme();
   const { signOut } = useClerk();
   const [loadingSignout, setLoadingSignout] = useState(false);
   const [open, setOpen] = useState("");
-
   return (
     <header className="flex items-center justify-between py-4">
       <Button variant="link" size="icon" asChild className="px-0">
@@ -77,12 +77,18 @@ export default function Header({ userId }: { userId: string | null }) {
                   align="end"
                   onInteractOutside={() => setOpen("")}
                 >
-                  <MenubarItem asChild className="cursor-pointer">
+                  <MenubarItem
+                    asChild
+                    className="cursor-pointer"
+                    onClick={() => setOpen("")}
+                  >
                     <Link href={`/${user?.username}`}>
                       {user?.username ? `@${user?.username}` : "My profile"}
                     </Link>
                   </MenubarItem>
-                  <MenubarItem disabled>Account Settings</MenubarItem>
+                  <MenubarItem asChild onClick={() => setOpen("")} disabled>
+                    <Link href="/account">Account Settings</Link>
+                  </MenubarItem>
 
                   <MenubarSeparator />
 

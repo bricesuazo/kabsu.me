@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { ACCOUNT_TYPE, followees, followers, users } from "@/db/schema";
+import { BLOCKED_USERNAMES } from "@/lib/constants";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -123,6 +124,8 @@ export async function getProgramForAuth() {
 }
 
 export async function isUsernameExists({ username }: { username: string }) {
+  if (BLOCKED_USERNAMES.includes(username)) return true;
+
   const users = await clerkClient.users.getUserList({
     username: [username],
   });

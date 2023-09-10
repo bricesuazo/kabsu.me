@@ -29,7 +29,7 @@ export default function Home({
     <main className="container">
       {userId ? (
         <>
-          <Header userId={userId} />
+          <Header />
           <div className="space-y-8">
             <PostForm />
 
