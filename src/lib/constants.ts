@@ -78,7 +78,7 @@ export const POST_TYPE_TABS: {
 }[] = [
   {
     id: "all",
-    name: "CvSU",
+    name: "All campus",
   },
   {
     id: "campus",
