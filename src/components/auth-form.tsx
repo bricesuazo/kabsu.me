@@ -70,8 +70,6 @@ export default function AuthForm() {
   useEffect(() => {
     if (!signUp) return;
 
-    if (signUp.status !== "missing_requirements") return;
-
     if (!isLoadedSignUp) return;
 
     form1.setValue(

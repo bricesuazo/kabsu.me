@@ -173,7 +173,11 @@ export default function Post({
             )}
           </div>
 
-          <p>{post.content}</p>
+          <p>
+            {post.content.length > 512
+              ? post.content.slice(0, 512) + "..."
+              : post.content}
+          </p>
         </div>
       </TooltipProvider>
     </>

@@ -310,6 +310,9 @@ export async function getPosts({
 }
 
 export async function createPost({ content }: CreatePostSchema) {
+  if (content.length > 512)
+    throw new Error("Post is too long. Please keep it under 512 characters.");
+
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 

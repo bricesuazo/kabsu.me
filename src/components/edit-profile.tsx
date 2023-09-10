@@ -27,6 +27,8 @@ import { useEffect, useState } from "react";
 import { User as UserFromClerk } from "@clerk/nextjs/server";
 import { Input } from "./ui/input";
 import { toast } from "./ui/use-toast";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function EditProfile({
   userFromDB,
@@ -35,12 +37,27 @@ export default function EditProfile({
   userFromDB: UserFromDB;
   userFromClerk: UserFromClerk;
 }) {
-  const form = useForm<{
-    bio: string;
-    firstName: string;
-    lastName: string;
-    username: string;
-  }>({
+  const formSchema = z.object({
+    bio: z.string().max(256, "Bio must be at most 256 characters long."),
+    firstName: z
+      .string()
+      // .nonempty({ message: "First name is required." })
+      .max(64, { message: "First name must be at most 64 characters long." })
+      .optional(),
+    lastName: z
+      .string()
+      // .nonempty({ message: "First name is required." })
+      .max(64, { message: "Last name must be at most 64 characters long." })
+      .optional(),
+    username: z
+      .string()
+      // .nonempty({ message: "Username is required." })
+      .max(64, { message: "Username must be at most 64 characters long." })
+      .optional(),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       bio: userFromDB.bio ?? "",
       firstName: userFromClerk.firstName ?? "",
@@ -53,6 +70,7 @@ export default function EditProfile({
 
   useEffect(() => {
     if (open) {
+      form.reset();
       form.setValue("bio", userFromDB.bio ?? "");
       form.setValue("firstName", userFromClerk.firstName ?? "");
       form.setValue("lastName", userFromClerk.lastName ?? "");

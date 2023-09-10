@@ -45,6 +45,8 @@ export async function updateBio({
   user_id: string;
   bio: string;
 }) {
+  if (bio.length > 256) throw new Error("Bio must be less than 256 characters");
+
   const { userId } = auth();
 
   if (!userId || userId !== user_id) throw new Error("User not found");
