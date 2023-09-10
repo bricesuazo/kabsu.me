@@ -35,12 +35,8 @@ export default async function FollowersPage({
     where: (follower, { eq }) => eq(follower.followee_id, user.id),
   });
 
-  const isFollower = await db.query.followees.findFirst({
-    where: (followee, { eq, and, not }) =>
-      and(
-        eq(followee.followee_id, user.id),
-        not(eq(followee.follower_id, userId)),
-      ),
+  const myFollowees = await db.query.followees.findMany({
+    where: (followee, { eq }) => eq(followee.followee_id, userId),
   });
 
   const followersUsers =
@@ -61,7 +57,11 @@ export default async function FollowersPage({
             <UserFollows
               key={follower.id}
               user={follower}
-              isFollower={!!isFollower}
+              isFollower={
+                myFollowees.filter(
+                  (followee) => followee.follower_id === follower.id,
+                ).length !== 0
+              }
             />
           ))
         )}

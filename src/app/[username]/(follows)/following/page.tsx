@@ -20,6 +20,9 @@ export default async function FollowingPage({
   params: { username: string };
 }) {
   const { userId } = auth();
+
+  if (!userId) notFound();
+
   const users = await clerkClient.users.getUserList({
     username: [username],
   });
@@ -39,6 +42,11 @@ export default async function FollowingPage({
         })
       : [];
 
+  // TODO: This is a hacky way to get the followers of the user
+  const myFollowers = await db.query.followers.findMany({
+    where: (follower, { eq }) => eq(follower.follower_id, userId),
+  });
+
   return (
     <div>
       <h1>Following</h1>
@@ -46,15 +54,19 @@ export default async function FollowingPage({
         {followeesUsers.length === 0 ? (
           <p>No following yet.</p>
         ) : (
-          followeesUsers.map((followee) => (
-            <UserFollows
-              key={followee.id}
-              user={followee}
-              isFollower={
-                !followees.find((followee) => followee.follower_id === userId)
-              }
-            />
-          ))
+          followeesUsers.map((followee) => {
+            return (
+              <UserFollows
+                key={followee.id}
+                user={followee}
+                isFollower={
+                  myFollowers.filter(
+                    (myFollower) => myFollower.followee_id === followee.id,
+                  ).length !== 0
+                }
+              />
+            );
+          })
         )}
       </div>
     </div>

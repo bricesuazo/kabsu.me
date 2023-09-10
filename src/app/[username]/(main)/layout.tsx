@@ -120,7 +120,11 @@ export default async function ProfileLayout({
               {userFromClerk.firstName} {userFromClerk.lastName}
             </h4>
 
-            <p>{userFromDB.bio}</p>
+            <p>
+              {userFromDB.bio && userFromDB.bio.length > 256
+                ? userFromDB.bio.slice(0, 256) + "..."
+                : userFromDB.bio}
+            </p>
           </div>
           <div className="">
             <Image
@@ -167,10 +171,7 @@ export default async function ProfileLayout({
           </div>
         </div>
 
-        <Tabs
-          defaultValue="posts"
-          // onChange={(values) => console.log(values)}
-        >
+        <Tabs defaultValue="posts">
           <TabsList className="w-full">
             <TabsTrigger value="posts" className="w-full">
               Posts
