@@ -36,60 +36,20 @@ export async function getPosts({
 
   if (type === "all") {
     posts = await db.query.posts.findMany({
-      where: (post, { isNull }) => isNull(post.deleted_at),
-
-      orderBy: (post, { desc }) => desc(post.created_at),
-      limit: 10,
-      offset: (page - 1) * 10,
-
-      with: {
-        user: {
-          with: {
-            program: {
-              with: {
-                college: {
-                  with: {
-                    campus: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
-  } else if (type === "program") {
-    const user = await db.query.users.findFirst({
-      where: (user, { eq }) => eq(user.id, userId),
-      orderBy: (post, { desc }) => desc(post.created_at),
-      with: {
-        program: true,
-      },
-    });
-
-    if (!user) throw new Error("User not found");
-
-    const usersInPrograms: User[] = await db.query.users.findMany({
-      where: (userInDB, { eq }) => eq(userInDB.program_id, user.program_id),
-    });
-
-    posts = await db.query.posts.findMany({
-      where: (post, { or, and, eq, isNull, inArray }) =>
+      where: (post, { isNull, or, eq }) =>
         or(
-          and(
-            isNull(post.deleted_at),
-            usersInPrograms.length > 0
-              ? inArray(
-                  post.user_id,
-                  usersInPrograms.map((f) => f.id),
-                )
-              : undefined,
-          ),
-          eq(post.user_id, userId),
+          isNull(post.deleted_at),
+          eq(post.type, "following"),
+          eq(post.type, "program"),
+          eq(post.type, "college"),
+          eq(post.type, "campus"),
+          eq(post.type, "all"),
         ),
+
       orderBy: (post, { desc }) => desc(post.created_at),
       limit: 10,
       offset: (page - 1) * 10,
+
       with: {
         user: {
           with: {
@@ -149,6 +109,8 @@ export async function getPosts({
               : undefined,
           ),
           eq(post.user_id, userId),
+          eq(post.type, "college"),
+          eq(post.type, "program"),
         ),
       limit: 10,
       offset: (page - 1) * 10,
@@ -236,6 +198,55 @@ export async function getPosts({
     //       },
     //     },
     //   });
+  } else if (type === "program") {
+    const user = await db.query.users.findFirst({
+      where: (user, { eq }) => eq(user.id, userId),
+      orderBy: (post, { desc }) => desc(post.created_at),
+      with: {
+        program: true,
+      },
+    });
+
+    if (!user) throw new Error("User not found");
+
+    const usersInPrograms: User[] = await db.query.users.findMany({
+      where: (userInDB, { eq }) => eq(userInDB.program_id, user.program_id),
+    });
+
+    posts = await db.query.posts.findMany({
+      where: (post, { or, and, eq, isNull, inArray }) =>
+        or(
+          and(
+            isNull(post.deleted_at),
+            usersInPrograms.length > 0
+              ? inArray(
+                  post.user_id,
+                  usersInPrograms.map((f) => f.id),
+                )
+              : undefined,
+          ),
+          eq(post.type, "program"),
+          eq(post.user_id, userId),
+        ),
+      orderBy: (post, { desc }) => desc(post.created_at),
+      limit: 10,
+      offset: (page - 1) * 10,
+      with: {
+        user: {
+          with: {
+            program: {
+              with: {
+                college: {
+                  with: {
+                    campus: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
   } else if (type === "following") {
     const user = await db.query.users.findFirst({
       where: (user, { eq }) => eq(user.id, userId),
@@ -271,6 +282,7 @@ export async function getPosts({
               : undefined,
             eq(post.user_id, userId),
           ),
+          eq(post.type, "following"),
         ),
 
       limit: 10,
