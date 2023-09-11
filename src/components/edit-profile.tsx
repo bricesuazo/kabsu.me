@@ -81,7 +81,7 @@ export default function EditProfile({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="default">
+        <Button size="sm">
           <PenSquare size="1rem" className="mr-2" />
           Edit profile
         </Button>

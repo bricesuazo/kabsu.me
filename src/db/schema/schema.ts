@@ -11,11 +11,11 @@ import { nanoid } from "nanoid";
 
 export const ACCOUNT_TYPE = ["student", "faculty", "alumni"] as const;
 export const POST_TYPE = [
-  "all",
-  "campus",
+  "following",
   "program",
   "college",
-  "following",
+  "campus",
+  "all",
 ] as const;
 
 const id = varchar("id", { length: 256 })

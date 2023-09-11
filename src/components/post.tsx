@@ -94,7 +94,7 @@ export default function Post({
                       }
                     })()} */}
                     <Tooltip delayDuration={250}>
-                      <TooltipTrigger>
+                      <TooltipTrigger className="xs:block hidden">
                         <Badge>
                           {post.user.program.college.campus.slug.toUpperCase()}
                         </Badge>

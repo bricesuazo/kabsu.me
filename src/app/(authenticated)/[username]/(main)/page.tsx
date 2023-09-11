@@ -59,8 +59,8 @@ export default async function UserPage({
   return (
     <div className="space-y-4">
       <div className="space-y-4">
-        <div className="flex gap-x-8">
-          <div className="flex-1 ">
+        <div className="xs:flex-row flex flex-col-reverse gap-x-8">
+          <div className="flex-1">
             <div className="flex items-center gap-x-2">
               <Tooltip delayDuration={250}>
                 {(() => {
@@ -118,9 +118,11 @@ export default async function UserPage({
               </Tooltip>
             </div>
 
-            <h2 className="text-4xl font-semibold">@{user.username}</h2>
+            <h2 className="xs:text-4xl text-2xl font-semibold">
+              @{user.username}
+            </h2>
 
-            <h4 className="text-xl">
+            <h4 className="text-lg">
               {user.firstName} {user.lastName}
             </h4>
 
@@ -133,7 +135,7 @@ export default async function UserPage({
             )}
           </div>
 
-          <div className="">
+          <div className="min-w-max">
             <Image
               src={user.imageUrl}
               alt="Image"

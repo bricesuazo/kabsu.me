@@ -243,8 +243,9 @@ export default function AuthForm() {
               await signIn.authenticateWithRedirect({
                 strategy: "oauth_google",
                 redirectUrl: "/sso-callback",
-                redirectUrlComplete:
-                  "/" + searchParams.get("callback_url") ?? "/",
+                redirectUrlComplete: searchParams.get("callback_url")
+                  ? `/${searchParams.get("callback_url")}`
+                  : "/",
               });
 
               setLoading(false);

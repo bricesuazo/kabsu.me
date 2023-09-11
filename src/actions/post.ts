@@ -36,15 +36,8 @@ export async function getPosts({
 
   if (type === "all") {
     posts = await db.query.posts.findMany({
-      where: (post, { isNull, or, eq }) =>
-        or(
-          isNull(post.deleted_at),
-          eq(post.type, "following"),
-          eq(post.type, "program"),
-          eq(post.type, "college"),
-          eq(post.type, "campus"),
-          eq(post.type, "all"),
-        ),
+      where: (post, { isNull, and, eq }) =>
+        and(isNull(post.deleted_at), eq(post.type, "all")),
 
       orderBy: (post, { desc }) => desc(post.created_at),
       limit: 10,
@@ -97,21 +90,19 @@ export async function getPosts({
         : [];
 
     posts = await db.query.posts.findMany({
-      where: (post, { or, and, eq, isNull, inArray }) =>
-        or(
-          and(
-            isNull(post.deleted_at),
-            usersInPrograms.length > 0
-              ? inArray(
-                  post.user_id,
-                  usersInColleges.map((f) => f.id),
-                )
-              : undefined,
-            eq(post.user_id, userId),
-            eq(post.type, "college"),
-            eq(post.type, "program"),
-          ),
+      where: (post, { and, eq, isNull, inArray }) =>
+        and(
+          isNull(post.deleted_at),
+          usersInPrograms.length > 0
+            ? inArray(
+                post.user_id,
+                usersInColleges.map((f) => f.id),
+              )
+            : undefined,
+          eq(post.user_id, userId),
+          eq(post.type, "college"),
         ),
+
       limit: 10,
       offset: (page - 1) * 10,
       orderBy: (post, { desc }) => desc(post.created_at),
@@ -320,14 +311,14 @@ export async function getPosts({
   return returnPosts;
 }
 
-export async function createPost({ content }: CreatePostSchema) {
+export async function createPost({ content, type }: CreatePostSchema) {
   if (content.length > 512)
     throw new Error("Post is too long. Please keep it under 512 characters.");
 
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
-  await db.insert(posts).values({ content, user_id: userId });
+  await db.insert(posts).values({ content, user_id: userId, type });
 
   revalidatePath("/");
 }
