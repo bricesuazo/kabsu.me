@@ -44,7 +44,7 @@ export default async function UserPage({
   if (!user) notFound();
 
   const userFromDB = await db.query.users.findFirst({
-    where: (user, { eq }) => eq(user.id, user.id),
+    where: (userDB, { eq }) => eq(userDB.id, user.id),
 
     with: {
       program: { with: { college: { with: { campus: true } } } },
@@ -152,20 +152,24 @@ export default async function UserPage({
               {user.firstName} {user.lastName}
             </h4>
 
-            <p>
-              {userFromDB.bio && userFromDB.bio.length > 256
-                ? userFromDB.bio.slice(0, 256) + "..."
-                : userFromDB.bio}
-            </p>
+            {userFromDB.bio && (
+              <p>
+                {userFromDB.bio.length > 256
+                  ? userFromDB.bio.slice(0, 256) + "..."
+                  : userFromDB.bio}
+              </p>
+            )}
           </div>
 
-          <Image
-            src={user.imageUrl}
-            alt="Image"
-            width={100}
-            height={100}
-            className="rounded-full"
-          />
+          <div className="">
+            <Image
+              src={user.imageUrl}
+              alt="Image"
+              width={100}
+              height={100}
+              className="rounded-full"
+            />
+          </div>
         </div>
 
         <div className="space-y-2">

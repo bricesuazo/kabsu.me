@@ -25,8 +25,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { getProgramForAuth, isUsernameExists } from "@/actions/user";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircle } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 export default function AuthForm() {
+  const searchParams = useSearchParams();
   const { data } = useQuery({
     queryKey: ["program-auth"],
     queryFn: async () => getProgramForAuth(),
@@ -241,7 +243,8 @@ export default function AuthForm() {
               await signIn.authenticateWithRedirect({
                 strategy: "oauth_google",
                 redirectUrl: "/sso-callback",
-                redirectUrlComplete: "/",
+                redirectUrlComplete:
+                  "/" + searchParams.get("callback_url") ?? "/",
               });
 
               setLoading(false);
