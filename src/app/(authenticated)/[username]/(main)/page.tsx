@@ -290,7 +290,7 @@ async function PostsWrapper({ user }: { user: User }) {
   });
 
   return (
-    <>
+    <div>
       {posts.length === 0 ? (
         <div className="text-center">
           <div className="text-2xl font-semibold">No posts yet</div>
@@ -316,6 +316,6 @@ async function PostsWrapper({ user }: { user: User }) {
           <LoadMoreUserPost user_id={user.id} />
         </>
       )}
-    </>
+    </div>
   );
 }

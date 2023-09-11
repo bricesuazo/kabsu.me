@@ -16,6 +16,7 @@ import { auth } from "@clerk/nextjs";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { clerkClient } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 export async function getPosts({
   type,
@@ -320,6 +321,7 @@ export async function createPost({ content, type }: CreatePostSchema) {
 
   await db.insert(posts).values({ content, user_id: userId, type });
 
+  redirect(`/?tab=${type}`);
   revalidatePath("/");
 }
 export async function deletePost({ post_id }: { post_id: string }) {

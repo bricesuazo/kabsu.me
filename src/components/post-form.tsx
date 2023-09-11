@@ -25,12 +25,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { POST_TYPE } from "@/db/schema";
 import { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import Image from "next/image";
 import { Skeleton } from "./ui/skeleton";
 import { useUser } from "@clerk/nextjs";
+import { POST_TYPE_TABS } from "@/lib/constants";
+import Link from "next/link";
 
 export default function PostForm() {
   const { user } = useUser();
@@ -75,7 +76,7 @@ export default function PostForm() {
       {!user?.imageUrl ? (
         <Skeleton className="h-10 w-10 rounded-full" />
       ) : (
-        <div className="min-w-max">
+        <Link href={`/${user.username}`} className="min-w-max">
           <Image
             src={user.imageUrl}
             alt="Profile picture"
@@ -83,7 +84,7 @@ export default function PostForm() {
             height={40}
             className="rounded-full"
           />
-        </div>
+        </Link>
       )}
       <Form {...form}>
         <form
@@ -133,15 +134,15 @@ export default function PostForm() {
                         onValueChange={field.onChange}
                         value={field.value}
                       >
-                        <SelectTrigger className="w-32">
+                        <SelectTrigger className="w-40">
                           <SelectValue placeholder="Post type" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
                             <SelectLabel>Privacy</SelectLabel>
-                            {POST_TYPE.map((type) => (
-                              <SelectItem key={type} value={type}>
-                                {type.charAt(0).toUpperCase() + type.slice(1)}
+                            {POST_TYPE_TABS.map((type) => (
+                              <SelectItem key={type.id} value={type.id}>
+                                {type.name}
                               </SelectItem>
                             ))}
                           </SelectGroup>
