@@ -17,6 +17,9 @@ import FollowButton from "@/components/follow-button";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { User } from "@clerk/nextjs/server";
+import { Suspense } from "react";
+import PostSkeleton from "@/components/post-skeleton";
 
 export function generateMetadata({
   params,
@@ -52,37 +55,6 @@ export default async function UserPage({
   });
 
   if (!userFromDB) notFound();
-
-  const posts = await db.query.posts.findMany({
-    where: (post, { and, eq, isNull }) =>
-      and(isNull(post.deleted_at), eq(post.user_id, user.id)),
-    orderBy: (post, { desc }) => desc(post.created_at),
-    with: {
-      user: {
-        with: {
-          program: {
-            with: {
-              college: {
-                with: { campus: true },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
-
-  const usersFromPosts = await clerkClient.users.getUserList({
-    userId: posts.map((post) => post.user.id),
-  });
-
-  const followers = await db.query.followers.findMany({
-    where: (follower, { eq }) => eq(follower.followee_id, user.id),
-  });
-
-  const followees = await db.query.followees.findMany({
-    where: (followee, { eq }) => eq(followee.followee_id, user.id),
-  });
 
   return (
     <div className="space-y-4">
@@ -177,29 +149,33 @@ export default async function UserPage({
             {userId === user.id ? (
               <EditProfile userFromDB={userFromDB} userFromClerk={user} />
             ) : (
-              <FollowButton
-                isFollower={
-                  !!followers.find(
-                    (follower) => follower.follower_id === userId,
-                  )
-                }
-                user_id={user.id}
-              />
+              <Suspense fallback={<Button disabled>Follow</Button>}>
+                <FollowUserButton user={user} />
+              </Suspense>
             )}
           </div>
 
           <div className="flex items-center gap-x-4">
-            <Button variant="link" className="p-0" asChild>
-              <Link href={`/${user.username}/followers`}>
-                {followers.length} follower{followers.length > 1 && "s"}
-              </Link>
-            </Button>
+            <Suspense
+              fallback={
+                <Button variant="link" className="p-0">
+                  0 followers
+                </Button>
+              }
+            >
+              <FollowsButton type="followers" user={user} />
+            </Suspense>
             <p className="pointer-events-none select-none">·</p>
-            <Button variant="link" className="p-0" asChild>
-              <Link href={`/${user.username}/following`}>
-                {followees.length} following
-              </Link>
-            </Button>
+
+            <Suspense
+              fallback={
+                <Button variant="link" className="p-0">
+                  0 following
+                </Button>
+              }
+            >
+              <FollowsButton type="following" user={user} />
+            </Suspense>
           </div>
         </div>
 
@@ -217,36 +193,127 @@ export default async function UserPage({
           </TabsList>
         </Tabs>
       </div>
-
-      <div className="">
-        {posts.length === 0 ? (
-          <div>
-            <div className="text-center">
-              <div className="text-2xl font-semibold">No posts yet</div>
-              <div className="mt-2 text-gray-500">
-                When @{user.username} posts something, it will show up here.
-              </div>
-            </div>
-          </div>
-        ) : (
+      <Suspense
+        fallback={
           <>
-            {posts.map((post) => (
-              <Post
-                key={post.id}
-                post={{
-                  ...post,
-                  user: {
-                    ...usersFromPosts.find((user) => user.id === post.user.id)!,
-                    ...post.user,
-                  },
-                }}
-                isMyPost={userId === post.user.id}
-              />
+            {[0, 1, 2, 3, 4, 5, 6].map((_, i) => (
+              <PostSkeleton key={i} />
             ))}
-            <LoadMoreUserPost user_id={user.id} />
           </>
-        )}
-      </div>
+        }
+      >
+        <PostsWrapper user={user} />
+      </Suspense>
     </div>
+  );
+}
+
+async function FollowUserButton({ user }: { user: User }) {
+  const { userId } = auth();
+  const followers = await db.query.followers.findMany({
+    where: (follower, { eq }) => eq(follower.followee_id, user.id),
+  });
+
+  return (
+    <FollowButton
+      isFollower={
+        !!followers.find((follower) => follower.follower_id === userId)
+      }
+      user_id={user.id}
+    />
+  );
+}
+
+async function FollowsButton({
+  type,
+  user,
+}: {
+  type: "followers" | "following";
+  user: User;
+}) {
+  if (type === "followers") {
+    const followers = await db.query.followers.findMany({
+      where: (follower, { eq }) => eq(follower.followee_id, user.id),
+    });
+
+    return (
+      <Button variant="link" className="p-0" asChild>
+        <Link href={`/${user.username}/followers`}>
+          {followers.length} follower{followers.length > 1 && "s"}
+        </Link>
+      </Button>
+    );
+  }
+
+  if (type === "following") {
+    const followees = await db.query.followees.findMany({
+      where: (followee, { eq }) => eq(followee.followee_id, user.id),
+    });
+
+    return (
+      <Button variant="link" className="p-0" asChild>
+        <Link href={`/${user.username}/following`}>
+          {followees.length} following
+        </Link>
+      </Button>
+    );
+  }
+
+  return null;
+}
+
+async function PostsWrapper({ user }: { user: User }) {
+  const { userId } = auth();
+  const posts = await db.query.posts.findMany({
+    where: (post, { and, eq, isNull }) =>
+      and(isNull(post.deleted_at), eq(post.user_id, user.id)),
+    orderBy: (post, { desc }) => desc(post.created_at),
+    with: {
+      user: {
+        with: {
+          program: {
+            with: {
+              college: {
+                with: { campus: true },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const usersFromPosts = await clerkClient.users.getUserList({
+    userId: posts.map((post) => post.user.id),
+  });
+
+  return (
+    <>
+      {posts.length === 0 ? (
+        <div className="text-center">
+          <div className="text-2xl font-semibold">No posts yet</div>
+          <div className="mt-2 text-gray-500">
+            When @{user.username} posts something, it will show up here.
+          </div>
+        </div>
+      ) : (
+        <>
+          {posts.map((post) => (
+            <Post
+              key={post.id}
+              post={{
+                ...post,
+                user: {
+                  ...usersFromPosts.find((user) => user.id === post.user.id)!,
+                  ...post.user,
+                },
+              }}
+              isMyPost={userId === post.user.id}
+            />
+          ))}
+          <LoadMoreUserPost user_id={user.id} />
+        </>
+      )}
+    </>
   );
 }

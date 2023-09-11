@@ -81,8 +81,8 @@ export default function Header() {
               <Bell size="1rem" className="" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="" align="end">
-            <ScrollArea className="h-80 ">
+          <PopoverContent className="p-2" align="end">
+            <ScrollArea className="h-80">
               {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
                 <div key={i} className="flex items-center gap-x-2 p-2">
                   <Skeleton className="h-8 w-8 rounded-full" />
