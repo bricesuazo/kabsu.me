@@ -60,6 +60,75 @@ export async function getPosts({
         },
       },
     });
+  } else if (type === "campus") {
+    const user = await db.query.users.findFirst({
+      where: (user, { eq }) => eq(user.id, userId),
+      with: {
+        program: {
+          with: {
+            college: {
+              with: {
+                campus: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user) throw new Error("User not found");
+
+    const campuses = await db.query.colleges.findMany({
+      where: (college, { eq }) =>
+        eq(college.campus_id, user.program.college.campus_id),
+    });
+
+    const usersInColleges: User[] =
+      campuses.length > 0
+        ? await db.query.users.findMany({
+            where: (userInDB, { inArray }) =>
+              inArray(
+                userInDB.program_id,
+                campuses.map((c) => c.id),
+              ),
+          })
+        : [];
+
+    posts = await db.query.posts.findMany({
+      where: (post, { or, and, eq, isNull, inArray }) =>
+        and(
+          or(
+            usersInColleges.length > 0
+              ? inArray(
+                  post.user_id,
+                  usersInColleges.map((f) => f.id),
+                )
+              : undefined,
+            eq(post.user_id, userId),
+          ),
+          isNull(post.deleted_at),
+          eq(post.type, "campus"),
+        ),
+
+      limit: 10,
+      offset: (page - 1) * 10,
+      orderBy: (post, { desc }) => desc(post.created_at),
+      with: {
+        user: {
+          with: {
+            program: {
+              with: {
+                college: {
+                  with: {
+                    campus: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
   } else if (type === "college") {
     const user = await db.query.users.findFirst({
       where: (user, { eq }) => eq(user.id, userId),

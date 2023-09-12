@@ -31,9 +31,11 @@ import {
 } from "./ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   // { userId }: { userId: string | null }
+  const router = useRouter();
   const { isLoaded, user, isSignedIn } = useUser();
   const { setTheme } = useTheme();
   const { signOut } = useClerk();
@@ -167,6 +169,7 @@ export default function Header() {
                     onClick={async () => {
                       setLoadingSignout(true);
                       await signOut();
+                      router.push("/");
                       setLoadingSignout(false);
                       setOpen("");
                     }}
