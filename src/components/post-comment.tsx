@@ -37,6 +37,10 @@ export default function PostComment({
   userId: string;
   post: Post & { likes: Like[]; comments: Comment[] };
 }) {
+  const [likes, setLikes] = useState<Like[]>(post.likes);
+  // TODO: Fix optimistic updates
+  // const [optimisticLike, setOptimisticLike] = useOptimistic<Like[]>(post.likes);
+
   const [isFocused, setIsFocused] = useState(false);
   const form = useForm<{ comment: string }>({
     resolver: zodResolver(
@@ -51,7 +55,6 @@ export default function PostComment({
     },
   });
 
-  const [optimisticLike, setOptimisticLike] = useOptimistic<Like[]>(post.likes);
   const { user } = useUser();
 
   useEffect(() => {
@@ -81,12 +84,12 @@ export default function PostComment({
         <div className="flex">
           <Toggle
             size="sm"
-            pressed={optimisticLike.some((like) => like.user_id === userId)}
+            pressed={likes.some((like) => like.user_id === userId)}
             onClick={(e) => e.stopPropagation()}
             onPressedChange={async (pressed) => {
               if (pressed) {
-                setOptimisticLike([
-                  ...optimisticLike,
+                setLikes([
+                  ...likes,
                   {
                     id: nanoid(),
                     post_id: post.id,
@@ -97,9 +100,7 @@ export default function PostComment({
 
                 await likePost({ post_id: post.id });
               } else {
-                setOptimisticLike(
-                  optimisticLike.filter((like) => like.user_id !== userId),
-                );
+                setLikes(likes.filter((like) => like.user_id !== userId));
 
                 await unlikePost({ post_id: post.id });
               }
@@ -108,7 +109,7 @@ export default function PostComment({
             <Heart
               className={cn(
                 "h-4 w-4",
-                optimisticLike.some((like) => like.user_id === userId) &&
+                likes.some((like) => like.user_id === userId) &&
                   "fill-primary text-primary",
               )}
             />
@@ -124,7 +125,7 @@ export default function PostComment({
         </div>
 
         <p className="text-sm text-muted-foreground">
-          {optimisticLike.length} likes &mdash; {post.comments.length} comments
+          {likes.length} likes &mdash; {post.comments.length} comments
         </p>
       </div>
 

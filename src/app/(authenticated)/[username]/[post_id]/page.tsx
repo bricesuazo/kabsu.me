@@ -10,25 +10,31 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { db } from "@/db";
+import { Comment } from "@/db/schema";
 import { auth, clerkClient } from "@clerk/nextjs";
 import {
   Album,
   Briefcase,
   GraduationCap,
-  Heart,
-  MessageCircle,
   MoreHorizontal,
+  MoreVertical,
 } from "lucide-react";
 import moment from "moment";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export async function generateMetadata({
   params,
@@ -62,7 +68,9 @@ export default async function PostPage({
     where: (post, { eq }) => eq(post.id, post_id),
     with: {
       likes: true,
-      comments: true,
+      comments: {
+        orderBy: (comment, { desc }) => desc(comment.created_at),
+      },
       user: {
         with: {
           program: {
@@ -85,7 +93,7 @@ export default async function PostPage({
     <>
       {/* <UpdatePost open={openUpdate} setOpen={setOpenUpdate} post={post} /> */}
       {/* <DeletePost open={openDelete} setOpen={setOpenDelete} post_id={post.id} /> */}
-      <div className="space-y-2 p-4">
+      <div className="space-y-2">
         <div className="flex justify-between">
           <Link href={`/${user.username}`} className="flex gap-x-2">
             <div className="w-max">
@@ -194,7 +202,94 @@ export default async function PostPage({
         <p>{post.content}</p>
 
         <PostComment userId={userId} post={post} />
+
+        <div className="">
+          {post.comments.map((comment) => (
+            <Suspense key={comment.id}>
+              <CommentComponent comment={comment} />
+            </Suspense>
+          ))}
+        </div>
       </div>
     </>
+  );
+}
+
+async function CommentComponent({ comment }: { comment: Comment }) {
+  const { userId } = auth();
+  const fullComment = await db.query.comments.findFirst({
+    where: (c, { eq }) => eq(c.id, comment.id),
+    with: {
+      user: true,
+    },
+  });
+
+  if (!fullComment) return null;
+
+  const user = await clerkClient.users.getUser(fullComment.user_id);
+
+  return (
+    <div className="space-y-2 border p-4">
+      <div className="flex justify-between">
+        <div className="flex gap-x-2">
+          <Link href={`/${user.username}`}>
+            <Image src={user.imageUrl} alt="" width={40} height={40} />
+          </Link>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-x-2">
+              <p className="line-clamp-1 group-hover:underline">
+                {user.firstName} {user.lastName}{" "}
+              </p>
+              <p className="pointer-events-none hidden select-none sm:block">
+                ·
+              </p>
+              <div className="hidden sm:block">
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger>
+                    <p className="text-xs">
+                      {moment(fullComment.created_at).fromNow()}
+                    </p>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {moment(fullComment.created_at).format(
+                      "MMMM Do YYYY, h:mm:ss A",
+                    )}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </div>
+            <p className="line-clamp-1 flex-1 break-all text-sm">
+              @{user.username}
+            </p>
+          </div>
+        </div>
+        {fullComment.user_id === userId && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <div className="">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8 text-muted-foreground hover:text-primary"
+                  >
+                    <MoreVertical size="1rem" />
+                  </Button>
+                </div>
+              </DropdownMenuTrigger>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                className="!text-red-500"
+                // onClick={() => setOpenDelete(true)}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
+      <p>{fullComment.content}</p>
+    </div>
   );
 }
