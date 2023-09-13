@@ -145,6 +145,7 @@ export const BLOCKED_USERNAMES = [
 
 export const DEVS_INFO = [
   {
+    index: 0,
     name: "Brice Brine Suazo",
     role: "Full Stack Developer",
     image: "/dev-pics/brice.png",
@@ -157,6 +158,7 @@ export const DEVS_INFO = [
     ],
   },
   {
+    index: 1,
     name: "Aries Dela Pena",
     role: "UI/UX Designer",
     image: "/dev-pics/aries.jpg",
@@ -166,6 +168,7 @@ export const DEVS_INFO = [
     ],
   },
   {
+    index: 2,
     name: "Gabriel Luis Astilla",
     role: "UI/UX Designer",
     image: "/dev-pics/gab.png",
@@ -178,6 +181,7 @@ export const DEVS_INFO = [
     ],
   },
   {
+    index: 3,
     name: "Alexis Ken Alvarez",
     role: "Backend Developer",
     image: "/dev-pics/aki.png",
@@ -190,6 +194,7 @@ export const DEVS_INFO = [
     ],
   },
   {
+    index: 4,
     name: "Aaron Joshua Espinosa",
     role: "Frontend Developer",
     image: "/dev-pics/aj.jpg",
@@ -200,6 +205,7 @@ export const DEVS_INFO = [
     ],
   },
   {
+    index: 5,
     name: "John Bernard Sarroca",
     role: "Backend Developer",
     image: "/dev-pics/bernard.jpg",
@@ -211,6 +217,7 @@ export const DEVS_INFO = [
     ],
   },
   {
+    index: 6,
     name: "Rod Clarence Cotines",
     role: "Frontend Developer",
     image: "/dev-pics/rod.jpeg",
@@ -222,6 +229,7 @@ export const DEVS_INFO = [
     ],
   },
   {
+    index: 7,
     name: "Alex Kal-El Buenviaje",
     role: "Quality Assurance Tester",
     image: "/dev-pics/lex.jpg",

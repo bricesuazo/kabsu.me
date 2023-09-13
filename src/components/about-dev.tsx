@@ -10,7 +10,10 @@ export default function AboutDev() {
       <div className="grid grid-cols-1 gap-x-2 pb-20 sm:grid-cols-2">
         {DEVS_INFO.map((dev) => {
           return (
-            <div className="flex flex-row items-center gap-x-4 rounded-lg p-4">
+            <div
+              key={dev.index}
+              className="flex flex-row items-center gap-x-4 rounded-lg p-4"
+            >
               <Image
                 src={dev.image}
                 alt={dev.name}
