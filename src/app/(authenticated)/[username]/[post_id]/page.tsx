@@ -1,3 +1,4 @@
+import PostComment from "@/components/post-comment";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,7 +9,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Toggle } from "@/components/ui/toggle";
 import {
   Tooltip,
   TooltipContent,
@@ -55,9 +55,14 @@ export default async function PostPage({
   params: { post_id: string };
 }) {
   const { userId } = auth();
+
+  if (!userId) notFound();
+
   const post = await db.query.posts.findFirst({
     where: (post, { eq }) => eq(post.id, post_id),
     with: {
+      likes: true,
+      comments: true,
       user: {
         with: {
           program: {
@@ -80,15 +85,15 @@ export default async function PostPage({
     <>
       {/* <UpdatePost open={openUpdate} setOpen={setOpenUpdate} post={post} /> */}
       {/* <DeletePost open={openDelete} setOpen={setOpenDelete} post_id={post.id} /> */}
-      <div className="space-y-2 border p-4">
+      <div className="space-y-2 p-4">
         <div className="flex justify-between">
           <Link href={`/${user.username}`} className="flex gap-x-2">
             <div className="w-max">
               <Image
                 src={user.imageUrl}
                 alt="Image"
-                width={40}
-                height={40}
+                width={60}
+                height={60}
                 className="rounded-full object-cover"
               />
             </div>
@@ -187,54 +192,9 @@ export default async function PostPage({
         </div>
 
         <p>{post.content}</p>
+
+        <PostComment userId={userId} post={post} />
       </div>
-
-      {/* <div className="space-y-2">
-        <div className="flex">
-          <Toggle
-            size="sm"
-            pressed={optimisticLike.some((like) => like.user_id === userId)}
-            onClick={(e) => e.stopPropagation()}
-            onPressedChange={async (pressed) => {
-              if (pressed) {
-                setOptimisticLike([
-                  ...optimisticLike,
-                  {
-                    id: nanoid(),
-                    post_id: post.id,
-                    user_id: userId,
-                    created_at: new Date(),
-                  },
-                ]);
-
-                await likePost({ post_id: post.id });
-              } else {
-                setOptimisticLike(
-                  optimisticLike.filter((like) => like.user_id !== userId),
-                );
-
-                await unlikePost({ post_id: post.id });
-              }
-            }}
-          >
-            <Heart
-              className={cn(
-                "h-4 w-4",
-                optimisticLike.some((like) => like.user_id === userId) &&
-                  "fill-primary text-primary",
-              )}
-            />
-          </Toggle>
-
-          <Toggle size="sm" pressed={false}>
-            <MessageCircle className="h-4 w-4" />
-          </Toggle>
-        </div>
-
-        <p className="text-sm text-muted-foreground">
-          {optimisticLike.length} likes &mdash; {post.comments.length} comments
-        </p>
-      </div> */}
     </>
   );
 }

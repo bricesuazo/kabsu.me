@@ -49,9 +49,9 @@ export default function Post({
   userId: string;
 }) {
   const router = useRouter();
-  const [optimisticLike, setOptimisticLike] = useOptimistic<Like[]>(post.likes);
   const [openDelete, setOpenDelete] = useState(false);
   // const [openUpdate, setOpenUpdate] = useState(false);
+  const [optimisticLike, setOptimisticLike] = useOptimistic<Like[]>(post.likes);
 
   return (
     <>

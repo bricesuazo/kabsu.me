@@ -7,7 +7,7 @@ export default function AboutDev() {
   return (
     <div>
       <p className="py-4 text-center text-4xl font-bold text-primary">About</p>
-      <div className="grid grid-cols-1 gap-x-2 pb-20 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-x-2 self-center pb-20 sm:grid-cols-2">
         {DEVS_INFO.map((dev) => {
           return (
             <div
@@ -22,8 +22,8 @@ export default function AboutDev() {
                 height="80"
               />
               <div className="flex flex-col items-start text-left">
-                <p className="text-center font-semibold">{dev.name}</p>
-                <p className="text-center text-sm">{dev.role}</p>
+                <p className="font-semibold">{dev.name}</p>
+                <p className="text-sm">{dev.role}</p>
                 <div className="flex gap-x-1 pt-2">
                   {dev.links.map((link, i) => {
                     return (
@@ -33,7 +33,9 @@ export default function AboutDev() {
                         target="_blank"
                         className="hover:text-primary"
                       >
-                        <link.icon className="h-5 w-5" />
+                        <div className="grid place-items-center p-1">
+                          <link.icon size="1rem" />
+                        </div>
                       </Link>
                     );
                   })}

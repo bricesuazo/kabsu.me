@@ -152,7 +152,6 @@ export const DEVS_INFO = [
     links: [
       { icon: Mail, url: "mailto:bricebrine.suazo@cvsu.edu.ph" },
       { icon: Github, url: "https://github.com/bricesuazo/" },
-      { icon: Facebook, url: "https://www.facebook.com/BriceSuazo/" },
       { icon: Instagram, url: "https://www.instagram.com/brice_suazo/" },
       { icon: Twitter, url: "https://twitter.com/brice_suazo" },
     ],
@@ -162,10 +161,7 @@ export const DEVS_INFO = [
     name: "Aries Dela Pena",
     role: "UI/UX Designer",
     image: "/dev-pics/aries.jpg",
-    links: [
-      { icon: Mail, url: "mailto:aries.delapena@cvsu.edu.ph" },
-      { icon: Facebook, url: "https://www.facebook.com/delapena.aries25" },
-    ],
+    links: [{ icon: Mail, url: "mailto:aries.delapena@cvsu.edu.ph" }],
   },
   {
     index: 2,
@@ -176,7 +172,6 @@ export const DEVS_INFO = [
       { icon: Mail, url: "mailto:gabrielluis.astilla@cvsu.edu.ph" },
       { icon: Globe, url: "https://gabastilla.rf.gd/" },
       { icon: Github, url: "https://github.com/GabrielAstilla" },
-      { icon: Facebook, url: "https://www.facebook.com/gabriel.astilla.7" },
       { icon: Instagram, url: "https://www.instagram.com/gabrieeelluis/" },
     ],
   },
@@ -189,7 +184,6 @@ export const DEVS_INFO = [
       { icon: Mail, url: "mailto:alexisken.alvarez@cvsu.edu.ph" },
       { icon: Globe, url: "https://www.akialvarez.com/" },
       { icon: Github, url: "https://github.com/AlexisKenAlvarez" },
-      { icon: Facebook, url: "https://www.facebook.com/alvarez.aki/" },
       { icon: Instagram, url: "https://www.instagram.com/alexiskenalvarez/" },
     ],
   },
@@ -212,7 +206,6 @@ export const DEVS_INFO = [
     links: [
       { icon: Mail, url: "mailto:johnbernard.sarroca@cvsu.edu.ph" },
       { icon: Github, url: "https://github.com/iamnards" },
-      { icon: Facebook, url: "https://www.facebook.com/bernarddddd" },
       { icon: Instagram, url: "https://www.instagram.com/i.am.nards/" },
     ],
   },
@@ -224,7 +217,6 @@ export const DEVS_INFO = [
     links: [
       { icon: Mail, url: "mailto:rodclarence.cotines@cvsu.edu.ph" },
       { icon: Github, url: "https://github.com/Ayenzcc" },
-      { icon: Facebook, url: "https://www.facebook.com/dururuyeye/" },
       { icon: Instagram, url: "https://www.instagram.com/dururuyeye/" },
     ],
   },
@@ -233,9 +225,6 @@ export const DEVS_INFO = [
     name: "Alex Kal-El Buenviaje",
     role: "Quality Assurance Tester",
     image: "/dev-pics/lex.jpg",
-    links: [
-      { icon: Mail, url: "mailto:alexkal-el.buenviaje@cvsu.edu.ph" },
-      { icon: Facebook, url: "https://www.facebook.com/LexBuenviaje" },
-    ],
+    links: [{ icon: Mail, url: "mailto:alexkal-el.buenviaje@cvsu.edu.ph" }],
   },
 ];
