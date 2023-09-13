@@ -186,7 +186,7 @@ export default function Post({
         </p>
 
         <div className="space-y-2">
-          <div className="flex gap-x-1">
+          <div className="flex">
             <Toggle
               size="sm"
               pressed={optimisticLike.some((like) => like.user_id === userId)}

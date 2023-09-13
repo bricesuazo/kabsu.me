@@ -429,8 +429,7 @@ export async function likePost({ post_id }: { post_id: string }) {
   if (!userId) throw new Error("Unauthorized");
 
   const post = await db.query.posts.findFirst({
-    where: (posts, { and, eq }) =>
-      and(eq(posts.id, post_id), eq(posts.user_id, userId)),
+    where: (posts, { eq }) => eq(posts.id, post_id),
   });
 
   if (!post) throw new Error("Post not found");
@@ -443,8 +442,7 @@ export async function unlikePost({ post_id }: { post_id: string }) {
   if (!userId) throw new Error("Unauthorized");
 
   const post = await db.query.posts.findFirst({
-    where: (posts, { and, eq }) =>
-      and(eq(posts.id, post_id), eq(posts.user_id, userId)),
+    where: (posts, { eq }) => eq(posts.id, post_id),
   });
 
   if (!post) throw new Error("Post not found");

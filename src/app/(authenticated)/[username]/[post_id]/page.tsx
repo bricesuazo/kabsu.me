@@ -8,6 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Toggle } from "@/components/ui/toggle";
 import {
   Tooltip,
   TooltipContent,
@@ -15,7 +16,14 @@ import {
 } from "@/components/ui/tooltip";
 import { db } from "@/db";
 import { auth, clerkClient } from "@clerk/nextjs";
-import { Album, Briefcase, GraduationCap, MoreHorizontal } from "lucide-react";
+import {
+  Album,
+  Briefcase,
+  GraduationCap,
+  Heart,
+  MessageCircle,
+  MoreHorizontal,
+} from "lucide-react";
 import moment from "moment";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -180,6 +188,53 @@ export default async function PostPage({
 
         <p>{post.content}</p>
       </div>
+
+      {/* <div className="space-y-2">
+        <div className="flex">
+          <Toggle
+            size="sm"
+            pressed={optimisticLike.some((like) => like.user_id === userId)}
+            onClick={(e) => e.stopPropagation()}
+            onPressedChange={async (pressed) => {
+              if (pressed) {
+                setOptimisticLike([
+                  ...optimisticLike,
+                  {
+                    id: nanoid(),
+                    post_id: post.id,
+                    user_id: userId,
+                    created_at: new Date(),
+                  },
+                ]);
+
+                await likePost({ post_id: post.id });
+              } else {
+                setOptimisticLike(
+                  optimisticLike.filter((like) => like.user_id !== userId),
+                );
+
+                await unlikePost({ post_id: post.id });
+              }
+            }}
+          >
+            <Heart
+              className={cn(
+                "h-4 w-4",
+                optimisticLike.some((like) => like.user_id === userId) &&
+                  "fill-primary text-primary",
+              )}
+            />
+          </Toggle>
+
+          <Toggle size="sm" pressed={false}>
+            <MessageCircle className="h-4 w-4" />
+          </Toggle>
+        </div>
+
+        <p className="text-sm text-muted-foreground">
+          {optimisticLike.length} likes &mdash; {post.comments.length} comments
+        </p>
+      </div> */}
     </>
   );
 }
