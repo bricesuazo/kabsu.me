@@ -75,6 +75,8 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
     fields: [posts.user_id],
     references: [users.id],
   }),
+  likes: many(likes),
+  comments: many(comments),
 }));
 
 export const campusesRelations = relations(campuses, ({ one, many }) => ({}));
