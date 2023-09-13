@@ -188,6 +188,7 @@ export default function Post({
         <div className="space-y-2">
           <div className="flex gap-x-1">
             <Toggle
+              size="sm"
               pressed={optimisticLike.some((like) => like.user_id === userId)}
               onClick={(e) => e.stopPropagation()}
               onPressedChange={async (pressed) => {
@@ -216,14 +217,14 @@ export default function Post({
                 className={cn(
                   "h-4 w-4",
                   optimisticLike.some((like) => like.user_id === userId) &&
-                    "fill-red-600 text-red-500",
+                    "fill-primary text-primary",
                 )}
               />
             </Toggle>
 
-            <Button size="icon" variant="ghost" className="h-8 w-8">
-              <MessageCircle size="1rem" />
-            </Button>
+            <Toggle size="sm" pressed={false}>
+              <MessageCircle className="h-4 w-4" />
+            </Toggle>
           </div>
 
           <p className="text-sm text-muted-foreground">

@@ -32,6 +32,7 @@ import { Skeleton } from "./ui/skeleton";
 import { useUser } from "@clerk/nextjs";
 import { POST_TYPE_TABS } from "@/lib/constants";
 import Link from "next/link";
+import { Trash } from "lucide-react";
 
 export default function PostForm() {
   const { user } = useUser();
@@ -153,17 +154,31 @@ export default function PostForm() {
                   </FormItem>
                 )}
               />
-              <Button
-                type="submit"
-                disabled={
-                  form.formState.isSubmitting || !form.formState.isValid
-                }
-              >
-                {form.formState.isSubmitting && (
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Post
-              </Button>
+
+              <div className="flex gap-x-2">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  type="button"
+                  onClick={() => {
+                    form.reset();
+                    setIsFocused(false);
+                  }}
+                >
+                  <Trash className="h-4 w-4 text-rose-500" />
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={
+                    form.formState.isSubmitting || !form.formState.isValid
+                  }
+                >
+                  {form.formState.isSubmitting && (
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Post
+                </Button>
+              </div>
             </div>
           )}
         </form>
