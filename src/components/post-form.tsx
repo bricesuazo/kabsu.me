@@ -80,15 +80,17 @@ export default function PostForm() {
       {!user?.imageUrl ? (
         <Skeleton className="h-10 w-10 rounded-full" />
       ) : (
-        <Link href={`/${user.username}`} className="min-w-max">
-          <Image
-            src={user.imageUrl}
-            alt="Profile picture"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
-        </Link>
+        <div>
+          <Link href={`/${user.username}`} className="min-w-max">
+            <Image
+              src={user.imageUrl}
+              alt="Profile picture"
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
+          </Link>
+        </div>
       )}
       <Form {...form}>
         <form
