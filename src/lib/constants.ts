@@ -146,7 +146,7 @@ export const BLOCKED_USERNAMES = [
 export const DEVS_INFO = [
   {
     index: 0,
-    name: "Brice Brine Suazo",
+    name: "Brice Suazo",
     role: "Full Stack Developer",
     image: "/dev-pics/brice.png",
     links: [
