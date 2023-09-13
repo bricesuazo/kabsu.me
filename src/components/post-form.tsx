@@ -51,7 +51,10 @@ export default function PostForm() {
     form.reset();
   }
 
-  // disable set focus if esc is pressed
+  useEffect(() => {
+    form.reset();
+  }, [isFocused, form]);
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (!isFocused) return;

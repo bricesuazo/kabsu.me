@@ -13,6 +13,7 @@ import {
   User,
   Like,
   Comment,
+  comments,
 } from "@/db/schema";
 import { CreatePostSchema, UpdatePostSchema } from "@/zod-schema/post";
 import { auth } from "@clerk/nextjs";
@@ -450,4 +451,27 @@ export async function unlikePost({ post_id }: { post_id: string }) {
   await db
     .delete(likes)
     .where(and(eq(likes.user_id, userId), eq(likes.post_id, post_id)));
+}
+
+export async function createComment({
+  post_id,
+  content,
+}: {
+  post_id: string;
+  content: string;
+}) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const post = await db.query.posts.findFirst({
+    where: (posts, { eq }) => eq(posts.id, post_id),
+  });
+
+  if (!post) throw new Error("Post not found");
+
+  await db.insert(comments).values({ user_id: userId, post_id, content });
+
+  revalidatePath("/");
+  revalidatePath("/[username]");
+  revalidatePath("/[username]/[post_id]");
 }
