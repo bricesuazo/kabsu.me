@@ -5,12 +5,21 @@ import { useInView } from "react-intersection-observer";
 import { Icons } from "./icons";
 import Post from "./post";
 import { User } from "@clerk/nextjs/server";
-import { Campus, College, Post as PostType, Program } from "@/db/schema";
+import {
+  Campus,
+  College,
+  Post as PostType,
+  Program,
+  Like,
+  Comment,
+} from "@/db/schema";
 import { getUserPosts } from "@/actions/post";
 
 export function LoadMoreUserPost({ user_id }: { user_id: string }) {
   const [posts, setPosts] = useState<
     (PostType & {
+      likes: Like[];
+      comments: Comment[];
       user: User & {
         program: Program & { college: College & { campus: Campus } };
       };
@@ -42,7 +51,12 @@ export function LoadMoreUserPost({ user_id }: { user_id: string }) {
       {posts.map((post) => {
         if (!post.user) return null;
         return (
-          <Post key={post.id} post={post} isMyPost={post.user.id === user_id} />
+          <Post
+            key={post.id}
+            post={post}
+            isMyPost={post.user.id === user_id}
+            userId={user_id}
+          />
         );
       })}
 

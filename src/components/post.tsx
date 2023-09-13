@@ -1,6 +1,13 @@
 "use client";
 
-import type { Campus, College, Post, Program } from "@/db/schema";
+import type {
+  Campus,
+  College,
+  Like,
+  Comment,
+  Post,
+  Program,
+} from "@/db/schema";
 import moment from "moment";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -13,39 +20,36 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import {
-  Album,
-  Briefcase,
-  GraduationCap,
-  Heart,
-  MessageCircle,
-  MoreHorizontal,
-} from "lucide-react";
-import { useState } from "react";
+import { Heart, MessageCircle, MoreHorizontal } from "lucide-react";
+import { useState, experimental_useOptimistic as useOptimistic } from "react";
 import DeletePost from "./delete-post";
 // import UpdatePost from "./update-post";
 import { User } from "@clerk/nextjs/server";
 import Image from "next/image";
 import { Badge } from "./ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { nanoid } from "nanoid";
+import { likePost, unlikePost } from "@/actions/post";
+import { Toggle } from "./ui/toggle";
+import { cn } from "@/lib/utils";
 
 export default function Post({
   post,
   isMyPost,
+  userId,
 }: {
   post: Post & {
+    likes: Like[];
+    comments: Comment[];
     user: User & {
       program: Program & { college: College & { campus: Campus } };
     };
   };
   isMyPost: boolean;
+  userId: string;
 }) {
   const router = useRouter();
+  const [optimisticLike, setOptimisticLike] = useOptimistic<Like[]>(post.likes);
   const [openDelete, setOpenDelete] = useState(false);
   // const [openUpdate, setOpenUpdate] = useState(false);
 
@@ -181,20 +185,52 @@ export default function Post({
             : post.content}
         </p>
 
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Heart size="1rem" />
-        </Button>
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <MessageCircle size="1rem" />
-        </Button>
+        <div className="space-y-2">
+          <div className="flex gap-x-1">
+            <Toggle
+              pressed={optimisticLike.some((like) => like.user_id === userId)}
+              onClick={(e) => e.stopPropagation()}
+              onPressedChange={async (pressed) => {
+                if (pressed) {
+                  setOptimisticLike([
+                    ...optimisticLike,
+                    {
+                      id: nanoid(),
+                      post_id: post.id,
+                      user_id: userId,
+                      created_at: new Date(),
+                    },
+                  ]);
+
+                  await likePost({ post_id: post.id });
+                } else {
+                  setOptimisticLike(
+                    optimisticLike.filter((like) => like.user_id !== userId),
+                  );
+
+                  await unlikePost({ post_id: post.id });
+                }
+              }}
+            >
+              <Heart
+                className={cn(
+                  "h-4 w-4",
+                  optimisticLike.some((like) => like.user_id === userId) &&
+                    "fill-red-600 text-red-500",
+                )}
+              />
+            </Toggle>
+
+            <Button size="icon" variant="ghost" className="h-8 w-8">
+              <MessageCircle size="1rem" />
+            </Button>
+          </div>
+
+          <p className="text-sm text-muted-foreground">
+            {optimisticLike.length} likes &mdash; {post.comments.length}{" "}
+            comments
+          </p>
+        </div>
       </div>
     </>
   );

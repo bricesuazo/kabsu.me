@@ -41,7 +41,12 @@ export function LoadMorePost({
       {posts.map((post) => {
         if (!post.user) return null;
         return (
-          <Post key={post.id} post={post} isMyPost={post.user.id === userId} />
+          <Post
+            key={post.id}
+            post={post}
+            isMyPost={post.user.id === userId}
+            userId={userId}
+          />
         );
       })}
 

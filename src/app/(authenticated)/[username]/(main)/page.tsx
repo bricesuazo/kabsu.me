@@ -59,7 +59,7 @@ export default async function UserPage({
   return (
     <div className="space-y-4">
       <div className="space-y-4">
-        <div className="xs:flex-row flex flex-col-reverse gap-x-8">
+        <div className="flex flex-col-reverse gap-x-8 xs:flex-row">
           <div className="flex-1">
             <div className="flex items-center gap-x-2">
               <Tooltip delayDuration={250}>
@@ -118,7 +118,7 @@ export default async function UserPage({
               </Tooltip>
             </div>
 
-            <h2 className="xs:text-4xl text-2xl font-semibold">
+            <h2 className="text-2xl font-semibold xs:text-4xl">
               @{user.username}
             </h2>
 
@@ -271,6 +271,8 @@ async function PostsWrapper({ user }: { user: User }) {
       and(isNull(post.deleted_at), eq(post.user_id, user.id)),
     orderBy: (post, { desc }) => desc(post.created_at),
     with: {
+      comments: true,
+      likes: true,
       user: {
         with: {
           program: {
@@ -289,6 +291,7 @@ async function PostsWrapper({ user }: { user: User }) {
     userId: posts.map((post) => post.user.id),
   });
 
+  if (!userId) return "Unauthorized";
   return (
     <div>
       {posts.length === 0 ? (
@@ -303,6 +306,7 @@ async function PostsWrapper({ user }: { user: User }) {
           {posts.map((post) => (
             <Post
               key={post.id}
+              userId={userId}
               post={{
                 ...post,
                 user: {

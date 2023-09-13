@@ -6,10 +6,13 @@ import {
   Campus,
   College,
   Follower,
+  likes,
   Post,
   posts,
   Program,
   User,
+  Like,
+  Comment,
 } from "@/db/schema";
 import { CreatePostSchema, UpdatePostSchema } from "@/zod-schema/post";
 import { auth } from "@clerk/nextjs";
@@ -30,6 +33,8 @@ export async function getPosts({
   if (!userId) throw new Error("Unauthorized");
 
   let posts: (Post & {
+    likes: Like[];
+    comments: Comment[];
     user: User & {
       program: Program & { college: College & { campus: Campus } };
     };
@@ -45,6 +50,8 @@ export async function getPosts({
       offset: (page - 1) * 10,
 
       with: {
+        comments: true,
+        likes: true,
         user: {
           with: {
             program: {
@@ -112,6 +119,8 @@ export async function getPosts({
       offset: (page - 1) * 10,
       orderBy: (post, { desc }) => desc(post.created_at),
       with: {
+        comments: true,
+        likes: true,
         user: {
           with: {
             program: {
@@ -170,11 +179,12 @@ export async function getPosts({
           eq(post.user_id, userId),
           eq(post.type, "college"),
         ),
-
       limit: 10,
       offset: (page - 1) * 10,
       orderBy: (post, { desc }) => desc(post.created_at),
       with: {
+        comments: true,
+        likes: true,
         user: {
           with: {
             program: {
@@ -223,6 +233,8 @@ export async function getPosts({
       limit: 10,
       offset: (page - 1) * 10,
       with: {
+        comments: true,
+        likes: true,
         user: {
           with: {
             program: {
@@ -280,6 +292,8 @@ export async function getPosts({
       offset: (page - 1) * 10,
       orderBy: (post, { desc }) => desc(post.created_at),
       with: {
+        comments: true,
+        likes: true,
         user: {
           with: {
             program: {
@@ -377,6 +391,8 @@ export async function getUserPosts({
     offset: (page - 1) * 10,
     orderBy: (post, { desc }) => desc(post.created_at),
     with: {
+      comments: true,
+      likes: true,
       user: {
         with: {
           program: {
@@ -406,4 +422,34 @@ export async function getUserPosts({
   }));
 
   return returnPosts;
+}
+
+export async function likePost({ post_id }: { post_id: string }) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const post = await db.query.posts.findFirst({
+    where: (posts, { and, eq }) =>
+      and(eq(posts.id, post_id), eq(posts.user_id, userId)),
+  });
+
+  if (!post) throw new Error("Post not found");
+
+  await db.insert(likes).values({ user_id: userId, post_id });
+}
+
+export async function unlikePost({ post_id }: { post_id: string }) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const post = await db.query.posts.findFirst({
+    where: (posts, { and, eq }) =>
+      and(eq(posts.id, post_id), eq(posts.user_id, userId)),
+  });
+
+  if (!post) throw new Error("Post not found");
+
+  await db
+    .delete(likes)
+    .where(and(eq(likes.user_id, userId), eq(likes.post_id, post_id)));
 }

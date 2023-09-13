@@ -32,6 +32,7 @@ export default async function Posts({
                   key={post.id}
                   post={post}
                   isMyPost={post.user.id === userId}
+                  userId={userId}
                 />
               );
             })}
