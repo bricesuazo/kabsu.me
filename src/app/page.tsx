@@ -7,6 +7,7 @@ import Header from "@/components/header";
 import AuthForm from "@/components/auth-form";
 import PostSkeleton from "@/components/post-skeleton";
 import PostTypeTab from "@/components/post-type-tab";
+import AboutDev from "@/components/about-dev";
 
 export function generateMetadata(): Metadata {
   const { userId } = auth();
@@ -51,6 +52,7 @@ export default function Home({
       ) : (
         <>
           <AuthForm />
+          <AboutDev />
           {/* <Auth /> */}
         </>
       )}

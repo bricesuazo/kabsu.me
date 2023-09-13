@@ -1,6 +1,15 @@
 import { POST_TYPE } from "@/db/schema";
 import { nanoid } from "nanoid";
 
+import {
+  Twitter,
+  Facebook,
+  Instagram,
+  Github,
+  Globe,
+  Mail,
+} from "lucide-react";
+
 const CAMPUSES = [
   {
     id: "df4O69dvDl6ahsFFAZfDS",
@@ -132,4 +141,101 @@ export const BLOCKED_USERNAMES = [
   "sys",
   "system",
   "administrator",
+];
+
+export const DEVS_INFO = [
+  {
+    index: 0,
+    name: "Brice Brine Suazo",
+    role: "Full Stack Developer",
+    image: "/dev-pics/brice.png",
+    links: [
+      { icon: Mail, url: "mailto:bricebrine.suazo@cvsu.edu.ph" },
+      { icon: Github, url: "https://github.com/bricesuazo/" },
+      { icon: Facebook, url: "https://www.facebook.com/BriceSuazo/" },
+      { icon: Instagram, url: "https://www.instagram.com/brice_suazo/" },
+      { icon: Twitter, url: "https://twitter.com/brice_suazo" },
+    ],
+  },
+  {
+    index: 1,
+    name: "Aries Dela Pena",
+    role: "UI/UX Designer",
+    image: "/dev-pics/aries.jpg",
+    links: [
+      { icon: Mail, url: "mailto:aries.delapena@cvsu.edu.ph" },
+      { icon: Facebook, url: "https://www.facebook.com/delapena.aries25" },
+    ],
+  },
+  {
+    index: 2,
+    name: "Gabriel Luis Astilla",
+    role: "UI/UX Designer",
+    image: "/dev-pics/gab.png",
+    links: [
+      { icon: Mail, url: "mailto:gabrielluis.astilla@cvsu.edu.ph" },
+      { icon: Globe, url: "https://gabastilla.rf.gd/" },
+      { icon: Github, url: "https://github.com/GabrielAstilla" },
+      { icon: Facebook, url: "https://www.facebook.com/gabriel.astilla.7" },
+      { icon: Instagram, url: "https://www.instagram.com/gabrieeelluis/" },
+    ],
+  },
+  {
+    index: 3,
+    name: "Alexis Ken Alvarez",
+    role: "Backend Developer",
+    image: "/dev-pics/aki.png",
+    links: [
+      { icon: Mail, url: "mailto:alexisken.alvarez@cvsu.edu.ph" },
+      { icon: Globe, url: "https://www.akialvarez.com/" },
+      { icon: Github, url: "https://github.com/AlexisKenAlvarez" },
+      { icon: Facebook, url: "https://www.facebook.com/alvarez.aki/" },
+      { icon: Instagram, url: "https://www.instagram.com/alexiskenalvarez/" },
+    ],
+  },
+  {
+    index: 4,
+    name: "Aaron Joshua Espinosa",
+    role: "Frontend Developer",
+    image: "/dev-pics/aj.jpg",
+    links: [
+      { icon: Mail, url: "mailto:aaronjoshua.espinosa@cvsu.edu.ph" },
+      { icon: Globe, url: "https://ajespinosa.vercel.app/" },
+      { icon: Github, url: "https://github.com/aaronjoshuaespinosa" },
+    ],
+  },
+  {
+    index: 5,
+    name: "John Bernard Sarroca",
+    role: "Backend Developer",
+    image: "/dev-pics/bernard.jpg",
+    links: [
+      { icon: Mail, url: "mailto:johnbernard.sarroca@cvsu.edu.ph" },
+      { icon: Github, url: "https://github.com/iamnards" },
+      { icon: Facebook, url: "https://www.facebook.com/bernarddddd" },
+      { icon: Instagram, url: "https://www.instagram.com/i.am.nards/" },
+    ],
+  },
+  {
+    index: 6,
+    name: "Rod Clarence Cotines",
+    role: "Frontend Developer",
+    image: "/dev-pics/rod.jpeg",
+    links: [
+      { icon: Mail, url: "mailto:rodclarence.cotines@cvsu.edu.ph" },
+      { icon: Github, url: "https://github.com/Ayenzcc" },
+      { icon: Facebook, url: "https://www.facebook.com/dururuyeye/" },
+      { icon: Instagram, url: "https://www.instagram.com/dururuyeye/" },
+    ],
+  },
+  {
+    index: 7,
+    name: "Alex Kal-El Buenviaje",
+    role: "Quality Assurance Tester",
+    image: "/dev-pics/lex.jpg",
+    links: [
+      { icon: Mail, url: "mailto:alexkal-el.buenviaje@cvsu.edu.ph" },
+      { icon: Facebook, url: "https://www.facebook.com/LexBuenviaje" },
+    ],
+  },
 ];
