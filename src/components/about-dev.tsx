@@ -25,9 +25,10 @@ export default function AboutDev() {
                 <p className="text-center font-semibold">{dev.name}</p>
                 <p className="text-center text-sm">{dev.role}</p>
                 <div className="flex gap-x-1 pt-2">
-                  {dev.links.map((link) => {
+                  {dev.links.map((link, i) => {
                     return (
                       <Link
+                        key={i}
                         href={link.url}
                         target="_blank"
                         className="hover:text-primary"
