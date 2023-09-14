@@ -7,7 +7,7 @@ export default function AboutDev() {
   return (
     <div>
       <p className="py-4 text-center text-4xl font-bold text-primary">About</p>
-      <div className="mx-auto grid w-fit grid-cols-1 gap-x-20 self-center pb-20 sm:grid-cols-2">
+      <div className="mx-auto grid w-fit grid-cols-1 gap-x-20 self-center sm:grid-cols-2">
         {DEVS_INFO.map((dev) => {
           return (
             <div

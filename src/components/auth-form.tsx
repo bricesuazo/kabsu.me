@@ -215,7 +215,7 @@ export default function AuthForm() {
     );
   } else {
     return (
-      <div className="space-y-20 py-20">
+      <div className="space-y-20 pt-20">
         <div className="space-y-4">
           <Image
             src="/logo.png"
@@ -229,7 +229,8 @@ export default function AuthForm() {
             CvSU.me
           </h1>
           <h4 className="text-center text-xl [text-wrap:balance]">
-            A social media platform for CvSU students, faculty, and alumni.
+            A social media platform that&apos;s only exclusive for Cavite State
+            University students, faculty, and alumni.
           </h4>
         </div>
 

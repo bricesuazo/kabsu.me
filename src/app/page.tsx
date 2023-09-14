@@ -8,6 +8,11 @@ import AuthForm from "@/components/auth-form";
 import PostSkeleton from "@/components/post-skeleton";
 import PostTypeTab from "@/components/post-type-tab";
 import AboutDev from "@/components/about-dev";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import Image from "next/image";
+import { Separator } from "@/components/ui/separator";
+import Footer from "@/components/footer";
 
 export function generateMetadata(): Metadata {
   const { userId } = auth();
@@ -50,11 +55,39 @@ export default function Home({
           </div>
         </>
       ) : (
-        <>
+        <div className="space-y-20">
           <AuthForm />
           <AboutDev />
-          {/* <Auth /> */}
-        </>
+          <div className="grid place-items-center space-y-8">
+            <div className="">
+              <div className="relative mx-auto aspect-video w-80">
+                <Image
+                  src="/adventura-logo.png"
+                  alt=""
+                  fill
+                  className="pointer-events-none hidden select-none object-contain dark:block"
+                />
+                <Image
+                  src="/adventura-logo-dark.png"
+                  alt=""
+                  fill
+                  className="pointer-events-none select-none object-contain dark:hidden"
+                />
+              </div>
+              <p className="text-center [text-wrap:balance]">
+                Adventura is a Visual Novel game that allows the users to
+                navigate inside the actual place of Cavite State University
+                Indang Campus.
+              </p>
+            </div>
+            <Button asChild>
+              <Link href="/adventura">Play Adventura</Link>
+            </Button>
+          </div>
+          <Separator className="mx-auto w-8" />
+
+          <Footer />
+        </div>
       )}
     </main>
   );

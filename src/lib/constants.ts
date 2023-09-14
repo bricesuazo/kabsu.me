@@ -120,6 +120,10 @@ export const NAVBAR_LINKS = [
     name: "About",
     url: "/about",
   },
+  {
+    name: "Play Adventura: An online campus tour",
+    url: "/adventura",
+  },
 ];
 
 export const BLOCKED_USERNAMES = [
