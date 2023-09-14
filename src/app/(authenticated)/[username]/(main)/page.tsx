@@ -56,18 +56,7 @@ export default async function UserPage({
     },
   });
 
-  function mapToPercentage(value: number) {
-    // Ensure the value is within the 0-256 range
-    value = Math.min(256, Math.max(0, value));
-    
-    // Map the value to the 0-100% range
-    const percentage = (value / 256) * 100;
-    
-    return percentage;
-  }
-
   if (!userFromDB) notFound();
-  
 
   return (
     <>
@@ -137,24 +126,20 @@ export default async function UserPage({
               </div>
 
               <div className="">
-                <h2 className="text-2xl font-semibold xs:text-4xl">
+                <h2 className="truncate text-2xl font-semibold xs:text-4xl">
                   @{user.username}
                 </h2>
 
                 {/* <h4 className="text-lg">
               {user.firstName} {user.lastName}
             </h4> */}
-                {userFromDB.bio ? (
-                  <p className="text-muted-foreground">
-                    {userFromDB.bio.length > 256
+                <p className="break-all text-muted-foreground">
+                  {userFromDB.bio
+                    ? userFromDB.bio.length > 256
                       ? userFromDB.bio.slice(0, 256) + "..."
-                      : userFromDB.bio}
-                  </p>
-                ) : (
-                  <p className="text-muted-foreground">
-                    This user hasn&apos;t written a bio yet.
-                  </p>
-                )}
+                      : userFromDB.bio
+                    : "This user hasn&apos;t written a bio yet."}
+                </p>
               </div>
             </div>
 
@@ -321,7 +306,7 @@ async function PostsWrapper({ user }: { user: User }) {
       {posts.length === 0 ? (
         <div className="text-center">
           <div className="text-2xl font-semibold">No posts yet</div>
-          <div className="mt-2 text-gray-500">
+          <div className="mt-2 break-words text-gray-500">
             When @{user.username} posts something, it will show up here.
           </div>
         </div>
