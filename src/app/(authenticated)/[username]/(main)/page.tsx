@@ -55,7 +55,18 @@ export default async function UserPage({
     },
   });
 
+  function mapToPercentage(value: number) {
+    // Ensure the value is within the 0-256 range
+    value = Math.min(256, Math.max(0, value));
+    
+    // Map the value to the 0-100% range
+    const percentage = (value / 256) * 100;
+    
+    return percentage;
+  }
+
   if (!userFromDB) notFound();
+  
 
   return (
     <div className="space-y-4">

@@ -29,6 +29,9 @@ import { Input } from "./ui/input";
 import { toast } from "./ui/use-toast";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+import CustomProgress from "./ui/custom-progress";
 
 export default function EditProfile({
   userFromDB,
@@ -77,6 +80,15 @@ export default function EditProfile({
       form.setValue("username", userFromClerk.username ?? "");
     }
   }, [open, userFromDB, userFromClerk, form]);
+
+  function mapToPercentage(value: number) {
+    value = Math.min(256, Math.max(0, value));
+    const percentage = (value / 256) * 100;
+
+    return percentage;
+  }
+
+  const bioLength = form.watch("bio").length;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -175,6 +187,12 @@ export default function EditProfile({
               )}
             />
 
+            <CustomProgress
+              value={mapToPercentage(bioLength)}
+              className={cn("h-2", bioLength > 256 && "-red-500")}
+              hitLimit={bioLength > 256}
+            />
+
             <div className="flex justify-end gap-x-2">
               <Button
                 variant="ghost"
@@ -187,7 +205,9 @@ export default function EditProfile({
               <Button
                 size="sm"
                 type="submit"
-                disabled={form.formState.isSubmitting}
+                disabled={
+                  form.formState.isSubmitting || !form.formState.isValid
+                }
               >
                 {form.formState.isSubmitting && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
