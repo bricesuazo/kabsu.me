@@ -26,6 +26,10 @@ import { getProgramForAuth, isUsernameExists } from "@/actions/user";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import AboutDev from "./about-dev";
+import Link from "next/link";
+import { Separator } from "./ui/separator";
+import Footer from "./footer";
 
 export default function AuthForm() {
   const searchParams = useSearchParams();
@@ -282,6 +286,36 @@ export default function AuthForm() {
 
           <ToggleTheme />
         </div>
+
+        <AboutDev />
+        <div className="grid place-items-center space-y-8">
+          <div className="">
+            <div className="relative mx-auto aspect-video w-80">
+              <Image
+                src="/adventura-logo.png"
+                alt=""
+                fill
+                className="pointer-events-none hidden select-none object-contain dark:block"
+              />
+              <Image
+                src="/adventura-logo-dark.png"
+                alt=""
+                fill
+                className="pointer-events-none select-none object-contain dark:hidden"
+              />
+            </div>
+            <p className="text-center [text-wrap:balance]">
+              Adventura is a Visual Novel game that allows the users to navigate
+              inside the actual place of Cavite State University Indang Campus.
+            </p>
+          </div>
+          <Button asChild>
+            <Link href="/adventura">Play Adventura</Link>
+          </Button>
+        </div>
+        <Separator className="mx-auto w-8" />
+
+        <Footer />
       </div>
     );
   }
