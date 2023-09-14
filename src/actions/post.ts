@@ -435,6 +435,13 @@ export async function likePost({ post_id }: { post_id: string }) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
+  const like = await db.query.likes.findFirst({
+    where: (likes, { and, eq }) =>
+      and(eq(likes.user_id, userId), eq(likes.post_id, post_id)),
+  });
+
+  if (like) throw new Error("Already liked");
+
   const post = await db.query.posts.findFirst({
     where: (posts, { eq }) => eq(posts.id, post_id),
   });
@@ -447,6 +454,13 @@ export async function likePost({ post_id }: { post_id: string }) {
 export async function unlikePost({ post_id }: { post_id: string }) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
+
+  const unlike = await db.query.likes.findFirst({
+    where: (likes, { and, eq }) =>
+      and(eq(likes.user_id, userId), eq(likes.post_id, post_id)),
+  });
+
+  if (!unlike) throw new Error("Not liked");
 
   const post = await db.query.posts.findFirst({
     where: (posts, { eq }) => eq(posts.id, post_id),
