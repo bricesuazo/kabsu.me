@@ -1,3 +1,4 @@
+import RefreshPage from "@/components/RefreshPage";
 import PostComment from "@/components/post-comment";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -229,67 +230,70 @@ async function CommentComponent({ comment }: { comment: Comment }) {
   const user = await clerkClient.users.getUser(fullComment.user_id);
 
   return (
-    <div className="space-y-2 border p-4">
-      <div className="flex justify-between">
-        <div className="flex gap-x-2">
-          <Link href={`/${user.username}`}>
-            <Image src={user.imageUrl} alt="" width={40} height={40} />
-          </Link>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-x-2">
-              <p className="line-clamp-1 group-hover:underline">
-                {user.firstName} {user.lastName}{" "}
-              </p>
-              <p className="pointer-events-none hidden select-none sm:block">
-                ·
-              </p>
-              <div className="hidden sm:block">
-                <Tooltip delayDuration={250}>
-                  <TooltipTrigger>
-                    <p className="text-xs">
-                      {moment(fullComment.created_at).fromNow()}
-                    </p>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {moment(fullComment.created_at).format(
-                      "MMMM Do YYYY, h:mm:ss A",
-                    )}
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </div>
-            <p className="line-clamp-1 flex-1 break-all text-sm">
-              @{user.username}
-            </p>
-          </div>
-        </div>
-        {fullComment.user_id === userId && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <DropdownMenuTrigger asChild>
-                <div className="">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-8 w-8 text-muted-foreground hover:text-primary"
-                  >
-                    <MoreVertical size="1rem" />
-                  </Button>
+    <>
+      <RefreshPage />
+      <div className="space-y-2 border p-4">
+        <div className="flex justify-between">
+          <div className="flex gap-x-2">
+            <Link href={`/${user.username}`}>
+              <Image src={user.imageUrl} alt="" width={40} height={40} />
+            </Link>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-x-2">
+                <p className="line-clamp-1 group-hover:underline">
+                  {user.firstName} {user.lastName}{" "}
+                </p>
+                <p className="pointer-events-none hidden select-none sm:block">
+                  ·
+                </p>
+                <div className="hidden sm:block">
+                  <Tooltip delayDuration={250}>
+                    <TooltipTrigger>
+                      <p className="text-xs">
+                        {moment(fullComment.created_at).fromNow()}
+                      </p>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {moment(fullComment.created_at).format(
+                        "MMMM Do YYYY, h:mm:ss A",
+                      )}
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
+              </div>
+              <p className="line-clamp-1 flex-1 break-all text-sm">
+                @{user.username}
+              </p>
+            </div>
+          </div>
+          {fullComment.user_id === userId && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <div className="">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 text-muted-foreground hover:text-primary"
+                    >
+                      <MoreVertical size="1rem" />
+                    </Button>
+                  </div>
+                </DropdownMenuTrigger>
               </DropdownMenuTrigger>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem
-                className="!text-red-500"
-                // onClick={() => setOpenDelete(true)}
-              >
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  className="!text-red-500"
+                  // onClick={() => setOpenDelete(true)}
+                >
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+        <p>{fullComment.content}</p>
       </div>
-      <p>{fullComment.content}</p>
-    </div>
+    </>
   );
 }

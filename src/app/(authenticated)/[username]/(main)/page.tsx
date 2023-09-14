@@ -21,6 +21,7 @@ import { User } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import PostSkeleton from "@/components/post-skeleton";
 import { getOrdinal } from "@/lib/utils";
+import RefreshPage from "@/components/RefreshPage";
 
 export function generateMetadata({
   params,
@@ -58,164 +59,167 @@ export default async function UserPage({
   if (!userFromDB) notFound();
 
   return (
-    <div className="space-y-4">
+    <>
+      <RefreshPage />
       <div className="space-y-4">
-        <div className="flex flex-col-reverse gap-x-8 gap-y-4 xs:flex-row">
-          <div className="flex-1 space-y-2">
-            <div className="flex items-center gap-x-2">
-              <Tooltip delayDuration={250}>
-                {(() => {
-                  if (userFromDB.type === "student") {
-                    return (
-                      <>
-                        <TooltipTrigger>
-                          <Album />
-                        </TooltipTrigger>
-                        <TooltipContent>Student</TooltipContent>
-                      </>
-                    );
-                  } else if (userFromDB.type === "alumni") {
-                    return (
-                      <>
-                        <TooltipTrigger>
-                          <GraduationCap />
-                        </TooltipTrigger>
-                        <TooltipContent>Alumni</TooltipContent>
-                      </>
-                    );
-                  } else if (userFromDB.type === "faculty") {
-                    return (
-                      <>
-                        <TooltipTrigger>
-                          <Briefcase />
-                        </TooltipTrigger>
-                        <TooltipContent>Faculty</TooltipContent>
-                      </>
-                    );
-                  }
-                })()}
-              </Tooltip>
+        <div className="space-y-4">
+          <div className="flex flex-col-reverse gap-x-8 gap-y-4 xs:flex-row">
+            <div className="flex-1 space-y-2">
+              <div className="flex items-center gap-x-2">
+                <Tooltip delayDuration={250}>
+                  {(() => {
+                    if (userFromDB.type === "student") {
+                      return (
+                        <>
+                          <TooltipTrigger>
+                            <Album />
+                          </TooltipTrigger>
+                          <TooltipContent>Student</TooltipContent>
+                        </>
+                      );
+                    } else if (userFromDB.type === "alumni") {
+                      return (
+                        <>
+                          <TooltipTrigger>
+                            <GraduationCap />
+                          </TooltipTrigger>
+                          <TooltipContent>Alumni</TooltipContent>
+                        </>
+                      );
+                    } else if (userFromDB.type === "faculty") {
+                      return (
+                        <>
+                          <TooltipTrigger>
+                            <Briefcase />
+                          </TooltipTrigger>
+                          <TooltipContent>Faculty</TooltipContent>
+                        </>
+                      );
+                    }
+                  })()}
+                </Tooltip>
 
-              <Tooltip delayDuration={250}>
-                <TooltipTrigger>
-                  <Badge>
-                    {userFromDB.program.college.campus.slug.toUpperCase()}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-60">
-                  {userFromDB.program.college.campus.name}
-                </TooltipContent>
-              </Tooltip>
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger>
+                    <Badge>
+                      {userFromDB.program.college.campus.slug.toUpperCase()}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-60">
+                    {userFromDB.program.college.campus.name}
+                  </TooltipContent>
+                </Tooltip>
 
-              <Tooltip delayDuration={250}>
-                <TooltipTrigger>
-                  <Badge variant="outline">
-                    {userFromDB.program.slug.toUpperCase()}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-60">
-                  {userFromDB.program.name}
-                </TooltipContent>
-              </Tooltip>
-              <Badge variant="outline">
-                {getOrdinal(userFromDB.user_number + 1)} user
-              </Badge>
-            </div>
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger>
+                    <Badge variant="outline">
+                      {userFromDB.program.slug.toUpperCase()}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-60">
+                    {userFromDB.program.name}
+                  </TooltipContent>
+                </Tooltip>
+                <Badge variant="outline">
+                  {getOrdinal(userFromDB.user_number + 1)} user
+                </Badge>
+              </div>
 
-            <div className="">
-              <h2 className="text-2xl font-semibold xs:text-4xl">
-                @{user.username}
-              </h2>
+              <div className="">
+                <h2 className="text-2xl font-semibold xs:text-4xl">
+                  @{user.username}
+                </h2>
 
-              {/* <h4 className="text-lg">
+                {/* <h4 className="text-lg">
               {user.firstName} {user.lastName}
             </h4> */}
-              {userFromDB.bio ? (
-                <p className="text-muted-foreground">
-                  {userFromDB.bio.length > 256
-                    ? userFromDB.bio.slice(0, 256) + "..."
-                    : userFromDB.bio}
-                </p>
-              ) : (
-                <p className="text-muted-foreground">
-                  This user hasn&apos;t written a bio yet.
-                </p>
-              )}
+                {userFromDB.bio ? (
+                  <p className="text-muted-foreground">
+                    {userFromDB.bio.length > 256
+                      ? userFromDB.bio.slice(0, 256) + "..."
+                      : userFromDB.bio}
+                  </p>
+                ) : (
+                  <p className="text-muted-foreground">
+                    This user hasn&apos;t written a bio yet.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="min-w-max">
+              <Image
+                src={user.imageUrl}
+                alt="Image"
+                width={100}
+                height={100}
+                className="rounded-full"
+              />
             </div>
           </div>
 
-          <div className="min-w-max">
-            <Image
-              src={user.imageUrl}
-              alt="Image"
-              width={100}
-              height={100}
-              className="rounded-full"
-            />
-          </div>
-        </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-x-2">
+              {userId === user.id ? (
+                <EditProfile userFromDB={userFromDB} userFromClerk={user} />
+              ) : (
+                <Suspense fallback={<Button disabled>Follow</Button>}>
+                  <FollowUserButton user={user} />
+                </Suspense>
+              )}
+            </div>
 
-        <div className="space-y-2">
-          <div className="flex items-center gap-x-2">
-            {userId === user.id ? (
-              <EditProfile userFromDB={userFromDB} userFromClerk={user} />
-            ) : (
-              <Suspense fallback={<Button disabled>Follow</Button>}>
-                <FollowUserButton user={user} />
+            <div className="flex items-center gap-x-4">
+              <Suspense
+                fallback={
+                  <Button variant="link" className="p-0">
+                    0 followers
+                  </Button>
+                }
+              >
+                <FollowsButton type="followers" user={user} />
               </Suspense>
-            )}
+              <p className="pointer-events-none select-none">·</p>
+
+              <Suspense
+                fallback={
+                  <Button variant="link" className="p-0">
+                    0 following
+                  </Button>
+                }
+              >
+                <FollowsButton type="following" user={user} />
+              </Suspense>
+            </div>
           </div>
 
-          <div className="flex items-center gap-x-4">
-            <Suspense
-              fallback={
-                <Button variant="link" className="p-0">
-                  0 followers
-                </Button>
-              }
-            >
-              <FollowsButton type="followers" user={user} />
-            </Suspense>
-            <p className="pointer-events-none select-none">·</p>
-
-            <Suspense
-              fallback={
-                <Button variant="link" className="p-0">
-                  0 following
-                </Button>
-              }
-            >
-              <FollowsButton type="following" user={user} />
-            </Suspense>
-          </div>
+          <Tabs defaultValue="posts">
+            <TabsList className="w-full">
+              <TabsTrigger value="posts" className="w-full">
+                Posts
+              </TabsTrigger>
+              <TabsTrigger value="replies" className="w-full" disabled>
+                Replies
+              </TabsTrigger>
+              <TabsTrigger value="likes" className="w-full" disabled>
+                Likes
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
-
-        <Tabs defaultValue="posts">
-          <TabsList className="w-full">
-            <TabsTrigger value="posts" className="w-full">
-              Posts
-            </TabsTrigger>
-            <TabsTrigger value="replies" className="w-full" disabled>
-              Replies
-            </TabsTrigger>
-            <TabsTrigger value="likes" className="w-full" disabled>
-              Likes
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <Suspense
+          fallback={
+            <>
+              {[0, 1, 2, 3, 4, 5, 6].map((_, i) => (
+                <PostSkeleton key={i} />
+              ))}
+            </>
+          }
+        >
+          <PostsWrapper user={user} />
+        </Suspense>
       </div>
-      <Suspense
-        fallback={
-          <>
-            {[0, 1, 2, 3, 4, 5, 6].map((_, i) => (
-              <PostSkeleton key={i} />
-            ))}
-          </>
-        }
-      >
-        <PostsWrapper user={user} />
-      </Suspense>
-    </div>
+    </>
   );
 }
 
