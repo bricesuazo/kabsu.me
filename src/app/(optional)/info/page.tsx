@@ -10,6 +10,8 @@ export default function InformationCenterPage() {
 
       <h4 className="text-2xl">Truth | Excellence | Service</h4>
 
+      <Separator className="mx-auto w-10" />
+
       <div className="mx-auto max-w-md">
         <h4 className="text-xl font-semibold">CvSU Mission</h4>
         <p className="[text-wrap:balance]">
