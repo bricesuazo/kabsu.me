@@ -35,7 +35,9 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
         <body className={cn(font.className)}>
           <QueryProvider>
             <ThemeProvider attribute="class" defaultTheme="light">
-              <TooltipProvider>{children}</TooltipProvider>
+              <TooltipProvider>
+                <div>{children}</div>
+              </TooltipProvider>
               <Toaster />
             </ThemeProvider>
           </QueryProvider>
