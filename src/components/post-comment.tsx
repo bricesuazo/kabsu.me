@@ -161,6 +161,7 @@ export default function PostComment({
                 <FormField
                   control={form.control}
                   name="comment"
+                  disabled={form.formState.isSubmitting}
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormControl>

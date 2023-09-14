@@ -107,10 +107,27 @@ export const POST_TYPE_TABS: {
   },
 ];
 
+export const NAVBAR_LINKS = [
+  {
+    name: "Home",
+    url: "/",
+  },
+  {
+    name: "CvSU Information Center",
+    url: "/info",
+  },
+  {
+    name: "About",
+    url: "/about",
+  },
+];
+
 export const BLOCKED_USERNAMES = [
   "brice",
   "bricesuazo",
   "cg",
+  "about",
+  "info",
   "cvsu",
   "signup",
   "sign-up",
