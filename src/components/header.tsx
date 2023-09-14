@@ -23,6 +23,7 @@ import { Bell, Check, LogOut, Menu, Moon, Sun } from "lucide-react";
 import { Icons } from "./icons";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -31,11 +32,13 @@ import {
 } from "./ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { NAVBAR_LINKS } from "@/lib/constants";
 
 export default function Header() {
   // { userId }: { userId: string | null }
   const router = useRouter();
+  const pathname = usePathname();
   const { isLoaded, user, isSignedIn } = useUser();
   const { setTheme } = useTheme();
   const { signOut } = useClerk();
@@ -50,12 +53,24 @@ export default function Header() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left">
-          <SheetHeader>
-            <SheetTitle>Test</SheetTitle>
-            <SheetDescription>
-              I still don`&apos;t know what to put here :)
-            </SheetDescription>
+          <SheetHeader className="mb-4">
+            <SheetTitle>CvSU.me</SheetTitle>
+            <SheetDescription>Navigate to different pages</SheetDescription>
           </SheetHeader>
+
+          {NAVBAR_LINKS.map((link) => (
+            <Button
+              key={link.url}
+              asChild
+              className="w-full justify-start"
+              variant={pathname === link.url ? "secondary" : "ghost"}
+              // size="sm"
+            >
+              <SheetClose asChild>
+                <Link href={link.url}>{link.name}</Link>
+              </SheetClose>
+            </Button>
+          ))}
         </SheetContent>
       </Sheet>
       <Button variant="link" size="icon" asChild className="px-0">

@@ -26,6 +26,10 @@ import { getProgramForAuth, isUsernameExists } from "@/actions/user";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import AboutDev from "./about-dev";
+import Link from "next/link";
+import { Separator } from "./ui/separator";
+import Footer from "./footer";
 
 export default function AuthForm() {
   const searchParams = useSearchParams();
@@ -215,7 +219,7 @@ export default function AuthForm() {
     );
   } else {
     return (
-      <div className="space-y-20 py-20">
+      <div className="space-y-20 pt-20">
         <div className="space-y-4">
           <Image
             src="/logo.png"
@@ -229,7 +233,8 @@ export default function AuthForm() {
             CvSU.me
           </h1>
           <h4 className="text-center text-xl [text-wrap:balance]">
-            A social media platform for CvSU students, faculty, and alumni.
+            A social media platform that&apos;s only exclusive for Cavite State
+            University students, faculty, and alumni.
           </h4>
         </div>
 
@@ -281,6 +286,36 @@ export default function AuthForm() {
 
           <ToggleTheme />
         </div>
+
+        <AboutDev />
+        <div className="grid place-items-center space-y-8">
+          <div className="">
+            <div className="relative mx-auto aspect-video w-80">
+              <Image
+                src="/adventura-logo.png"
+                alt=""
+                fill
+                className="pointer-events-none hidden select-none object-contain dark:block"
+              />
+              <Image
+                src="/adventura-logo-dark.png"
+                alt=""
+                fill
+                className="pointer-events-none select-none object-contain dark:hidden"
+              />
+            </div>
+            <p className="text-center [text-wrap:balance]">
+              Adventura is a Visual Novel game that allows the users to navigate
+              inside the actual place of Cavite State University Indang Campus.
+            </p>
+          </div>
+          <Button asChild>
+            <Link href="/adventura">Play Adventura</Link>
+          </Button>
+        </div>
+        <Separator className="mx-auto w-8" />
+
+        <Footer />
       </div>
     );
   }

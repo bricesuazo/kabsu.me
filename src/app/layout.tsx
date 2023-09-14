@@ -14,7 +14,7 @@ const font = Poppins({
 });
 
 // export const runtime = "edge";
-// export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: {

@@ -2,9 +2,13 @@
 
 import { nanoid } from "nanoid";
 import { Toggle } from "./ui/toggle";
-import { experimental_useOptimistic as useOptimistic, useState } from "react";
+import {
+  useEffect,
+  experimental_useOptimistic as useOptimistic,
+  useState,
+} from "react";
 import { Comment, Like, Post } from "@/db/schema";
-import { likePost, unlikePost } from "@/actions/post";
+import { createComment, likePost, unlikePost } from "@/actions/post";
 import { Heart, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "./ui/textarea";
@@ -24,6 +28,7 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
+import { Icons } from "./icons";
 
 export default function PostComment({
   userId,
@@ -32,6 +37,10 @@ export default function PostComment({
   userId: string;
   post: Post & { likes: Like[]; comments: Comment[] };
 }) {
+  const [likes, setLikes] = useState<Like[]>(post.likes);
+  // TODO: Fix optimistic updates
+  // const [optimisticLike, setOptimisticLike] = useOptimistic<Like[]>(post.likes);
+
   const [isFocused, setIsFocused] = useState(false);
   const form = useForm<{ comment: string }>({
     resolver: zodResolver(
@@ -46,8 +55,28 @@ export default function PostComment({
     },
   });
 
-  const [optimisticLike, setOptimisticLike] = useOptimistic<Like[]>(post.likes);
   const { user } = useUser();
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (!isFocused) return;
+
+      if (e.key === "Escape") {
+        form.reset();
+        setIsFocused(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isFocused, form]);
+
+  useEffect(() => {
+    form.reset();
+  }, [isFocused, form]);
 
   return (
     <div className="space-y-4">
@@ -55,12 +84,12 @@ export default function PostComment({
         <div className="flex">
           <Toggle
             size="sm"
-            pressed={optimisticLike.some((like) => like.user_id === userId)}
+            pressed={likes.some((like) => like.user_id === userId)}
             onClick={(e) => e.stopPropagation()}
             onPressedChange={async (pressed) => {
               if (pressed) {
-                setOptimisticLike([
-                  ...optimisticLike,
+                setLikes([
+                  ...likes,
                   {
                     id: nanoid(),
                     post_id: post.id,
@@ -71,9 +100,7 @@ export default function PostComment({
 
                 await likePost({ post_id: post.id });
               } else {
-                setOptimisticLike(
-                  optimisticLike.filter((like) => like.user_id !== userId),
-                );
+                setLikes(likes.filter((like) => like.user_id !== userId));
 
                 await unlikePost({ post_id: post.id });
               }
@@ -82,7 +109,7 @@ export default function PostComment({
             <Heart
               className={cn(
                 "h-4 w-4",
-                optimisticLike.some((like) => like.user_id === userId) &&
+                likes.some((like) => like.user_id === userId) &&
                   "fill-primary text-primary",
               )}
             />
@@ -98,7 +125,7 @@ export default function PostComment({
         </div>
 
         <p className="text-sm text-muted-foreground">
-          {optimisticLike.length} likes &mdash; {post.comments.length} comments
+          {likes.length} likes &mdash; {post.comments.length} comments
         </p>
       </div>
 
@@ -106,8 +133,14 @@ export default function PostComment({
         {isFocused ? (
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit((values) => {
-                console.log(values);
+              onSubmit={form.handleSubmit(async (values) => {
+                await createComment({
+                  post_id: post.id,
+                  content: values.comment,
+                });
+
+                form.reset();
+                setIsFocused(false);
               })}
               className="w-full"
             >
@@ -128,6 +161,7 @@ export default function PostComment({
                 <FormField
                   control={form.control}
                   name="comment"
+                  disabled={form.formState.isSubmitting}
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormControl>
@@ -151,6 +185,9 @@ export default function PostComment({
                             !form.formState.isValid
                           }
                         >
+                          {form.formState.isSubmitting && (
+                            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                          )}
                           Comment
                         </Button>
                       </div>

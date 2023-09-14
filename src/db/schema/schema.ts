@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
   mysqlTable,
   varchar,
@@ -6,6 +7,7 @@ import {
   int,
   text,
   mysqlEnum,
+  boolean,
 } from "drizzle-orm/mysql-core";
 import { nanoid } from "nanoid";
 
@@ -17,14 +19,20 @@ export const POST_TYPE = [
   "campus",
   "all",
 ] as const;
+export const NOTIFICATION_TYPE = ["like", "comment"] as const;
 
 const id = varchar("id", { length: 256 })
   .primaryKey()
   .notNull()
   .unique()
   .$defaultFn(() => nanoid());
-const created_at = timestamp("created_at").notNull().defaultNow();
-const updated_at = timestamp("updated_at").notNull().defaultNow().onUpdateNow();
+const created_at = timestamp("created_at")
+  .default(sql`CURRENT_TIMESTAMP`)
+  .notNull();
+const updated_at = timestamp("updated_at")
+  .default(sql`CURRENT_TIMESTAMP`)
+  .onUpdateNow()
+  .notNull();
 const deleted_at = timestamp("deleted_at");
 const slug = varchar("slug", { length: 256 }).unique().notNull();
 
@@ -116,6 +124,15 @@ export const programs = mysqlTable("programs", {
   created_at,
   updated_at,
   deleted_at,
+});
+export const notifications = mysqlTable("notifications", {
+  id,
+  from_id: varchar("from", { length: 256 }).notNull(),
+  to_id: varchar("to", { length: 256 }).notNull(),
+  read: boolean("read").notNull().default(false),
+  type: mysqlEnum("type", NOTIFICATION_TYPE).notNull(),
+
+  created_at,
 });
 
 export type User = typeof users.$inferSelect;

@@ -107,10 +107,31 @@ export const POST_TYPE_TABS: {
   },
 ];
 
+export const NAVBAR_LINKS = [
+  {
+    name: "Home",
+    url: "/",
+  },
+  {
+    name: "CvSU Information Center",
+    url: "/info",
+  },
+  {
+    name: "About",
+    url: "/about",
+  },
+  {
+    name: "Play Adventura: An online campus tour",
+    url: "/adventura",
+  },
+];
+
 export const BLOCKED_USERNAMES = [
   "brice",
   "bricesuazo",
   "cg",
+  "about",
+  "info",
   "cvsu",
   "signup",
   "sign-up",
@@ -151,6 +172,7 @@ export const DEVS_INFO = [
     image: "/dev-pics/brice.png",
     links: [
       { icon: Mail, url: "mailto:bricebrine.suazo@cvsu.edu.ph" },
+      { icon: Globe, url: "https://bricesuazo.com/" },
       { icon: Github, url: "https://github.com/bricesuazo/" },
       { icon: Instagram, url: "https://www.instagram.com/brice_suazo/" },
       { icon: Twitter, url: "https://twitter.com/brice_suazo" },
@@ -158,10 +180,13 @@ export const DEVS_INFO = [
   },
   {
     index: 1,
-    name: "Aries Dela Pena",
+    name: "Aries Dela Peña",
     role: "UI/UX Designer",
     image: "/dev-pics/aries.jpg",
-    links: [{ icon: Mail, url: "mailto:aries.delapena@cvsu.edu.ph" }],
+    links: [
+      { icon: Mail, url: "mailto:aries.delapena@cvsu.edu.ph" },
+      { icon: Instagram, url: "https://www.instagram.com/25aryasss52/" },
+    ],
   },
   {
     index: 2,
@@ -216,6 +241,7 @@ export const DEVS_INFO = [
     image: "/dev-pics/rod.jpeg",
     links: [
       { icon: Mail, url: "mailto:rodclarence.cotines@cvsu.edu.ph" },
+      { icon: Globe, url: "https://rodcotines.vercel.app/" },
       { icon: Github, url: "https://github.com/Ayenzcc" },
       { icon: Instagram, url: "https://www.instagram.com/dururuyeye/" },
     ],
@@ -225,6 +251,9 @@ export const DEVS_INFO = [
     name: "Alex Kal-El Buenviaje",
     role: "Quality Assurance Tester",
     image: "/dev-pics/lex.jpg",
-    links: [{ icon: Mail, url: "mailto:alexkal-el.buenviaje@cvsu.edu.ph" }],
+    links: [
+      { icon: Mail, url: "mailto:alexkal-el.buenviaje@cvsu.edu.ph" },
+      { icon: Instagram, url: "https://www.instagram.com/lxbnvj/" },
+    ],
   },
 ];

@@ -9,6 +9,7 @@ import {
   likes,
   comments,
   campuses,
+  notifications,
 } from ".";
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -103,3 +104,17 @@ export const programsRelations = relations(programs, ({ one, many }) => ({
     references: [colleges.id],
   }),
 }));
+
+export const notificationsRelations = relations(
+  notifications,
+  ({ one, many }) => ({
+    from: one(users, {
+      fields: [notifications.from_id],
+      references: [users.id],
+    }),
+    to: one(users, {
+      fields: [notifications.to_id],
+      references: [users.id],
+    }),
+  }),
+);

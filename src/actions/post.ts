@@ -13,6 +13,7 @@ import {
   User,
   Like,
   Comment,
+  comments,
 } from "@/db/schema";
 import { CreatePostSchema, UpdatePostSchema } from "@/zod-schema/post";
 import { auth } from "@clerk/nextjs";
@@ -140,7 +141,11 @@ export async function getPosts({
     const user = await db.query.users.findFirst({
       where: (user, { eq }) => eq(user.id, userId),
       with: {
-        program: true,
+        program: {
+          with: {
+            college: true,
+          },
+        },
       },
     });
 
@@ -158,7 +163,7 @@ export async function getPosts({
     const usersInColleges: User[] =
       colleges.length > 0
         ? await db.query.users.findMany({
-            where: (userInDB, { inArray }) =>
+            where: (userInDB, { and, inArray }) =>
               inArray(
                 userInDB.program_id,
                 colleges.map((c) => c.id),
@@ -167,16 +172,18 @@ export async function getPosts({
         : [];
 
     posts = await db.query.posts.findMany({
-      where: (post, { and, eq, isNull, inArray }) =>
+      where: (post, { or, and, eq, isNull, inArray }) =>
         and(
           isNull(post.deleted_at),
-          usersInPrograms.length > 0
-            ? inArray(
-                post.user_id,
-                usersInColleges.map((f) => f.id),
-              )
-            : undefined,
-          eq(post.user_id, userId),
+          or(
+            usersInPrograms.length > 0
+              ? inArray(
+                  post.user_id,
+                  usersInColleges.map((f) => f.id),
+                )
+              : undefined,
+            eq(post.user_id, userId),
+          ),
           eq(post.type, "college"),
         ),
       limit: 10,
@@ -428,6 +435,13 @@ export async function likePost({ post_id }: { post_id: string }) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
+  const like = await db.query.likes.findFirst({
+    where: (likes, { and, eq }) =>
+      and(eq(likes.user_id, userId), eq(likes.post_id, post_id)),
+  });
+
+  if (like) throw new Error("Already liked");
+
   const post = await db.query.posts.findFirst({
     where: (posts, { eq }) => eq(posts.id, post_id),
   });
@@ -441,6 +455,13 @@ export async function unlikePost({ post_id }: { post_id: string }) {
   const { userId } = auth();
   if (!userId) throw new Error("Unauthorized");
 
+  const unlike = await db.query.likes.findFirst({
+    where: (likes, { and, eq }) =>
+      and(eq(likes.user_id, userId), eq(likes.post_id, post_id)),
+  });
+
+  if (!unlike) throw new Error("Not liked");
+
   const post = await db.query.posts.findFirst({
     where: (posts, { eq }) => eq(posts.id, post_id),
   });
@@ -450,4 +471,27 @@ export async function unlikePost({ post_id }: { post_id: string }) {
   await db
     .delete(likes)
     .where(and(eq(likes.user_id, userId), eq(likes.post_id, post_id)));
+}
+
+export async function createComment({
+  post_id,
+  content,
+}: {
+  post_id: string;
+  content: string;
+}) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const post = await db.query.posts.findFirst({
+    where: (posts, { eq }) => eq(posts.id, post_id),
+  });
+
+  if (!post) throw new Error("Post not found");
+
+  await db.insert(comments).values({ user_id: userId, post_id, content });
+
+  revalidatePath("/");
+  revalidatePath("/[username]");
+  revalidatePath("/[username]/[post_id]");
 }
