@@ -20,6 +20,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import PostSkeleton from "@/components/post-skeleton";
+import { getOrdinal } from "@/lib/utils";
 
 export function generateMetadata({
   params,
@@ -59,8 +60,8 @@ export default async function UserPage({
   return (
     <div className="space-y-4">
       <div className="space-y-4">
-        <div className="flex flex-col-reverse gap-x-8 xs:flex-row">
-          <div className="flex-1">
+        <div className="flex flex-col-reverse gap-x-8 gap-y-4 xs:flex-row">
+          <div className="flex-1 space-y-2">
             <div className="flex items-center gap-x-2">
               <Tooltip delayDuration={250}>
                 {(() => {
@@ -116,23 +117,31 @@ export default async function UserPage({
                   {userFromDB.program.name}
                 </TooltipContent>
               </Tooltip>
+              <Badge variant="outline">
+                {getOrdinal(userFromDB.user_number + 1)} user
+              </Badge>
             </div>
 
-            <h2 className="text-2xl font-semibold xs:text-4xl">
-              @{user.username}
-            </h2>
+            <div className="">
+              <h2 className="text-2xl font-semibold xs:text-4xl">
+                @{user.username}
+              </h2>
 
-            <h4 className="text-lg">
+              {/* <h4 className="text-lg">
               {user.firstName} {user.lastName}
-            </h4>
-
-            {userFromDB.bio && (
-              <p>
-                {userFromDB.bio.length > 256
-                  ? userFromDB.bio.slice(0, 256) + "..."
-                  : userFromDB.bio}
-              </p>
-            )}
+            </h4> */}
+              {userFromDB.bio ? (
+                <p className="text-muted-foreground">
+                  {userFromDB.bio.length > 256
+                    ? userFromDB.bio.slice(0, 256) + "..."
+                    : userFromDB.bio}
+                </p>
+              ) : (
+                <p className="text-muted-foreground">
+                  This user hasn&apos;t written a bio yet.
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="min-w-max">
