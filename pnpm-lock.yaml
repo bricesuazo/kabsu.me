@@ -8,6 +8,9 @@ dependencies:
   '@clerk/nextjs':
     specifier: ^4.23.5
     version: registry.npmjs.org/@clerk/nextjs@4.23.5(next@13.4.19)(react-dom@18.2.0)(react@18.2.0)
+  '@clerk/themes':
+    specifier: ^1.7.5
+    version: registry.npmjs.org/@clerk/themes@1.7.5(react@18.2.0)
   '@hookform/resolvers':
     specifier: ^3.3.1
     version: registry.npmjs.org/@hookform/resolvers@3.3.1(react-hook-form@7.46.1)
@@ -318,6 +321,18 @@ packages:
       js-cookie: registry.npmjs.org/js-cookie@3.0.1
       react: registry.npmjs.org/react@18.2.0
       swr: registry.npmjs.org/swr@2.2.0(react@18.2.0)
+    dev: false
+
+  registry.npmjs.org/@clerk/themes@1.7.5(react@18.2.0):
+    resolution: {integrity: sha512-kIdCIBSCp6t1saGAzbelcfZi5P+L3+CuVFwSjpulwGTRxeOOs/S8hB4CAHVbTwfxPw5Ms+AnN4dXJKHjSnxPIg==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/@clerk/themes/-/themes-1.7.5.tgz}
+    id: registry.npmjs.org/@clerk/themes/1.7.5
+    name: '@clerk/themes'
+    version: 1.7.5
+    engines: {node: '>=14'}
+    peerDependencies:
+      react: '>=16'
+    dependencies:
+      react: registry.npmjs.org/react@18.2.0
     dev: false
 
   registry.npmjs.org/@clerk/types@3.51.0:

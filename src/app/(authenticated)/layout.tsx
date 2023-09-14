@@ -11,6 +11,7 @@ export default function AuthenticatedLayout({
   return (
     <main className="container">
       <Header />
+
       {children}
     </main>
   );
