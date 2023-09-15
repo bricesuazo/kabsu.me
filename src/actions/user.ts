@@ -124,7 +124,7 @@ export async function getProgramForAuth() {
 }
 
 export async function isUsernameExists({ username }: { username: string }) {
-  if (BLOCKED_USERNAMES.includes(username)) return true;
+  if (BLOCKED_USERNAMES.has(username)) return true;
 
   const users = await clerkClient.users.getUserList({
     username: [username],

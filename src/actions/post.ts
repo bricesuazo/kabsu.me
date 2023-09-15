@@ -87,34 +87,44 @@ export async function getPosts({
 
     if (!user) throw new Error("User not found");
 
-    const campuses = await db.query.colleges.findMany({
+    const colleges = await db.query.colleges.findMany({
       where: (college, { eq }) =>
         eq(college.campus_id, user.program.college.campus_id),
     });
 
-    const usersInColleges: User[] =
-      campuses.length > 0
+    const programs = await db.query.programs.findMany({
+      where: (program, { inArray }) =>
+        inArray(
+          program.college_id,
+          colleges.map((c) => c.id),
+        ),
+    });
+
+    const usersInCampuses: User[] =
+      colleges.length > 0
         ? await db.query.users.findMany({
             where: (userInDB, { inArray }) =>
               inArray(
                 userInDB.program_id,
-                campuses.map((c) => c.id),
+                programs.map((c) => c.id),
               ),
           })
         : [];
 
     posts = await db.query.posts.findMany({
-      where: (post, { and, eq, isNull, inArray }) =>
+      where: (post, { or, and, eq, isNull, inArray }) =>
         and(
-          usersInColleges.length > 0
-            ? inArray(
-                post.user_id,
-                usersInColleges.map((f) => f.id),
-              )
-            : undefined,
-          eq(post.user_id, userId),
-          eq(post.type, "campus"),
+          or(
+            usersInCampuses.length > 0
+              ? inArray(
+                  post.user_id,
+                  usersInCampuses.map((f) => f.id),
+                )
+              : undefined,
+            eq(post.user_id, userId),
+          ),
           isNull(post.deleted_at),
+          eq(post.type, "campus"),
         ),
 
       limit: 10,
@@ -226,15 +236,17 @@ export async function getPosts({
     posts = await db.query.posts.findMany({
       where: (post, { or, and, eq, isNull, inArray }) =>
         and(
-          isNull(post.deleted_at),
-          usersInPrograms.length > 0
-            ? inArray(
-                post.user_id,
-                usersInPrograms.map((f) => f.id),
-              )
-            : undefined,
+          or(
+            usersInPrograms.length > 0
+              ? inArray(
+                  post.user_id,
+                  usersInPrograms.map((f) => f.id),
+                )
+              : undefined,
+            eq(post.user_id, userId),
+          ),
           eq(post.type, "program"),
-          eq(post.user_id, userId),
+          isNull(post.deleted_at),
         ),
 
       orderBy: (post, { desc }) => desc(post.created_at),

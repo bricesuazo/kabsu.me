@@ -126,7 +126,7 @@ export const NAVBAR_LINKS = [
   },
 ];
 
-export const BLOCKED_USERNAMES = [
+export const BLOCKED_USERNAMES = new Set([
   "brice",
   "bricesuazo",
   "cg",
@@ -134,6 +134,16 @@ export const BLOCKED_USERNAMES = [
   "info",
   "cvsu",
   "signup",
+  "notification",
+  "notif",
+  "notifs",
+  "notifications",
+  "post",
+  "posts",
+  "feed",
+  "feeds",
+  "home",
+  "homes",
   "sign-up",
   "signin",
   "sign-in",
@@ -161,8 +171,7 @@ export const BLOCKED_USERNAMES = [
   "sysadmin",
   "sys",
   "system",
-  "administrator",
-];
+]);
 
 export const DEVS_INFO = [
   {
