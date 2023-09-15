@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllNotifications } from "@/actions/user";
 import Image from "next/image";
 import moment from "moment";
+import Link from "next/link";
 
 export default function Notifications() {
   const { data, isLoading } = useQuery({
@@ -48,30 +49,39 @@ export default function Notifications() {
             </div>
           ) : (
             data.map((notification) => (
-              <div
+              <Link
                 key={notification.id}
+                href={`/${notification.link}`}
                 className="flex items-center gap-x-2 p-2"
               >
-                <div className="relative h-8 w-8">
-                  <Image
-                    src={notification.from.imageUrl}
-                    alt="Image"
-                    fill
-                    className="rounded-full"
-                  />
-                </div>
+                <Image
+                  src={notification.from.imageUrl}
+                  alt="Image"
+                  width={40}
+                  height={40}
+                  className="rounded-full"
+                />
                 <div className="flex flex-col gap-1">
                   <p className="line-clamp-2 text-sm font-medium">
                     @{notification.from.username}{" "}
-                    {notification.type === "like"
-                      ? "liked your post"
-                      : "commented on your post"}
+                    {(() => {
+                      switch (notification.type) {
+                        case "follow":
+                          return "started following you";
+                        case "like":
+                          return "liked your post";
+                        case "comment":
+                          return "commented on your post";
+                        default:
+                          return "";
+                      }
+                    })()}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {moment(notification.created_at).fromNow()}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))
           )}
         </ScrollArea>

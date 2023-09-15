@@ -19,7 +19,7 @@ export const POST_TYPE = [
   "campus",
   "all",
 ] as const;
-export const NOTIFICATION_TYPE = ["like", "comment"] as const;
+export const NOTIFICATION_TYPE = ["like", "comment", "follow"] as const;
 
 const id = varchar("id", { length: 256 })
   .primaryKey()
@@ -131,6 +131,7 @@ export const notifications = mysqlTable("notifications", {
   to_id: varchar("to", { length: 256 }).notNull(),
   read: boolean("read").notNull().default(false),
   type: mysqlEnum("type", NOTIFICATION_TYPE).notNull(),
+  link: text("link").notNull(),
 
   created_at,
 });

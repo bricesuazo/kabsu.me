@@ -1,7 +1,13 @@
 "use server";
 
 import { db } from "@/db";
-import { ACCOUNT_TYPE, followees, followers, users } from "@/db/schema";
+import {
+  ACCOUNT_TYPE,
+  followees,
+  followers,
+  notifications,
+  users,
+} from "@/db/schema";
 import { BLOCKED_USERNAMES } from "@/lib/constants";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
@@ -46,7 +52,7 @@ export async function updateBio({
   user_id: string;
   bio: string;
 }) {
-  if (bio.length > 256) throw new Error("Bio must be less than 256 characters");
+  if (bio.length > 128) throw new Error("Bio must be less than 128 characters");
 
   const { userId } = auth();
 
@@ -81,6 +87,17 @@ export async function followUser({ user_id }: { user_id: string }) {
   revalidatePath("/[username]");
   revalidatePath("/[username]/followers");
   revalidatePath("/[username]/following");
+
+  const user = await clerkClient.users.getUser(user_id);
+
+  if (userId !== user_id) {
+    await db.insert(notifications).values({
+      to_id: user_id,
+      type: "follow",
+      from_id: userId,
+      link: user.username ?? "",
+    });
+  }
 }
 
 export async function unfollowUser({ user_id }: { user_id: string }) {
@@ -109,6 +126,18 @@ export async function unfollowUser({ user_id }: { user_id: string }) {
   revalidatePath("/[username]");
   revalidatePath("/[username]/followers");
   revalidatePath("/[username]/following");
+
+  if (userId !== user_id) {
+    await db
+      .delete(notifications)
+      .where(
+        and(
+          eq(notifications.to_id, user_id),
+          eq(notifications.from_id, userId),
+          eq(notifications.type, "follow"),
+        ),
+      );
+  }
 }
 
 export async function getProgramForAuth() {
@@ -141,7 +170,7 @@ export async function getAllNotifications() {
 
   const notifications = await db.query.notifications.findMany({
     where: (notification, { eq }) => eq(notification.to_id, userId),
-    orderBy: (notification, { asc }) => asc(notification.created_at),
+    orderBy: (notification, { desc }) => desc(notification.created_at),
   });
 
   const users = await clerkClient.users.getUserList({

@@ -135,10 +135,10 @@ export default async function UserPage({
             </h4> */}
                 <p className="break-words text-muted-foreground">
                   {userFromDB.bio
-                    ? userFromDB.bio.length > 256
-                      ? userFromDB.bio.slice(0, 256) + "..."
+                    ? userFromDB.bio.length > 128
+                      ? userFromDB.bio.slice(0, 128) + "..."
                       : userFromDB.bio
-                    : "This user hasn&apos;t written a bio yet."}
+                    : "This user hasn't written a bio yet."}
                 </p>
               </div>
             </div>

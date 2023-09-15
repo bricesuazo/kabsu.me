@@ -468,6 +468,7 @@ export async function likePost({ post_id }: { post_id: string }) {
       to_id: post.user_id,
       type: "like",
       from_id: userId,
+      link: post_id,
     });
   }
 }
@@ -492,6 +493,18 @@ export async function unlikePost({ post_id }: { post_id: string }) {
   await db
     .delete(likes)
     .where(and(eq(likes.user_id, userId), eq(likes.post_id, post_id)));
+
+  if (post.user_id !== userId) {
+    await db
+      .delete(notifications)
+      .where(
+        and(
+          eq(notifications.to_id, post.user_id),
+          eq(notifications.from_id, userId),
+          eq(notifications.type, "like"),
+        ),
+      );
+  }
 }
 
 export async function createComment({
@@ -517,6 +530,7 @@ export async function createComment({
       to_id: post.user_id,
       type: "comment",
       from_id: userId,
+      link: post_id,
     });
   }
 

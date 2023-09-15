@@ -41,7 +41,7 @@ export default function EditProfile({
   userFromClerk: UserFromClerk;
 }) {
   const formSchema = z.object({
-    bio: z.string().max(256, "Bio must be at most 256 characters long."),
+    bio: z.string().max(128, "Bio must be at most 128 characters long."),
     firstName: z
       .string()
       // .nonempty({ message: "First name is required." })
@@ -82,8 +82,8 @@ export default function EditProfile({
   }, [open, userFromDB, userFromClerk, form]);
 
   function mapToPercentage(value: number) {
-    value = Math.min(256, Math.max(0, value));
-    const percentage = (value / 256) * 100;
+    value = Math.min(128, Math.max(0, value));
+    const percentage = (value / 128) * 100;
 
     return percentage;
   }
@@ -189,8 +189,8 @@ export default function EditProfile({
 
             <CustomProgress
               value={mapToPercentage(bioLength)}
-              className={cn("h-2", bioLength > 256 && "-red-500")}
-              hitLimit={bioLength > 256}
+              className={cn("h-2", bioLength > 128 && "-red-500")}
+              hitLimit={bioLength > 128}
             />
 
             <div className="flex justify-end gap-x-2">
