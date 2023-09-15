@@ -19,17 +19,10 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "./ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
 import { Icons } from "./icons";
-import { useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 export default function PostComment({
   userId,
@@ -38,7 +31,9 @@ export default function PostComment({
   userId: string;
   post: Post & { likes: Like[]; comments: Comment[] };
 }) {
+  const params = useParams();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [likes, setLikes] = useState<Like[]>(post.likes);
   // TODO: Fix optimistic updates
   // const [optimisticLike, setOptimisticLike] = useOptimistic<Like[]>(post.likes);
@@ -122,7 +117,14 @@ export default function PostComment({
           <Toggle
             size="sm"
             pressed={isFocused}
-            onPressedChange={(pressed) => setIsFocused(pressed)}
+            onPressedChange={(pressed) => {
+              setIsFocused(pressed);
+              if (pressed) {
+                router.push(`/${params.username}/${params.post_id}?comment`);
+              } else {
+                router.push(`/${params.username}/${params.post_id}`);
+              }
+            }}
           >
             <MessageCircle className="h-4 w-4" />
           </Toggle>
