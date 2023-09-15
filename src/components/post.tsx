@@ -228,8 +228,9 @@ export default function Post({
           </div>
 
           <p className="text-sm text-muted-foreground">
-            {optimisticLike.length} likes &mdash; {post.comments.length}{" "}
-            comments
+            {optimisticLike.length} like{optimisticLike.length > 1 && "s"}{" "}
+            &mdash; {post.comments.length} comment
+            {post.comments.length > 1 && "s"}
           </p>
         </div>
       </div>

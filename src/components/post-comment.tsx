@@ -125,7 +125,8 @@ export default function PostComment({
         </div>
 
         <p className="text-sm text-muted-foreground">
-          {likes.length} likes &mdash; {post.comments.length} comments
+          {likes.length} like{likes.length > 1 && "s"} &mdash;{" "}
+          {post.comments.length} comment{post.comments.length > 1 && "s"}
         </p>
       </div>
 
