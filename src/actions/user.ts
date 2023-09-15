@@ -182,3 +182,24 @@ export async function getAllNotifications() {
     from: users.find((user) => user.id === notification.from_id)!,
   }));
 }
+
+export async function markAllNotificationAsRead() {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("User not found");
+
+  await db
+    .update(notifications)
+    .set({ read: true })
+    .where(eq(notifications.to_id, userId));
+}
+export async function markNotificationAsRead({ id }: { id: string }) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("User not found");
+
+  await db
+    .update(notifications)
+    .set({ read: true })
+    .where(and(eq(notifications.to_id, userId), eq(notifications.id, id)));
+}
