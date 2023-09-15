@@ -227,11 +227,18 @@ export default function Post({
             </Toggle>
           </div>
 
-          <p className="text-sm text-muted-foreground">
-            {optimisticLike.length} like{optimisticLike.length > 1 && "s"}{" "}
-            &mdash; {post.comments.length} comment
-            {post.comments.length > 1 && "s"}
-          </p>
+          <div className="flex items-center gap-x-4">
+            <p className="text-sm text-muted-foreground">
+              {optimisticLike.length} like{optimisticLike.length > 1 && "s"}{" "}
+              &mdash; {post.comments.length} comment
+              {post.comments.length > 1 && "s"}
+            </p>
+
+            {/* <p className="text-xs text-muted-foreground">Privacy:</p> */}
+            <Badge variant="outline">
+              {post.type.charAt(0).toUpperCase() + post.type.slice(1)}
+            </Badge>
+          </div>
         </div>
       </div>
     </>

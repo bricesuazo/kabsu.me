@@ -187,7 +187,7 @@ export default async function UserPage({
             </div>
           </div>
 
-          <Tabs defaultValue="posts">
+          {/* <Tabs defaultValue="posts">
             <TabsList className="w-full">
               <TabsTrigger value="posts" className="w-full">
                 Posts
@@ -199,7 +199,7 @@ export default async function UserPage({
                 Likes
               </TabsTrigger>
             </TabsList>
-          </Tabs>
+          </Tabs> */}
         </div>
         <Suspense
           fallback={

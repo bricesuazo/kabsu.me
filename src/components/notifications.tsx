@@ -47,7 +47,7 @@ export default function Notifications() {
           className="relative h-9 w-9 rounded-full"
         >
           <Bell size="1rem" className="" />
-          <p className="absolute right-0 top-0 aspect-square h-4 w-4 rounded-full bg-rose-500 text-xs">
+          <p className="absolute right-0 top-0 flex aspect-square h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[0.5rem]">
             {getAllNotificationsQuery.data?.filter(
               (notification) => !notification.read,
             ).length || 0}
@@ -161,6 +161,11 @@ export default function Notifications() {
             ))
           )}
         </ScrollArea>
+        <Button variant="link" asChild className="w-full" size="sm">
+          <Link href="/notifications" className="text-center text-xs">
+            Show all notifications
+          </Link>
+        </Button>
       </PopoverContent>
     </Popover>
   );
