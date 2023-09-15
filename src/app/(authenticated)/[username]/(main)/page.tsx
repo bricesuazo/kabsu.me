@@ -63,8 +63,8 @@ export default async function UserPage({
       <RefreshPage />
       <div className="space-y-4">
         <div className="space-y-4">
-          <div className="flex flex-col-reverse gap-x-8 gap-y-4 xs:flex-row">
-            <div className="flex-1 space-y-2">
+          <div className="flex w-full flex-col-reverse gap-x-8 gap-y-4 xs:flex-row">
+            <div className="flex-1 space-y-2 xs:w-px">
               <div className="flex items-center gap-x-2">
                 <Tooltip delayDuration={250}>
                   {(() => {
@@ -120,19 +120,17 @@ export default async function UserPage({
                     {userFromDB.program.name}
                   </TooltipContent>
                 </Tooltip>
+
                 <Badge variant="outline">
                   {getOrdinal(userFromDB.user_number + 1)} user
                 </Badge>
               </div>
 
-              <div className="">
+              <div className="flex flex-col">
                 <h2 className="truncate text-2xl font-semibold xs:text-4xl">
                   @{user.username}
                 </h2>
 
-                {/* <h4 className="text-lg">
-              {user.firstName} {user.lastName}
-            </h4> */}
                 <p className="break-words text-muted-foreground">
                   {userFromDB.bio
                     ? userFromDB.bio.length > 128

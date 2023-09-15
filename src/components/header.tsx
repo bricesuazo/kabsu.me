@@ -111,13 +111,14 @@ export default function Header() {
                 <MenubarContent
                   align="end"
                   onInteractOutside={() => setOpen("")}
+                  className="max-w-[2rem]"
                 >
                   <MenubarItem
                     asChild
-                    className="cursor-pointer"
+                    className="line-clamp-1 w-full cursor-pointer truncate"
                     onClick={() => setOpen("")}
                   >
-                    <Link href={`/${user?.username}`}>
+                    <Link href={`/${user?.username}`} className="w-full">
                       {user?.username ? `@${user?.username}` : "My profile"}
                     </Link>
                   </MenubarItem>
