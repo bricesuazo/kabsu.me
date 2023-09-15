@@ -222,16 +222,25 @@ export default function Post({
               />
             </Toggle>
 
-            <Toggle size="sm" pressed={false}>
-              <MessageCircle className="h-4 w-4" />
+            <Toggle
+              size="sm"
+              pressed={false}
+              asChild
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Link href={`/${post.user.username}/${post.id}?comment`}>
+                <MessageCircle className="h-4 w-4" />
+              </Link>
             </Toggle>
           </div>
 
           <div className="flex items-center gap-x-4">
             <p className="text-sm text-muted-foreground">
-              {optimisticLike.length} like{optimisticLike.length > 1 && "s"}{" "}
-              &mdash; {post.comments.length} comment
-              {post.comments.length > 1 && "s"}
+              {`${optimisticLike.length} like${
+                optimisticLike.length > 1 ? "s" : ""
+              } — ${post.comments.length} comment${
+                post.comments.length > 1 ? "s" : ""
+              }`}
             </p>
 
             {/* <p className="text-xs text-muted-foreground">Privacy:</p> */}

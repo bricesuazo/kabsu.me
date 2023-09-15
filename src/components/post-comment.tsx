@@ -29,6 +29,7 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { Icons } from "./icons";
+import { useSearchParams } from "next/navigation";
 
 export default function PostComment({
   userId,
@@ -37,11 +38,14 @@ export default function PostComment({
   userId: string;
   post: Post & { likes: Like[]; comments: Comment[] };
 }) {
+  const searchParams = useSearchParams();
   const [likes, setLikes] = useState<Like[]>(post.likes);
   // TODO: Fix optimistic updates
   // const [optimisticLike, setOptimisticLike] = useOptimistic<Like[]>(post.likes);
 
-  const [isFocused, setIsFocused] = useState(false);
+  const [isFocused, setIsFocused] = useState(
+    searchParams.get("comment")?.length === 0 ? true : false,
+  );
   const form = useForm<{ comment: string }>({
     resolver: zodResolver(
       z.object({
@@ -125,8 +129,10 @@ export default function PostComment({
         </div>
 
         <p className="text-sm text-muted-foreground">
-          {likes.length} like{likes.length > 1 && "s"} &mdash;{" "}
-          {post.comments.length} comment{post.comments.length > 1 && "s"}
+          {`${likes.length} like${likes.length > 1 ? "s" : ""} — 
+          ${post.comments.length} comment${
+            post.comments.length > 1 ? "s" : ""
+          }`}
         </p>
       </div>
 
