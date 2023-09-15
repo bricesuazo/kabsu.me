@@ -66,60 +66,60 @@ export default async function UserPage({
           <div className="flex w-full flex-col-reverse gap-x-8 gap-y-4 xs:flex-row">
             <div className="flex-1 space-y-2 xs:w-px">
               <div className="flex items-center gap-x-2">
-                <Tooltip delayDuration={250}>
-                  {(() => {
-                    if (userFromDB.type === "student") {
-                      return (
-                        <>
-                          <TooltipTrigger>
-                            <Album />
-                          </TooltipTrigger>
-                          <TooltipContent>Student</TooltipContent>
-                        </>
-                      );
-                    } else if (userFromDB.type === "alumni") {
-                      return (
-                        <>
-                          <TooltipTrigger>
-                            <GraduationCap />
-                          </TooltipTrigger>
-                          <TooltipContent>Alumni</TooltipContent>
-                        </>
-                      );
-                    } else if (userFromDB.type === "faculty") {
-                      return (
-                        <>
-                          <TooltipTrigger>
-                            <Briefcase />
-                          </TooltipTrigger>
-                          <TooltipContent>Faculty</TooltipContent>
-                        </>
-                      );
-                    }
-                  })()}
-                </Tooltip>
+                {/* <Tooltip delayDuration={250}> */}
+                {(() => {
+                  if (userFromDB.type === "student") {
+                    return (
+                      <>
+                        {/* <TooltipTrigger> */}
+                        <Album />
+                        {/* </TooltipTrigger> */}
+                        {/* <TooltipContent>Student</TooltipContent> */}
+                      </>
+                    );
+                  } else if (userFromDB.type === "alumni") {
+                    return (
+                      <>
+                        {/* <TooltipTrigger> */}
+                        <GraduationCap />
+                        {/* </TooltipTrigger> */}
+                        {/* <TooltipContent>Alumni</TooltipContent> */}
+                      </>
+                    );
+                  } else if (userFromDB.type === "faculty") {
+                    return (
+                      <>
+                        {/* <TooltipTrigger> */}
+                        <Briefcase />
+                        {/* </TooltipTrigger> */}
+                        {/* <TooltipContent>Faculty</TooltipContent> */}
+                      </>
+                    );
+                  }
+                })()}
+                {/* </Tooltip> */}
 
-                <Tooltip delayDuration={250}>
-                  <TooltipTrigger>
-                    <Badge>
-                      {userFromDB.program.college.campus.slug.toUpperCase()}
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-60">
+                {/* <Tooltip delayDuration={250}>
+                  <TooltipTrigger> */}
+                <Badge>
+                  {userFromDB.program.college.campus.slug.toUpperCase()}
+                </Badge>
+                {/* </TooltipTrigger> */}
+                {/* <TooltipContent className="max-w-60">
                     {userFromDB.program.college.campus.name}
-                  </TooltipContent>
-                </Tooltip>
+                  </TooltipContent> */}
+                {/* </Tooltip> */}
 
-                <Tooltip delayDuration={250}>
-                  <TooltipTrigger>
-                    <Badge variant="outline">
-                      {userFromDB.program.slug.toUpperCase()}
-                    </Badge>
-                  </TooltipTrigger>
+                {/* <Tooltip delayDuration={250}>
+                  <TooltipTrigger> */}
+                <Badge variant="outline">
+                  {userFromDB.program.slug.toUpperCase()}
+                </Badge>
+                {/* </TooltipTrigger>
                   <TooltipContent className="max-w-60">
                     {userFromDB.program.name}
                   </TooltipContent>
-                </Tooltip>
+                </Tooltip> */}
 
                 <Badge variant="outline">
                   {getOrdinal(userFromDB.user_number + 1)} user

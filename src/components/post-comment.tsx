@@ -154,7 +154,7 @@ export default function PostComment({
               className="w-full"
             >
               <div className="flex w-full gap-x-2">
-                <div className="">
+                <div className="min-w-max">
                   {user?.imageUrl ? (
                     <Image
                       src={user.imageUrl}
@@ -208,14 +208,14 @@ export default function PostComment({
           </Form>
         ) : (
           <div className="flex w-full gap-x-2">
-            <div className="">
+            <div className="min-w-max">
               {user?.imageUrl ? (
                 <Image
                   src={user.imageUrl}
                   alt="Image"
                   width={40}
                   height={40}
-                  className="rounded-full"
+                  className="aspect-square rounded-full"
                 />
               ) : (
                 <Skeleton className="h-10 w-10 rounded-full" />

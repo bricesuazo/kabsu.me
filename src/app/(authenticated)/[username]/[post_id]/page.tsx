@@ -230,9 +230,17 @@ async function CommentComponent({ comment }: { comment: Comment }) {
       <div className="space-y-2 border p-4">
         <div className="flex justify-between">
           <div className="flex gap-x-2">
-            <Link href={`/${user.username}`}>
-              <Image src={user.imageUrl} alt="" width={40} height={40} />
-            </Link>
+            <div className="min-w-max">
+              <Link href={`/${user.username}`}>
+                <Image
+                  src={user.imageUrl}
+                  alt=""
+                  width={40}
+                  height={40}
+                  className="aspect-square rounded-full"
+                />
+              </Link>
+            </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-x-2">
                 <p className="line-clamp-1 group-hover:underline">
