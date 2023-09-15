@@ -155,3 +155,5 @@ export type Like = typeof likes.$inferSelect;
 export type NewLike = typeof likes.$inferInsert;
 export type Campus = typeof campuses.$inferSelect;
 export type NewCampus = typeof campuses.$inferInsert;
+export type Notification = typeof notifications.$inferSelect;
+export type NewNotification = typeof notifications.$inferInsert;

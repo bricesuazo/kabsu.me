@@ -134,3 +134,22 @@ export async function isUsernameExists({ username }: { username: string }) {
 
   return !!user || users.length > 0;
 }
+export async function getAllNotifications() {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("User not found");
+
+  const notifications = await db.query.notifications.findMany({
+    where: (notification, { eq }) => eq(notification.to_id, userId),
+    orderBy: (notification, { asc }) => asc(notification.created_at),
+  });
+
+  const users = await clerkClient.users.getUserList({
+    userId: notifications.map((notification) => notification.from_id),
+  });
+
+  return notifications.map((notification) => ({
+    ...notification,
+    from: users.find((user) => user.id === notification.from_id)!,
+  }));
+}

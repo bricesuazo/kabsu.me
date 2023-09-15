@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { UserButton, currentUser, useClerk, useUser } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import { Skeleton } from "./ui/skeleton";
 import {
   Menubar,
@@ -19,7 +19,7 @@ import {
   MenubarTrigger,
 } from "./ui/menubar";
 import { useTheme } from "next-themes";
-import { Bell, Check, LogOut, Menu, Moon, Sun } from "lucide-react";
+import { Check, LogOut, Menu, Moon, Sun } from "lucide-react";
 import { Icons } from "./icons";
 import {
   Sheet,
@@ -30,10 +30,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { ScrollArea } from "./ui/scroll-area";
 import { usePathname, useRouter } from "next/navigation";
 import { NAVBAR_LINKS } from "@/lib/constants";
+import Notifications from "./notifications";
 
 export default function Header() {
   // { userId }: { userId: string | null }
@@ -88,34 +87,7 @@ export default function Header() {
       </Button>
 
       <div className="flex items-center gap-x-2">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-9 w-9 rounded-full"
-            >
-              <Bell size="1rem" className="" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="p-2" align="end">
-            <h3 className="flex items-center gap-x-2 p-2 font-semibold">
-              <Bell size="1rem" />
-              Notifications
-            </h3>
-            <ScrollArea className="h-80">
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-                <div key={i} className="flex items-center gap-x-2 p-2">
-                  <Skeleton className="h-8 w-8 rounded-full" />
-                  <div className="flex flex-col gap-2">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-3 w-16" />
-                  </div>
-                </div>
-              ))}
-            </ScrollArea>
-          </PopoverContent>
-        </Popover>
+        <Notifications />
 
         {!isLoaded ? (
           <Skeleton className="m-1 h-8 w-8 rounded-full" />

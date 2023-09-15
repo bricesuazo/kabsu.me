@@ -133,7 +133,7 @@ export default async function UserPage({
                 {/* <h4 className="text-lg">
               {user.firstName} {user.lastName}
             </h4> */}
-                <p className="break-all text-muted-foreground">
+                <p className="break-words text-muted-foreground">
                   {userFromDB.bio
                     ? userFromDB.bio.length > 256
                       ? userFromDB.bio.slice(0, 256) + "..."

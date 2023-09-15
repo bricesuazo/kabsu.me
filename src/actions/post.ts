@@ -14,6 +14,7 @@ import {
   Like,
   Comment,
   comments,
+  notifications,
 } from "@/db/schema";
 import { CreatePostSchema, UpdatePostSchema } from "@/zod-schema/post";
 import { auth } from "@clerk/nextjs";
@@ -449,6 +450,14 @@ export async function likePost({ post_id }: { post_id: string }) {
   if (!post) throw new Error("Post not found");
 
   await db.insert(likes).values({ user_id: userId, post_id });
+
+  if (post.user_id !== userId) {
+    await db.insert(notifications).values({
+      to_id: post.user_id,
+      type: "like",
+      from_id: userId,
+    });
+  }
 }
 
 export async function unlikePost({ post_id }: { post_id: string }) {
@@ -490,6 +499,14 @@ export async function createComment({
   if (!post) throw new Error("Post not found");
 
   await db.insert(comments).values({ user_id: userId, post_id, content });
+
+  if (post.user_id !== userId) {
+    await db.insert(notifications).values({
+      to_id: post.user_id,
+      type: "comment",
+      from_id: userId,
+    });
+  }
 
   revalidatePath("/");
   revalidatePath("/[username]");
