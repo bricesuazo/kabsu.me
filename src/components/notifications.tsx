@@ -16,7 +16,7 @@ export default function Notifications() {
     queryKey: ["notifications"],
     queryFn: getAllNotifications,
     refetchOnMount: false,
-    refetchOnWindowFocus: false,
+    // refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     retry: false,
   });
@@ -51,16 +51,30 @@ export default function Notifications() {
             data.map((notification) => (
               <Link
                 key={notification.id}
-                href={`/${notification.link}`}
-                className="flex items-center gap-x-2 p-2"
+                href={(() => {
+                  switch (notification.type) {
+                    case "follow":
+                      return `/${notification.from.username}`;
+                    case "like":
+                      return `/${notification.from.username}/${notification.link}`;
+                    case "comment":
+                      return `/${notification.from.username}//${notification.link}`;
+                    default:
+                      return "";
+                  }
+                })()}
+                className="flex items-center gap-x-2 rounded p-2 hover:bg-muted"
               >
-                <Image
-                  src={notification.from.imageUrl}
-                  alt="Image"
-                  width={40}
-                  height={40}
-                  className="rounded-full"
-                />
+                <Link href={`/${notification.from.username}`}>
+                  <div className="relative h-10 w-10">
+                    <Image
+                      src={notification.from.imageUrl}
+                      alt="Image"
+                      fill
+                      className="rounded-full"
+                    />
+                  </div>
+                </Link>
                 <div className="flex flex-col gap-1">
                   <p className="line-clamp-2 text-sm font-medium">
                     @{notification.from.username}{" "}
