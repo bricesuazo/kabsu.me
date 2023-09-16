@@ -29,7 +29,6 @@ import { Input } from "./ui/input";
 import { toast } from "./ui/use-toast";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import CustomProgress from "./ui/custom-progress";
 

@@ -1,3 +1,13 @@
+import UserFollowsSkeleton from "@/components/user-follows-skeleton";
+
 export default function FollowersLoading() {
-  return <div>FOLLOWERS loading...</div>;
+  return (
+    <div>
+      <p className="text-center text-sm text-muted-foreground">Followers</p>
+
+      {[...Array(10)].map((_, i) => (
+        <UserFollowsSkeleton key={i} />
+      ))}
+    </div>
+  );
 }

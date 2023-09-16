@@ -46,6 +46,7 @@ export function LoadMorePost({
             post={post}
             isMyPost={post.user.id === userId}
             userId={userId}
+            data-superjson
           />
         );
       })}

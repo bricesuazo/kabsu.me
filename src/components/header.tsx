@@ -104,6 +104,7 @@ export default function Header() {
                       src={user.imageUrl}
                       alt="Image"
                       fill
+                      sizes="100%"
                       className="rounded-full"
                     />
                   </div>

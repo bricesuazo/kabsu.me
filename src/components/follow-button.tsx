@@ -30,7 +30,9 @@ export default function FollowButton({
     return (
       <AlertDialog open={openUnfollow} onOpenChange={setOpenUnfollow}>
         <AlertDialogTrigger asChild>
-          <Button variant="outline">Following</Button>
+          <Button variant="outline" size="sm">
+            Following
+          </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -68,6 +70,7 @@ export default function FollowButton({
     return (
       <Button
         variant="default"
+        size="sm"
         onClick={async () => {
           setLoading(true);
 

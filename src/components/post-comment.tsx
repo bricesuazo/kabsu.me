@@ -2,11 +2,7 @@
 
 import { nanoid } from "nanoid";
 import { Toggle } from "./ui/toggle";
-import {
-  useEffect,
-  experimental_useOptimistic as useOptimistic,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 import { Comment, Like, Post } from "@/db/schema";
 import {
   createComment,
@@ -36,8 +32,6 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Badge } from "./ui/badge";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import moment from "moment";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { ScrollArea } from "./ui/scroll-area";

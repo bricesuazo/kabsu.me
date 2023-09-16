@@ -118,6 +118,7 @@ export default function NotificationPage() {
                     src={notification.from.imageUrl}
                     alt="Image"
                     fill
+                    sizes="100%"
                     className="rounded-full"
                   />
                 </div>

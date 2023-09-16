@@ -33,6 +33,7 @@ export default async function Posts({
                   post={post}
                   isMyPost={post.user.id === userId}
                   userId={userId}
+                  data-superjson
                 />
               );
             })}

@@ -149,7 +149,11 @@ export default async function UserPage({
           <div className="space-y-2">
             <div className="flex items-center gap-x-2">
               {userId === user.id ? (
-                <EditProfile userFromDB={userFromDB} userFromClerk={user} />
+                <EditProfile
+                  userFromDB={userFromDB}
+                  userFromClerk={user}
+                  data-superjson
+                />
               ) : (
                 <Suspense fallback={<Button disabled>Follow</Button>}>
                   <FollowUserButton user={user} />
@@ -160,7 +164,7 @@ export default async function UserPage({
             <div className="flex items-center gap-x-4">
               <Suspense
                 fallback={
-                  <Button variant="link" className="p-0">
+                  <Button variant="link" className="p-0" disabled>
                     0 followers
                   </Button>
                 }
@@ -171,7 +175,7 @@ export default async function UserPage({
 
               <Suspense
                 fallback={
-                  <Button variant="link" className="p-0">
+                  <Button variant="link" className="p-0" disabled>
                     0 following
                   </Button>
                 }
@@ -316,6 +320,7 @@ async function PostsWrapper({ user }: { user: User }) {
                 },
               }}
               isMyPost={userId === post.user.id}
+              data-superjson
             />
           ))}
           <LoadMoreUserPost user_id={user.id} />

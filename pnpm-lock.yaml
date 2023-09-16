@@ -152,6 +152,9 @@ dependencies:
   next:
     specifier: 13.4.19
     version: registry.npmjs.org/next@13.4.19(react-dom@18.2.0)(react@18.2.0)
+  next-superjson-plugin:
+    specifier: ^0.5.9
+    version: registry.npmjs.org/next-superjson-plugin@0.5.9(next@13.4.19)(superjson@1.13.1)
   next-themes:
     specifier: ^0.2.1
     version: registry.npmjs.org/next-themes@0.2.1(next@13.4.19)(react-dom@18.2.0)(react@18.2.0)
@@ -176,6 +179,9 @@ dependencies:
   sharp:
     specifier: ^0.32.5
     version: registry.npmjs.org/sharp@0.32.5
+  superjson:
+    specifier: ^1.13.1
+    version: registry.npmjs.org/superjson@1.13.1
   svix:
     specifier: ^1.12.0
     version: registry.npmjs.org/svix@1.12.0
@@ -4754,6 +4760,14 @@ packages:
     version: 0.2.7
     dev: true
 
+  registry.npmjs.org/hoist-non-react-statics@3.3.2:
+    resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz}
+    name: hoist-non-react-statics
+    version: 3.3.2
+    dependencies:
+      react-is: registry.npmjs.org/react-is@16.13.1
+    dev: false
+
   registry.npmjs.org/iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.6.3.tgz}
     name: iconv-lite
@@ -5479,6 +5493,20 @@ packages:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/natural-compare/-/natural-compare-1.4.0.tgz}
     name: natural-compare
     version: 1.4.0
+    dev: false
+
+  registry.npmjs.org/next-superjson-plugin@0.5.9(next@13.4.19)(superjson@1.13.1):
+    resolution: {integrity: sha512-xEU+SvrSDk8PGAQ2TrJM/OhkZBcWjWWqSjpUtlxTAI9ovTjKBxxQumcFt7oXzoBLJsRtq0BWTHrcnzL/9izXPQ==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/next-superjson-plugin/-/next-superjson-plugin-0.5.9.tgz}
+    id: registry.npmjs.org/next-superjson-plugin/0.5.9
+    name: next-superjson-plugin
+    version: 0.5.9
+    peerDependencies:
+      next: ^13
+      superjson: ^1
+    dependencies:
+      hoist-non-react-statics: registry.npmjs.org/hoist-non-react-statics@3.3.2
+      next: registry.npmjs.org/next@13.4.19(react-dom@18.2.0)(react@18.2.0)
+      superjson: registry.npmjs.org/superjson@1.13.1
     dev: false
 
   registry.npmjs.org/next-themes@0.2.1(next@13.4.19)(react-dom@18.2.0)(react@18.2.0):

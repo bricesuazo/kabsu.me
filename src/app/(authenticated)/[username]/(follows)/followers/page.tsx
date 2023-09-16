@@ -48,24 +48,22 @@ export default async function FollowersPage({
 
   return (
     <div>
-      <h1>Followers</h1>
-      <div>
-        {followersUsers.length === 0 ? (
-          <p>No followees yet.</p>
-        ) : (
-          followersUsers.map((follower) => (
-            <UserFollows
-              key={follower.id}
-              user={follower}
-              isFollower={
-                myFollowees.filter(
-                  (followee) => followee.follower_id === follower.id,
-                ).length !== 0
-              }
-            />
-          ))
-        )}
-      </div>
+      <p className="text-center text-sm text-muted-foreground">Followers</p>
+      {followersUsers.length === 0 ? (
+        <p className="text-center">No followers yet.</p>
+      ) : (
+        followersUsers.map((follower) => (
+          <UserFollows
+            key={follower.id}
+            user={follower}
+            isFollower={
+              myFollowees.filter(
+                (followee) => followee.follower_id === follower.id,
+              ).length !== 0
+            }
+          />
+        ))
+      )}
     </div>
   );
 }

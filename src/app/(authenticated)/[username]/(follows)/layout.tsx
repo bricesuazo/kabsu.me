@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function FollowsLayout({
@@ -9,9 +10,17 @@ export default function FollowsLayout({
 }>) {
   return (
     <>
-      <Button asChild variant="outline">
-        <Link href={`/${username}`}>Back</Link>
-      </Button>
+      <div className="flex items-center justify-between">
+        <Button asChild variant="outline" size="icon">
+          <Link href={`/${username}`}>
+            <ArrowLeft size="1rem" />
+          </Link>
+        </Button>
+        <h2 className="line-clamp-1 flex-1 truncate text-center">
+          @{username}
+        </h2>
+        <div className="h-10 w-10" />
+      </div>
       {children}
     </>
   );

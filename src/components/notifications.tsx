@@ -94,7 +94,7 @@ export default function Notifications() {
         <ScrollArea className="h-80">
           {getAllNotificationsQuery.isLoading ||
           !getAllNotificationsQuery.data ? (
-            [...Array(10)].map((i) => (
+            [...Array(10)].map((_, i) => (
               <div key={i} className="flex items-center gap-x-2 p-2">
                 <Skeleton className="h-8 w-8 rounded-full" />
                 <div className="flex flex-col gap-2">
@@ -137,6 +137,7 @@ export default function Notifications() {
                       src={notification.from.imageUrl}
                       alt="Image"
                       fill
+                      sizes="100%"
                       className="rounded-full"
                     />
                   </div>

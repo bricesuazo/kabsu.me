@@ -11,7 +11,7 @@ import type {
 import moment from "moment";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,6 +48,7 @@ export default function Post({
   isMyPost: boolean;
   userId: string;
 }) {
+  const searchParams = useSearchParams();
   const router = useRouter();
   const [openDelete, setOpenDelete] = useState(false);
   // const [openUpdate, setOpenUpdate] = useState(false);
@@ -102,7 +103,9 @@ export default function Post({
                   <Tooltip delayDuration={250}>
                     <TooltipTrigger className="hidden xs:block">
                       <Badge>
-                        {post.user.program.college.campus.slug.toUpperCase()}
+                        {searchParams.get("tab") === "college"
+                          ? post.user.program.college.slug.toUpperCase()
+                          : post.user.program.college.campus.slug.toUpperCase()}
                       </Badge>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-[12rem]">

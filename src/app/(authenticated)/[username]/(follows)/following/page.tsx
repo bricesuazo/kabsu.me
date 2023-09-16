@@ -49,10 +49,10 @@ export default async function FollowingPage({
 
   return (
     <div>
-      <h1>Following</h1>
+      <p className="text-center text-sm text-muted-foreground">Following</p>
       <div>
         {followeesUsers.length === 0 ? (
-          <p>No following yet.</p>
+          <p className="text-center">No following yet.</p>
         ) : (
           followeesUsers.map((followee) => {
             return (

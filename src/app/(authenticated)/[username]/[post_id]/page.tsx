@@ -197,7 +197,7 @@ export default async function PostPage({
 
         <p>{post.content}</p>
 
-        <PostComment userId={userId} post={post} />
+        <PostComment userId={userId} post={post} data-superjson />
 
         <div className="">
           {post.comments.map((comment) => (

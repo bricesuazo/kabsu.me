@@ -295,12 +295,14 @@ export default function AuthForm() {
                 src="/adventura-logo.png"
                 alt=""
                 fill
+                sizes="100%"
                 className="pointer-events-none hidden select-none object-contain dark:block"
               />
               <Image
                 src="/adventura-logo-dark.png"
                 alt=""
                 fill
+                sizes="100%"
                 className="pointer-events-none select-none object-contain dark:hidden"
               />
             </div>
