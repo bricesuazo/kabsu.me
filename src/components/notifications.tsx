@@ -94,7 +94,7 @@ export default function Notifications() {
         <ScrollArea className="h-80">
           {getAllNotificationsQuery.isLoading ||
           !getAllNotificationsQuery.data ? (
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+            [...Array(10)].map((i) => (
               <div key={i} className="flex items-center gap-x-2 p-2">
                 <Skeleton className="h-8 w-8 rounded-full" />
                 <div className="flex flex-col gap-2">

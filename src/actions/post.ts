@@ -471,6 +471,10 @@ export async function likePost({ post_id }: { post_id: string }) {
       link: post_id,
     });
   }
+
+  revalidatePath("/");
+  revalidatePath("/[username]");
+  revalidatePath("/[username]/[post_id]");
 }
 
 export async function unlikePost({ post_id }: { post_id: string }) {
@@ -505,6 +509,10 @@ export async function unlikePost({ post_id }: { post_id: string }) {
         ),
       );
   }
+
+  revalidatePath("/");
+  revalidatePath("/[username]");
+  revalidatePath("/[username]/[post_id]");
 }
 
 export async function createComment({

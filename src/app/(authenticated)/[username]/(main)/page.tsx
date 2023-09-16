@@ -4,11 +4,6 @@ import { auth, clerkClient } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { LoadMoreUserPost } from "@/components/load-more-my-post";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Album, Briefcase, GraduationCap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
@@ -16,7 +11,6 @@ import EditProfile from "@/components/edit-profile";
 import FollowButton from "@/components/follow-button";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import PostSkeleton from "@/components/post-skeleton";
@@ -203,11 +197,11 @@ export default async function UserPage({
         </div>
         <Suspense
           fallback={
-            <>
-              {[0, 1, 2, 3, 4, 5, 6].map((_, i) => (
+            <div>
+              {[...Array(6)].map((_, i) => (
                 <PostSkeleton key={i} />
               ))}
-            </>
+            </div>
           }
         >
           <PostsWrapper user={user} />

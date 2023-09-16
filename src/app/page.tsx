@@ -44,7 +44,7 @@ export default function Home({
             <Suspense
               fallback={
                 <div>
-                  {[0, 1, 2, 3, 4, 5, 6].map((_, i) => (
+                  {[...Array(6)].map((_, i) => (
                     <PostSkeleton key={i} />
                   ))}
                 </div>

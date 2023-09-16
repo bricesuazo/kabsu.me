@@ -243,7 +243,6 @@ export default function Post({
               }`}
             </p>
 
-            {/* <p className="text-xs text-muted-foreground">Privacy:</p> */}
             <Badge variant="outline">
               {post.type.charAt(0).toUpperCase() + post.type.slice(1)}
             </Badge>

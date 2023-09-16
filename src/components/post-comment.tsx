@@ -53,7 +53,7 @@ export default function PostComment({
   const getLikesInPostQuery = useQuery({
     queryKey: ["getLikesInPost"],
     queryFn: async () => getLikesInPost({ id: post.id }),
-    enabled: open,
+    enabled: open && !!post.likes.length,
   });
   const params = useParams();
   const searchParams = useSearchParams();
@@ -127,6 +127,7 @@ export default function PostComment({
 
                 await unlikePost({ post_id: post.id });
               }
+              await getLikesInPostQuery.refetch();
             }}
           >
             <Heart
@@ -168,19 +169,19 @@ export default function PostComment({
                   <Badge>{likes.length}</Badge>
                 </DialogTitle>
               </DialogHeader>
-              {getLikesInPostQuery.isLoading ||
-              getLikesInPostQuery.isFetching ||
-              !getLikesInPostQuery.data ? (
-                <div className="flex flex-col gap-y-2">
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-              ) : getLikesInPostQuery.data.length === 0 ? (
+              {post.likes.length === 0 ||
+              getLikesInPostQuery.data?.length === 0 ? (
                 <p>No likes yet.</p>
+              ) : getLikesInPostQuery.isLoading ||
+                getLikesInPostQuery.isFetching ? (
+                <>
+                  {[...Array(post.likes.length)].map((_, i) => (
+                    <Skeleton key={i} className="h-14 w-full" />
+                  ))}
+                </>
               ) : (
                 <ScrollArea className="max-h-96">
-                  {getLikesInPostQuery.data.map((like) => (
+                  {getLikesInPostQuery.data?.map((like) => (
                     <Link
                       href={`/${like.user.username}`}
                       key={like.id}
@@ -236,6 +237,8 @@ export default function PostComment({
 
                 form.reset();
                 setIsFocused(false);
+                searchParams.has("comment") &&
+                  router.push(`/${params.username}/${params.post_id}`);
               })}
               className="w-full"
             >
