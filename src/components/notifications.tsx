@@ -16,8 +16,10 @@ import moment from "moment";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Icons } from "./icons";
+// import { useState } from "react";
 
 export default function Notifications() {
+  // const [open, setOpen] = useState(false);
   const getAllNotificationsQuery = useQuery({
     queryKey: ["notifications"],
     queryFn: getAllNotifications,
@@ -39,7 +41,9 @@ export default function Notifications() {
     },
   });
   return (
-    <Popover>
+    <Popover
+    // open={open} onOpenChange={setOpen}
+    >
       <PopoverTrigger asChild>
         <Button
           size="icon"
@@ -119,9 +123,12 @@ export default function Notifications() {
                       return "";
                   }
                 })()}
-                onClick={() =>
-                  markNotificationAsReadMutation.mutate({ id: notification.id })
-                }
+                onClick={(e) => {
+                  e.stopPropagation();
+                  markNotificationAsReadMutation.mutate({
+                    id: notification.id,
+                  });
+                }}
                 className="flex items-center gap-x-2 rounded p-2 hover:bg-muted"
               >
                 <Link href={`/${notification.from.username}`}>

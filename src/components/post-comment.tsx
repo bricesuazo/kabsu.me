@@ -8,7 +8,12 @@ import {
   useState,
 } from "react";
 import { Comment, Like, Post } from "@/db/schema";
-import { createComment, likePost, unlikePost } from "@/actions/post";
+import {
+  createComment,
+  getLikesInPost,
+  likePost,
+  unlikePost,
+} from "@/actions/post";
 import { Heart, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "./ui/textarea";
@@ -23,6 +28,19 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
 import { Icons } from "./icons";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Badge } from "./ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import moment from "moment";
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import { ScrollArea } from "./ui/scroll-area";
 
 export default function PostComment({
   userId,
@@ -31,6 +49,12 @@ export default function PostComment({
   userId: string;
   post: Post & { likes: Like[]; comments: Comment[] };
 }) {
+  const [open, setOpen] = useState(false);
+  const getLikesInPostQuery = useQuery({
+    queryKey: ["getLikesInPost"],
+    queryFn: async () => getLikesInPost({ id: post.id }),
+    enabled: open,
+  });
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -130,12 +154,74 @@ export default function PostComment({
           </Toggle>
         </div>
 
-        <p className="text-sm text-muted-foreground">
-          {`${likes.length} like${likes.length > 1 ? "s" : ""} — 
-          ${post.comments.length} comment${
-            post.comments.length > 1 ? "s" : ""
-          }`}
-        </p>
+        <div className="flex items-center gap-x-2">
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <button className="text-sm text-muted-foreground hover:underline">
+                {`${likes.length} like${likes.length > 1 ? "s" : ""}`}
+              </button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-x-2">
+                  <p>Likes</p>
+                  <Badge>{likes.length}</Badge>
+                </DialogTitle>
+              </DialogHeader>
+              {getLikesInPostQuery.isLoading ||
+              getLikesInPostQuery.isFetching ||
+              !getLikesInPostQuery.data ? (
+                <div className="flex flex-col gap-y-2">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              ) : getLikesInPostQuery.data.length === 0 ? (
+                <p>No likes yet.</p>
+              ) : (
+                <ScrollArea className="max-h-96">
+                  {getLikesInPostQuery.data.map((like) => (
+                    <Link
+                      href={`/${like.user.username}`}
+                      key={like.id}
+                      className="flex items-center gap-x-2 rounded p-2 hover:bg-muted"
+                    >
+                      <div className="min-w-max">
+                        {like.user.imageUrl ? (
+                          <Image
+                            src={like.user.imageUrl}
+                            alt="Image"
+                            width={40}
+                            height={40}
+                            className="aspect-square rounded-full"
+                          />
+                        ) : (
+                          <Skeleton className="h-10 w-10 rounded-full" />
+                        )}
+                      </div>
+                      <div className="flex flex-col">
+                        <p className="line-clamp-1 group-hover:underline">
+                          {like.user.firstName} {like.user.lastName}{" "}
+                        </p>
+                        <p className="line-clamp-1 flex-1 break-all text-sm">
+                          @{like.user.username}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </ScrollArea>
+              )}
+            </DialogContent>
+          </Dialog>
+          <p className="pointer-events-none select-none text-sm text-muted-foreground">
+            —
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {`${post.comments.length} comment${
+              post.comments.length > 1 ? "s" : ""
+            }`}
+          </p>
+        </div>
       </div>
 
       <div className="flex flex-col items-end gap-2">

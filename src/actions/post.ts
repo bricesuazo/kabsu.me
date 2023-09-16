@@ -538,3 +538,22 @@ export async function createComment({
   revalidatePath("/[username]");
   revalidatePath("/[username]/[post_id]");
 }
+
+export async function getLikesInPost({ id }: { id: string }) {
+  const likes = await db.query.likes.findMany({
+    where: (like, { eq }) => eq(like.post_id, id),
+    with: {
+      user: true,
+    },
+    orderBy: (like, { desc }) => desc(like.created_at),
+  });
+
+  const users = await clerkClient.users.getUserList({
+    userId: likes.map((like) => like.user_id),
+  });
+
+  return likes.map((like) => ({
+    ...like,
+    user: users.find((user) => user.id === like.user_id)!,
+  }));
+}
