@@ -30,6 +30,7 @@ import AboutDev from "./about-dev";
 import Link from "next/link";
 import { Separator } from "./ui/separator";
 import Footer from "./footer";
+import { Badge } from "./ui/badge";
 
 export default function AuthForm() {
   const searchParams = useSearchParams();
@@ -229,6 +230,11 @@ export default function AuthForm() {
             className="pointer-events-none mx-auto select-none"
           />
 
+          <div className="flex justify-center">
+            <Link href="https://github.com/bricesuazo/cvsu.me" target="_blank">
+              <Badge>Private Alpha Testing</Badge>
+            </Link>
+          </div>
           <h1 className="text-center text-6xl font-bold text-primary">
             CvSU.me
           </h1>
