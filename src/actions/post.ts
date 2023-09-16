@@ -547,6 +547,29 @@ export async function createComment({
   revalidatePath("/[username]/[post_id]");
 }
 
+export async function deleteComment({ comment_id }: { comment_id: string }) {
+  const { userId } = auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const comment = await db.query.comments.findFirst({
+    where: (comments, { and, eq }) =>
+      and(eq(comments.id, comment_id), eq(comments.user_id, userId)),
+  });
+
+  if (!comment) throw new Error("Comment not found");
+
+  if (comment.user_id !== userId) throw new Error("Unauthorized");
+
+  await db
+    .update(comments)
+    .set({ deleted_at: new Date() })
+    .where(and(eq(comments.id, comment_id), eq(comments.user_id, userId)));
+
+  revalidatePath("/");
+  revalidatePath("/[username]");
+  revalidatePath("/[username]/[post_id]");
+}
+
 export async function getLikesInPost({ id }: { id: string }) {
   const likes = await db.query.likes.findMany({
     where: (like, { eq }) => eq(like.post_id, id),

@@ -43,8 +43,8 @@ export default function PostSkeleton() {
 
       <div className="space-y-2">
         <div className="flex items-center gap-x-1">
-          <Skeleton className="h-7 w-7" />
-          <Skeleton className="h-7 w-7" />
+          <Skeleton className="h-8 w-8" />
+          <Skeleton className="h-8 w-8" />
         </div>
 
         <div className="flex items-center gap-x-2">

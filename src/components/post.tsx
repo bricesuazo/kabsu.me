@@ -22,7 +22,6 @@ import {
 } from "./ui/dropdown-menu";
 import { Heart, MessageCircle, MoreHorizontal } from "lucide-react";
 import { useState, experimental_useOptimistic as useOptimistic } from "react";
-import DeletePost from "./delete-post";
 // import UpdatePost from "./update-post";
 import { User } from "@clerk/nextjs/server";
 import Image from "next/image";
@@ -32,6 +31,7 @@ import { nanoid } from "nanoid";
 import { likePost, unlikePost } from "@/actions/post";
 import { Toggle } from "./ui/toggle";
 import { cn } from "@/lib/utils";
+import PostDropdown from "./post-dropdown";
 
 export default function Post({
   post,
@@ -50,14 +50,10 @@ export default function Post({
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [openDelete, setOpenDelete] = useState(false);
-  // const [openUpdate, setOpenUpdate] = useState(false);
   const [optimisticLike, setOptimisticLike] = useOptimistic<Like[]>(post.likes);
 
   return (
     <>
-      {/* <UpdatePost open={openUpdate} setOpen={setOpenUpdate} post={post} /> */}
-      <DeletePost open={openDelete} setOpen={setOpenDelete} post_id={post.id} />
       <div
         onClick={(e) => {
           e.stopPropagation();
@@ -68,9 +64,7 @@ export default function Post({
         <div className="flex justify-between">
           <Link
             href={`/${post.user.username}`}
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
+            onClick={(e) => e.stopPropagation()}
             className="flex gap-x-2"
           >
             <div className="w-max">
@@ -148,38 +142,7 @@ export default function Post({
             </div>
           </Link>
 
-          {isMyPost && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <div className="">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-8 w-8 text-muted-foreground hover:text-primary"
-                  >
-                    <MoreHorizontal size="1rem" />
-                  </Button>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                <DropdownMenuLabel>Post</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {/* <DropdownMenuItem onClick={() => setOpenUpdate(true)}>
-                  Edit
-                </DropdownMenuItem> */}
-                <DropdownMenuItem
-                  className="!text-red-500"
-                  onClick={() => setOpenDelete(true)}
-                >
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          {isMyPost && <PostDropdown post_id={post.id} />}
         </div>
 
         <p>

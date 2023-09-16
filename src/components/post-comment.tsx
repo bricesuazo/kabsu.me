@@ -216,6 +216,9 @@ export default function PostComment({
               post.comments.length > 1 ? "s" : ""
             }`}
           </p>
+          <Badge variant="outline">
+            {post.type.charAt(0).toUpperCase() + post.type.slice(1)}
+          </Badge>
         </div>
       </div>
 
