@@ -148,7 +148,9 @@ export default function PostForm() {
                             <SelectLabel>Privacy</SelectLabel>
                             {POST_TYPE_TABS.map((type) => (
                               <SelectItem key={type.id} value={type.id}>
-                                {type.name}
+                                {type.id === "following"
+                                  ? "Follower"
+                                  : type.name}
                               </SelectItem>
                             ))}
                           </SelectGroup>

@@ -23,7 +23,7 @@ import Link from "next/link";
 export default function NotificationPage() {
   const getAllNotificationsQuery = useQuery({
     queryKey: ["notifications"],
-    queryFn: getAllNotifications,
+    queryFn: async () => await getAllNotifications({ all: true }),
     refetchOnMount: false,
     // refetchOnWindowFocus: false,
     refetchOnReconnect: false,

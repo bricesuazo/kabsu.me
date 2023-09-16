@@ -22,7 +22,7 @@ export default function Notifications() {
   // const [open, setOpen] = useState(false);
   const getAllNotificationsQuery = useQuery({
     queryKey: ["notifications"],
-    queryFn: getAllNotifications,
+    queryFn: async () => await getAllNotifications(),
     refetchOnMount: false,
     // refetchOnWindowFocus: false,
     refetchOnReconnect: false,

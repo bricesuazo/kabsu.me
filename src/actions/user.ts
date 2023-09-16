@@ -163,7 +163,9 @@ export async function isUsernameExists({ username }: { username: string }) {
 
   return !!user || users.length > 0;
 }
-export async function getAllNotifications() {
+export async function getAllNotifications(
+  { all }: { all?: boolean } = { all: false },
+) {
   const { userId } = auth();
 
   if (!userId) throw new Error("User not found");
@@ -171,6 +173,7 @@ export async function getAllNotifications() {
   const notifications = await db.query.notifications.findMany({
     where: (notification, { eq }) => eq(notification.to_id, userId),
     orderBy: (notification, { desc }) => desc(notification.created_at),
+    limit: !all ? 8 : undefined,
   });
 
   const users = await clerkClient.users.getUserList({

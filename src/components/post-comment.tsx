@@ -168,11 +168,22 @@ export default function PostComment({
                 <p>No likes yet.</p>
               ) : getLikesInPostQuery.isLoading ||
                 getLikesInPostQuery.isFetching ? (
-                <>
+                <ScrollArea className="max-h-96">
                   {[...Array(post.likes.length)].map((_, i) => (
-                    <Skeleton key={i} className="h-14 w-full" />
+                    <div
+                      key={i}
+                      className="flex items-center gap-x-2 rounded p-2"
+                    >
+                      <div className="min-w-max">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                      </div>
+                      <div className="mb-1 space-y-2">
+                        <Skeleton className="h-5 w-40" />
+                        <Skeleton className="h-3 w-16" />
+                      </div>
+                    </div>
                   ))}
-                </>
+                </ScrollArea>
               ) : (
                 <ScrollArea className="max-h-96">
                   {getLikesInPostQuery.data?.map((like) => (
@@ -182,17 +193,13 @@ export default function PostComment({
                       className="flex items-center gap-x-2 rounded p-2 hover:bg-muted"
                     >
                       <div className="min-w-max">
-                        {like.user.imageUrl ? (
-                          <Image
-                            src={like.user.imageUrl}
-                            alt="Image"
-                            width={40}
-                            height={40}
-                            className="aspect-square rounded-full"
-                          />
-                        ) : (
-                          <Skeleton className="h-10 w-10 rounded-full" />
-                        )}
+                        <Image
+                          src={like.user.imageUrl}
+                          alt="Image"
+                          width={40}
+                          height={40}
+                          className="aspect-square rounded-full"
+                        />
                       </div>
                       <div className="flex flex-col">
                         <p className="line-clamp-1 group-hover:underline">
