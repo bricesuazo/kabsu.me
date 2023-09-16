@@ -36,6 +36,7 @@ import { Icons } from "./icons";
 import { ACCOUNT_TYPE, Campus, College, Program } from "@/db/schema";
 import { Card, CardFooter, CardHeader } from "./ui/card";
 import { Label } from "./ui/label";
+import { ScrollArea } from "./ui/scroll-area";
 
 export default function ProgramAuth({
   form1,
@@ -238,47 +239,54 @@ export default function ProgramAuth({
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[200px] p-0">
-                        <Command>
+                      <PopoverContent className="w-[236px] p-0" side="bottom">
+                        <Command
+                          filter={(value, search) => {
+                            if (value.match(search)) return 1;
+                            return 0;
+                          }}
+                        >
                           <CommandInput placeholder="Search campus..." />
                           <CommandEmpty>No campus.</CommandEmpty>
                           <CommandGroup>
-                            {data.campuses.map((campus) => (
-                              <CommandItem
-                                key={campus.id}
-                                value={`${
-                                  campus.name
-                                } (${campus.slug.toUpperCase()})`}
-                                onSelect={() => {
-                                  if (
-                                    form2.getValues("campus_id") !== campus.id
-                                  ) {
-                                    form2.setValue("college_id", "");
-                                    form2.setValue("program_id", "");
-                                  }
+                            <ScrollArea className="h-80">
+                              {data.campuses.map((campus) => (
+                                <CommandItem
+                                  key={campus.id}
+                                  value={`${
+                                    campus.name
+                                  } (${campus.slug.toUpperCase()})`}
+                                  onSelect={() => {
+                                    if (
+                                      form2.getValues("campus_id") !== campus.id
+                                    ) {
+                                      form2.setValue("college_id", "");
+                                      form2.setValue("program_id", "");
+                                    }
 
-                                  form2.setValue("campus_id", campus.id);
-                                  form2.trigger("campus_id");
-                                  setOpens((prev) => ({
-                                    ...prev,
-                                    campuses: false,
-                                  }));
-                                }}
-                                className="line-clamp-1"
-                              >
-                                <div>
-                                  <Check
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      campus.id === field.value
-                                        ? "opacity-100"
-                                        : "opacity-0",
-                                    )}
-                                  />
-                                </div>
-                                {campus.name} ({campus.slug.toUpperCase()})
-                              </CommandItem>
-                            ))}
+                                    form2.setValue("campus_id", campus.id);
+                                    form2.trigger("campus_id");
+                                    setOpens((prev) => ({
+                                      ...prev,
+                                      campuses: false,
+                                    }));
+                                  }}
+                                  className="line-clamp-1"
+                                >
+                                  <div>
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        campus.id === field.value
+                                          ? "opacity-100"
+                                          : "opacity-0",
+                                      )}
+                                    />
+                                  </div>
+                                  {campus.name} ({campus.slug.toUpperCase()})
+                                </CommandItem>
+                              ))}
+                            </ScrollArea>
                           </CommandGroup>
                         </Command>
                       </PopoverContent>
@@ -324,53 +332,61 @@ export default function ProgramAuth({
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[200px] p-0">
-                        <Command>
+                      <PopoverContent className="w-[236px] p-0" side="bottom">
+                        <Command
+                          filter={(value, search) => {
+                            if (value.match(search)) return 1;
+                            return 0;
+                          }}
+                        >
                           <CommandInput placeholder="Search college..." />
                           <CommandEmpty>No college.</CommandEmpty>
                           <CommandGroup>
-                            {data.colleges
-                              .filter(
-                                (college) =>
-                                  college.campus_id ===
-                                  form2.getValues("campus_id"),
-                              )
-                              .map((college) => (
-                                <CommandItem
-                                  key={college.id}
-                                  value={`${
-                                    college.name
-                                  } (${college.slug.toUpperCase()})`}
-                                  onSelect={() => {
-                                    if (
-                                      form2.getValues("college_id") !==
-                                      college.id
-                                    ) {
-                                      form2.setValue("program_id", "");
-                                    }
+                            <ScrollArea className="h-80">
+                              {data.colleges
+                                .filter(
+                                  (college) =>
+                                    college.campus_id ===
+                                    form2.getValues("campus_id"),
+                                )
+                                .map((college) => (
+                                  <CommandItem
+                                    key={college.id}
+                                    value={`${
+                                      college.name
+                                    } (${college.slug.toUpperCase()})`}
+                                    onSelect={() => {
+                                      if (
+                                        form2.getValues("college_id") !==
+                                        college.id
+                                      ) {
+                                        form2.setValue("program_id", "");
+                                      }
 
-                                    form2.setValue("college_id", college.id);
-                                    form2.trigger("college_id");
-                                    setOpens((prev) => ({
-                                      ...prev,
-                                      colleges: false,
-                                    }));
-                                  }}
-                                  className="line-clamp-1"
-                                >
-                                  <div>
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        college.id === field.value
-                                          ? "opacity-100"
-                                          : "opacity-0",
-                                      )}
-                                    />
-                                  </div>
-                                  {college.name} ({college.slug.toUpperCase()})
-                                </CommandItem>
-                              ))}
+                                      form2.setValue("college_id", college.id);
+                                      form2.trigger("college_id");
+                                      setOpens((prev) => ({
+                                        ...prev,
+                                        colleges: false,
+                                      }));
+                                    }}
+                                    className="line-clamp-1"
+                                  >
+                                    <div>
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          college.id === field.value
+                                            ? "opacity-100"
+                                            : "opacity-0",
+                                        )}
+                                      />
+                                    </div>
+                                    {college.name} ({college.slug.toUpperCase()}
+                                    )
+                                  </CommandItem>
+                                ))}
+                            </ScrollArea>
                           </CommandGroup>
                         </Command>
                       </PopoverContent>
@@ -414,45 +430,53 @@ export default function ProgramAuth({
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[200px] p-0">
-                        <Command>
+                      <PopoverContent className="w-[236px] p-0" side="bottom">
+                        <Command
+                          filter={(value, search) => {
+                            if (value.match(search)) return 1;
+                            return 0;
+                          }}
+                        >
                           <CommandInput placeholder="Search program..." />
                           <CommandEmpty>No program.</CommandEmpty>
                           <CommandGroup>
-                            {data.programs
-                              .filter(
-                                (program) =>
-                                  program.college_id ===
-                                  form2.getValues("college_id"),
-                              )
-                              .map((program) => (
-                                <CommandItem
-                                  key={program.id}
-                                  value={`${
-                                    program.name
-                                  } (${program.slug.toUpperCase()})`}
-                                  onSelect={() => {
-                                    form2.setValue("program_id", program.id);
-                                    form2.trigger("program_id");
-                                    setOpens((prev) => ({
-                                      ...prev,
-                                      programs: false,
-                                    }));
-                                  }}
-                                >
-                                  <div>
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        field.value === program.id
-                                          ? "opacity-100"
-                                          : "opacity-0",
-                                      )}
-                                    />
-                                  </div>
-                                  {program.name} ({program.slug.toUpperCase()})
-                                </CommandItem>
-                              ))}
+                            <ScrollArea className="h-80">
+                              {data.programs
+                                .filter(
+                                  (program) =>
+                                    program.college_id ===
+                                    form2.getValues("college_id"),
+                                )
+                                .map((program) => (
+                                  <CommandItem
+                                    key={program.id}
+                                    value={`${
+                                      program.name
+                                    } (${program.slug.toUpperCase()})`}
+                                    onSelect={() => {
+                                      form2.setValue("program_id", program.id);
+                                      form2.trigger("program_id");
+                                      setOpens((prev) => ({
+                                        ...prev,
+                                        programs: false,
+                                      }));
+                                    }}
+                                  >
+                                    <div>
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          field.value === program.id
+                                            ? "opacity-100"
+                                            : "opacity-0",
+                                        )}
+                                      />
+                                    </div>
+                                    {program.name} ({program.slug.toUpperCase()}
+                                    )
+                                  </CommandItem>
+                                ))}
+                            </ScrollArea>
                           </CommandGroup>
                         </Command>
                       </PopoverContent>
