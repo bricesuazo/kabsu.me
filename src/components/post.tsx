@@ -76,13 +76,16 @@ export default function Post({
                 className="rounded-full object-cover"
               />
             </div>
-            <div className="flex flex-1 flex-col">
+            <div className="flex flex-1 flex-col gap-y-1">
               <div className="group flex items-center gap-x-2">
-                <p className="line-clamp-1 group-hover:underline">
+                {/* <p className="line-clamp-1 group-hover:underline">
                   {post.user.firstName} {post.user.lastName}{" "}
+                </p> */}
+                <p className="text-md line-clamp-1 flex-1 break-all font-medium">
+                  @{post.user.username}
                 </p>
-                <div className="flex items-center gap-x-1">
-                  {/* {(() => {
+                {/* <div className="flex items-center gap-x-1"> */}
+                {/* {(() => {
                       switch (post.user.type) {
                         case "student":
                           return <Album />;
@@ -94,7 +97,7 @@ export default function Post({
                           return null;
                       }
                     })()} */}
-                  <Tooltip delayDuration={250}>
+                {/* <Tooltip delayDuration={250}>
                     <TooltipTrigger className="hidden xs:block">
                       <Badge>
                         {searchParams.get("tab") === "college"
@@ -116,8 +119,9 @@ export default function Post({
                     <TooltipContent className="max-w-[12rem]">
                       {post.user.program.name}
                     </TooltipContent>
-                  </Tooltip>
-                </div>
+                  </Tooltip> */}
+                {/* </div> */}
+
                 <p className="pointer-events-none hidden select-none sm:block">
                   ·
                 </p>
@@ -135,10 +139,51 @@ export default function Post({
                     </TooltipContent>
                   </Tooltip>
                 </div>
+                <Badge variant="outline">
+                  {post.type.charAt(0).toUpperCase() + post.type.slice(1)}
+                </Badge>
               </div>
-              <p className="line-clamp-1 flex-1 break-all text-sm">
+
+              <div className="flex items-center gap-x-1 ">
+                {/* {(() => {
+                      switch (post.user.type) {
+                        case "student":
+                          return <Album />;
+                        case "alumni":
+                          return <Briefcase />;
+                        case "faculty":
+                          return <GraduationCap />;
+                        default:
+                          return null;
+                      }
+                    })()} */}
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger className="hidden xs:block">
+                    <Badge>
+                      {searchParams.get("tab") === "college"
+                        ? post.user.program.college.slug.toUpperCase()
+                        : post.user.program.college.campus.slug.toUpperCase()}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[12rem]">
+                    {post.user.program.college.campus.name}
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger>
+                    <Badge variant="outline">
+                      {post.user.program.slug.toUpperCase()}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[12rem]">
+                    {post.user.program.name}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              {/* <p className="line-clamp-1 flex-1 break-all text-sm">
                 @{post.user.username}
-              </p>
+              </p> */}
             </div>
           </Link>
 
@@ -209,9 +254,9 @@ export default function Post({
               }`}
             </p>
 
-            <Badge variant="outline">
+            {/* <Badge variant="outline">
               {post.type.charAt(0).toUpperCase() + post.type.slice(1)}
-            </Badge>
+            </Badge> */}
           </div>
         </div>
       </div>
