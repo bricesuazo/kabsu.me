@@ -16,9 +16,15 @@ import moment from "moment";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Icons } from "./icons";
+// import { pusherClient } from "@/lib/pusher";
 // import { useState } from "react";
 
 export default function Notifications() {
+  // const channel = pusherClient.subscribe("my-channel");
+  // channel.bind("my-event", (data: any) => {
+  //   alert(JSON.stringify(data));
+  // });
+
   // const [open, setOpen] = useState(false);
   const getAllNotificationsQuery = useQuery({
     queryKey: ["notifications"],
