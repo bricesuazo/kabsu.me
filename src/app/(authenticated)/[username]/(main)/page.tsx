@@ -121,9 +121,13 @@ export default async function UserPage({
               </div>
 
               <div className="flex flex-col">
-                <h2 className="truncate text-2xl font-semibold xs:text-4xl">
+                <h2 className="truncate  text-2xl font-semibold xs:text-4xl">
                   @{user.username}
                 </h2>
+
+                <p className="line-clamp-1  ">
+                  {user.firstName} {user.lastName}
+                </p>
 
                 <p className="break-words text-muted-foreground">
                   {userFromDB.bio
