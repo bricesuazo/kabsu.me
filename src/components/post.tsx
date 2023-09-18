@@ -12,7 +12,7 @@ import moment from "moment";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Heart, MessageCircle } from "lucide-react";
-import { experimental_useOptimistic as useOptimistic } from "react";
+import { useState } from "react";
 // import UpdatePost from "./update-post";
 import { User } from "@clerk/nextjs/server";
 import Image from "next/image";
@@ -39,11 +39,25 @@ export default function Post({
   isMyPost: boolean;
   userId: string;
 }) {
-  const unlikeMutation = api.posts.unlike.useMutation();
-  const likeMutation = api.posts.like.useMutation();
+  const [likes, setLikes] = useState<Like[]>(post.likes);
+  const unlikeMutation = api.posts.unlike.useMutation({
+    onMutate: ({ post_id }) =>
+      setLikes(likes.filter((like) => like.user_id !== userId)),
+  });
+  const likeMutation = api.posts.like.useMutation({
+    onMutate: ({ post_id }) =>
+      setLikes([
+        ...likes,
+        {
+          id: nanoid(),
+          post_id,
+          user_id: userId,
+          created_at: new Date(),
+        },
+      ]),
+  });
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [optimisticLike, setOptimisticLike] = useOptimistic<Like[]>(post.likes);
 
   return (
     <>
@@ -193,34 +207,20 @@ export default function Post({
           <div className="flex">
             <Toggle
               size="sm"
-              pressed={optimisticLike.some((like) => like.user_id === userId)}
+              pressed={likes.some((like) => like.user_id === userId)}
               onClick={(e) => e.stopPropagation()}
-              onPressedChange={async (pressed) => {
+              onPressedChange={(pressed) => {
                 if (pressed) {
-                  setOptimisticLike([
-                    ...optimisticLike,
-                    {
-                      id: nanoid(),
-                      post_id: post.id,
-                      user_id: userId,
-                      created_at: new Date(),
-                    },
-                  ]);
-
-                  await likeMutation.mutateAsync({ post_id: post.id });
+                  likeMutation.mutate({ post_id: post.id });
                 } else {
-                  setOptimisticLike(
-                    optimisticLike.filter((like) => like.user_id !== userId),
-                  );
-
-                  await unlikeMutation.mutateAsync({ post_id: post.id });
+                  unlikeMutation.mutate({ post_id: post.id });
                 }
               }}
             >
               <Heart
                 className={cn(
                   "h-4 w-4",
-                  optimisticLike.some((like) => like.user_id === userId) &&
+                  likes.some((like) => like.user_id === userId) &&
                     "fill-primary text-primary",
                 )}
               />
@@ -240,11 +240,9 @@ export default function Post({
 
           <div className="flex items-center gap-x-4">
             <p className="text-sm text-muted-foreground">
-              {`${optimisticLike.length} like${
-                optimisticLike.length > 1 ? "s" : ""
-              } — ${post.comments.length} comment${
-                post.comments.length > 1 ? "s" : ""
-              }`}
+              {`${likes.length} like${likes.length > 1 ? "s" : ""} — ${
+                post.comments.length
+              } comment${post.comments.length > 1 ? "s" : ""}`}
             </p>
 
             {/* <Badge variant="outline">

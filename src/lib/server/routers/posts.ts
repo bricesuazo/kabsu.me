@@ -337,7 +337,7 @@ export const postsRouter = router({
         },
       }));
 
-      return returnPosts;
+      return { posts: returnPosts, userId: ctx.session.user.id };
     }),
 
   create: protectedProcedure
