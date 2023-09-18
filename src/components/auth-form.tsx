@@ -220,6 +220,7 @@ export default function AuthForm() {
             alt="Logo"
             width={256}
             height={256}
+            priority
             className="pointer-events-none mx-auto select-none"
           />
 

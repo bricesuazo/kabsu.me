@@ -80,6 +80,7 @@ export default function Header() {
               alt=""
               width={40}
               height={40}
+              priority
               className="object-contain"
             />
           </div>

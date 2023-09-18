@@ -12,7 +12,6 @@ import {
   User,
   posts,
 } from "@/lib/db/schema";
-import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
@@ -360,8 +359,6 @@ export const postsRouter = router({
         user_id: ctx.session.user.id,
         type: input.type,
       });
-
-      redirect(input.type === "following" ? "/" : `/?tab=${input.type}`);
     }),
 
   update: protectedProcedure

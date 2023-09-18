@@ -35,6 +35,9 @@ import { z } from "zod";
 import { POST_TYPE } from "@/lib/db/schema";
 import { api } from "@/lib/trpc/client";
 
+import { redirect, useRouter } from "next/navigation";
+import { testRevalidate } from "@/lib/actions";
+
 const Schema = z.object({
   content: z
     .string()
@@ -46,9 +49,7 @@ const Schema = z.object({
   type: z.enum(POST_TYPE).default(POST_TYPE[0]),
 });
 export default function PostForm() {
-  const createPostMutation = api.posts.create.useMutation();
-  const { user } = useUser();
-  const [isFocused, setIsFocused] = useState(false);
+  const router = useRouter();
   const form = useForm<z.infer<typeof Schema>>({
     resolver: zodResolver(Schema),
     defaultValues: {
@@ -56,6 +57,20 @@ export default function PostForm() {
       content: "",
     },
   });
+
+  const createPostMutation = api.posts.create.useMutation({
+    onSuccess: async () => {
+      router.refresh();
+      // await testRevalidate();
+      // redirect(
+      //   form.getValues("type") === "following"
+      //     ? "/"
+      //     : `/?tab=${form.getValues("type")}`,
+      // );
+    },
+  });
+  const { user } = useUser();
+  const [isFocused, setIsFocused] = useState(false);
 
   async function onSubmit(values: z.infer<typeof Schema>) {
     await createPostMutation.mutateAsync(values);
