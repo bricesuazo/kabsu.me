@@ -47,7 +47,7 @@ export default function PostComment({
       post_id: post.id,
     },
     {
-      enabled: open && !!post.likes.length,
+      enabled: open,
     },
   );
   const params = useParams();

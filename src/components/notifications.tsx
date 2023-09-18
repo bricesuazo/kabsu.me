@@ -25,9 +25,8 @@ export default function Notifications() {
     { all: true },
     {
       refetchOnMount: false,
-      // refetchOnWindowFocus: false,
+      refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-      retry: false,
     },
   );
   const markAllNotificationAsReadMutation =
