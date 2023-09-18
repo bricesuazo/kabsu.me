@@ -84,7 +84,9 @@ export const postsRouter = router({
           offset: (input.page - 1) * 10,
 
           with: {
-            comments: true,
+            comments: {
+              where: (comment, { isNull }) => isNull(comment.deleted_at),
+            },
             likes: true,
             user: {
               with: {
@@ -164,7 +166,9 @@ export const postsRouter = router({
           offset: (input.page - 1) * 10,
           orderBy: (post, { desc }) => desc(post.created_at),
           with: {
-            comments: true,
+            comments: {
+              where: (comment, { isNull }) => isNull(comment.deleted_at),
+            },
             likes: true,
             user: {
               with: {
@@ -235,7 +239,9 @@ export const postsRouter = router({
           offset: (input.page - 1) * 10,
           orderBy: (post, { desc }) => desc(post.created_at),
           with: {
-            comments: true,
+            comments: {
+              where: (comment, { isNull }) => isNull(comment.deleted_at),
+            },
             likes: true,
             user: {
               with: {
@@ -288,7 +294,9 @@ export const postsRouter = router({
           limit: 10,
           offset: (input.page - 1) * 10,
           with: {
-            comments: true,
+            comments: {
+              where: (comment, { isNull }) => isNull(comment.deleted_at),
+            },
             likes: true,
             user: {
               with: {
@@ -349,7 +357,9 @@ export const postsRouter = router({
           offset: (input.page - 1) * 10,
           orderBy: (post, { desc }) => desc(post.created_at),
           with: {
-            comments: true,
+            comments: {
+              where: (comment, { isNull }) => isNull(comment.deleted_at),
+            },
             likes: true,
             user: {
               with: {
@@ -484,7 +494,9 @@ export const postsRouter = router({
         offset: (input.page - 1) * 10,
         orderBy: (post, { desc }) => desc(post.created_at),
         with: {
-          comments: true,
+          comments: {
+            where: (comment, { isNull }) => isNull(comment.deleted_at),
+          },
           likes: true,
           user: {
             with: {

@@ -22,7 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/trpc/client";
 
 export default function PostDropdown({
@@ -32,6 +32,8 @@ export default function PostDropdown({
   post_id: string;
   successUrl?: string;
 }) {
+  const context = api.useContext();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const deletePostMutation = api.posts.delete.useMutation({
     onSuccess: () => {
@@ -68,6 +70,14 @@ export default function PostDropdown({
                 toast({
                   title: "Post deleted",
                   description: "Your post has been deleted.",
+                });
+                await context.posts.getPosts.invalidate({
+                  type:
+                    (searchParams.get("tab") as
+                      | "all"
+                      | "program"
+                      | "college"
+                      | undefined) || "following",
                 });
               }}
               disabled={deletePostMutation.isLoading}

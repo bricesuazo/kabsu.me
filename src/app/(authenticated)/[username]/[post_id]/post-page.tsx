@@ -1,6 +1,6 @@
 "use client";
 
-import CommentDropdown from "@/components/comment-dropdown";
+import CommentDropdown from "@/app/(authenticated)/[username]/[post_id]/comment-dropdown";
 import PostComment from "@/components/post-comment";
 import PostDropdown from "@/components/post-dropdown";
 import { Badge } from "@/components/ui/badge";

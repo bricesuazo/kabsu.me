@@ -19,16 +19,19 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "./ui/alert-dialog";
-import { toast } from "./ui/use-toast";
-import { Icons } from "./icons";
+} from "../../../../components/ui/alert-dialog";
+import { toast } from "../../../../components/ui/use-toast";
+import { Icons } from "../../../../components/icons";
 import { api } from "@/lib/trpc/client";
+import { useParams } from "next/navigation";
 
 export default function CommentDropdown({
   comment_id,
 }: {
   comment_id: string;
 }) {
+  const params = useParams();
+  const context = api.useContext();
   const deleteCommentMutation = api.comments.delete.useMutation();
   const [openDelete, setOpenDelete] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -56,6 +59,10 @@ export default function CommentDropdown({
                 toast({
                   title: "Comment deleted",
                   description: "Your comment has been deleted.",
+                });
+
+                await context.posts.getPost.invalidate({
+                  post_id: params.post_id as string,
                 });
               }}
               disabled={loading}

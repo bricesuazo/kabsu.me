@@ -15,7 +15,6 @@ import { User } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import PostSkeleton from "@/components/post-skeleton";
 import { getOrdinal } from "@/lib/utils";
-import RefreshPage from "@/components/RefreshPage";
 
 export function generateMetadata({
   params,
@@ -54,7 +53,6 @@ export default async function UserPage({
 
   return (
     <>
-      <RefreshPage />
       <div className="space-y-4">
         <div className="space-y-4">
           <div className="flex w-full flex-col-reverse gap-x-8 gap-y-4 xs:flex-row">

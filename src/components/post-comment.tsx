@@ -37,6 +37,7 @@ export default function PostComment({
   userId: string;
   post: Post & { likes: Like[]; comments: Comment[] };
 }) {
+  const context = api.useContext();
   const [open, setOpen] = useState(false);
   const likePostMutation = api.posts.like.useMutation();
   const unlikePostMutation = api.posts.unlike.useMutation();
@@ -243,6 +244,8 @@ export default function PostComment({
                 setIsFocused(false);
                 searchParams.has("comment") &&
                   router.push(`/${params.username}/${params.post_id}`);
+
+                await context.posts.getPost.invalidate({ post_id: post.id });
               })}
               className="w-full"
             >

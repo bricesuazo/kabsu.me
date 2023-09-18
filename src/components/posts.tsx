@@ -4,7 +4,7 @@ import Post from "./post";
 import { POST_TYPE_TABS } from "@/lib/constants";
 import { LoadMorePost } from "./load-more-post";
 import { api } from "@/lib/trpc/client";
-import PostSkeleton, { PostSkeletonNoRandom } from "./post-skeleton";
+import { PostSkeletonNoRandom } from "./post-skeleton";
 
 export default function Posts({
   tab,

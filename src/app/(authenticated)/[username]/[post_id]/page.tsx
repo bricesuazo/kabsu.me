@@ -1,4 +1,3 @@
-import RefreshPage from "@/components/RefreshPage";
 import { db } from "@/lib/db";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -30,7 +29,6 @@ export default function PostPage({
 }) {
   return (
     <>
-      <RefreshPage />
       {/* <UpdatePost open={openUpdate} setOpen={setOpenUpdate} post={post} /> */}
       {/* <DeletePost open={openDelete} setOpen={setOpenDelete} post_id={post.id} /> */}
 

@@ -48,6 +48,7 @@ const Schema = z.object({
   type: z.enum(POST_TYPE).default(POST_TYPE[0]),
 });
 export default function PostForm() {
+  const context = api.useContext();
   const router = useRouter();
   const form = useForm<z.infer<typeof Schema>>({
     resolver: zodResolver(Schema),
@@ -65,6 +66,8 @@ export default function PostForm() {
           : `/?tab=${form.getValues("type")}`,
       );
       router.refresh();
+
+      await context.posts.getPosts.invalidate({ type: form.getValues("type") });
     },
   });
   const { user } = useUser();
