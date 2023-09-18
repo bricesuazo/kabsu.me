@@ -12,8 +12,8 @@ import {
   Program,
   Like,
   Comment,
-} from "@/db/schema";
-import { getUserPosts } from "@/actions/post";
+} from "@/lib/db/schema";
+import { api } from "@/lib/trpc/server";
 
 export function LoadMoreUserPost({ user_id }: { user_id: string }) {
   const [posts, setPosts] = useState<
@@ -34,7 +34,8 @@ export function LoadMoreUserPost({ user_id }: { user_id: string }) {
     setLoading(true);
     // const nextPage = (page % 7) + 1;
     const nextPage = page + 1;
-    const newPosts = (await getUserPosts({ page: nextPage, user_id })) ?? [];
+    const newPosts =
+      (await api.posts.getUserPosts.query({ page: nextPage, user_id })) ?? [];
     setPosts((prevPosts) => [...prevPosts, ...newPosts]);
     setPage(nextPage);
     setLoading(false);

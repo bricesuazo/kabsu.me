@@ -1,4 +1,4 @@
-import { POST_TYPE } from "@/db/schema";
+import { POST_TYPE } from "@/lib/db/schema";
 import { nanoid } from "nanoid";
 
 import { Twitter, Instagram, Github, Globe, Mail } from "lucide-react";

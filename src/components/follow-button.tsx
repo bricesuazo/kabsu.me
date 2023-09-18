@@ -3,7 +3,6 @@
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { Icons } from "./icons";
-import { followUser, unfollowUser } from "@/actions/user";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
+import { api } from "@/lib/trpc/client";
 
 export default function FollowButton({
   isFollower,
@@ -23,6 +23,9 @@ export default function FollowButton({
   isFollower: boolean;
   user_id: string;
 }) {
+  const unfollowMutation = api.users.unfollow.useMutation();
+  const followMutation = api.users.follow.useMutation();
+
   const [loading, setLoading] = useState(false);
   const [openUnfollow, setOpenUnfollow] = useState(false);
 
@@ -49,7 +52,7 @@ export default function FollowButton({
             <Button
               onClick={async () => {
                 setLoading(true);
-                await unfollowUser({ user_id });
+                await unfollowMutation.mutateAsync({ user_id });
 
                 setOpenUnfollow(false);
 
@@ -74,7 +77,7 @@ export default function FollowButton({
         onClick={async () => {
           setLoading(true);
 
-          await followUser({
+          await followMutation.mutateAsync({
             user_id,
           });
           setLoading(false);

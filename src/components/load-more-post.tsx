@@ -5,7 +5,7 @@ import { useInView } from "react-intersection-observer";
 import { Icons } from "./icons";
 import Post from "./post";
 import { POST_TYPE_TABS } from "@/lib/constants";
-import { getPosts } from "@/actions/post";
+import { api } from "@/lib/trpc/server";
 
 export function LoadMorePost({
   userId,
@@ -14,7 +14,9 @@ export function LoadMorePost({
   userId: string;
   type: (typeof POST_TYPE_TABS)[number]["id"];
 }) {
-  const [posts, setPosts] = useState<Awaited<ReturnType<typeof getPosts>>>([]);
+  const [posts, setPosts] = useState<
+    Awaited<ReturnType<typeof api.posts.getPosts.query>>
+  >([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -24,7 +26,8 @@ export function LoadMorePost({
     setLoading(true);
     // const nextPage = (page % 7) + 1;
     const nextPage = page + 1;
-    const newPosts = (await getPosts({ page: nextPage, type })) ?? [];
+    const newPosts =
+      (await api.posts.getPosts.query({ page: nextPage, type })) ?? [];
     setPosts((prevPosts) => [...prevPosts, ...newPosts]);
     setPage(nextPage);
     setLoading(false);

@@ -1,5 +1,5 @@
 import Post from "@/components/post";
-import { db } from "@/db";
+import { db } from "@/lib/db";
 import { auth, clerkClient } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -327,7 +327,7 @@ async function PostsWrapper({ user }: { user: User }) {
               data-superjson
             />
           ))}
-          <LoadMoreUserPost user_id={user.id} />
+          {/* <LoadMoreUserPost user_id={user.id} /> */}
         </>
       )}
     </div>

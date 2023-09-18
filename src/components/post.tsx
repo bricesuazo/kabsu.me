@@ -7,31 +7,22 @@ import type {
   Comment,
   Post,
   Program,
-} from "@/db/schema";
+} from "@/lib/db/schema";
 import moment from "moment";
 import Link from "next/link";
-import { Button } from "./ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Heart, MessageCircle, MoreHorizontal } from "lucide-react";
-import { useState, experimental_useOptimistic as useOptimistic } from "react";
+import { Heart, MessageCircle } from "lucide-react";
+import { experimental_useOptimistic as useOptimistic } from "react";
 // import UpdatePost from "./update-post";
 import { User } from "@clerk/nextjs/server";
 import Image from "next/image";
 import { Badge } from "./ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { nanoid } from "nanoid";
-import { likePost, unlikePost } from "@/actions/post";
 import { Toggle } from "./ui/toggle";
 import { cn } from "@/lib/utils";
 import PostDropdown from "./post-dropdown";
+import { api } from "@/lib/trpc/client";
 
 export default function Post({
   post,
@@ -48,6 +39,8 @@ export default function Post({
   isMyPost: boolean;
   userId: string;
 }) {
+  const unlikeMutation = api.posts.unlike.useMutation();
+  const likeMutation = api.posts.like.useMutation();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [optimisticLike, setOptimisticLike] = useOptimistic<Like[]>(post.likes);
@@ -214,13 +207,13 @@ export default function Post({
                     },
                   ]);
 
-                  await likePost({ post_id: post.id });
+                  await likeMutation.mutateAsync({ post_id: post.id });
                 } else {
                   setOptimisticLike(
                     optimisticLike.filter((like) => like.user_id !== userId),
                   );
 
-                  await unlikePost({ post_id: post.id });
+                  await unlikeMutation.mutateAsync({ post_id: post.id });
                 }
               }}
             >

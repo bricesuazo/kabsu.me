@@ -1,6 +1,5 @@
 "use client";
 
-import { deleteComment } from "@/actions/post";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -23,12 +22,14 @@ import {
 } from "./ui/alert-dialog";
 import { toast } from "./ui/use-toast";
 import { Icons } from "./icons";
+import { api } from "@/lib/trpc/client";
 
 export default function CommentDropdown({
   comment_id,
 }: {
   comment_id: string;
 }) {
+  const deleteCommentMutation = api.comments.delete.useMutation();
   const [openDelete, setOpenDelete] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -49,7 +50,7 @@ export default function CommentDropdown({
               variant="destructive"
               onClick={async () => {
                 setLoading(true);
-                await deleteComment({ comment_id });
+                await deleteCommentMutation.mutateAsync({ comment_id });
                 setLoading(false);
                 setOpenDelete(false);
                 toast({

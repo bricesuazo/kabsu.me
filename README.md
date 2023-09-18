@@ -11,6 +11,21 @@ A social media platform exclusive only for Cavite State University students, fac
 - [PlanetScale](https://planetscale.com/) - Database
 - [Vercel](https://vercel.com/) - Hosting
 
+### Roadmap
+
+- [x] Authentication
+- [x] Profile
+- [x] Posts
+- [x] Comments
+- [x] Likes
+- [x] Follows
+- [x] Notifications
+- [ ] React query for infinite scrolling
+- [ ] Realtime
+- [ ] Ratelimit
+- [ ] Messages
+- [ ] Search
+
 ### Development
 
 1. Clone the repository

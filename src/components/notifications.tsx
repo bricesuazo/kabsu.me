@@ -5,17 +5,12 @@ import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
 import { Skeleton } from "./ui/skeleton";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  getAllNotifications,
-  markAllNotificationAsRead,
-  markNotificationAsRead,
-} from "@/actions/user";
 import Image from "next/image";
 import moment from "moment";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Icons } from "./icons";
+import { api } from "@/lib/trpc/client";
 // import { pusherClient } from "@/lib/pusher";
 // import { useState } from "react";
 
@@ -26,26 +21,28 @@ export default function Notifications() {
   // });
 
   // const [open, setOpen] = useState(false);
-  const getAllNotificationsQuery = useQuery({
-    queryKey: ["notifications"],
-    queryFn: async () => await getAllNotifications(),
-    refetchOnMount: false,
-    // refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    retry: false,
-  });
-  const markAllNotificationAsReadMutation = useMutation({
-    mutationFn: markAllNotificationAsRead,
-    onSettled: () => {
-      getAllNotificationsQuery.refetch();
+  const getAllNotificationsQuery = api.notifications.getAll.useQuery(
+    { all: true },
+    {
+      refetchOnMount: false,
+      // refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      retry: false,
     },
-  });
-  const markNotificationAsReadMutation = useMutation({
-    mutationFn: markNotificationAsRead,
-    onSettled: () => {
-      getAllNotificationsQuery.refetch();
-    },
-  });
+  );
+  const markAllNotificationAsReadMutation =
+    api.notifications.markAllAsRead.useMutation({
+      onSettled: () => {
+        getAllNotificationsQuery.refetch();
+      },
+    });
+  const markNotificationAsReadMutation =
+    api.notifications.markAsRead.useMutation({
+      onSettled: () => {
+        getAllNotificationsQuery.refetch();
+      },
+    });
+
   return (
     <Popover
     // open={open} onOpenChange={setOpen}

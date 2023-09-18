@@ -1,5 +1,5 @@
 import UserFollows from "@/components/user-follows";
-import { db } from "@/db";
+import { db } from "@/lib/db";
 import { auth, clerkClient } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";

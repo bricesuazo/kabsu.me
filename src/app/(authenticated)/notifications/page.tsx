@@ -1,10 +1,5 @@
 "use client";
 
-import {
-  getAllNotifications,
-  markAllNotificationAsRead,
-  markNotificationAsRead,
-} from "@/actions/user";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -14,33 +9,28 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/trpc/client";
 import { Bell, BookOpenCheckIcon } from "lucide-react";
 import moment from "moment";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function NotificationPage() {
-  const getAllNotificationsQuery = useQuery({
-    queryKey: ["notifications"],
-    queryFn: async () => await getAllNotifications({ all: true }),
-    refetchOnMount: false,
-    // refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    retry: false,
+  const getAllNotificationsQuery = api.notifications.getAll.useQuery({
+    all: true,
   });
-  const markAllNotificationAsReadMutation = useMutation({
-    mutationFn: markAllNotificationAsRead,
-    onSettled: () => {
-      getAllNotificationsQuery.refetch();
-    },
-  });
-  const markNotificationAsReadMutation = useMutation({
-    mutationFn: markNotificationAsRead,
-    onSettled: () => {
-      getAllNotificationsQuery.refetch();
-    },
-  });
+  const markAllNotificationAsReadMutation =
+    api.notifications.markAllAsRead.useMutation({
+      onSettled: () => {
+        getAllNotificationsQuery.refetch();
+      },
+    });
+  const markNotificationAsReadMutation =
+    api.notifications.markAsRead.useMutation({
+      onSettled: () => {
+        getAllNotificationsQuery.refetch();
+      },
+    });
   return (
     <>
       <div className="flex items-center justify-between">

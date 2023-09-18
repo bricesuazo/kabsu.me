@@ -8,8 +8,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { db } from "@/db";
-import { Comment } from "@/db/schema";
+import { db } from "@/lib/db";
+import { Comment } from "@/lib/db/schema";
 import { auth, clerkClient } from "@clerk/nextjs";
 import { Album, Briefcase, GraduationCap } from "lucide-react";
 import moment from "moment";

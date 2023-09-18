@@ -1,9 +1,9 @@
 import Post from "./post";
-import { auth, clerkClient } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
-import { getPosts } from "@/actions/post";
 import { POST_TYPE_TABS } from "@/lib/constants";
 import { LoadMorePost } from "./load-more-post";
+import { api } from "@/lib/trpc/server";
 
 export default async function Posts({
   tab,
@@ -14,7 +14,7 @@ export default async function Posts({
 
   if (!userId) notFound();
 
-  const posts = await getPosts({ type: tab, page: 1 });
+  const posts = await api.posts.getPosts.query({ type: tab, page: 1 });
 
   return (
     <div className="flex flex-col">
@@ -37,7 +37,7 @@ export default async function Posts({
                 />
               );
             })}
-            <LoadMorePost type={tab} userId={userId} />
+            {/* <LoadMorePost type={tab} userId={userId} /> */}
           </>
         )
       )}

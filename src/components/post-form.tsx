@@ -13,8 +13,6 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { CreatePostSchema, createPostSchema } from "@/zod-schema/post";
-import { createPost } from "@/actions/post";
 import { Icons } from "./icons";
 import {
   Select,
@@ -33,20 +31,34 @@ import { useUser } from "@clerk/nextjs";
 import { POST_TYPE_TABS } from "@/lib/constants";
 import Link from "next/link";
 import { Trash } from "lucide-react";
+import { z } from "zod";
+import { POST_TYPE } from "@/lib/db/schema";
+import { api } from "@/lib/trpc/client";
 
+const Schema = z.object({
+  content: z
+    .string()
+    .trim()
+    .nonempty({ message: "Post cannot be empty." })
+    .max(512, {
+      message: "Post cannot be longer than 512 characters.",
+    }),
+  type: z.enum(POST_TYPE).default(POST_TYPE[0]),
+});
 export default function PostForm() {
+  const createPostMutation = api.posts.create.useMutation();
   const { user } = useUser();
   const [isFocused, setIsFocused] = useState(false);
-  const form = useForm<CreatePostSchema>({
-    resolver: zodResolver(createPostSchema),
+  const form = useForm<z.infer<typeof Schema>>({
+    resolver: zodResolver(Schema),
     defaultValues: {
       type: "following",
       content: "",
     },
   });
 
-  async function onSubmit(values: CreatePostSchema) {
-    await createPost(values);
+  async function onSubmit(values: z.infer<typeof Schema>) {
+    await createPostMutation.mutateAsync(values);
 
     form.reset();
   }

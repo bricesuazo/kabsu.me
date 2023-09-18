@@ -11,7 +11,6 @@ import {
   AlertDialogTitle,
 } from "./ui/alert-dialog";
 import { Button } from "./ui/button";
-import { deletePost } from "@/actions/post";
 import { Icons } from "./icons";
 import { toast } from "./ui/use-toast";
 import {
@@ -24,6 +23,7 @@ import {
 } from "./ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/trpc/client";
 
 export default function PostDropdown({
   post_id,
@@ -32,6 +32,7 @@ export default function PostDropdown({
   post_id: string;
   successUrl?: string;
 }) {
+  const deletePostMutation = api.posts.delete.useMutation();
   const router = useRouter();
   const [openDelete, setOpenDelete] = useState(false);
   // const [openUpdate, setOpenUpdate] = useState(false);
@@ -54,7 +55,7 @@ export default function PostDropdown({
               variant="destructive"
               onClick={async () => {
                 setLoading(true);
-                await deletePost({ post_id });
+                await deletePostMutation.mutateAsync({ post_id });
                 setLoading(false);
                 setOpenDelete(false);
                 toast({
