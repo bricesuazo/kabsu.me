@@ -14,8 +14,51 @@ import {
 } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
+import { notFound } from "next/navigation";
 
 export const postsRouter = router({
+  getPost: protectedProcedure
+    .input(z.object({ post_id: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.db.query.posts.findFirst({
+        where: (post, { eq, and, isNull }) =>
+          and(eq(post.id, input.post_id), isNull(post.deleted_at)),
+        with: {
+          likes: true,
+          comments: {
+            where: (comment, { isNull }) => isNull(comment.deleted_at),
+            orderBy: (comment, { desc }) => desc(comment.created_at),
+          },
+          user: {
+            with: {
+              program: {
+                with: {
+                  college: {
+                    with: { campus: true },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!post) notFound();
+
+      const user = await ctx.clerk.users.getUser(post.user.id);
+
+      return {
+        userId: ctx.session.user.id,
+        post: {
+          ...post,
+          user: {
+            ...post.user,
+            ...user,
+          },
+        },
+      };
+    }),
+
   getPosts: protectedProcedure
     .input(
       z.object({

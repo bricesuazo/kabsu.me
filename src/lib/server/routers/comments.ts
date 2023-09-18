@@ -4,6 +4,30 @@ import { comments, notifications } from "@/lib/db/schema";
 import { z } from "zod";
 import { and, eq } from "drizzle-orm";
 export const commentsRouter = router({
+  getFullComment: protectedProcedure
+    .input(z.object({ comment_id: z.string().nonempty() }))
+
+    .query(async ({ ctx, input }) => {
+      const fullComment = await ctx.db.query.comments.findFirst({
+        where: (comment, { eq }) => eq(comment.id, input.comment_id),
+        with: {
+          user: true,
+        },
+      });
+
+      if (!fullComment) return null;
+
+      const user = await ctx.clerk.users.getUser(fullComment.user_id);
+
+      return {
+        comment: {
+          ...fullComment,
+          user,
+        },
+        userId: ctx.session.user.id,
+      };
+    }),
+
   create: protectedProcedure
     .input(
       z.object({
