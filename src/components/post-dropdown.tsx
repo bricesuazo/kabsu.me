@@ -32,12 +32,19 @@ export default function PostDropdown({
   post_id: string;
   successUrl?: string;
 }) {
-  const deletePostMutation = api.posts.delete.useMutation();
   const router = useRouter();
+  const deletePostMutation = api.posts.delete.useMutation({
+    onSuccess: () => {
+      if (successUrl) {
+        router.push(successUrl);
+      } else {
+        router.refresh();
+      }
+    },
+  });
   const [openDelete, setOpenDelete] = useState(false);
   // const [openUpdate, setOpenUpdate] = useState(false);
 
-  const [loading, setLoading] = useState(false);
   return (
     <div onClick={(e) => e.stopPropagation()}>
       <AlertDialog open={openDelete} onOpenChange={setOpenDelete}>
@@ -50,23 +57,22 @@ export default function PostDropdown({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={deletePostMutation.isLoading}>
+              Cancel
+            </AlertDialogCancel>
             <Button
               variant="destructive"
               onClick={async () => {
-                setLoading(true);
                 await deletePostMutation.mutateAsync({ post_id });
-                setLoading(false);
                 setOpenDelete(false);
                 toast({
                   title: "Post deleted",
                   description: "Your post has been deleted.",
                 });
-                if (successUrl) router.push(successUrl);
               }}
-              disabled={loading}
+              disabled={deletePostMutation.isLoading}
             >
-              {loading && (
+              {deletePostMutation.isLoading && (
                 <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
               )}
               Delete

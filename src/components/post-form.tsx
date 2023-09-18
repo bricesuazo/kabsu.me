@@ -35,8 +35,7 @@ import { z } from "zod";
 import { POST_TYPE } from "@/lib/db/schema";
 import { api } from "@/lib/trpc/client";
 
-import { redirect, useRouter } from "next/navigation";
-import { testRevalidate } from "@/lib/actions";
+import { useRouter } from "next/navigation";
 
 const Schema = z.object({
   content: z
@@ -60,13 +59,12 @@ export default function PostForm() {
 
   const createPostMutation = api.posts.create.useMutation({
     onSuccess: async () => {
+      router.push(
+        form.getValues("type") === "following"
+          ? "/"
+          : `/?tab=${form.getValues("type")}`,
+      );
       router.refresh();
-      // await testRevalidate();
-      // redirect(
-      //   form.getValues("type") === "following"
-      //     ? "/"
-      //     : `/?tab=${form.getValues("type")}`,
-      // );
     },
   });
   const { user } = useUser();
