@@ -7,6 +7,7 @@ import type {
   Comment,
   Post,
   Program,
+  User as UserFromDB,
 } from "@/lib/db/schema";
 import moment from "moment";
 import Link from "next/link";
@@ -14,7 +15,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Heart, MessageCircle } from "lucide-react";
 import { useState } from "react";
 // import UpdatePost from "./update-post";
-import { User } from "@clerk/nextjs/server";
+import { User as UserFromClerk } from "@clerk/nextjs/server";
 import Image from "next/image";
 import { Badge } from "./ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
@@ -32,9 +33,10 @@ export default function Post({
   post: Post & {
     likes: Like[];
     comments: Comment[];
-    user: User & {
-      program: Program & { college: College & { campus: Campus } };
-    };
+    user: UserFromDB &
+      UserFromClerk & {
+        program: Program & { college: College & { campus: Campus } };
+      };
   };
   isMyPost: boolean;
   userId: string;
@@ -91,9 +93,25 @@ export default function Post({
               {/* <p className="line-clamp-1 group-hover:underline">
                   {post.user.firstName} {post.user.lastName}{" "}
                 </p> */}
-              <p className="text-md line-clamp-1 flex-1 break-all font-medium">
-                @{post.user.username}
-              </p>
+              <div className="flex items-center gap-x-1">
+                <p className="text-md line-clamp-1 flex-1 break-all font-medium">
+                  @{post.user.username}
+                </p>
+
+                {post.user.verified_at && (
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Image
+                        src="/logo.png"
+                        alt="Logo"
+                        width={24}
+                        height={24}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>CvSU.me Verified</TooltipContent>
+                  </Tooltip>
+                )}
+              </div>
               {/* <div className="flex items-center gap-x-1"> */}
               {/* {(() => {
                       switch (post.user.type) {

@@ -13,6 +13,11 @@ import FollowButton from "@/components/follow-button";
 import Link from "next/link";
 import { User } from "@clerk/nextjs/server";
 import PostForm from "@/components/post-form";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function UserPage({
   profile,
@@ -93,9 +98,25 @@ export default function UserPage({
             </div>
 
             <div className="flex flex-col">
-              <h2 className="truncate  text-2xl font-semibold xs:text-4xl">
-                @{profileQuery.data.user.username}
-              </h2>
+              <div className="flex items-center gap-x-2">
+                <h2 className="truncate  text-2xl font-semibold xs:text-4xl">
+                  @{profileQuery.data.user.username}
+                </h2>
+
+                {profileQuery.data.user.verified_at && (
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Image
+                        src="/logo.png"
+                        alt="Logo"
+                        width={32}
+                        height={32}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>CvSU.me Verified</TooltipContent>
+                  </Tooltip>
+                )}
+              </div>
 
               <p className="line-clamp-1  ">
                 {profileQuery.data.user.firstName}{" "}
@@ -113,7 +134,7 @@ export default function UserPage({
               <div className="">
                 {profileQuery.data.user.link && (
                   <Button asChild variant="link" className="h-auto p-0">
-                    <Link href={profileQuery.data.user.link}>
+                    <Link href={profileQuery.data.user.link} target="_blank">
                       {profileQuery.data.user.link.length > 30
                         ? profileQuery.data.user.link.slice(0, 30) + "..."
                         : profileQuery.data.user.link}

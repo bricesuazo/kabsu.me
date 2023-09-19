@@ -38,18 +38,20 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
               <div className="w-max">
                 <Skeleton className="h-16 w-16 rounded-full" />
               </div>
-              <div className="flex flex-1 flex-col">
+              <div className="flex flex-1 flex-col gap-2">
                 <div className="group flex items-center gap-x-2">
                   <Skeleton className="h-4 w-36" />
-                  <div className="flex items-center gap-x-1">
-                    <Skeleton className="h-5 w-5" />
-                    <Skeleton className="h-5 w-12 rounded-full bg-primary" />
-                    <Skeleton className="h-5 w-12 rounded-full border" />
-                  </div>
+                  <Skeleton className="h-5 w-5" />
                   <Skeleton className="h-1 w-1" />
                   <div className="hidden sm:block">
                     <Skeleton className="h-4 w-20" />
                   </div>
+                </div>
+                <div className="flex items-center gap-x-1">
+                  <Skeleton className="h-5 w-16" />
+                  <Skeleton className="h-5 w-5" />
+                  <Skeleton className="h-5 w-12 rounded-full bg-primary" />
+                  <Skeleton className="h-5 w-12 rounded-full border" />
                 </div>
               </div>
             </div>
@@ -107,6 +109,43 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                     {postQuery.data.post.user.firstName}{" "}
                     {postQuery.data.post.user.lastName}{" "}
                   </p>
+
+                  {postQuery.data.post.user.verified_at && (
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Image
+                          src="/logo.png"
+                          alt="Logo"
+                          width={24}
+                          height={24}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>CvSU.me Verified</TooltipContent>
+                    </Tooltip>
+                  )}
+
+                  <p className="pointer-events-none hidden select-none sm:block">
+                    ·
+                  </p>
+                  <div className="hidden sm:block">
+                    <Tooltip delayDuration={250}>
+                      <TooltipTrigger>
+                        <p className="text-xs">
+                          {moment(postQuery.data.post.created_at).fromNow()}
+                        </p>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {moment(postQuery.data.post.created_at).format(
+                          "MMMM Do YYYY, h:mm:ss A",
+                        )}
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </div>
+                <div className="flex items-center gap-x-2">
+                  <p className="line-clamp-1 flex-1 break-all text-sm">
+                    @{postQuery.data.post.user.username}{" "}
+                  </p>
                   <div className="flex items-center gap-x-1">
                     {(() => {
                       switch (postQuery.data.post.user.type) {
@@ -142,27 +181,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                       </TooltipContent>
                     </Tooltip>
                   </div>
-                  <p className="pointer-events-none hidden select-none sm:block">
-                    ·
-                  </p>
-                  <div className="hidden sm:block">
-                    <Tooltip delayDuration={250}>
-                      <TooltipTrigger>
-                        <p className="text-xs">
-                          {moment(postQuery.data.post.created_at).fromNow()}
-                        </p>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        {moment(postQuery.data.post.created_at).format(
-                          "MMMM Do YYYY, h:mm:ss A",
-                        )}
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
                 </div>
-                <p className="line-clamp-1 flex-1 break-all text-sm">
-                  @{postQuery.data.post.user.username}{" "}
-                </p>
               </div>
             </Link>
 
