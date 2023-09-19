@@ -44,27 +44,23 @@ export default function Posts({
         <p className="text-center text-sm text-muted-foreground">
           {posts.error.message}
         </p>
+      ) : posts.data.pages.flatMap((page) => page.posts).length === 0 ? (
+        <div className="flex justify-center p-8">
+          There are no posts to show.
+        </div>
       ) : (
         <>
           {posts.data.pages.map((page, i) => (
             <Fragment key={i}>
-              {page.posts.length === 0 ? (
-                <div key={page.nextCursor} className="flex justify-center p-8">
-                  There are no posts to show.
-                </div>
-              ) : (
-                <>
-                  {page.posts.map((post) => (
-                    <Post
-                      key={post.id}
-                      post={post}
-                      isMyPost={post.user.id === page.userId}
-                      userId={page.userId}
-                      data-superjson
-                    />
-                  ))}
-                </>
-              )}
+              {page.posts.map((post) => (
+                <Post
+                  key={post.id}
+                  post={post}
+                  isMyPost={post.user.id === page.userId}
+                  userId={page.userId}
+                  data-superjson
+                />
+              ))}
             </Fragment>
           ))}
           <div

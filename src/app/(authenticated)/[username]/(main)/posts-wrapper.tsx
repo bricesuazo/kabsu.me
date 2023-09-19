@@ -38,29 +38,25 @@ export default function PostsWrapper({ user }: { user: User }) {
         <p className="text-center text-sm text-muted-foreground">
           {postsQuery.error.message}
         </p>
+      ) : postsQuery.data.pages.flatMap((page) => page.posts).length === 0 ? (
+        <div className="text-center">
+          <div className="text-2xl font-semibold">No posts yet</div>
+          <div className="mt-2 break-words text-gray-500">
+            When @{user.username} posts something, it will show up here.
+          </div>
+        </div>
       ) : (
         postsQuery.data.pages.map((page, i) => (
           <Fragment key={i}>
-            {page.posts.length === 0 ? (
-              <div className="text-center">
-                <div className="text-2xl font-semibold">No posts yet</div>
-                <div className="mt-2 break-words text-gray-500">
-                  When @{user.username} posts something, it will show up here.
-                </div>
-              </div>
-            ) : (
-              <>
-                {page.posts.map((post) => (
-                  <Post
-                    key={post.id}
-                    userId={page.userId}
-                    post={post}
-                    isMyPost={page.userId === post.user.id}
-                    data-superjson
-                  />
-                ))}
-              </>
-            )}
+            {page.posts.map((post) => (
+              <Post
+                key={post.id}
+                userId={page.userId}
+                post={post}
+                isMyPost={page.userId === post.user.id}
+                data-superjson
+              />
+            ))}
           </Fragment>
         ))
       )}
