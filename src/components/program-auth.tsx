@@ -16,7 +16,6 @@ import {
   CommandItem,
 } from "./ui/command";
 import { cn } from "@/lib/utils";
-import { signUpUser } from "@/actions/user";
 import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -33,10 +32,11 @@ import { useSignUp } from "@clerk/nextjs";
 import { Button } from "./ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Icons } from "./icons";
-import { ACCOUNT_TYPE, Campus, College, Program } from "@/db/schema";
+import { ACCOUNT_TYPE, Campus, College, Program } from "@/lib/db/schema";
 import { Card, CardFooter, CardHeader } from "./ui/card";
 import { Label } from "./ui/label";
 import { ScrollArea } from "./ui/scroll-area";
+import { api } from "@/lib/trpc/client";
 
 export default function ProgramAuth({
   form1,
@@ -57,6 +57,7 @@ export default function ProgramAuth({
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
 }) {
+  const signUpMutation = api.users.signUp.useMutation();
   const { isLoaded, signUp, setActive } = useSignUp();
   const [opens, setOpens] = useState<{
     campuses: boolean;
@@ -115,7 +116,7 @@ export default function ProgramAuth({
               actionCompleteRedirectUrl: "/",
             });
 
-            await signUpUser({
+            await signUpMutation.mutateAsync({
               userId: new_user.createdUserId ?? "",
               program_id: values.program_id,
               type: values.type ?? "",

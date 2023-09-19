@@ -5,17 +5,12 @@ import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
 import { Skeleton } from "./ui/skeleton";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  getAllNotifications,
-  markAllNotificationAsRead,
-  markNotificationAsRead,
-} from "@/actions/user";
 import Image from "next/image";
 import moment from "moment";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Icons } from "./icons";
+import { api } from "@/lib/trpc/client";
 // import { pusherClient } from "@/lib/pusher";
 // import { useState } from "react";
 
@@ -26,26 +21,20 @@ export default function Notifications() {
   // });
 
   // const [open, setOpen] = useState(false);
-  const getAllNotificationsQuery = useQuery({
-    queryKey: ["notifications"],
-    queryFn: async () => await getAllNotifications(),
-    refetchOnMount: false,
-    // refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    retry: false,
-  });
-  const markAllNotificationAsReadMutation = useMutation({
-    mutationFn: markAllNotificationAsRead,
-    onSettled: () => {
-      getAllNotificationsQuery.refetch();
-    },
-  });
-  const markNotificationAsReadMutation = useMutation({
-    mutationFn: markNotificationAsRead,
-    onSettled: () => {
-      getAllNotificationsQuery.refetch();
-    },
-  });
+  const getAllNotificationsQuery = api.notifications.getAll.useQuery({});
+  const markAllNotificationAsReadMutation =
+    api.notifications.markAllAsRead.useMutation({
+      onSettled: () => {
+        getAllNotificationsQuery.refetch();
+      },
+    });
+  const markNotificationAsReadMutation =
+    api.notifications.markAsRead.useMutation({
+      onSettled: () => {
+        getAllNotificationsQuery.refetch();
+      },
+    });
+
   return (
     <Popover
     // open={open} onOpenChange={setOpen}
@@ -135,39 +124,42 @@ export default function Notifications() {
                     id: notification.id,
                   });
                 }}
-                className="flex items-center gap-x-2 rounded p-2 hover:bg-muted"
+                className="flex items-center justify-between gap-x-2 rounded p-2 hover:bg-muted"
               >
-                <Link href={`/${notification.from.username}`}>
-                  <div className="relative h-10 w-10">
-                    <Image
-                      src={notification.from.imageUrl}
-                      alt="Image"
-                      fill
-                      sizes="100%"
-                      className="rounded-full"
-                    />
+                <div className="flex gap-x-2">
+                  <Link href={`/${notification.from.username}`}>
+                    <div className="relative h-8 w-8">
+                      <Image
+                        src={notification.from.imageUrl}
+                        alt="Image"
+                        fill
+                        sizes="100%"
+                        className="rounded-full"
+                      />
+                    </div>
+                  </Link>
+                  <div className="flex flex-col gap-1">
+                    <p className="line-clamp-2 text-xs font-medium">
+                      @{notification.from.username}{" "}
+                      {(() => {
+                        switch (notification.type) {
+                          case "follow":
+                            return "started following you";
+                          case "like":
+                            return "liked your post";
+                          case "comment":
+                            return "commented on your post";
+                          default:
+                            return "";
+                        }
+                      })()}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {moment(notification.created_at).fromNow()}
+                    </p>
                   </div>
-                </Link>
-                <div className="flex flex-col gap-1">
-                  <p className="line-clamp-2 text-sm font-medium">
-                    @{notification.from.username}{" "}
-                    {(() => {
-                      switch (notification.type) {
-                        case "follow":
-                          return "started following you";
-                        case "like":
-                          return "liked your post";
-                        case "comment":
-                          return "commented on your post";
-                        default:
-                          return "";
-                      }
-                    })()}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {moment(notification.created_at).fromNow()}
-                  </p>
                 </div>
+
                 {!notification.read && (
                   <div className="aspect-square h-2 w-2 rounded-full bg-primary" />
                 )}

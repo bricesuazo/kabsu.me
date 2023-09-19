@@ -33,16 +33,19 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { NAVBAR_LINKS } from "@/lib/constants";
 import Notifications from "./notifications";
+import { api } from "@/lib/trpc/client";
 
 export default function Header() {
   // { userId }: { userId: string | null }
   const router = useRouter();
   const pathname = usePathname();
-  const { isLoaded, user, isSignedIn } = useUser();
   const { setTheme } = useTheme();
   const { signOut } = useClerk();
   const [loadingSignout, setLoadingSignout] = useState(false);
   const [open, setOpen] = useState("");
+  const { user } = useUser();
+  const userQuery = api.auth.getCurrentUser.useQuery();
+
   return (
     <header className="flex items-center justify-between py-4">
       <Sheet>
@@ -80,6 +83,7 @@ export default function Header() {
               alt=""
               width={40}
               height={40}
+              priority
               className="object-contain"
             />
           </div>
@@ -89,10 +93,10 @@ export default function Header() {
       <div className="flex items-center gap-x-2">
         <Notifications />
 
-        {!isLoaded ? (
+        {userQuery.isLoading ? (
           <Skeleton className="m-1 h-8 w-8 rounded-full" />
         ) : (
-          isSignedIn && (
+          userQuery.data && (
             <Menubar asChild value={open}>
               <MenubarMenu value="open">
                 <MenubarTrigger
@@ -101,7 +105,7 @@ export default function Header() {
                 >
                   <div className="relative h-8 w-8">
                     <Image
-                      src={user.imageUrl}
+                      src={userQuery.data.imageUrl}
                       alt="Image"
                       fill
                       sizes="100%"
@@ -119,8 +123,15 @@ export default function Header() {
                     className="line-clamp-1 w-full cursor-pointer truncate"
                     onClick={() => setOpen("")}
                   >
-                    <Link href={`/${user?.username}`} className="w-full">
-                      {user?.username ? `@${user?.username}` : "My profile"}
+                    <Link
+                      href={`/${user?.username ?? userQuery.data.username}`}
+                      className="w-full"
+                    >
+                      {user?.username
+                        ? `@${user.username}`
+                        : userQuery.data.username
+                        ? `@${userQuery.data.username}`
+                        : "My Profile"}
                     </Link>
                   </MenubarItem>
                   <MenubarItem asChild onClick={() => setOpen("")}>

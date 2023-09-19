@@ -1,5 +1,6 @@
+"use client";
+
 import { Button } from "./ui/button";
-import { updatePost } from "@/actions/post";
 import { Icons } from "./icons";
 import {
   Dialog,
@@ -11,7 +12,6 @@ import {
 } from "./ui/dialog";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UpdatePostSchema, updatePostSchema } from "@/zod-schema/post";
 import {
   Form,
   FormControl,
@@ -22,9 +22,15 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Textarea } from "./ui/textarea";
-import type { Post } from "@/db/schema";
+import type { Post } from "@/lib/db/schema";
 import { useEffect } from "react";
+import { z } from "zod";
+import { api } from "@/lib/trpc/client";
 
+const Schema = z.object({
+  post_id: z.string().min(1),
+  content: z.string().min(1, { message: "Post cannot be empty." }),
+});
 export default function UpdatePost({
   open,
   setOpen,
@@ -34,8 +40,10 @@ export default function UpdatePost({
   setOpen: (open: boolean) => void;
   post: Post;
 }) {
-  const form = useForm<UpdatePostSchema>({
-    resolver: zodResolver(updatePostSchema),
+  const updatePostMutation = api.posts.update.useMutation();
+
+  const form = useForm<z.infer<typeof Schema>>({
+    resolver: zodResolver(Schema),
     defaultValues: {
       content: post.content,
       post_id: post.id,
@@ -51,10 +59,10 @@ export default function UpdatePost({
     }
   }, [open, form, post.content, post.id]);
 
-  async function onSubmit(values: UpdatePostSchema) {
+  async function onSubmit(values: z.infer<typeof Schema>) {
     if (!form.formState.isDirty) return;
 
-    await updatePost(values);
+    await updatePostMutation.mutateAsync(values);
     setOpen(false);
   }
   return (

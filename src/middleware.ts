@@ -1,5 +1,5 @@
 import { authMiddleware, currentUser, redirectToSignIn } from "@clerk/nextjs";
-import { db } from "./db";
+import { db } from "@/lib/db";
 
 // This example protects all routes including api/trpc routes
 // Please edit this to allow other routes to be public as needed.

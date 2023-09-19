@@ -3,13 +3,7 @@
 import { nanoid } from "nanoid";
 import { Toggle } from "./ui/toggle";
 import { useEffect, useState } from "react";
-import { Comment, Like, Post } from "@/db/schema";
-import {
-  createComment,
-  getLikesInPost,
-  likePost,
-  unlikePost,
-} from "@/actions/post";
+import { Comment, Like, Post } from "@/lib/db/schema";
 import { Heart, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "./ui/textarea";
@@ -32,9 +26,9 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Badge } from "./ui/badge";
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { ScrollArea } from "./ui/scroll-area";
+import { api } from "@/lib/trpc/client";
 
 export default function PostComment({
   userId,
@@ -43,12 +37,25 @@ export default function PostComment({
   userId: string;
   post: Post & { likes: Like[]; comments: Comment[] };
 }) {
+  const context = api.useContext();
   const [open, setOpen] = useState(false);
-  const getLikesInPostQuery = useQuery({
-    queryKey: ["getLikesInPost"],
-    queryFn: async () => getLikesInPost({ id: post.id }),
-    enabled: open && !!post.likes.length,
+  const likePostMutation = api.posts.like.useMutation({
+    onSuccess: async () =>
+      await context.posts.getPost.invalidate({ post_id: post.id }),
   });
+  const unlikePostMutation = api.posts.unlike.useMutation({
+    onSuccess: async () =>
+      await context.posts.getPost.invalidate({ post_id: post.id }),
+  });
+  const createCommentMutation = api.comments.create.useMutation();
+  const getLikesInPostQuery = api.posts.getLikesInPost.useQuery(
+    {
+      post_id: post.id,
+    },
+    {
+      enabled: open,
+    },
+  );
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -115,11 +122,11 @@ export default function PostComment({
                   },
                 ]);
 
-                await likePost({ post_id: post.id });
+                await likePostMutation.mutateAsync({ post_id: post.id });
               } else {
                 setLikes(likes.filter((like) => like.user_id !== userId));
 
-                await unlikePost({ post_id: post.id });
+                await unlikePostMutation.mutateAsync({ post_id: post.id });
               }
               await getLikesInPostQuery.refetch();
             }}
@@ -223,8 +230,11 @@ export default function PostComment({
               post.comments.length > 1 ? "s" : ""
             }`}
           </p>
-          <Badge variant="outline">
-            {post.type.charAt(0).toUpperCase() + post.type.slice(1)}
+          <Badge variant="outline" className="flex items-center gap-x-1">
+            <p className="hidden xs:block">Privacy:</p>
+            {post.type === "following"
+              ? "Follower"
+              : post.type.charAt(0).toUpperCase() + post.type.slice(1)}
           </Badge>
         </div>
       </div>
@@ -234,10 +244,11 @@ export default function PostComment({
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(async (values) => {
-                await createComment({
+                await createCommentMutation.mutateAsync({
                   post_id: post.id,
                   content: values.comment,
                 });
+                await context.posts.getPost.invalidate({ post_id: post.id });
 
                 form.reset();
                 setIsFocused(false);

@@ -22,7 +22,6 @@ import ProgramAuth from "./program-auth";
 import Image from "next/image";
 import { ToggleTheme } from "./toggle-theme";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getProgramForAuth, isUsernameExists } from "@/actions/user";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -31,19 +30,12 @@ import Link from "next/link";
 import { Separator } from "./ui/separator";
 import Footer from "./footer";
 import { Badge } from "./ui/badge";
+import { api } from "@/lib/trpc/client";
 
 export default function AuthForm() {
   const searchParams = useSearchParams();
-  const { data } = useQuery({
-    queryKey: ["program-auth"],
-    queryFn: async () => getProgramForAuth(),
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
-  const { mutateAsync } = useMutation({
-    mutationKey: ["username-exists"],
-    mutationFn: isUsernameExists,
-  });
+  const { data } = api.users.getProgramForAuth.useQuery();
+  const isUsernameExistsMutation = api.users.isUsernameExists.useMutation();
   const [page, setPage] = useState(0);
   const [isLoading, setLoading] = useState(false);
   const { isLoaded: isLoadedSignIn, signIn } = useSignIn();
@@ -109,9 +101,10 @@ export default function AuthForm() {
             <Form {...form1}>
               <form
                 onSubmit={form1.handleSubmit(async (values) => {
-                  const isUsernameExists = await mutateAsync({
-                    username: values.username,
-                  });
+                  const isUsernameExists =
+                    await isUsernameExistsMutation.mutateAsync({
+                      username: values.username,
+                    });
 
                   if (isUsernameExists) {
                     form1.setError("username", {
@@ -227,6 +220,7 @@ export default function AuthForm() {
             alt="Logo"
             width={256}
             height={256}
+            priority
             className="pointer-events-none mx-auto select-none"
           />
 

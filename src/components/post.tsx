@@ -7,31 +7,22 @@ import type {
   Comment,
   Post,
   Program,
-} from "@/db/schema";
+} from "@/lib/db/schema";
 import moment from "moment";
 import Link from "next/link";
-import { Button } from "./ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Heart, MessageCircle, MoreHorizontal } from "lucide-react";
-import { useState, experimental_useOptimistic as useOptimistic } from "react";
+import { Heart, MessageCircle } from "lucide-react";
+import { useState } from "react";
 // import UpdatePost from "./update-post";
 import { User } from "@clerk/nextjs/server";
 import Image from "next/image";
 import { Badge } from "./ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { nanoid } from "nanoid";
-import { likePost, unlikePost } from "@/actions/post";
 import { Toggle } from "./ui/toggle";
 import { cn } from "@/lib/utils";
 import PostDropdown from "./post-dropdown";
+import { api } from "@/lib/trpc/client";
 
 export default function Post({
   post,
@@ -48,9 +39,29 @@ export default function Post({
   isMyPost: boolean;
   userId: string;
 }) {
+  const [likes, setLikes] = useState<Like[]>(post.likes);
+  const unlikeMutation = api.posts.unlike.useMutation({
+    onMutate: ({ post_id }) =>
+      setLikes(
+        likes.filter(
+          (like) => like.post_id !== post_id && like.user_id !== userId,
+        ),
+      ),
+  });
+  const likeMutation = api.posts.like.useMutation({
+    onMutate: ({ post_id }) =>
+      setLikes([
+        ...likes,
+        {
+          id: nanoid(),
+          post_id,
+          user_id: userId,
+          created_at: new Date(),
+        },
+      ]),
+  });
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [optimisticLike, setOptimisticLike] = useOptimistic<Like[]>(post.likes);
 
   return (
     <>
@@ -125,23 +136,17 @@ export default function Post({
                 <p className="pointer-events-none hidden select-none sm:block">
                   ·
                 </p>
-                <div className="hidden sm:block">
-                  <Tooltip delayDuration={250}>
-                    <TooltipTrigger>
-                      <p className="text-xs">
-                        {moment(post.created_at).fromNow()}
-                      </p>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {moment(post.created_at).format(
-                        "MMMM Do YYYY, h:mm:ss A",
-                      )}
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <Badge variant="outline">
-                  {post.type.charAt(0).toUpperCase() + post.type.slice(1)}
-                </Badge>
+
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger>
+                    <p className="hidden text-xs xs:block">
+                      {moment(post.created_at).fromNow()}
+                    </p>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {moment(post.created_at).format("MMMM Do YYYY, h:mm:ss A")}
+                  </TooltipContent>
+                </Tooltip>
               </div>
 
               <div className="flex items-center gap-x-1 ">
@@ -158,7 +163,7 @@ export default function Post({
                       }
                     })()} */}
                 <Tooltip delayDuration={250}>
-                  <TooltipTrigger className="hidden xs:block">
+                  <TooltipTrigger>
                     <Badge>
                       {searchParams.get("tab") === "college"
                         ? post.user.program.college.slug.toUpperCase()
@@ -200,34 +205,20 @@ export default function Post({
           <div className="flex">
             <Toggle
               size="sm"
-              pressed={optimisticLike.some((like) => like.user_id === userId)}
+              pressed={likes.some((like) => like.user_id === userId)}
               onClick={(e) => e.stopPropagation()}
-              onPressedChange={async (pressed) => {
+              onPressedChange={(pressed) => {
                 if (pressed) {
-                  setOptimisticLike([
-                    ...optimisticLike,
-                    {
-                      id: nanoid(),
-                      post_id: post.id,
-                      user_id: userId,
-                      created_at: new Date(),
-                    },
-                  ]);
-
-                  await likePost({ post_id: post.id });
+                  likeMutation.mutate({ post_id: post.id });
                 } else {
-                  setOptimisticLike(
-                    optimisticLike.filter((like) => like.user_id !== userId),
-                  );
-
-                  await unlikePost({ post_id: post.id });
+                  unlikeMutation.mutate({ post_id: post.id });
                 }
               }}
             >
               <Heart
                 className={cn(
                   "h-4 w-4",
-                  optimisticLike.some((like) => like.user_id === userId) &&
+                  likes.some((like) => like.user_id === userId) &&
                     "fill-primary text-primary",
                 )}
               />
@@ -247,16 +238,16 @@ export default function Post({
 
           <div className="flex items-center gap-x-4">
             <p className="text-sm text-muted-foreground">
-              {`${optimisticLike.length} like${
-                optimisticLike.length > 1 ? "s" : ""
-              } — ${post.comments.length} comment${
-                post.comments.length > 1 ? "s" : ""
-              }`}
+              {`${likes.length} like${likes.length > 1 ? "s" : ""} — ${
+                post.comments.length
+              } comment${post.comments.length > 1 ? "s" : ""}`}
             </p>
-
-            {/* <Badge variant="outline">
-              {post.type.charAt(0).toUpperCase() + post.type.slice(1)}
-            </Badge> */}
+            <Badge variant="outline" className="flex items-center gap-x-1">
+              <p className="hidden xs:block">Privacy:</p>
+              {post.type === "following"
+                ? "Follower"
+                : post.type.charAt(0).toUpperCase() + post.type.slice(1)}
+            </Badge>
           </div>
         </div>
       </div>

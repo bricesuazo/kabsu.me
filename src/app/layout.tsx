@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import QueryProvider from "@/components/query-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
+import TrpcProvider from "@/lib/trpc/Provider";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -36,7 +37,9 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
           <QueryProvider>
             <ThemeProvider attribute="class" defaultTheme="light">
               <TooltipProvider>
-                <div>{children}</div>
+                <div>
+<TrpcProvider>{children}</TrpcProvider>
+</div>
               </TooltipProvider>
               <Toaster />
             </ThemeProvider>

@@ -11,7 +11,6 @@ import {
   AlertDialogTitle,
 } from "./ui/alert-dialog";
 import { Button } from "./ui/button";
-import { deletePost } from "@/actions/post";
 import { Icons } from "./icons";
 import { toast } from "./ui/use-toast";
 import {
@@ -23,7 +22,8 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { api } from "@/lib/trpc/client";
 
 export default function PostDropdown({
   post_id,
@@ -32,11 +32,21 @@ export default function PostDropdown({
   post_id: string;
   successUrl?: string;
 }) {
+  const context = api.useContext();
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const deletePostMutation = api.posts.delete.useMutation({
+    onSuccess: () => {
+      if (successUrl) {
+        router.push(successUrl);
+      } else {
+        router.refresh();
+      }
+    },
+  });
   const [openDelete, setOpenDelete] = useState(false);
   // const [openUpdate, setOpenUpdate] = useState(false);
 
-  const [loading, setLoading] = useState(false);
   return (
     <div onClick={(e) => e.stopPropagation()}>
       <AlertDialog open={openDelete} onOpenChange={setOpenDelete}>
@@ -49,23 +59,30 @@ export default function PostDropdown({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={deletePostMutation.isLoading}>
+              Cancel
+            </AlertDialogCancel>
             <Button
               variant="destructive"
               onClick={async () => {
-                setLoading(true);
-                await deletePost({ post_id });
-                setLoading(false);
+                await deletePostMutation.mutateAsync({ post_id });
                 setOpenDelete(false);
                 toast({
                   title: "Post deleted",
                   description: "Your post has been deleted.",
                 });
-                if (successUrl) router.push(successUrl);
+                await context.posts.getPosts.invalidate({
+                  type:
+                    (searchParams.get("tab") as
+                      | "all"
+                      | "program"
+                      | "college"
+                      | undefined) || "following",
+                });
               }}
-              disabled={loading}
+              disabled={deletePostMutation.isLoading}
             >
-              {loading && (
+              {deletePostMutation.isLoading && (
                 <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
               )}
               Delete

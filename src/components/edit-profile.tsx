@@ -1,6 +1,6 @@
 "use client";
 
-import { User as UserFromDB } from "@/db/schema";
+import { User as UserFromDB } from "@/lib/db/schema";
 import { PenSquare } from "lucide-react";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
@@ -13,7 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from "./ui/form";
-import { updateBio } from "@/actions/user";
 import { Icons } from "./icons";
 import {
   Dialog,
@@ -31,6 +30,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
 import CustomProgress from "./ui/custom-progress";
+import { api } from "@/lib/trpc/client";
 
 export default function EditProfile({
   userFromDB,
@@ -39,6 +39,7 @@ export default function EditProfile({
   userFromDB: UserFromDB;
   userFromClerk: UserFromClerk;
 }) {
+  const updateBioMutation = api.users.updateBio.useMutation();
   const formSchema = z.object({
     bio: z.string().max(128, "Bio must be at most 128 characters long."),
     firstName: z
@@ -108,8 +109,7 @@ export default function EditProfile({
           <form
             className="space-y-2"
             onSubmit={form.handleSubmit(async (data) => {
-              await updateBio({
-                user_id: userFromDB.id,
+              await updateBioMutation.mutateAsync({
                 bio: data.bio,
               });
               toast({

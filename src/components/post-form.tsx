@@ -13,8 +13,6 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { CreatePostSchema, createPostSchema } from "@/zod-schema/post";
-import { createPost } from "@/actions/post";
 import { Icons } from "./icons";
 import {
   Select,
@@ -33,23 +31,65 @@ import { useUser } from "@clerk/nextjs";
 import { POST_TYPE_TABS } from "@/lib/constants";
 import Link from "next/link";
 import { Trash } from "lucide-react";
+import { z } from "zod";
+import { POST_TYPE } from "@/lib/db/schema";
+import { api } from "@/lib/trpc/client";
 
+import { useRouter, useSearchParams } from "next/navigation";
+
+const Schema = z.object({
+  content: z
+    .string()
+    .trim()
+    .nonempty({ message: "Post cannot be empty." })
+    .max(512, {
+      message: "Post cannot be longer than 512 characters.",
+    }),
+  type: z.enum(POST_TYPE).default(POST_TYPE[0]),
+});
 export default function PostForm() {
-  const { user } = useUser();
-  const [isFocused, setIsFocused] = useState(false);
-  const form = useForm<CreatePostSchema>({
-    resolver: zodResolver(createPostSchema),
+  const context = api.useContext();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const form = useForm<z.infer<typeof Schema>>({
+    resolver: zodResolver(Schema),
     defaultValues: {
       type: "following",
       content: "",
     },
   });
 
-  async function onSubmit(values: CreatePostSchema) {
-    await createPost(values);
+  const createPostMutation = api.posts.create.useMutation({
+    onSuccess: async () => {
+      router.push(
+        form.getValues("type") === "following"
+          ? "/"
+          : `/?tab=${form.getValues("type")}`,
+      );
+      router.refresh();
+
+      await context.posts.getPosts.invalidate({ type: form.getValues("type") });
+    },
+  });
+  const { user } = useUser();
+  const [isFocused, setIsFocused] = useState(false);
+
+  async function onSubmit(values: z.infer<typeof Schema>) {
+    await createPostMutation.mutateAsync(values);
 
     form.reset();
   }
+
+  useEffect(() => {
+    if (searchParams.has("tab")) {
+      form.setValue(
+        "type",
+        searchParams.get("tab") as (typeof POST_TYPE)[number],
+      );
+    } else {
+      form.setValue("type", "following");
+    }
+  }, [searchParams, form]);
 
   useEffect(() => {
     form.reset();
