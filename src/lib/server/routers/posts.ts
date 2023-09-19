@@ -69,9 +69,66 @@ export const postsRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const limit = 10;
+
+      const currentUserFromDB = await ctx.db.query.users.findFirst({
+        where: (user, { eq }) => eq(user.id, ctx.session.user.id),
+        with: {
+          program: {
+            with: {
+              college: {
+                with: {
+                  campus: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const userOfPost = await ctx.db.query.users.findFirst({
+        where: (user, { eq }) => eq(user.id, input.user_id),
+        with: {
+          program: {
+            with: {
+              college: {
+                with: {
+                  campus: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!currentUserFromDB || !userOfPost)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
       const posts = await ctx.db.query.posts.findMany({
         where: (post, { and, eq, isNull }) =>
-          and(isNull(post.deleted_at), eq(post.user_id, input.user_id)),
+          and(
+            isNull(post.deleted_at),
+            eq(post.user_id, input.user_id),
+
+            currentUserFromDB.id !== userOfPost.id
+              ? or(
+                  eq(post.type, "all"),
+                  currentUserFromDB.program_id === userOfPost.program_id
+                    ? eq(post.type, "program")
+                    : undefined,
+
+                  currentUserFromDB.program.college_id ===
+                    userOfPost.program.college_id
+                    ? eq(post.type, "college")
+                    : undefined,
+
+                  currentUserFromDB.program.college.campus_id ===
+                    userOfPost.program.college.campus_id
+                    ? eq(post.type, "campus")
+                    : undefined,
+                )
+              : undefined,
+          ),
+
         orderBy: (post, { desc }) => desc(post.created_at),
         limit,
         offset: (input.cursor - 1) * limit,
