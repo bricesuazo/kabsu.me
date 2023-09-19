@@ -49,6 +49,9 @@ export const users = mysqlTable("users", {
   program_id: varchar("program_id", { length: 256 }).notNull(),
   bio: longtext("bio"),
   type: mysqlEnum("type", ACCOUNT_TYPE).notNull(),
+  link: text("link"),
+  verified_at: timestamp("verified_at"),
+  is_email_displayed: boolean("is_email_displayed").notNull().default(false),
 
   created_at,
 });

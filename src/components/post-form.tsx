@@ -54,7 +54,9 @@ export default function PostForm() {
   const form = useForm<z.infer<typeof Schema>>({
     resolver: zodResolver(Schema),
     defaultValues: {
-      type: "following",
+      type: searchParams.has("tab")
+        ? (searchParams.get("tab") as (typeof POST_TYPE)[number])
+        : "following",
       content: "",
     },
   });

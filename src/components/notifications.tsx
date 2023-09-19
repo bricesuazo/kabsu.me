@@ -103,68 +103,71 @@ export default function Notifications() {
               <div className="text-sm text-gray-400">No notifications</div>
             </div>
           ) : (
-            getAllNotificationsQuery.data.map((notification) => (
-              <Link
-                key={notification.id}
-                href={(() => {
-                  switch (notification.type) {
-                    case "follow":
-                      return `/${notification.from.username}`;
-                    case "like":
-                      return `/${notification.from.username}/${notification.link}`;
-                    case "comment":
-                      return `/${notification.from.username}//${notification.link}`;
-                    default:
-                      return "";
-                  }
-                })()}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  markNotificationAsReadMutation.mutate({
-                    id: notification.id,
-                  });
-                }}
-                className="flex items-center justify-between gap-x-2 rounded p-2 hover:bg-muted"
-              >
-                <div className="flex gap-x-2">
-                  <Link href={`/${notification.from.username}`}>
-                    <div className="relative h-8 w-8">
-                      <Image
-                        src={notification.from.imageUrl}
-                        alt="Image"
-                        fill
-                        sizes="100%"
-                        className="rounded-full"
-                      />
+            getAllNotificationsQuery.data.map((notification) => {
+              if (!notification.from) return null;
+              return (
+                <Link
+                  key={notification.id}
+                  href={(() => {
+                    switch (notification.type) {
+                      case "follow":
+                        return `/${notification.from.username}`;
+                      case "like":
+                        return `/${notification.from.username}/${notification.link}`;
+                      case "comment":
+                        return `/${notification.from.username}//${notification.link}`;
+                      default:
+                        return "";
+                    }
+                  })()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    markNotificationAsReadMutation.mutate({
+                      id: notification.id,
+                    });
+                  }}
+                  className="flex items-center justify-between gap-x-2 rounded p-2 hover:bg-muted"
+                >
+                  <div className="flex gap-x-2">
+                    <Link href={`/${notification.from.username}`}>
+                      <div className="relative h-8 w-8">
+                        <Image
+                          src={notification.from.imageUrl}
+                          alt="Image"
+                          fill
+                          sizes="100%"
+                          className="rounded-full"
+                        />
+                      </div>
+                    </Link>
+                    <div className="flex flex-col gap-1">
+                      <p className="line-clamp-2 text-xs font-medium">
+                        @{notification.from.username}{" "}
+                        {(() => {
+                          switch (notification.type) {
+                            case "follow":
+                              return "started following you";
+                            case "like":
+                              return "liked your post";
+                            case "comment":
+                              return "commented on your post";
+                            default:
+                              return "";
+                          }
+                        })()}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {moment(notification.created_at).fromNow()}
+                      </p>
                     </div>
-                  </Link>
-                  <div className="flex flex-col gap-1">
-                    <p className="line-clamp-2 text-xs font-medium">
-                      @{notification.from.username}{" "}
-                      {(() => {
-                        switch (notification.type) {
-                          case "follow":
-                            return "started following you";
-                          case "like":
-                            return "liked your post";
-                          case "comment":
-                            return "commented on your post";
-                          default:
-                            return "";
-                        }
-                      })()}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {moment(notification.created_at).fromNow()}
-                    </p>
                   </div>
-                </div>
 
-                {!notification.read && (
-                  <div className="aspect-square h-2 w-2 rounded-full bg-primary" />
-                )}
-              </Link>
-            ))
+                  {!notification.read && (
+                    <div className="aspect-square h-2 w-2 rounded-full bg-primary" />
+                  )}
+                </Link>
+              );
+            })
           )}
         </ScrollArea>
         <Button variant="link" asChild className="w-full" size="sm">
