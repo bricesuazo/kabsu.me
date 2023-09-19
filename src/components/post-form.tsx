@@ -34,6 +34,7 @@ import { Trash } from "lucide-react";
 import { z } from "zod";
 import { POST_TYPE } from "@/lib/db/schema";
 import { api } from "@/lib/trpc/client";
+import TextareaAutosize from "react-textarea-autosize";
 
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -51,6 +52,7 @@ export default function PostForm() {
   const context = api.useContext();
   const router = useRouter();
   const searchParams = useSearchParams();
+
   const form = useForm<z.infer<typeof Schema>>({
     resolver: zodResolver(Schema),
     defaultValues: {
@@ -73,6 +75,7 @@ export default function PostForm() {
       await context.posts.getPosts.invalidate({ type: form.getValues("type") });
     },
   });
+
   const { user } = useUser();
   const [isFocused, setIsFocused] = useState(false);
 
@@ -91,18 +94,14 @@ export default function PostForm() {
     } else {
       form.setValue("type", "following");
     }
-  }, [searchParams, form]);
-
-  useEffect(() => {
-    form.reset();
-  }, [isFocused, form]);
+  }, [searchParams]);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (!isFocused) return;
 
       if (e.key === "Escape") {
-        form.reset();
+        form.resetField("content");
         setIsFocused(false);
       }
     }
@@ -147,21 +146,30 @@ export default function PostForm() {
                 <FormItem className="flex-1">
                   {/* <FormLabel>Post</FormLabel> */}
                   <FormControl>
-                    {!isFocused ? (
-                      <Input
-                        placeholder="What's on your mind?"
-                        className="text-base"
-                        onFocus={() => setIsFocused(true)}
-                      />
-                    ) : (
-                      <Textarea
-                        placeholder="What's on your mind?"
-                        className="text-base"
-                        autoFocus
-                        maxLength={256}
-                        {...field}
-                      />
-                    )}
+                    <div className="p-1 ">
+                      {!isFocused ? (
+                        <input
+                          style={{
+                            width: "100%",
+                          }}
+                          placeholder="What's on your mind?"
+                          className="w-full text-base [all:unset]"
+                          onFocus={() => setIsFocused(true)}
+                        />
+                      ) : (
+                        <TextareaAutosize
+                          style={{
+                            width: "100%",
+                          }}
+                          placeholder="What's on your mind?"
+                          className="text-base [all:unset]"
+                          autoFocus
+                          maxLength={256}
+                          maxRows={6}
+                          {...field}
+                        />
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

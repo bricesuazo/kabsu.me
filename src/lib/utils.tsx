@@ -35,7 +35,7 @@ export function formatText(text: string) {
 
   const words = text.split(" ");
 
-  const link_class = "text-primary hover:underline";
+  const link_class = "text-primary hover:underline break-all";
   return (
     <>
       {words.map((word) => {

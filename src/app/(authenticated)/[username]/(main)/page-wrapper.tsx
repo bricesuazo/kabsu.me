@@ -12,6 +12,7 @@ import { RouterOutput } from "@/lib/server/routers/_app";
 import FollowButton from "@/components/follow-button";
 import Link from "next/link";
 import { User } from "@clerk/nextjs/server";
+import PostForm from "@/components/post-form";
 
 export default function UserPage({
   profile,
@@ -160,6 +161,8 @@ export default function UserPage({
               </TabsTrigger>
             </TabsList>
           </Tabs> */}
+
+        <PostForm />
       </div>
 
       <PostsWrapper user={profileQuery.data.user} data-superjson />

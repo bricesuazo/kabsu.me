@@ -50,8 +50,8 @@ export default function Posts({
         </div>
       ) : (
         <>
-          {posts.data.pages.map((page, i) => (
-            <Fragment key={i}>
+          {posts.data.pages.map((page) => (
+            <Fragment key={page.nextCursor}>
               {page.posts.map((post) => (
                 <Post
                   key={post.id}
