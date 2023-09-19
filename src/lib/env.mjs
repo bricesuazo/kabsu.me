@@ -9,7 +9,7 @@ export const env = createEnv({
       .default("development"),
     DATABASE_URL: z.string().nonempty(),
     CLERK_SECRET_KEY: z.string().nonempty(),
-    VERCEL_URL: z.string().url().optional(),
+    VERCEL_URL: z.string().optional(),
     DATABASE_URL: z.string().nonempty(),
     WEBHOOK_SECRET: z.string().nonempty(),
     PUSHER_APP_ID: z.string().nonempty(),
