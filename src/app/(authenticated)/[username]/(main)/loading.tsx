@@ -38,11 +38,6 @@ export default function UserLoading() {
           </div>
         </div>
       </div>
-      <div className="">
-        {[...Array(6)].map((_, i) => (
-          <PostSkeleton key={i} />
-        ))}
-      </div>
     </div>
   );
 }

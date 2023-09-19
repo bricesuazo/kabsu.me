@@ -11,7 +11,7 @@ import { and, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { BLOCKED_USERNAMES } from "@/lib/constants";
 export const usersRouter = router({
-  signUp: protectedProcedure
+  signUp: publicProcedure
     .input(
       z.object({
         userId: z.string(),

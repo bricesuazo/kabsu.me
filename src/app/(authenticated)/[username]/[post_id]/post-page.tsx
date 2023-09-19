@@ -10,22 +10,19 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { db } from "@/lib/db";
 import { Comment } from "@/lib/db/schema";
 import { api } from "@/lib/trpc/client";
-import { auth, clerkClient } from "@clerk/nextjs";
 import { Album, Briefcase, GraduationCap } from "lucide-react";
 import moment from "moment";
 import Image from "next/image";
 import Link from "next/link";
-import { Suspense } from "react";
 
 export default function PostPageComponent({ post_id }: { post_id: string }) {
   const postQuery = api.posts.getPost.useQuery({ post_id });
 
   return (
     <>
-      {!postQuery.data || postQuery.isLoading ? (
+      {postQuery.isLoading ? (
         <div className="space-y-2">
           <div className="flex justify-between">
             <div className="flex gap-x-2">
@@ -75,6 +72,10 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
             <Skeleton className="h-10 w-24" />
           </div>
         </div>
+      ) : !postQuery.data && postQuery.isError ? (
+        <p className="text-center text-sm text-muted-foreground">
+          {postQuery.error.message}
+        </p>
       ) : (
         <div className="space-y-2">
           <div className="flex justify-between">

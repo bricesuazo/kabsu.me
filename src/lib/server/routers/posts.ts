@@ -59,14 +59,75 @@ export const postsRouter = router({
       };
     }),
 
+  getUserPosts: protectedProcedure
+    .input(
+      z.object({
+        user_id: z.string().nonempty(),
+        cursor: z.number().int().positive(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const limit = 10;
+      const posts = await ctx.db.query.posts.findMany({
+        where: (post, { and, eq, isNull }) =>
+          and(isNull(post.deleted_at), eq(post.user_id, input.user_id)),
+        orderBy: (post, { desc }) => desc(post.created_at),
+        limit,
+        offset: (input.cursor - 1) * limit,
+        with: {
+          comments: true,
+          likes: true,
+          user: {
+            with: {
+              program: {
+                with: {
+                  college: {
+                    with: { campus: true },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const usersFromPosts = await ctx.clerk.users.getUserList({
+        userId: posts.map((post) => post.user.id),
+      });
+
+      const returnPosts = posts.map((post) => ({
+        ...post,
+        user: {
+          ...post.user,
+          ...usersFromPosts.find((user) => user.id === post.user.id)!,
+        },
+      }));
+
+      let nextCursor: typeof input.cursor | undefined = undefined;
+      if (posts.length > limit - 1) {
+        nextCursor = input.cursor + 1;
+      }
+
+      return {
+        posts: returnPosts,
+        userId: ctx.session.user.id,
+        nextCursor,
+      };
+    }),
+
   getPosts: protectedProcedure
     .input(
       z.object({
         type: z.enum(["all", "campus", "college", "program", "following"]),
-        page: z.number().int().positive(),
+        cursor: z.number().int().positive(),
       }),
     )
     .query(async ({ ctx, input }) => {
+      // const test = await ctx.db.query.posts.findMany({
+      //   where: (post, { isNull, and, eq }) =>
+      //     and(isNull(post.deleted_at), eq(post.type, input.type)),
+      // });
+      const limit = 10;
       let posts: (Post & {
         likes: Like[];
         comments: Comment[];
@@ -80,8 +141,8 @@ export const postsRouter = router({
           where: (post, { isNull, and, eq }) =>
             and(isNull(post.deleted_at), eq(post.type, "all")),
           orderBy: (post, { desc }) => desc(post.created_at),
-          limit: 10,
-          offset: (input.page - 1) * 10,
+          limit,
+          offset: (input.cursor - 1) * limit,
 
           with: {
             comments: {
@@ -162,8 +223,8 @@ export const postsRouter = router({
               eq(post.type, "campus"),
             ),
 
-          limit: 10,
-          offset: (input.page - 1) * 10,
+          limit,
+          offset: (input.cursor - 1) * limit,
           orderBy: (post, { desc }) => desc(post.created_at),
           with: {
             comments: {
@@ -235,8 +296,8 @@ export const postsRouter = router({
               ),
               eq(post.type, "college"),
             ),
-          limit: 10,
-          offset: (input.page - 1) * 10,
+          limit,
+          offset: (input.cursor - 1) * limit,
           orderBy: (post, { desc }) => desc(post.created_at),
           with: {
             comments: {
@@ -291,8 +352,8 @@ export const postsRouter = router({
             ),
 
           orderBy: (post, { desc }) => desc(post.created_at),
-          limit: 10,
-          offset: (input.page - 1) * 10,
+          limit,
+          offset: (input.cursor - 1) * limit,
           with: {
             comments: {
               where: (comment, { isNull }) => isNull(comment.deleted_at),
@@ -353,8 +414,8 @@ export const postsRouter = router({
               eq(post.type, "following"),
             ),
 
-          limit: 10,
-          offset: (input.page - 1) * 10,
+          limit,
+          offset: (input.cursor - 1) * limit,
           orderBy: (post, { desc }) => desc(post.created_at),
           with: {
             comments: {
@@ -390,7 +451,16 @@ export const postsRouter = router({
         },
       }));
 
-      return { posts: returnPosts, userId: ctx.session.user.id };
+      let nextCursor: typeof input.cursor | undefined = undefined;
+      if (posts.length > limit - 1) {
+        nextCursor = input.cursor + 1;
+      }
+
+      return {
+        posts: returnPosts,
+        userId: ctx.session.user.id,
+        nextCursor,
+      };
     }),
 
   create: protectedProcedure
@@ -478,56 +548,56 @@ export const postsRouter = router({
         );
     }),
 
-  getUserPosts: protectedProcedure
-    .input(
-      z.object({
-        user_id: z.string().min(1),
-        page: z.number().int().positive(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const posts = await ctx.db.query.posts.findMany({
-        where: (post, { and, eq, isNull }) =>
-          and(isNull(post.deleted_at), eq(post.user_id, ctx.session.user.id)),
+  // getUserPosts: protectedProcedure
+  //   .input(
+  //     z.object({
+  //       user_id: z.string().min(1),
+  //       page: z.number().int().positive(),
+  //     }),
+  //   )
+  //   .query(async ({ ctx, input }) => {
+  //     const posts = await ctx.db.query.posts.findMany({
+  //       where: (post, { and, eq, isNull }) =>
+  //         and(isNull(post.deleted_at), eq(post.user_id, ctx.session.user.id)),
 
-        limit: 10,
-        offset: (input.page - 1) * 10,
-        orderBy: (post, { desc }) => desc(post.created_at),
-        with: {
-          comments: {
-            where: (comment, { isNull }) => isNull(comment.deleted_at),
-          },
-          likes: true,
-          user: {
-            with: {
-              program: {
-                with: {
-                  college: {
-                    with: {
-                      campus: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      });
+  //       limit: 10,
+  //       offset: (input.page - 1) * 10,
+  //       orderBy: (post, { desc }) => desc(post.created_at),
+  //       with: {
+  //         comments: {
+  //           where: (comment, { isNull }) => isNull(comment.deleted_at),
+  //         },
+  //         likes: true,
+  //         user: {
+  //           with: {
+  //             program: {
+  //               with: {
+  //                 college: {
+  //                   with: {
+  //                     campus: true,
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     });
 
-      const usersFromPosts = await ctx.clerk.users.getUserList({
-        userId: posts.map((post) => post.user && post.user.id),
-      });
+  //     const usersFromPosts = await ctx.clerk.users.getUserList({
+  //       userId: posts.map((post) => post.user && post.user.id),
+  //     });
 
-      const returnPosts = posts.map((post) => ({
-        ...post,
-        user: {
-          ...post.user,
-          ...usersFromPosts.find((user) => user.id === post.user.id)!,
-        },
-      }));
+  //     const returnPosts = posts.map((post) => ({
+  //       ...post,
+  //       user: {
+  //         ...post.user,
+  //         ...usersFromPosts.find((user) => user.id === post.user.id)!,
+  //       },
+  //     }));
 
-      return returnPosts;
-    }),
+  //     return returnPosts;
+  //   }),
 
   like: protectedProcedure
     .input(z.object({ post_id: z.string().min(1) }))
