@@ -213,7 +213,7 @@ export default function AuthForm() {
     );
   } else {
     return (
-      <div className="space-y-20 pt-20">
+      <div className="space-y-10 pt-20">
         <div className="space-y-4">
           <Image
             src="/logo.png"
@@ -238,7 +238,7 @@ export default function AuthForm() {
           </h4>
         </div>
 
-        <div className="flex flex-col items-center justify-center gap-y-4">
+        <div className="flex flex-col items-center justify-center gap-y-4 ">
           <Button
             // variant="outline"
             onClick={async () => {
