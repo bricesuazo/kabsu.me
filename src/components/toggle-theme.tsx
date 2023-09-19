@@ -15,14 +15,14 @@ export function ToggleTheme({
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       {...props}
     >
-      <span className="flex items-center dark:hidden">
+      <div className="flex items-center dark:hidden">
         <Sun size="1.25rem" />
         <span className="ml-1">Light Mode</span>
-      </span>
-      <span className=" hidden items-center dark:flex">
+      </div>
+      <div className=" hidden items-center dark:flex">
         <Moon size="1.25rem" />
         <span className="ml-1">Dark Mode</span>
-      </span>
+      </div>
     </Button>
   );
 }
