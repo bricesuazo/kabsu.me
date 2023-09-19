@@ -39,8 +39,14 @@ export default function PostComment({
 }) {
   const context = api.useContext();
   const [open, setOpen] = useState(false);
-  const likePostMutation = api.posts.like.useMutation();
-  const unlikePostMutation = api.posts.unlike.useMutation();
+  const likePostMutation = api.posts.like.useMutation({
+    onSuccess: async () =>
+      await context.posts.getPost.invalidate({ post_id: post.id }),
+  });
+  const unlikePostMutation = api.posts.unlike.useMutation({
+    onSuccess: async () =>
+      await context.posts.getPost.invalidate({ post_id: post.id }),
+  });
   const createCommentMutation = api.comments.create.useMutation();
   const getLikesInPostQuery = api.posts.getLikesInPost.useQuery(
     {
@@ -225,7 +231,7 @@ export default function PostComment({
             }`}
           </p>
           <Badge variant="outline">
-            {post.type.charAt(0).toUpperCase() + post.type.slice(1)}
+            Privacy: {post.type.charAt(0).toUpperCase() + post.type.slice(1)}
           </Badge>
         </div>
       </div>
@@ -239,13 +245,12 @@ export default function PostComment({
                   post_id: post.id,
                   content: values.comment,
                 });
+                await context.posts.getPost.invalidate({ post_id: post.id });
 
                 form.reset();
                 setIsFocused(false);
                 searchParams.has("comment") &&
                   router.push(`/${params.username}/${params.post_id}`);
-
-                await context.posts.getPost.invalidate({ post_id: post.id });
               })}
               className="w-full"
             >

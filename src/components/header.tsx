@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useClerk } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -43,6 +43,7 @@ export default function Header() {
   const { signOut } = useClerk();
   const [loadingSignout, setLoadingSignout] = useState(false);
   const [open, setOpen] = useState("");
+  const { user } = useUser();
   const userQuery = api.auth.getCurrentUser.useQuery();
 
   return (
@@ -123,12 +124,14 @@ export default function Header() {
                     onClick={() => setOpen("")}
                   >
                     <Link
-                      href={`/${userQuery.data.username}`}
+                      href={`/${user?.username ?? userQuery.data.username}`}
                       className="w-full"
                     >
-                      {userQuery.data.username
+                      {user?.username
+                        ? `@${user.username}`
+                        : userQuery.data.username
                         ? `@${userQuery.data.username}`
-                        : "My profile"}
+                        : "My Profile"}
                     </Link>
                   </MenubarItem>
                   <MenubarItem asChild onClick={() => setOpen("")}>

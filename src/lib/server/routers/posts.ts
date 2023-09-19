@@ -12,7 +12,7 @@ import {
   User,
   posts,
 } from "@/lib/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { notFound } from "next/navigation";
 
@@ -43,7 +43,8 @@ export const postsRouter = router({
         },
       });
 
-      if (!post) notFound();
+      if (!post)
+        throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
 
       const user = await ctx.clerk.users.getUser(post.user.id);
 
@@ -545,6 +546,18 @@ export const postsRouter = router({
         .set({ deleted_at: new Date() })
         .where(
           and(eq(posts.id, post.id), eq(posts.user_id, ctx.session.user.id)),
+        );
+
+      await ctx.db
+        .delete(notifications)
+        .where(
+          and(
+            eq(notifications.link, post.id),
+            or(
+              eq(notifications.type, "like"),
+              eq(notifications.type, "comment"),
+            ),
+          ),
         );
     }),
 

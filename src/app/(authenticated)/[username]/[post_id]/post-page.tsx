@@ -16,9 +16,17 @@ import { Album, Briefcase, GraduationCap } from "lucide-react";
 import moment from "moment";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 export default function PostPageComponent({ post_id }: { post_id: string }) {
-  const postQuery = api.posts.getPost.useQuery({ post_id });
+  const postQuery = api.posts.getPost.useQuery({ post_id }, { retry: 1 });
+
+  if (
+    (postQuery.isSuccess && !postQuery.data) ||
+    postQuery.error?.data?.code === "NOT_FOUND"
+  ) {
+    notFound();
+  }
 
   return (
     <>

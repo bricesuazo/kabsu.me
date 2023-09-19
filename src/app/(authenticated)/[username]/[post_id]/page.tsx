@@ -9,7 +9,8 @@ export async function generateMetadata({
   params: { username: string; post_id: string };
 }): Promise<Metadata> {
   const post = await db.query.posts.findFirst({
-    where: (post, { eq }) => eq(post.id, params.post_id),
+    where: (post, { eq, isNull, and }) =>
+      and(eq(post.id, params.post_id), isNull(post.deleted_at)),
     with: {
       user: true,
     },
