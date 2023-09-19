@@ -635,7 +635,7 @@ export const postsRouter = router({
     }),
 
   unlike: protectedProcedure
-    .input(z.object({ post_id: z.string().min(1) }))
+    .input(z.object({ post_id: z.string().nonempty() }))
     .mutation(async ({ ctx, input }) => {
       const unlike = await ctx.db.query.likes.findFirst({
         where: (likes, { and, eq }) =>
@@ -672,6 +672,7 @@ export const postsRouter = router({
               eq(notifications.to_id, post.user_id),
               eq(notifications.from_id, ctx.session.user.id),
               eq(notifications.type, "like"),
+              eq(notifications.link, input.post_id),
             ),
           );
       }

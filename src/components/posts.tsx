@@ -5,7 +5,7 @@ import { useInView } from "react-intersection-observer";
 import { POST_TYPE_TABS } from "@/lib/constants";
 import { api } from "@/lib/trpc/client";
 import { PostSkeletonNoRandom } from "./post-skeleton";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect } from "react";
 import { Icons } from "./icons";
 
 export default function Posts({

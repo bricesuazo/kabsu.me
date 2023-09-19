@@ -42,7 +42,11 @@ export default function Post({
   const [likes, setLikes] = useState<Like[]>(post.likes);
   const unlikeMutation = api.posts.unlike.useMutation({
     onMutate: ({ post_id }) =>
-      setLikes(likes.filter((like) => like.user_id !== userId)),
+      setLikes(
+        likes.filter(
+          (like) => like.post_id !== post_id && like.user_id !== userId,
+        ),
+      ),
   });
   const likeMutation = api.posts.like.useMutation({
     onMutate: ({ post_id }) =>

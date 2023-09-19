@@ -23,13 +23,21 @@ export default function FollowButton({
   isFollower: boolean;
   user_id: string;
 }) {
-  const unfollowMutation = api.users.unfollow.useMutation();
-  const followMutation = api.users.follow.useMutation();
+  const isFollowerQuery = api.users.isFollower.useQuery(
+    { user_id },
+    { initialData: isFollower },
+  );
+  const unfollowMutation = api.users.unfollow.useMutation({
+    onSuccess: () => isFollowerQuery.refetch(),
+  });
+  const followMutation = api.users.follow.useMutation({
+    onSuccess: () => isFollowerQuery.refetch(),
+  });
 
   const [loading, setLoading] = useState(false);
   const [openUnfollow, setOpenUnfollow] = useState(false);
 
-  if (isFollower) {
+  if (isFollowerQuery.data) {
     return (
       <AlertDialog open={openUnfollow} onOpenChange={setOpenUnfollow}>
         <AlertDialogTrigger asChild>

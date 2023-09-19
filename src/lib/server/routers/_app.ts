@@ -4,12 +4,14 @@ import { commentsRouter } from "./comments";
 import { router } from "../trpc";
 import { notificationsRouter } from "./notifications";
 import { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
+import { authRouter } from "./auth";
 
 export const appRouter = router({
   users: usersRouter,
   posts: postsRouter,
   comments: commentsRouter,
   notifications: notificationsRouter,
+  auth: authRouter,
 });
 
 export type AppRouter = typeof appRouter;

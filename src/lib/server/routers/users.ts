@@ -142,4 +142,18 @@ export const usersRouter = router({
 
       return !!user || users.length > 0;
     }),
+
+  isFollower: protectedProcedure
+    .input(z.object({ user_id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const isFollower = await ctx.db.query.followers.findFirst({
+        where: (follower, { and, eq }) =>
+          and(
+            eq(follower.follower_id, ctx.session.user.id),
+            eq(follower.followee_id, input.user_id),
+          ),
+      });
+
+      return !!isFollower;
+    }),
 });
