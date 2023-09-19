@@ -156,4 +156,64 @@ export const usersRouter = router({
 
       return !!isFollower;
     }),
+
+  getUserProfile: protectedProcedure
+    .input(z.object({ username: z.string().nonempty() }))
+    .query(async ({ ctx, input }) => {
+      const users = await ctx.clerk.users.getUserList({
+        username: [input.username],
+      });
+
+      const user = users[0];
+
+      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+
+      const userFromDB = await ctx.db.query.users.findFirst({
+        where: (userDB, { eq }) => eq(userDB.id, user.id),
+
+        with: {
+          program: { with: { college: { with: { campus: true } } } },
+        },
+      });
+
+      if (!userFromDB) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return {
+        user: {
+          ...user,
+          ...userFromDB,
+        },
+        userId: ctx.session.user.id,
+      };
+    }),
+
+  isFollowerToUser: protectedProcedure
+    .input(z.object({ user_id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const followers = await ctx.db.query.followers.findMany({
+        where: (follower, { eq }) => eq(follower.followee_id, input.user_id),
+      });
+
+      return !!followers.find(
+        (follower) => follower.follower_id === ctx.session.user.id,
+      );
+    }),
+
+  getFollowersLength: protectedProcedure
+    .input(z.object({ user_id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const followers = await ctx.db.query.followers.findMany({
+        where: (follower, { eq }) => eq(follower.followee_id, input.user_id),
+      });
+
+      return followers.length;
+    }),
+  getFolloweesLength: protectedProcedure
+    .input(z.object({ user_id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const followees = await ctx.db.query.followees.findMany({
+        where: (followee, { eq }) => eq(followee.followee_id, input.user_id),
+      });
+      return followees.length;
+    }),
 });

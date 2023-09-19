@@ -39,7 +39,14 @@ export default function EditProfile({
   userFromDB: UserFromDB;
   userFromClerk: UserFromClerk;
 }) {
-  const updateBioMutation = api.users.updateBio.useMutation();
+  const context = api.useContext();
+  const updateBioMutation = api.users.updateBio.useMutation({
+    onSuccess: async () => {
+      await context.users.getUserProfile.invalidate({
+        username: userFromClerk.username ?? "",
+      });
+    },
+  });
   const formSchema = z.object({
     bio: z.string().max(128, "Bio must be at most 128 characters long."),
     firstName: z
@@ -205,7 +212,9 @@ export default function EditProfile({
                 size="sm"
                 type="submit"
                 disabled={
-                  form.formState.isSubmitting || !form.formState.isValid
+                  form.formState.isSubmitting ||
+                  !form.formState.isValid ||
+                  !form.formState.isDirty
                 }
               >
                 {form.formState.isSubmitting && (
