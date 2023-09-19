@@ -36,7 +36,9 @@ export default function AdventuraPage() {
       </div>
 
       <div className="text-center">
-        <h1 className="text-3xl font-bold">WELCOME TO ADVENTURA</h1>
+        <h1 className="text-3xl font-bold text-primary">
+          WELCOME TO ADVENTURA
+        </h1>
         <p className="[text-wrap:balance]">
           Adventura is a Visual Novel game that allows the users to navigate
           inside the actual place of Cavite State University Indang Campus.
@@ -44,7 +46,7 @@ export default function AdventuraPage() {
       </div>
 
       <div className="text-center">
-        <h1 className="text-xl font-bold">ABOUT THE GAME</h1>
+        <h1 className="text-xl font-bold text-primary">ABOUT THE GAME</h1>
         <p className="[text-wrap:balance]">
           You play as a curious Visitor or a Student of the campus. Navigating
           different places of the campus and learning its history and their

@@ -515,7 +515,7 @@ export const DEVS_INFO = [
     name: "Brice Suazo",
     role: "Full Stack Developer",
     image: "/dev-pics/brice.png",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    desc: "Saluysoy calculator developer, saluysoy predictor, and saluysoy predictor API developer.",
     links: [
       { icon: Mail, url: "mailto:bricebrine.suazo@cvsu.edu.ph" },
       { icon: Globe, url: "https://bricesuazo.com/" },
@@ -528,7 +528,7 @@ export const DEVS_INFO = [
     index: 1,
     name: "Aries Dela Peña",
     role: "UI/UX Designer",
-    image: "/dev-pics/aries.jpg",
+    image: "/dev-pics/aryas.jpg",
     desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:aries.delapena@cvsu.edu.ph" },

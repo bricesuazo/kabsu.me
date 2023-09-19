@@ -26,7 +26,7 @@ export default function AboutDev() {
               <Image
                 src={dev.image}
                 alt={dev.name}
-                className="  rounded-full"
+                className=" rounded-full saturate-0"
                 width="120"
                 height="120"
               />
