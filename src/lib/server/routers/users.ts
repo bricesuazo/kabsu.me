@@ -29,18 +29,22 @@ export const usersRouter = router({
       });
     }),
 
-  updateBio: protectedProcedure
+  updateProfile: protectedProcedure
     .input(
       z.object({
         bio: z
           .string()
           .max(128, { message: "Bio must be less than 128 characters" }),
+        link: z
+          .string()
+          .max(64, { message: "Link must be less than 64 characters" })
+          .optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db
         .update(users)
-        .set({ bio: input.bio })
+        .set({ bio: input.bio, link: input.link })
         .where(eq(users.id, ctx.session.user.id));
     }),
 

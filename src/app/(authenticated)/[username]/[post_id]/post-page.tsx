@@ -161,7 +161,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                   </div>
                 </div>
                 <p className="line-clamp-1 flex-1 break-all text-sm">
-                  @{postQuery.data.post.user.username}
+                  @{postQuery.data.post.user.username}{" "}
                 </p>
               </div>
             </Link>
@@ -174,7 +174,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
             )}
           </div>
 
-          {formatText(postQuery.data.post.content)}
+          <div className="">{formatText(postQuery.data.post.content)}</div>
 
           <PostComment
             userId={postQuery.data.userId}

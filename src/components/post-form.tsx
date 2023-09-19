@@ -36,7 +36,7 @@ import { POST_TYPE } from "@/lib/db/schema";
 import { api } from "@/lib/trpc/client";
 import TextareaAutosize from "react-textarea-autosize";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 const Schema = z.object({
   content: z
@@ -48,10 +48,11 @@ const Schema = z.object({
     }),
   type: z.enum(POST_TYPE).default(POST_TYPE[0]),
 });
-export default function PostForm() {
+export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
   const context = api.useContext();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const params = useParams();
 
   const form = useForm<z.infer<typeof Schema>>({
     resolver: zodResolver(Schema),
@@ -65,14 +66,21 @@ export default function PostForm() {
 
   const createPostMutation = api.posts.create.useMutation({
     onSuccess: async () => {
-      router.push(
-        form.getValues("type") === "following"
-          ? "/"
-          : `/?tab=${form.getValues("type")}`,
-      );
-      router.refresh();
-
-      await context.posts.getPosts.invalidate({ type: form.getValues("type") });
+      if (hasRedirect) {
+        router.push(
+          form.getValues("type") === "following"
+            ? "/"
+            : `/?tab=${form.getValues("type")}`,
+        );
+        // router.refresh();
+        await context.posts.getPosts.invalidate({
+          type: form.getValues("type"),
+        });
+      } else {
+        await context.users.getUserProfile.invalidate({
+          username: params.username as string,
+        });
+      }
     },
   });
 

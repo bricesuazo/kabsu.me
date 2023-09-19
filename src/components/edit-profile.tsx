@@ -40,7 +40,7 @@ export default function EditProfile({
   userFromClerk: UserFromClerk;
 }) {
   const context = api.useContext();
-  const updateBioMutation = api.users.updateBio.useMutation({
+  const updateProfileMutation = api.users.updateProfile.useMutation({
     onSuccess: async () => {
       await context.users.getUserProfile.invalidate({
         username: userFromClerk.username ?? "",
@@ -64,6 +64,11 @@ export default function EditProfile({
       // .nonempty({ message: "Username is required." })
       .max(64, { message: "Username must be at most 64 characters long." })
       .optional(),
+    link: z
+      .string()
+      .url({ message: "Link must be a valid URL." })
+      .max(64, { message: "Link must be less than 64 characters" })
+      .optional(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -73,6 +78,7 @@ export default function EditProfile({
       firstName: userFromClerk.firstName ?? "",
       lastName: userFromClerk.lastName ?? "",
       username: userFromClerk.username ?? "",
+      link: userFromDB.link ?? "",
     },
   });
 
@@ -116,8 +122,9 @@ export default function EditProfile({
           <form
             className="space-y-2"
             onSubmit={form.handleSubmit(async (data) => {
-              await updateBioMutation.mutateAsync({
+              await updateProfileMutation.mutateAsync({
                 bio: data.bio,
+                link: data.link,
               });
               toast({
                 title: "Profile updated",
@@ -192,11 +199,23 @@ export default function EditProfile({
                 </FormItem>
               )}
             />
-
             <CustomProgress
               value={mapToPercentage(bioLength)}
               className={cn("h-2", bioLength > 128 && "-red-500")}
               hitLimit={bioLength > 128}
+            />
+            <FormField
+              control={form.control}
+              name="link"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>Link</FormLabel>
+                  <FormControl>
+                    <Input placeholder="https://bricesuazo.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
             <div className="flex justify-end gap-x-2">
@@ -212,9 +231,7 @@ export default function EditProfile({
                 size="sm"
                 type="submit"
                 disabled={
-                  form.formState.isSubmitting ||
-                  !form.formState.isValid ||
-                  !form.formState.isDirty
+                  form.formState.isSubmitting || !form.formState.isDirty
                 }
               >
                 {form.formState.isSubmitting && (

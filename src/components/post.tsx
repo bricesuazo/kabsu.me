@@ -64,39 +64,38 @@ export default function Post({
   const router = useRouter();
 
   return (
-    <>
-      <div
-        onClick={(e) => {
-          e.stopPropagation();
-          router.push(`/${post.user.username}/${post.id}`);
-        }}
-        className="cursor-pointer space-y-2 border p-4"
-      >
-        <div className="flex justify-between">
-          <Link
-            href={`/${post.user.username}`}
-            onClick={(e) => e.stopPropagation()}
-            className="flex gap-x-2"
-          >
-            <div className="w-max">
-              <Image
-                src={post.user.imageUrl}
-                alt="Image"
-                width={40}
-                height={40}
-                className="rounded-full object-cover"
-              />
-            </div>
-            <div className="flex flex-1 flex-col gap-y-1">
-              <div className="group flex items-center gap-x-2">
-                {/* <p className="line-clamp-1 group-hover:underline">
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+        router.push(`/${post.user.username}/${post.id}`);
+      }}
+      className="cursor-pointer space-y-2 border p-4"
+    >
+      <div className="flex justify-between">
+        <Link
+          href={`/${post.user.username}`}
+          onClick={(e) => e.stopPropagation()}
+          className="flex gap-x-2"
+        >
+          <div className="w-max">
+            <Image
+              src={post.user.imageUrl}
+              alt="Image"
+              width={40}
+              height={40}
+              className="rounded-full object-cover"
+            />
+          </div>
+          <div className="flex flex-1 flex-col gap-y-1">
+            <div className="group flex items-center gap-x-2">
+              {/* <p className="line-clamp-1 group-hover:underline">
                   {post.user.firstName} {post.user.lastName}{" "}
                 </p> */}
-                <p className="text-md line-clamp-1 flex-1 break-all font-medium">
-                  @{post.user.username}
-                </p>
-                {/* <div className="flex items-center gap-x-1"> */}
-                {/* {(() => {
+              <p className="text-md line-clamp-1 flex-1 break-all font-medium">
+                @{post.user.username}
+              </p>
+              {/* <div className="flex items-center gap-x-1"> */}
+              {/* {(() => {
                       switch (post.user.type) {
                         case "student":
                           return <Album />;
@@ -108,7 +107,7 @@ export default function Post({
                           return null;
                       }
                     })()} */}
-                {/* <Tooltip delayDuration={250}>
+              {/* <Tooltip delayDuration={250}>
                     <TooltipTrigger className="hidden xs:block">
                       <Badge>
                         {searchParams.get("tab") === "college"
@@ -131,26 +130,26 @@ export default function Post({
                       {post.user.program.name}
                     </TooltipContent>
                   </Tooltip> */}
-                {/* </div> */}
+              {/* </div> */}
 
-                <p className="pointer-events-none hidden select-none sm:block">
-                  ·
-                </p>
+              <p className="pointer-events-none hidden select-none sm:block">
+                ·
+              </p>
 
-                <Tooltip delayDuration={250}>
-                  <TooltipTrigger>
-                    <p className="hidden text-xs xs:block">
-                      {moment(post.created_at).fromNow()}
-                    </p>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {moment(post.created_at).format("MMMM Do YYYY, h:mm:ss A")}
-                  </TooltipContent>
-                </Tooltip>
-              </div>
+              <Tooltip delayDuration={250}>
+                <TooltipTrigger>
+                  <p className="hidden text-xs xs:block">
+                    {moment(post.created_at).fromNow()}
+                  </p>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {moment(post.created_at).format("MMMM Do YYYY, h:mm:ss A")}
+                </TooltipContent>
+              </Tooltip>
+            </div>
 
-              <div className="flex items-center gap-x-1 ">
-                {/* {(() => {
+            <div className="flex items-center gap-x-1 ">
+              {/* {(() => {
                       switch (post.user.type) {
                         case "student":
                           return <Album />;
@@ -162,95 +161,96 @@ export default function Post({
                           return null;
                       }
                     })()} */}
-                <Tooltip delayDuration={250}>
-                  <TooltipTrigger>
-                    <Badge>
-                      {searchParams.get("tab") === "college"
-                        ? post.user.program.college.slug.toUpperCase()
-                        : post.user.program.college.campus.slug.toUpperCase()}
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-[12rem]">
-                    {post.user.program.college.campus.name}
-                  </TooltipContent>
-                </Tooltip>
+              <Tooltip delayDuration={250}>
+                <TooltipTrigger>
+                  <Badge>
+                    {searchParams.get("tab") === "college"
+                      ? post.user.program.college.slug.toUpperCase()
+                      : post.user.program.college.campus.slug.toUpperCase()}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[12rem]">
+                  {post.user.program.college.campus.name}
+                </TooltipContent>
+              </Tooltip>
 
-                <Tooltip delayDuration={250}>
-                  <TooltipTrigger>
-                    <Badge variant="outline">
-                      {post.user.program.slug.toUpperCase()}
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-[12rem]">
-                    {post.user.program.name}
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              {/* <p className="line-clamp-1 flex-1 break-all text-sm">
+              <Tooltip delayDuration={250}>
+                <TooltipTrigger>
+                  <Badge variant="outline">
+                    {post.user.program.slug.toUpperCase()}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[12rem]">
+                  {post.user.program.name}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            {/* <p className="line-clamp-1 flex-1 break-all text-sm">
                 @{post.user.username}
               </p> */}
-            </div>
-          </Link>
+          </div>
+        </Link>
 
-          {isMyPost && <PostDropdown post_id={post.id} />}
-        </div>
+        {isMyPost && <PostDropdown post_id={post.id} />}
+      </div>
 
+      <div className="">
         {formatText(
           post.content.length > 512
             ? post.content.slice(0, 512) + "..."
             : post.content,
         )}
+      </div>
 
-        <div className="space-y-2">
-          <div className="flex">
-            <Toggle
-              size="sm"
-              pressed={likes.some((like) => like.user_id === userId)}
-              onClick={(e) => e.stopPropagation()}
-              onPressedChange={(pressed) => {
-                if (pressed) {
-                  likeMutation.mutate({ post_id: post.id });
-                } else {
-                  unlikeMutation.mutate({ post_id: post.id });
-                }
-              }}
-            >
-              <Heart
-                className={cn(
-                  "h-4 w-4",
-                  likes.some((like) => like.user_id === userId) &&
-                    "fill-primary text-primary",
-                )}
-              />
-            </Toggle>
+      <div className="space-y-2">
+        <div className="flex">
+          <Toggle
+            size="sm"
+            pressed={likes.some((like) => like.user_id === userId)}
+            onClick={(e) => e.stopPropagation()}
+            onPressedChange={(pressed) => {
+              if (pressed) {
+                likeMutation.mutate({ post_id: post.id });
+              } else {
+                unlikeMutation.mutate({ post_id: post.id });
+              }
+            }}
+          >
+            <Heart
+              className={cn(
+                "h-4 w-4",
+                likes.some((like) => like.user_id === userId) &&
+                  "fill-primary text-primary",
+              )}
+            />
+          </Toggle>
 
-            <Toggle
-              size="sm"
-              pressed={false}
-              asChild
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Link href={`/${post.user.username}/${post.id}?comment`}>
-                <MessageCircle className="h-4 w-4" />
-              </Link>
-            </Toggle>
-          </div>
+          <Toggle
+            size="sm"
+            pressed={false}
+            asChild
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Link href={`/${post.user.username}/${post.id}?comment`}>
+              <MessageCircle className="h-4 w-4" />
+            </Link>
+          </Toggle>
+        </div>
 
-          <div className="flex items-center gap-x-4">
-            <p className="text-sm text-muted-foreground">
-              {`${likes.length} like${likes.length > 1 ? "s" : ""} — ${
-                post.comments.length
-              } comment${post.comments.length > 1 ? "s" : ""}`}
-            </p>
-            <Badge variant="outline" className="flex items-center gap-x-1">
-              <p className="hidden xs:block">Privacy:</p>
-              {post.type === "following"
-                ? "Follower"
-                : post.type.charAt(0).toUpperCase() + post.type.slice(1)}
-            </Badge>
-          </div>
+        <div className="flex items-center gap-x-4">
+          <p className="text-sm text-muted-foreground">
+            {`${likes.length} like${likes.length > 1 ? "s" : ""} — ${
+              post.comments.length
+            } comment${post.comments.length > 1 ? "s" : ""}`}
+          </p>
+          <Badge variant="outline" className="flex items-center gap-x-1">
+            <p className="hidden xs:block">Privacy:</p>
+            {post.type === "following"
+              ? "Follower"
+              : post.type.charAt(0).toUpperCase() + post.type.slice(1)}
+          </Badge>
         </div>
       </div>
-    </>
+    </div>
   );
 }

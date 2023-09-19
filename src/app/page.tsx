@@ -29,7 +29,7 @@ export default function Home({
         <>
           <Header />
           <div className="space-y-8">
-            <PostForm />
+            <PostForm hasRedirect />
 
             <PostTypeTab />
 

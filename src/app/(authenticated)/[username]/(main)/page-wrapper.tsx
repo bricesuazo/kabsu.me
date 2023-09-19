@@ -109,6 +109,18 @@ export default function UserPage({
                     : profileQuery.data.user.bio
                   : "This user hasn't written a bio yet."}
               </p>
+
+              <div className="">
+                {profileQuery.data.user.link && (
+                  <Button asChild variant="link" className="h-auto p-0">
+                    <Link href={profileQuery.data.user.link}>
+                      {profileQuery.data.user.link.length > 30
+                        ? profileQuery.data.user.link.slice(0, 30) + "..."
+                        : profileQuery.data.user.link}
+                    </Link>
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
 
