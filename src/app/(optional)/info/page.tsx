@@ -13,7 +13,7 @@ export default function InformationCenterPage() {
       <Separator className="mx-auto w-10" />
 
       <div className="mx-auto max-w-md">
-        <h4 className="text-xl font-semibold">CvSU Mission</h4>
+        <h4 className="text-xl font-semibold text-primary">CvSU Mission</h4>
         <p className="[text-wrap:balance]">
           Cavite State University shall provide excellent, equitable, and
           relevant educational opportunities in the arts, sciences and
@@ -22,7 +22,7 @@ export default function InformationCenterPage() {
         </p>
       </div>
       <div className="mx-auto max-w-md">
-        <h4 className="text-xl font-semibold">CvSU Vision</h4>
+        <h4 className="text-xl font-semibold text-primary">CvSU Vision</h4>
         <p className="[text-wrap:balance]">
           The Premier University in historic Cavite globally recognized for
           excellence in character development, academics, research, innovation
@@ -33,7 +33,7 @@ export default function InformationCenterPage() {
       <Separator className="mx-auto w-10" />
 
       <div className="space-y-4">
-        <h4 className="text-xl font-semibold">CvSU Hymn</h4>
+        <h4 className="text-xl font-semibold text-primary">CvSU Hymn</h4>
         <iframe
           className="aspect-video w-full"
           src="https://www.youtube.com/embed/A2fOWAo9jME?si=tnYfyrktvR4VUofk"
