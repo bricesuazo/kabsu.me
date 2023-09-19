@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Comment } from "@/lib/db/schema";
 import { api } from "@/lib/trpc/client";
+import { formatText } from "@/lib/utils";
 import { Album, Briefcase, GraduationCap } from "lucide-react";
 import moment from "moment";
 import Image from "next/image";
@@ -173,7 +174,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
             )}
           </div>
 
-          <p>{postQuery.data.post.content}</p>
+          {formatText(postQuery.data.post.content)}
 
           <PostComment
             userId={postQuery.data.userId}

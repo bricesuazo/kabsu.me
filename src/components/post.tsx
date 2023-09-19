@@ -20,7 +20,7 @@ import { Badge } from "./ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { nanoid } from "nanoid";
 import { Toggle } from "./ui/toggle";
-import { cn } from "@/lib/utils";
+import { cn, formatText } from "@/lib/utils";
 import PostDropdown from "./post-dropdown";
 import { api } from "@/lib/trpc/client";
 
@@ -195,11 +195,11 @@ export default function Post({
           {isMyPost && <PostDropdown post_id={post.id} />}
         </div>
 
-        <p>
-          {post.content.length > 512
+        {formatText(
+          post.content.length > 512
             ? post.content.slice(0, 512) + "..."
-            : post.content}
-        </p>
+            : post.content,
+        )}
 
         <div className="space-y-2">
           <div className="flex">
