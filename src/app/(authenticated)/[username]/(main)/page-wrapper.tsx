@@ -5,18 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import EditProfile from "@/components/edit-profile";
 import { Button } from "@/components/ui/button";
-import { Suspense } from "react";
-import PostSkeleton from "@/components/post-skeleton";
 import { getOrdinal } from "@/lib/utils";
 import PostsWrapper from "./posts-wrapper";
 import { api } from "@/lib/trpc/client";
 import { RouterOutput } from "@/lib/server/routers/_app";
 import FollowButton from "@/components/follow-button";
-import { db } from "@/lib/db";
-import { auth } from "@clerk/nextjs";
 import Link from "next/link";
 import { User } from "@clerk/nextjs/server";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export default function UserPage({
   profile,
@@ -129,40 +124,26 @@ export default function UserPage({
 
         <div className="space-y-2">
           <div className="flex items-center gap-x-2">
-            {profileQuery.data.userId === profileQuery.data.user.id ? (
+            {profileQuery.data.isFollower !== undefined ? (
+              <FollowButton
+                isFollower={profileQuery.data.isFollower}
+                user_id={profileQuery.data.user.id}
+              />
+            ) : (
               <EditProfile
                 userFromDB={profileQuery.data.user}
                 userFromClerk={profileQuery.data.user}
                 data-superjson
               />
-            ) : (
-              <Suspense fallback={<Button disabled>Follow</Button>}>
-                <FollowUserButton user_id={profileQuery.data.user.id} />
-              </Suspense>
             )}
           </div>
 
           <div className="flex items-center gap-x-4">
-            <Suspense
-              fallback={
-                <Button variant="link" className="p-0" disabled>
-                  0 followers
-                </Button>
-              }
-            >
-              <FollowsButton type="followers" user={profileQuery.data.user} />
-            </Suspense>
+            <FollowsButton type="followers" user={profileQuery.data.user} />
+
             <p className="pointer-events-none select-none">·</p>
 
-            <Suspense
-              fallback={
-                <Button variant="link" className="p-0" disabled>
-                  0 following
-                </Button>
-              }
-            >
-              <FollowsButton type="following" user={profileQuery.data.user} />
-            </Suspense>
+            <FollowsButton type="following" user={profileQuery.data.user} />
           </div>
         </div>
 
@@ -180,32 +161,9 @@ export default function UserPage({
             </TabsList>
           </Tabs> */}
       </div>
-      <Suspense
-        fallback={
-          <div>
-            {[...Array(6)].map((_, i) => (
-              <PostSkeleton key={i} />
-            ))}
-          </div>
-        }
-      >
-        <PostsWrapper user={profileQuery.data.user} data-superjson />
-      </Suspense>
-    </div>
-  );
-}
 
-export function FollowUserButton({ user_id }: { user_id: string }) {
-  const isFollowerToUserQuery = api.users.isFollowerToUser.useQuery(
-    {
-      user_id,
-    },
-    {
-      initialData: false,
-    },
-  );
-  return (
-    <FollowButton isFollower={isFollowerToUserQuery.data} user_id={user_id} />
+      <PostsWrapper user={profileQuery.data.user} data-superjson />
+    </div>
   );
 }
 

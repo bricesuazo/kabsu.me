@@ -11,9 +11,6 @@ export async function generateMetadata({
   const post = await db.query.posts.findFirst({
     where: (post, { eq, isNull, and }) =>
       and(eq(post.id, params.post_id), isNull(post.deleted_at)),
-    with: {
-      user: true,
-    },
   });
 
   if (!post) notFound();

@@ -1,4 +1,4 @@
-import PostSkeleton from "@/components/post-skeleton";
+import { PostSkeletonNoRandom } from "@/components/post-skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function UserLoading() {
@@ -17,6 +17,7 @@ export default function UserLoading() {
             <div className="flex flex-col">
               <Skeleton className="h-10 w-60" />
 
+              <Skeleton className="mt-1 h-5 w-full xs:w-32" />
               <Skeleton className="mt-1 h-5 w-full xs:w-80" />
             </div>
           </div>
@@ -37,6 +38,12 @@ export default function UserLoading() {
             <Skeleton className="h-4 w-20" />
           </div>
         </div>
+      </div>
+
+      <div className="">
+        {[...Array(6)].map((_, i) => (
+          <PostSkeletonNoRandom key={i} />
+        ))}
       </div>
     </div>
   );
