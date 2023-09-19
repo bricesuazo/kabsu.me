@@ -515,6 +515,7 @@ export const DEVS_INFO = [
     name: "Brice Suazo",
     role: "Full Stack Developer",
     image: "/dev-pics/brice.png",
+    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:bricebrine.suazo@cvsu.edu.ph" },
       { icon: Globe, url: "https://bricesuazo.com/" },
@@ -528,6 +529,7 @@ export const DEVS_INFO = [
     name: "Aries Dela Peña",
     role: "UI/UX Designer",
     image: "/dev-pics/aries.jpg",
+    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:aries.delapena@cvsu.edu.ph" },
       { icon: Instagram, url: "https://www.instagram.com/25aryasss52/" },
@@ -538,6 +540,7 @@ export const DEVS_INFO = [
     name: "Gabriel Luis Astilla",
     role: "UI/UX Designer",
     image: "/dev-pics/gab.png",
+    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:gabrielluis.astilla@cvsu.edu.ph" },
       { icon: Globe, url: "https://gabastilla.rf.gd/" },
@@ -550,6 +553,7 @@ export const DEVS_INFO = [
     name: "Alexis Ken Alvarez",
     role: "Backend Developer",
     image: "/dev-pics/aki.png",
+    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:alexisken.alvarez@cvsu.edu.ph" },
       { icon: Globe, url: "https://www.akialvarez.com/" },
@@ -562,6 +566,7 @@ export const DEVS_INFO = [
     name: "Aaron Joshua Espinosa",
     role: "Frontend Developer",
     image: "/dev-pics/aj.jpg",
+    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:aaronjoshua.espinosa@cvsu.edu.ph" },
       { icon: Globe, url: "https://ajespinosa.vercel.app/" },
@@ -573,6 +578,7 @@ export const DEVS_INFO = [
     name: "John Bernard Sarroca",
     role: "Backend Developer",
     image: "/dev-pics/bernard.jpg",
+    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:johnbernard.sarroca@cvsu.edu.ph" },
       { icon: Github, url: "https://github.com/iamnards" },
@@ -584,6 +590,7 @@ export const DEVS_INFO = [
     name: "Rod Clarence Cotines",
     role: "Frontend Developer",
     image: "/dev-pics/rod.jpeg",
+    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:rodclarence.cotines@cvsu.edu.ph" },
       { icon: Globe, url: "https://rodcotines.vercel.app/" },
@@ -596,6 +603,7 @@ export const DEVS_INFO = [
     name: "Alex Kal-El Buenviaje",
     role: "Quality Assurance Tester",
     image: "/dev-pics/lex.jpg",
+    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:alexkal-el.buenviaje@cvsu.edu.ph" },
       { icon: Instagram, url: "https://www.instagram.com/lxbnvj/" },
