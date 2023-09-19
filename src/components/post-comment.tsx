@@ -230,8 +230,11 @@ export default function PostComment({
               post.comments.length > 1 ? "s" : ""
             }`}
           </p>
-          <Badge variant="outline">
-            Privacy: {post.type.charAt(0).toUpperCase() + post.type.slice(1)}
+          <Badge variant="outline" className="flex items-center gap-x-1">
+            <p className="hidden xs:block">Privacy:</p>
+            {post.type === "following"
+              ? "Follower"
+              : post.type.charAt(0).toUpperCase() + post.type.slice(1)}
           </Badge>
         </div>
       </div>

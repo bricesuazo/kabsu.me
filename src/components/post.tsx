@@ -136,23 +136,17 @@ export default function Post({
                 <p className="pointer-events-none hidden select-none sm:block">
                   ·
                 </p>
-                <div className="hidden sm:block">
-                  <Tooltip delayDuration={250}>
-                    <TooltipTrigger>
-                      <p className="text-xs">
-                        {moment(post.created_at).fromNow()}
-                      </p>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {moment(post.created_at).format(
-                        "MMMM Do YYYY, h:mm:ss A",
-                      )}
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <Badge variant="outline">
-                  {post.type.charAt(0).toUpperCase() + post.type.slice(1)}
-                </Badge>
+
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger>
+                    <p className="hidden text-xs xs:block">
+                      {moment(post.created_at).fromNow()}
+                    </p>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {moment(post.created_at).format("MMMM Do YYYY, h:mm:ss A")}
+                  </TooltipContent>
+                </Tooltip>
               </div>
 
               <div className="flex items-center gap-x-1 ">
@@ -169,7 +163,7 @@ export default function Post({
                       }
                     })()} */}
                 <Tooltip delayDuration={250}>
-                  <TooltipTrigger className="hidden xs:block">
+                  <TooltipTrigger>
                     <Badge>
                       {searchParams.get("tab") === "college"
                         ? post.user.program.college.slug.toUpperCase()
@@ -248,10 +242,12 @@ export default function Post({
                 post.comments.length
               } comment${post.comments.length > 1 ? "s" : ""}`}
             </p>
-
-            {/* <Badge variant="outline">
-              {post.type.charAt(0).toUpperCase() + post.type.slice(1)}
-            </Badge> */}
+            <Badge variant="outline" className="flex items-center gap-x-1">
+              <p className="hidden xs:block">Privacy:</p>
+              {post.type === "following"
+                ? "Follower"
+                : post.type.charAt(0).toUpperCase() + post.type.slice(1)}
+            </Badge>
           </div>
         </div>
       </div>

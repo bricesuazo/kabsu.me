@@ -35,7 +35,7 @@ import { z } from "zod";
 import { POST_TYPE } from "@/lib/db/schema";
 import { api } from "@/lib/trpc/client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const Schema = z.object({
   content: z
@@ -50,6 +50,7 @@ const Schema = z.object({
 export default function PostForm() {
   const context = api.useContext();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const form = useForm<z.infer<typeof Schema>>({
     resolver: zodResolver(Schema),
     defaultValues: {
@@ -78,6 +79,17 @@ export default function PostForm() {
 
     form.reset();
   }
+
+  useEffect(() => {
+    if (searchParams.has("tab")) {
+      form.setValue(
+        "type",
+        searchParams.get("tab") as (typeof POST_TYPE)[number],
+      );
+    } else {
+      form.setValue("type", "following");
+    }
+  }, [searchParams, form]);
 
   useEffect(() => {
     form.reset();
