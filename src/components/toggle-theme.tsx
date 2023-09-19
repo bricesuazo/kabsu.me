@@ -11,13 +11,18 @@ export function ToggleTheme({
 
   return (
     <Button
-      size="icon"
       variant="outline"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       {...props}
     >
-      <Sun className="block dark:hidden" size="1.25rem" />
-      <Moon className="hidden dark:block" size="1.25rem" />
+      <span className="flex items-center dark:hidden">
+        <Sun size="1.25rem" />
+        <span className="ml-1">Light Mode</span>
+      </span>
+      <span className=" hidden items-center dark:flex">
+        <Moon size="1.25rem" />
+        <span className="ml-1">Dark Mode</span>
+      </span>
     </Button>
   );
 }
