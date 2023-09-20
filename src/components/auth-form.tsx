@@ -17,6 +17,7 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
+import { DEVS_INFO } from "@/lib/constants";
 
 import ProgramAuth from "./program-auth";
 import Image from "next/image";
@@ -237,7 +238,6 @@ export default function AuthForm() {
             University students, faculty, and alumni.
           </h4>
         </div>
-
         <div className="flex flex-col items-center justify-center gap-y-4 ">
           <Button
             // variant="outline"
@@ -286,8 +286,50 @@ export default function AuthForm() {
 
           <ToggleTheme />
         </div>
-
-        <AboutDev />
+        {/* ABOUT DEV COMPONENT */}{" "}
+        <div>
+          <p className="py-4 text-center text-4xl font-bold text-primary">
+            About
+          </p>
+          <div className="mx-auto grid w-fit grid-cols-1 gap-x-20 self-center sm:grid-cols-2">
+            {DEVS_INFO.map((dev) => {
+              return (
+                <div
+                  key={dev.index}
+                  className="flex flex-row items-center gap-x-4 rounded-lg p-4"
+                >
+                  <Image
+                    src={dev.image}
+                    alt={dev.name}
+                    className="rounded-full saturate-0"
+                    width="80"
+                    height="80"
+                  />
+                  <div className="flex flex-col items-start text-left">
+                    <p className="font-semibold">{dev.name}</p>
+                    <p className="text-sm">{dev.role}</p>
+                    <div className="flex gap-x-1 pt-2">
+                      {dev.links.map((link, i) => {
+                        return (
+                          <Link
+                            key={i}
+                            href={link.url}
+                            target="_blank"
+                            className="hover:text-primary"
+                          >
+                            <div className="grid place-items-center p-1">
+                              <link.icon size="1rem" />
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
         <div className="grid place-items-center space-y-8">
           <div className="">
             <div className="relative mx-auto aspect-video w-80">
@@ -316,7 +358,6 @@ export default function AuthForm() {
           </Button>
         </div>
         <Separator className="mx-auto w-8" />
-
         <Footer />
       </div>
     );
