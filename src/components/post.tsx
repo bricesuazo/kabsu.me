@@ -204,7 +204,9 @@ export default function Post({
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
-                  {post.user.program.college.campus.name}
+                  {searchParams.get("tab") === "college"
+                    ? post.user.program.college.name
+                    : post.user.program.college.campus.name}
                 </TooltipContent>
               </Tooltip>
 

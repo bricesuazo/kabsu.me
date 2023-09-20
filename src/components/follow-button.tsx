@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Icons } from "./icons";
 import {
   AlertDialog,
@@ -15,6 +15,7 @@ import {
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
 import { api } from "@/lib/trpc/client";
+import { useParams } from "next/navigation";
 
 export default function FollowButton({
   isFollower,
@@ -23,18 +24,31 @@ export default function FollowButton({
   isFollower: boolean;
   user_id: string;
 }) {
+  const params = useParams();
+  const context = api.useContext();
   const isFollowerQuery = api.users.isFollower.useQuery(
     { user_id },
     { initialData: isFollower },
   );
   const unfollowMutation = api.users.unfollow.useMutation({
-    onSuccess: () => isFollowerQuery.refetch(),
+    onSuccess: async () => {
+      await isFollowerQuery.refetch();
+      await context.users.getUserProfile.invalidate({
+        username: params.username as string,
+      });
+
+      setOpenUnfollow(false);
+    },
   });
   const followMutation = api.users.follow.useMutation({
-    onSuccess: () => isFollowerQuery.refetch(),
+    onSuccess: async () => {
+      await isFollowerQuery.refetch();
+      await context.users.getUserProfile.invalidate({
+        username: params.username as string,
+      });
+    },
   });
 
-  const [loading, setLoading] = useState(false);
   const [openUnfollow, setOpenUnfollow] = useState(false);
 
   if (isFollowerQuery.data) {
@@ -59,16 +73,11 @@ export default function FollowButton({
 
             <Button
               onClick={async () => {
-                setLoading(true);
                 await unfollowMutation.mutateAsync({ user_id });
-
-                setOpenUnfollow(false);
-
-                setLoading(false);
               }}
-              disabled={loading}
+              disabled={unfollowMutation.isLoading}
             >
-              {loading && (
+              {unfollowMutation.isLoading && (
                 <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
               )}
               Unfollow
@@ -83,16 +92,15 @@ export default function FollowButton({
         variant="default"
         size="sm"
         onClick={async () => {
-          setLoading(true);
-
           await followMutation.mutateAsync({
             user_id,
           });
-          setLoading(false);
         }}
-        disabled={loading}
+        disabled={followMutation.isLoading}
       >
-        {loading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+        {followMutation.isLoading && (
+          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+        )}
         Follow
       </Button>
     );
