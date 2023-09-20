@@ -91,22 +91,19 @@ export default function EditProfile({
 
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    if (open) {
-      form.reset();
-      form.setValue("bio", userFromDB.bio ?? "");
-      form.setValue("firstName", userFromClerk.firstName ?? "");
-      form.setValue("lastName", userFromClerk.lastName ?? "");
-      form.setValue("username", userFromClerk.username ?? "");
-      form.setValue("link", userFromDB.link?.split("https://")[1] ?? "");
-    }
-  }, [open, userFromDB, userFromClerk, form]);
+  // useEffect(() => {
+  //   if (open) {
+  //     form.reset();
+  //     form.setValue("bio", userFromDB.bio ?? "");
+  //     form.setValue("firstName", userFromClerk.firstName ?? "");
+  //     form.setValue("lastName", userFromClerk.lastName ?? "");
+  //     form.setValue("username", userFromClerk.username ?? "");
+  //     form.setValue("link", userFromDB.link?.split("https://")[1] ?? "");
+  //   }
+  // }, [open, userFromDB, userFromClerk, form]);
 
   function mapToPercentage(value: number) {
-    value = Math.min(128, Math.max(0, value));
-    const percentage = (value / 128) * 100;
-
-    return percentage;
+    return (Math.min(128, Math.max(0, value)) / 128) * 100;
   }
 
   const bioLength = form.watch("bio")?.length ?? 0;

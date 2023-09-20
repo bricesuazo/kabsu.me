@@ -18,7 +18,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export default function UserPage({
+export default function UserPageWrapper({
   profile,
   username,
 }: {

@@ -36,6 +36,9 @@ export default function FollowButton({
       await context.users.getUserProfile.invalidate({
         username: params.username as string,
       });
+      await context.posts.getUserPosts.invalidate({
+        user_id,
+      });
 
       setOpenUnfollow(false);
     },
@@ -45,6 +48,9 @@ export default function FollowButton({
       await isFollowerQuery.refetch();
       await context.users.getUserProfile.invalidate({
         username: params.username as string,
+      });
+      await context.posts.getUserPosts.invalidate({
+        user_id,
       });
     },
   });

@@ -100,6 +100,14 @@ export const postsRouter = router({
         },
       });
 
+      const isFollower = await ctx.db.query.followers.findFirst({
+        where: (follower, { and, eq }) =>
+          and(
+            eq(follower.follower_id, ctx.session.user.id),
+            eq(follower.followee_id, input.user_id),
+          ),
+      });
+
       if (!currentUserFromDB || !userOfPost)
         throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
@@ -125,6 +133,8 @@ export const postsRouter = router({
                     userOfPost.program.college.campus_id
                     ? eq(post.type, "campus")
                     : undefined,
+
+                  isFollower ? eq(post.type, "following") : undefined,
                 )
               : undefined,
           ),
