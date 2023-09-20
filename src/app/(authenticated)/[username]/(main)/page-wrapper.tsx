@@ -27,7 +27,7 @@ export default function UserPage({
 }) {
   const profileQuery = api.users.getUserProfile.useQuery(
     { username },
-    { initialData: profile },
+    { initialData: profile, refetchOnWindowFocus: false },
   );
 
   return (
@@ -36,60 +36,60 @@ export default function UserPage({
         <div className="flex w-full flex-col-reverse gap-x-8 gap-y-4 xs:flex-row">
           <div className="flex-1 space-y-2 xs:w-px">
             <div className="flex items-center gap-x-2">
-              {/* <Tooltip delayDuration={250}> */}
-              {(() => {
-                if (profileQuery.data.user.type === "student") {
-                  return (
-                    <>
-                      {/* <TooltipTrigger> */}
-                      <Album />
-                      {/* </TooltipTrigger> */}
-                      {/* <TooltipContent>Student</TooltipContent> */}
-                    </>
-                  );
-                } else if (profileQuery.data.user.type === "alumni") {
-                  return (
-                    <>
-                      {/* <TooltipTrigger> */}
-                      <GraduationCap />
-                      {/* </TooltipTrigger> */}
-                      {/* <TooltipContent>Alumni</TooltipContent> */}
-                    </>
-                  );
-                } else if (profileQuery.data.user.type === "faculty") {
-                  return (
-                    <>
-                      {/* <TooltipTrigger> */}
-                      <Briefcase />
-                      {/* </TooltipTrigger> */}
-                      {/* <TooltipContent>Faculty</TooltipContent> */}
-                    </>
-                  );
-                }
-              })()}
-              {/* </Tooltip> */}
+              <Tooltip delayDuration={250}>
+                {(() => {
+                  if (profileQuery.data.user.type === "student") {
+                    return (
+                      <>
+                        <TooltipTrigger>
+                          <Album />
+                        </TooltipTrigger>
+                        <TooltipContent>Student</TooltipContent>
+                      </>
+                    );
+                  } else if (profileQuery.data.user.type === "alumni") {
+                    return (
+                      <>
+                        <TooltipTrigger>
+                          <GraduationCap />
+                        </TooltipTrigger>
+                        <TooltipContent>Alumni</TooltipContent>
+                      </>
+                    );
+                  } else if (profileQuery.data.user.type === "faculty") {
+                    return (
+                      <>
+                        <TooltipTrigger>
+                          <Briefcase />
+                        </TooltipTrigger>
+                        <TooltipContent>Faculty</TooltipContent>
+                      </>
+                    );
+                  }
+                })()}
+              </Tooltip>
 
-              {/* <Tooltip delayDuration={250}>
-                  <TooltipTrigger> */}
-              <Badge>
-                {profileQuery.data.user.program.college.campus.slug.toUpperCase()}
-              </Badge>
-              {/* </TooltipTrigger> */}
-              {/* <TooltipContent className="max-w-60">
-                    {profileQuery.data.user.program.college.campus.name}
-                  </TooltipContent> */}
-              {/* </Tooltip> */}
+              <Tooltip delayDuration={250}>
+                <TooltipTrigger>
+                  <Badge>
+                    {profileQuery.data.user.program.college.campus.slug.toUpperCase()}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-60">
+                  {profileQuery.data.user.program.college.campus.name}
+                </TooltipContent>
+              </Tooltip>
 
-              {/* <Tooltip delayDuration={250}>
-                  <TooltipTrigger> */}
-              <Badge variant="outline">
-                {profileQuery.data.user.program.slug.toUpperCase()}
-              </Badge>
-              {/* </TooltipTrigger>
-                  <TooltipContent className="max-w-60">
-                    {profileQuery.data.user.program.name}
-                  </TooltipContent>
-                </Tooltip> */}
+              <Tooltip delayDuration={250}>
+                <TooltipTrigger>
+                  <Badge variant="outline">
+                    {profileQuery.data.user.program.slug.toUpperCase()}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-60">
+                  {profileQuery.data.user.program.name}
+                </TooltipContent>
+              </Tooltip>
 
               <Badge variant="outline">
                 {getOrdinal(profileQuery.data.user.user_number + 1)} user
@@ -103,7 +103,7 @@ export default function UserPage({
                 </h2>
 
                 {profileQuery.data.user.verified_at && (
-                  <Tooltip>
+                  <Tooltip delayDuration={250}>
                     <TooltipTrigger>
                       <Image
                         src="/logo.png"

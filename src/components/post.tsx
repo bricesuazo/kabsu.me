@@ -13,7 +13,13 @@ import type {
 import moment from "moment";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Heart, MessageCircle } from "lucide-react";
+import {
+  Album,
+  Briefcase,
+  GraduationCap,
+  Heart,
+  MessageCircle,
+} from "lucide-react";
 import { useState } from "react";
 // import UpdatePost from "./update-post";
 import { User as UserFromClerk } from "@clerk/nextjs/server";
@@ -128,43 +134,6 @@ export default function Post({
                   </Tooltip>
                 )}
               </div>
-              {/* <div className="flex items-center gap-x-1"> */}
-              {/* {(() => {
-                      switch (post.user.type) {
-                        case "student":
-                          return <Album />;
-                        case "alumni":
-                          return <Briefcase />;
-                        case "faculty":
-                          return <GraduationCap />;
-                        default:
-                          return null;
-                      }
-                    })()} */}
-              {/* <Tooltip delayDuration={250}>
-                    <TooltipTrigger className="hidden xs:block">
-                      <Badge>
-                        {searchParams.get("tab") === "college"
-                          ? post.user.program.college.slug.toUpperCase()
-                          : post.user.program.college.campus.slug.toUpperCase()}
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-[12rem]">
-                      {post.user.program.college.campus.name}
-                    </TooltipContent>
-                  </Tooltip>
-
-                  <Tooltip delayDuration={250}>
-                    <TooltipTrigger>
-                      <Badge variant="outline">
-                        {post.user.program.slug.toUpperCase()}
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-[12rem]">
-                      {post.user.program.name}
-                    </TooltipContent>
-                  </Tooltip> */}
-              {/* </div> */}
 
               <p className="pointer-events-none hidden select-none sm:block">
                 ·
@@ -183,18 +152,26 @@ export default function Post({
             </div>
 
             <div className="flex items-center gap-x-1 ">
-              {/* {(() => {
-                      switch (post.user.type) {
-                        case "student":
-                          return <Album />;
-                        case "alumni":
-                          return <Briefcase />;
-                        case "faculty":
-                          return <GraduationCap />;
-                        default:
-                          return null;
-                      }
-                    })()} */}
+              <Tooltip delayDuration={250}>
+                <TooltipTrigger>
+                  {(() => {
+                    switch (post.user.type) {
+                      case "student":
+                        return <Album />;
+                      case "alumni":
+                        return <Briefcase />;
+                      case "faculty":
+                        return <GraduationCap />;
+                      default:
+                        return null;
+                    }
+                  })()}
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[12rem]">
+                  {post.user.type.charAt(0).toUpperCase() +
+                    post.user.type.slice(1)}
+                </TooltipContent>
+              </Tooltip>
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge>

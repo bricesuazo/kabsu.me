@@ -201,10 +201,9 @@ export const usersRouter = router({
         isFollower:
           user.id === ctx.session.user.id
             ? undefined
-            : !!(await ctx.db.query.followers.findFirst({
-                where: (follower, { eq }) =>
-                  eq(follower.follower_id, ctx.session.user.id),
-              })),
+            : !!followers.find(
+                (follower) => follower.follower_id === ctx.session.user.id,
+              ),
       };
     }),
 });
