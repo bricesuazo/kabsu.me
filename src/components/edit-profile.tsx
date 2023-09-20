@@ -48,7 +48,10 @@ export default function EditProfile({
     },
   });
   const formSchema = z.object({
-    bio: z.string().max(128, "Bio must be at most 128 characters long."),
+    bio: z
+      .string()
+      .max(128, "Bio must be at most 128 characters long.")
+      .optional(),
     firstName: z
       .string()
       // .nonempty({ message: "First name is required." })
@@ -66,8 +69,12 @@ export default function EditProfile({
       .optional(),
     link: z
       .string()
-      .url({ message: "Link must be a valid URL." })
+      // .url({ message: "Link must be a valid URL." })
       .max(64, { message: "Link must be less than 64 characters" })
+      .transform((value) => {
+        if (value === "") return undefined;
+        return value.startsWith("http://") ? value : `https://${value}`;
+      })
       .optional(),
   });
 
@@ -78,7 +85,7 @@ export default function EditProfile({
       firstName: userFromClerk.firstName ?? "",
       lastName: userFromClerk.lastName ?? "",
       username: userFromClerk.username ?? "",
-      link: userFromDB.link ?? "",
+      link: userFromDB.link?.split("https://")[1] ?? "",
     },
   });
 
@@ -91,6 +98,7 @@ export default function EditProfile({
       form.setValue("firstName", userFromClerk.firstName ?? "");
       form.setValue("lastName", userFromClerk.lastName ?? "");
       form.setValue("username", userFromClerk.username ?? "");
+      form.setValue("link", userFromDB.link?.split("https://")[1] ?? "");
     }
   }, [open, userFromDB, userFromClerk, form]);
 
@@ -101,7 +109,7 @@ export default function EditProfile({
     return percentage;
   }
 
-  const bioLength = form.watch("bio").length;
+  const bioLength = form.watch("bio")?.length ?? 0;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -123,8 +131,8 @@ export default function EditProfile({
             className="space-y-2"
             onSubmit={form.handleSubmit(async (data) => {
               await updateProfileMutation.mutateAsync({
-                bio: data.bio,
-                link: data.link,
+                bio: !!data.bio?.length ? data.bio : null,
+                link: data.link ?? null,
               });
               toast({
                 title: "Profile updated",
@@ -211,7 +219,7 @@ export default function EditProfile({
                 <FormItem className="flex-1">
                   <FormLabel>Link</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://bricesuazo.com" {...field} />
+                    <Input placeholder="bricesuazo.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

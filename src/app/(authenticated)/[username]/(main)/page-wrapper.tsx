@@ -30,6 +30,8 @@ export default function UserPage({
     { initialData: profile, refetchOnWindowFocus: false },
   );
 
+  const formatedLink = profileQuery.data.user.link?.split("https://")[1] ?? "";
+
   return (
     <div className="space-y-4">
       <div className="space-y-4">
@@ -123,20 +125,17 @@ export default function UserPage({
               </p>
 
               <p className="break-words text-muted-foreground">
-                {profileQuery.data.user.bio
-                  ? profileQuery.data.user.bio.length > 128
-                    ? profileQuery.data.user.bio.slice(0, 128) + "..."
-                    : profileQuery.data.user.bio
-                  : "This user hasn't written a bio yet."}
+                {profileQuery.data.user.bio ??
+                  "This user hasn't written a bio yet."}
               </p>
 
               <div className="">
                 {profileQuery.data.user.link && (
                   <Button asChild variant="link" className="h-auto p-0">
                     <Link href={profileQuery.data.user.link} target="_blank">
-                      {profileQuery.data.user.link.length > 30
-                        ? profileQuery.data.user.link.slice(0, 30) + "..."
-                        : profileQuery.data.user.link}
+                      {formatedLink.length > 30
+                        ? formatedLink.slice(0, 30) + "..."
+                        : formatedLink}
                     </Link>
                   </Button>
                 )}

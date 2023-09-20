@@ -34,11 +34,12 @@ export const usersRouter = router({
       z.object({
         bio: z
           .string()
-          .max(128, { message: "Bio must be less than 128 characters" }),
+          .max(128, { message: "Bio must be less than 128 characters" })
+          .nullable(),
         link: z
           .string()
           .max(64, { message: "Link must be less than 64 characters" })
-          .optional(),
+          .nullable(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
