@@ -71,6 +71,7 @@ export default function PostDropdown({
                   title: "Post deleted",
                   description: "Your post has been deleted.",
                 });
+                await context.posts.getUserPosts.invalidate();
                 await context.posts.getPosts.invalidate({
                   type:
                     (searchParams.get("tab") as

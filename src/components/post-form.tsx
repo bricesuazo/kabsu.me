@@ -77,21 +77,15 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
           type: form.getValues("type"),
         });
       } else {
-        await context.users.getUserProfile.invalidate({
-          username: params.username as string,
-        });
+        await context.users.getUserProfile.invalidate();
+        await context.posts.getUserPosts.invalidate();
       }
+      form.reset();
     },
   });
 
   const { user } = useUser();
   const [isFocused, setIsFocused] = useState(false);
-
-  async function onSubmit(values: z.infer<typeof Schema>) {
-    await createPostMutation.mutateAsync(values);
-
-    form.reset();
-  }
 
   useEffect(() => {
     if (searchParams.has("tab")) {
@@ -141,7 +135,9 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
       )}
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(async (values) => {
+            await createPostMutation.mutateAsync(values);
+          })}
           className="flex-1 space-y-4"
         >
           <div className="flex gap-x-2">
