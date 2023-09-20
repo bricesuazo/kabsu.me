@@ -5,13 +5,10 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Icons } from "./icons";
 import {
@@ -24,7 +21,6 @@ import {
   SelectValue,
 } from "./ui/select";
 import { useEffect, useState } from "react";
-import { Input } from "./ui/input";
 import Image from "next/image";
 import { Skeleton } from "./ui/skeleton";
 import { useUser } from "@clerk/nextjs";
@@ -35,7 +31,6 @@ import { z } from "zod";
 import { POST_TYPE } from "@/lib/db/schema";
 import { api } from "@/lib/trpc/client";
 import TextareaAutosize from "react-textarea-autosize";
-
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 const Schema = z.object({
@@ -123,12 +118,15 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
       {!user?.imageUrl ? (
         <Skeleton className="h-10 w-10 rounded-full" />
       ) : (
-        <Link href={`/${user.username}`} className="min-w-max">
+        <Link
+          href={`/${user.username}`}
+          className="relative aspect-square h-8 w-8 min-w-max xs:h-10 xs:w-10"
+        >
           <Image
             src={user.imageUrl}
             alt="Profile picture"
-            width={40}
-            height={40}
+            fill
+            sizes="100%"
             className="rounded-full"
           />
         </Link>
@@ -181,38 +179,48 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
           </div>
 
           {isFocused && (
-            <div className="flex items-center justify-between gap-x-2">
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <SelectTrigger className="w-40">
-                          <SelectValue placeholder="Post type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Privacy</SelectLabel>
-                            {POST_TYPE_TABS.map((type) => (
-                              <SelectItem key={type.id} value={type.id}>
-                                {type.id === "following"
-                                  ? "Follower"
-                                  : type.name}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className="flex justify-between gap-x-2">
+              <div className="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center">
+                <FormField
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger className="w-32">
+                            <SelectValue placeholder="Post type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Privacy</SelectLabel>
+                              {POST_TYPE_TABS.map((type) => (
+                                <SelectItem key={type.id} value={type.id}>
+                                  {type.id === "following"
+                                    ? "Follower"
+                                    : type.name}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <p className="flex-1 text-xs text-muted-foreground xs:text-sm">
+                  This post will be visible to{" "}
+                  {form.watch("type") === "following"
+                    ? "your followers"
+                    : form.watch("type") === "all"
+                    ? "all campuses"
+                    : "your " + form.watch("type")}
+                </p>
+              </div>
 
               <div className="flex gap-x-2">
                 <Button
@@ -226,6 +234,53 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                 >
                   <Trash className="h-4 w-4 text-rose-500" />
                 </Button>
+
+                {/* {form.watch("type") !== "following" && (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button type="button" disabled={!form.formState.isValid}>
+                        Post
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <p className="text-sm text-muted-foreground">
+                        This post will be visible to{" "}
+                        {form.watch("type") === "following"
+                          ? "your followers"
+                          : form.watch("type") === "all"
+                          ? "all campuses"
+                          : "your " + form.watch("type")}
+                        .
+                      </p>
+                      <div className="flex justify-end gap-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          type="button"
+                          onClick={() => {
+                            form.reset();
+                            setIsFocused(false);
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          size="sm"
+                          type="submit"
+                          disabled={
+                            form.formState.isSubmitting ||
+                            !form.formState.isValid
+                          }
+                        >
+                          {form.formState.isSubmitting && (
+                            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                          )}
+                          Post
+                        </Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                )} */}
                 <Button
                   type="submit"
                   disabled={

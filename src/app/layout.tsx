@@ -38,9 +38,10 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
             <ThemeProvider attribute="class" defaultTheme="light">
               <TooltipProvider>
                 <div>
-<TrpcProvider>{children}</TrpcProvider>
-</div>
+                  <TrpcProvider>{children}</TrpcProvider>
+                </div>
               </TooltipProvider>
+
               <Toaster />
             </ThemeProvider>
           </QueryProvider>
