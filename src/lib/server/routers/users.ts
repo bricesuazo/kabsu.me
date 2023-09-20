@@ -182,7 +182,17 @@ export const usersRouter = router({
 
       if (!userFromDB) throw new TRPCError({ code: "NOT_FOUND" });
 
+      const followers = await ctx.db.query.followers.findMany({
+        where: (follower, { eq }) => eq(follower.followee_id, userFromDB.id),
+      });
+
+      const followees = await ctx.db.query.followees.findMany({
+        where: (followee, { eq }) => eq(followee.followee_id, userFromDB.id),
+      });
+
       return {
+        followersLength: followers.length,
+        followeesLength: followees.length,
         user: {
           ...user,
           ...userFromDB,
@@ -200,23 +210,5 @@ export const usersRouter = router({
                 (follower) => follower.follower_id === ctx.session.user.id,
               ),
       };
-    }),
-
-  getFollowersLength: protectedProcedure
-    .input(z.object({ user_id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const followers = await ctx.db.query.followers.findMany({
-        where: (follower, { eq }) => eq(follower.followee_id, input.user_id),
-      });
-
-      return followers.length;
-    }),
-  getFolloweesLength: protectedProcedure
-    .input(z.object({ user_id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const followees = await ctx.db.query.followees.findMany({
-        where: (followee, { eq }) => eq(followee.followee_id, input.user_id),
-      });
-      return followees.length;
     }),
 });

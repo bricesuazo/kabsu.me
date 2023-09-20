@@ -2,7 +2,6 @@ import { DEVS_INFO } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { Badge } from "@/components/ui/badge";
 
 export default function AboutDev() {
   return (

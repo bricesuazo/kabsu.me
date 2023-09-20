@@ -124,22 +124,20 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
   return (
     <div
       // className="xs:flex hidden gap-x-4"
-      className="flex gap-x-4"
+      className="flex gap-x-2"
     >
       {!user?.imageUrl ? (
         <Skeleton className="h-10 w-10 rounded-full" />
       ) : (
-        <div>
-          <Link href={`/${user.username}`} className="min-w-max">
-            <Image
-              src={user.imageUrl}
-              alt="Profile picture"
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-          </Link>
-        </div>
+        <Link href={`/${user.username}`} className="min-w-max">
+          <Image
+            src={user.imageUrl}
+            alt="Profile picture"
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
+        </Link>
       )}
       <Form {...form}>
         <form

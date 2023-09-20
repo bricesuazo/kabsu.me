@@ -8,6 +8,7 @@ import type {
   Post,
   Program,
   User as UserFromDB,
+  POST_TYPE,
 } from "@/lib/db/schema";
 import moment from "moment";
 import Link from "next/link";
@@ -41,17 +42,27 @@ export default function Post({
   isMyPost: boolean;
   userId: string;
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const context = api.useContext();
   const [likes, setLikes] = useState<Like[]>(post.likes);
   const unlikeMutation = api.posts.unlike.useMutation({
-    onMutate: ({ post_id }) =>
+    onMutate: async ({ post_id }) => {
       setLikes(
         likes.filter(
           (like) => like.post_id !== post_id && like.user_id !== userId,
         ),
-      ),
+      );
+
+      // await context.posts.getPosts.invalidate({
+      //   type:
+      //     ((searchParams.get("tab") as (typeof POST_TYPE)[number]) || null) ??
+      //     "following",
+      // });
+    },
   });
   const likeMutation = api.posts.like.useMutation({
-    onMutate: ({ post_id }) =>
+    onMutate: async ({ post_id }) => {
       setLikes([
         ...likes,
         {
@@ -60,10 +71,15 @@ export default function Post({
           user_id: userId,
           created_at: new Date(),
         },
-      ]),
+      ]);
+
+      // await context.posts.getPosts.invalidate({
+      //   type:
+      //     ((searchParams.get("tab") as (typeof POST_TYPE)[number]) || null) ??
+      //     "following",
+      // });
+    },
   });
-  const searchParams = useSearchParams();
-  const router = useRouter();
 
   return (
     <div

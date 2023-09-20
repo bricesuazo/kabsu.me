@@ -11,7 +11,6 @@ import { api } from "@/lib/trpc/client";
 import { RouterOutput } from "@/lib/server/routers/_app";
 import FollowButton from "@/components/follow-button";
 import Link from "next/link";
-import { User } from "@clerk/nextjs/server";
 import PostForm from "@/components/post-form";
 import {
   Tooltip,
@@ -155,7 +154,6 @@ export default function UserPage({
             />
           </div>
         </div>
-
         <div className="space-y-2">
           <div className="flex items-center gap-x-2">
             {profileQuery.data.isFollower !== undefined ? (
@@ -173,14 +171,22 @@ export default function UserPage({
           </div>
 
           <div className="flex items-center gap-x-4">
-            <FollowsButton type="followers" user={profileQuery.data.user} />
+            <Button variant="link" className="p-0" asChild>
+              <Link href={`/${profileQuery.data.user.username}/followers`}>
+                {profileQuery.data.followersLength} follower
+                {profileQuery.data.followersLength > 1 && "s"}
+              </Link>
+            </Button>
 
             <p className="pointer-events-none select-none">·</p>
 
-            <FollowsButton type="following" user={profileQuery.data.user} />
+            <Button variant="link" className="p-0" asChild>
+              <Link href={`/${profileQuery.data.user.username}/following`}>
+                {profileQuery.data.followeesLength} following
+              </Link>
+            </Button>
           </div>
         </div>
-
         {/* <Tabs defaultValue="posts">
             <TabsList className="w-full">
               <TabsTrigger value="posts" className="w-full">
@@ -194,70 +200,10 @@ export default function UserPage({
               </TabsTrigger>
             </TabsList>
           </Tabs> */}
-
-        <PostForm />
+        {!profileQuery.data.isFollower && <PostForm />}
       </div>
 
       <PostsWrapper user={profileQuery.data.user} data-superjson />
     </div>
   );
-}
-
-export function FollowsButton({
-  type,
-  user,
-}: {
-  type: "followers" | "following";
-  user: User;
-}) {
-  if (type === "followers") {
-    const getFollowersLengthQuery = api.users.getFollowersLength.useQuery(
-      {
-        user_id: user.id,
-      },
-      {
-        initialData: 0,
-      },
-    );
-
-    return (
-      <Button
-        variant="link"
-        className="p-0"
-        disabled={getFollowersLengthQuery.isFetching}
-        asChild
-      >
-        <Link href={`/${user.username}/followers`}>
-          {getFollowersLengthQuery.data} follower
-          {getFollowersLengthQuery.data > 1 && "s"}
-        </Link>
-      </Button>
-    );
-  }
-
-  if (type === "following") {
-    const getFolloweesLengthQuery = api.users.getFolloweesLength.useQuery(
-      {
-        user_id: user.id,
-      },
-      {
-        initialData: 0,
-      },
-    );
-
-    return (
-      <Button
-        variant="link"
-        className="p-0"
-        asChild
-        disabled={getFolloweesLengthQuery.isFetching}
-      >
-        <Link href={`/${user.username}/following`}>
-          {getFolloweesLengthQuery.data} following
-        </Link>
-      </Button>
-    );
-  }
-
-  return null;
 }
