@@ -295,7 +295,7 @@ function CommentComponent({ comment }: { comment: Comment }) {
           <CommentDropdown comment_id={comment.id} />
         )}
       </div>
-      <p>{fullCommentQuery.data.comment.content}</p>
+      <div>{formatText(fullCommentQuery.data.comment.content)}</div>
     </div>
   );
 }

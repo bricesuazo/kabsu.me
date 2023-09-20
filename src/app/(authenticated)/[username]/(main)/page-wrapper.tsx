@@ -200,7 +200,7 @@ export default function UserPage({
               </TabsTrigger>
             </TabsList>
           </Tabs> */}
-        {!profileQuery.data.isFollower && <PostForm />}
+        {profileQuery.data.user.id === profileQuery.data.userId && <PostForm />}
       </div>
 
       <PostsWrapper user={profileQuery.data.user} data-superjson />

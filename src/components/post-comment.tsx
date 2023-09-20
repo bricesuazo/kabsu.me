@@ -274,7 +274,6 @@ export default function PostComment({
                 <FormField
                   control={form.control}
                   name="comment"
-                  disabled={form.formState.isSubmitting}
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormControl>
@@ -282,6 +281,7 @@ export default function PostComment({
                           {...field}
                           placeholder="Write a comment..."
                           autoFocus
+                          disabled={form.formState.isSubmitting}
                         />
                       </FormControl>
                       <div className="flex justify-between">
