@@ -227,7 +227,7 @@ export default function AuthForm() {
 
           <div className="flex justify-center">
             <Link href="https://github.com/bricesuazo/cvsu.me" target="_blank">
-              <Badge>Private Alpha Testing</Badge>
+              <Badge>Beta Testing Phase</Badge>
             </Link>
           </div>
           <h1 className="text-center text-6xl font-bold text-primary">
