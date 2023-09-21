@@ -1,6 +1,6 @@
 "use client";
 
-import { Album, Briefcase, GraduationCap } from "lucide-react";
+import { Album, Briefcase, Flag, GraduationCap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import EditProfile from "@/components/edit-profile";
@@ -17,6 +17,33 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import VerifiedBadge from "@/components/verified-badge";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { Icons } from "@/components/icons";
+import { toast } from "@/components/ui/use-toast";
 
 export default function UserPageWrapper({
   profile,
@@ -31,6 +58,34 @@ export default function UserPageWrapper({
   );
 
   const formatedLink = profileQuery.data.user.link?.split("https://")[1] ?? "";
+  const [openReport, setOpenReport] = useState(false);
+
+  const reportForm = useForm<{
+    reason: string;
+  }>({
+    resolver: zodResolver(
+      z.object({
+        reason: z.string().nonempty("Please provide a reason for your report."),
+      }),
+    ),
+    defaultValues: {
+      reason: "",
+    },
+  });
+
+  const reportUserMutation = api.users.report.useMutation({
+    onSuccess: () => {
+      setOpenReport(false);
+      toast({
+        title: "Post reported",
+        description: "Your report has been submitted",
+      });
+    },
+  });
+
+  useEffect(() => {
+    if (openReport) reportForm.reset();
+  }, [openReport]);
 
   return (
     <div className="space-y-4">
@@ -104,19 +159,7 @@ export default function UserPageWrapper({
                   @{profileQuery.data.user.username}
                 </h2>
 
-                {profileQuery.data.user.verified_at && (
-                  <Tooltip delayDuration={250}>
-                    <TooltipTrigger>
-                      <Image
-                        src="/logo.png"
-                        alt="Logo"
-                        width={32}
-                        height={32}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent>CvSU.me Verified</TooltipContent>
-                  </Tooltip>
-                )}
+                {profileQuery.data.user.verified_at && <VerifiedBadge />}
               </div>
 
               <p className="line-clamp-1  ">
@@ -156,10 +199,80 @@ export default function UserPageWrapper({
         <div className="space-y-2">
           <div className="flex items-center gap-x-2">
             {profileQuery.data.isFollower !== undefined ? (
-              <FollowButton
-                isFollower={profileQuery.data.isFollower}
-                user_id={profileQuery.data.user.id}
-              />
+              <div className="flex items-center gap-x-2">
+                <FollowButton
+                  isFollower={profileQuery.data.isFollower}
+                  user_id={profileQuery.data.user.id}
+                />
+                <AlertDialog open={openReport} onOpenChange={setOpenReport}>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Flag className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <Form {...reportForm}>
+                      <form
+                        onSubmit={reportForm.handleSubmit((values) => {
+                          reportUserMutation.mutate({
+                            user_id: profileQuery.data.user.id,
+                            reason: values.reason,
+                          });
+                        })}
+                        className="space-y-4"
+                      >
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Report User</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Report this post to the administrators.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+
+                        <FormField
+                          control={reportForm.control}
+                          name="reason"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Reason</FormLabel>
+
+                              <FormControl>
+                                <Textarea
+                                  placeholder="Please provide a reason for your report."
+                                  {...field}
+                                />
+                              </FormControl>
+
+                              <FormDescription>
+                                Please provide a reason for your report.
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <AlertDialogFooter>
+                          <AlertDialogCancel
+                            disabled={reportUserMutation.isLoading}
+                          >
+                            Cancel
+                          </AlertDialogCancel>
+
+                          <Button
+                            variant="destructive"
+                            type="submit"
+                            disabled={reportUserMutation.isLoading}
+                          >
+                            {reportUserMutation.isLoading && (
+                              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                            )}
+                            Report
+                          </Button>
+                        </AlertDialogFooter>
+                      </form>
+                    </Form>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             ) : (
               <EditProfile
                 userFromDB={profileQuery.data.user}

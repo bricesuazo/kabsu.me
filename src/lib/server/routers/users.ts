@@ -5,6 +5,7 @@ import {
   followees,
   followers,
   notifications,
+  reported_users,
   users,
 } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
@@ -206,5 +207,27 @@ export const usersRouter = router({
                 (follower) => follower.follower_id === ctx.session.user.id,
               ),
       };
+    }),
+  report: protectedProcedure
+    .input(z.object({ user_id: z.string().min(1), reason: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.db.query.users.findFirst({
+        where: (users, { and, eq }) => and(eq(users.id, input.user_id)),
+      });
+
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
+
+      if (user.id === ctx.session.user.id)
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not authorized to report this user",
+        });
+
+      await ctx.db.insert(reported_users).values({
+        reason: input.reason,
+        reported_by_id: ctx.session.user.id,
+        user_id: input.user_id,
+      });
     }),
 });

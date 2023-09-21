@@ -31,6 +31,7 @@ import { Toggle } from "./ui/toggle";
 import { cn, formatText } from "@/lib/utils";
 import PostDropdown from "./post-dropdown";
 import { api } from "@/lib/trpc/client";
+import VerifiedBadge from "./verified-badge";
 
 export default function Post({
   post,
@@ -120,19 +121,7 @@ export default function Post({
                   @{post.user.username}
                 </p>
 
-                {post.user.verified_at && (
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Image
-                        src="/logo.png"
-                        alt="Logo"
-                        width={24}
-                        height={24}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent>CvSU.me Verified</TooltipContent>
-                  </Tooltip>
-                )}
+                {post.user.verified_at && <VerifiedBadge />}
               </div>
 
               <p className="pointer-events-none hidden select-none sm:block">

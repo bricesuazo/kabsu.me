@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -95,6 +95,10 @@ export default function PostDropdown({
   const [openDelete, setOpenDelete] = useState(false);
   const [openReport, setOpenReport] = useState(false);
   // const [openUpdate, setOpenUpdate] = useState(false);
+
+  useEffect(() => {
+    if (openReport) reportForm.reset();
+  }, [openReport]);
 
   return (
     <div onClick={(e) => e.stopPropagation()}>

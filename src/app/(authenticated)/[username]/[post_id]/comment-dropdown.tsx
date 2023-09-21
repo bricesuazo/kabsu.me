@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -84,6 +84,10 @@ export default function CommentDropdown({
       reason: "",
     },
   });
+
+  useEffect(() => {
+    if (openReport) reportForm.reset();
+  }, [openReport]);
 
   return (
     <>

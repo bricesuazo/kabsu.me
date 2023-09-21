@@ -10,6 +10,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import VerifiedBadge from "@/components/verified-badge";
 import { Comment } from "@/lib/db/schema";
 import { api } from "@/lib/trpc/client";
 import { formatText } from "@/lib/utils";
@@ -110,19 +111,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                     {postQuery.data.post.user.lastName}{" "}
                   </p>
 
-                  {postQuery.data.post.user.verified_at && (
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Image
-                          src="/logo.png"
-                          alt="Logo"
-                          width={24}
-                          height={24}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>CvSU.me Verified</TooltipContent>
-                    </Tooltip>
-                  )}
+                  {postQuery.data.post.user.verified_at && <VerifiedBadge />}
 
                   <p className="pointer-events-none hidden select-none sm:block">
                     ·
