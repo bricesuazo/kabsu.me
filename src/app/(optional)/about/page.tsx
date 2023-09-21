@@ -4,15 +4,15 @@ import Link from "next/link";
 
 export default function AboutPage() {
   return (
-    <div>
-      <p className="py-4 text-center text-4xl font-bold text-primary">About</p>
-      <p className="">
-        Our accomplished team of developers and designers is responsible for
-        crafting this tailored social media platform exclusively for Cavite
-        State University students. Our mission is to enhance your university
-        journey by providing a dedicated online space for meaningful connections
-        and collaboration. Join us and be part of our commitment to academic and
-        social excellence.
+    <div className="space-y-4">
+      <p className="text-center text-4xl font-bold text-primary">About</p>
+      <p className="text-base [text-wrap:balance] sm:text-lg">
+        We believe that having this platform, is essential for bringing together
+        Cavite State University students, faculty, and alumni in a way
+        that&apos;s exclusive and focused. Our website, which is specifically
+        designed for the CvSU community Our goal is to ensure that our platform
+        perfectly integrates with CvSU&apos;s diversified academic environment,
+        allowing users to interact with their campuses, colleges, and programs.
       </p>
       <div className="mx-auto grid grid-cols-1 gap-x-4 gap-y-4 self-center pt-4 sm:grid-cols-2 ">
         {DEVS_INFO.map((dev) => {
@@ -32,7 +32,7 @@ export default function AboutPage() {
               <div className="flex  flex-col items-start gap-y-1 text-left">
                 <p className="font-semibold text-primary ">{dev.name}</p>
                 <p className="text-[12px] ">{dev.role}</p>
-                <p className="text-[10px] text-foreground/70">{dev.desc}</p>
+                {/* <p className="text-[10px] text-foreground/70">{dev.desc}</p> */}
                 <div className="flex items-center gap-x-4 rounded-full pt-1 ">
                   {dev.links.map((link, i) => {
                     return (

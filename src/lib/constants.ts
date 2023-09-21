@@ -449,12 +449,26 @@ export const NAVBAR_LINKS = [
     url: "/",
   },
   {
+    name: "About CvSU.me",
+    url: "/about",
+    hasSeparator: true,
+  },
+  {
     name: "CvSU Information Center",
     url: "/info",
   },
   {
-    name: "About",
-    url: "/about",
+    name: "University Registrar",
+    url: "https://registrar.cvsu.edu.ph/",
+  },
+  {
+    name: "Student Portal",
+    url: "https://myportal.cvsu.edu.ph/",
+  },
+  {
+    name: "CvSU LMS",
+    url: "https://elearning.cvsu.edu.ph/my/",
+    hasSeparator: true,
   },
   {
     name: "Play Adventura: An online campus tour",
