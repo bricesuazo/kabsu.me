@@ -73,7 +73,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
         });
       } else {
         await context.users.getUserProfile.invalidate();
-        await context.posts.getUserPosts.invalidate();
+        await context.posts.getUserPosts.reset();
       }
       form.reset();
     },

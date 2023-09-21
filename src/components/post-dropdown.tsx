@@ -60,11 +60,12 @@ export default function PostDropdown({
   const searchParams = useSearchParams();
   const router = useRouter();
   const deletePostMutation = api.posts.delete.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       if (successUrl) {
         router.push(successUrl);
       } else {
-        router.refresh();
+        await context.posts.getUserPosts.reset();
+        // router.refresh();
       }
     },
   });
