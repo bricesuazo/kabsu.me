@@ -204,7 +204,7 @@ export default function Post({
           </div>
         </Link>
 
-        {isMyPost && <PostDropdown post_id={post.id} />}
+        <PostDropdown post_id={post.id} isMyPost={isMyPost} />
       </div>
 
       <div className="">

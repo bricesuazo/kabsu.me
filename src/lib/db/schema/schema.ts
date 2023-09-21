@@ -139,6 +139,24 @@ export const notifications = mysqlTable("notifications", {
   created_at,
 });
 
+export const reported_users = mysqlTable("reported_users", {
+  id,
+  user_id: varchar("user_id", { length: 256 }).notNull(),
+  reported_by_id: varchar("reported_by_id", { length: 256 }).notNull(),
+  reason: text("reason").notNull(),
+
+  created_at,
+});
+
+export const reported_posts = mysqlTable("reported_posts", {
+  id,
+  post_id: varchar("post_id", { length: 256 }).notNull(),
+  reported_by_id: varchar("reported_by_id", { length: 256 }).notNull(),
+  reason: text("reason").notNull(),
+
+  created_at,
+});
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Post = typeof posts.$inferSelect;

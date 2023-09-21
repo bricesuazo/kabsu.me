@@ -10,6 +10,8 @@ import {
   comments,
   campuses,
   notifications,
+  reported_users,
+  reported_posts,
 } from ".";
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -114,6 +116,34 @@ export const notificationsRelations = relations(
     }),
     to: one(users, {
       fields: [notifications.to_id],
+      references: [users.id],
+    }),
+  }),
+);
+
+export const reported_usersRelations = relations(
+  reported_users,
+  ({ one, many }) => ({
+    user: one(users, {
+      fields: [reported_users.user_id],
+      references: [users.id],
+    }),
+    reported_by: one(users, {
+      fields: [reported_users.reported_by_id],
+      references: [users.id],
+    }),
+  }),
+);
+
+export const reported_postsRelations = relations(
+  reported_posts,
+  ({ one, many }) => ({
+    post: one(posts, {
+      fields: [reported_posts.post_id],
+      references: [posts.id],
+    }),
+    reported_by: one(users, {
+      fields: [reported_posts.reported_by_id],
       references: [users.id],
     }),
   }),

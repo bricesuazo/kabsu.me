@@ -1,4 +1,9 @@
-import { POST_TYPE, likes, notifications } from "./../../db/schema/schema";
+import {
+  POST_TYPE,
+  likes,
+  notifications,
+  reported_posts,
+} from "./../../db/schema/schema";
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 import {
@@ -626,6 +631,28 @@ export const postsRouter = router({
             ),
           ),
         );
+    }),
+  report: protectedProcedure
+    .input(z.object({ post_id: z.string().min(1), reason: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const post = await ctx.db.query.posts.findFirst({
+        where: (posts, { and, eq }) => and(eq(posts.id, input.post_id)),
+      });
+
+      if (!post || post.deleted_at)
+        throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
+
+      if (post.user_id === ctx.session.user.id)
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not authorized to report this post",
+        });
+
+      await ctx.db.insert(reported_posts).values({
+        reason: input.reason,
+        reported_by_id: ctx.session.user.id,
+        post_id: input.post_id,
+      });
     }),
 
   // getUserPosts: protectedProcedure
