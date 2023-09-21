@@ -77,7 +77,7 @@ export default function UserPageWrapper({
     onSuccess: () => {
       setOpenReport(false);
       toast({
-        title: "Post reported",
+        title: "User reported",
         description: "Your report has been submitted",
       });
     },
@@ -224,7 +224,7 @@ export default function UserPageWrapper({
                         <AlertDialogHeader>
                           <AlertDialogTitle>Report User</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Report this post to the administrators.
+                            Report this user to the administrators.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
 

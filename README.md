@@ -20,7 +20,7 @@ A social media platform exclusive only for Cavite State University students, fac
 - [x] Likes
 - [x] Follows
 - [x] Notifications
-- [ ] React query for infinite scrolling
+- [x] React query for infinite scrolling
 - [ ] Realtime
 - [ ] Ratelimit
 - [ ] Messages
