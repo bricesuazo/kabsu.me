@@ -185,12 +185,11 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
               </div>
             </Link>
 
-            {postQuery.data.userId === postQuery.data.post.user_id && (
-              <PostDropdown
-                post_id={postQuery.data.post.id}
-                successUrl={`/${postQuery.data.post.user.username}`}
-              />
-            )}
+            <PostDropdown
+              post_id={postQuery.data.post.id}
+              successUrl={`/${postQuery.data.post.user.username}`}
+              isMyPost={postQuery.data.userId === postQuery.data.post.user_id}
+            />
           </div>
 
           <div className="">{formatText(postQuery.data.post.content)}</div>
@@ -290,10 +289,14 @@ function CommentComponent({ comment }: { comment: Comment }) {
             </Link>
           </div>
         </div>
-        {fullCommentQuery.data.comment.user_id ===
-          fullCommentQuery.data.userId && (
-          <CommentDropdown comment_id={comment.id} />
-        )}
+
+        <CommentDropdown
+          comment_id={comment.id}
+          isMyComment={
+            fullCommentQuery.data.comment.user_id ===
+            fullCommentQuery.data.userId
+          }
+        />
       </div>
       <div>{formatText(fullCommentQuery.data.comment.content)}</div>
     </div>

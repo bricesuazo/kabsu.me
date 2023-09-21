@@ -157,6 +157,15 @@ export const reported_posts = mysqlTable("reported_posts", {
   created_at,
 });
 
+export const reported_comments = mysqlTable("reported_comments", {
+  id,
+  comment_id: varchar("comment_id", { length: 256 }).notNull(),
+  reported_by_id: varchar("reported_by_id", { length: 256 }).notNull(),
+  reason: text("reason").notNull(),
+
+  created_at,
+});
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Post = typeof posts.$inferSelect;

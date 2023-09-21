@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router } from "../trpc";
-import { comments, notifications } from "@/lib/db/schema";
+import { comments, notifications, reported_comments } from "@/lib/db/schema";
 import { z } from "zod";
 import { and, eq } from "drizzle-orm";
 export const commentsRouter = router({
@@ -87,5 +87,30 @@ export const commentsRouter = router({
             eq(comments.user_id, ctx.session.user.id),
           ),
         );
+    }),
+  report: protectedProcedure
+    .input(z.object({ comment_id: z.string().min(1), reason: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const comment = await ctx.db.query.comments.findFirst({
+        where: (comment, { and, eq }) => and(eq(comment.id, input.comment_id)),
+      });
+
+      if (!comment || comment.deleted_at)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Comment not found",
+        });
+
+      if (comment.user_id === ctx.session.user.id)
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not authorized to report this comment",
+        });
+
+      await ctx.db.insert(reported_comments).values({
+        reason: input.reason,
+        reported_by_id: ctx.session.user.id,
+        comment_id: input.comment_id,
+      });
     }),
 });
