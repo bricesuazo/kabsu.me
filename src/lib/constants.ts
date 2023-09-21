@@ -581,19 +581,19 @@ export const DEVS_INFO = [
 export const REPORT_POST_REASONS = [
   {
     id: "spam",
-    reason: "It's a spam",
+    reason: "Spam",
   },
   {
     id: "inappropriate",
-    reason: "It's inappropriate",
+    reason: "Inappropriate",
   },
   {
     id: "abusive",
-    reason: "It's abusive or harmful",
+    reason: "Abusive or harmful",
   },
   {
-    id: "racist",
-    reason: "It's racist or discriminatory",
+    id: "discriminatory",
+    reason: "Discriminatory",
   },
   {
     id: "other",
