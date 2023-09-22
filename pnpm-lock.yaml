@@ -35,6 +35,9 @@ importers:
 
   apps/admin:
     dependencies:
+      '@clerk/nextjs':
+        specifier: ^4.24.0
+        version: registry.npmjs.org/@clerk/nextjs@4.24.0(next@13.5.2)(react-dom@18.2.0)(react@18.2.0)
       '@hookform/resolvers':
         specifier: ^3.3.1
         version: registry.npmjs.org/@hookform/resolvers@3.3.1(react-hook-form@7.46.2)
@@ -149,6 +152,9 @@ importers:
       next:
         specifier: 13.5.2
         version: registry.npmjs.org/next@13.5.2(react-dom@18.2.0)(react@18.2.0)
+      next-themes:
+        specifier: ^0.2.1
+        version: registry.npmjs.org/next-themes@0.2.1(next@13.5.2)(react-dom@18.2.0)(react@18.2.0)
       postcss:
         specifier: 8.4.30
         version: registry.npmjs.org/postcss@8.4.30
