@@ -6,8 +6,8 @@ dotenv.config({
 });
 
 export default {
-  schema: "./src/lib/db/schema/index.ts",
-  out: "./src/lib/db/migrations",
+  schema: "./schema/index.ts",
+  out: "./migrations",
   driver: "mysql2",
   dbCredentials: {
     connectionString: process.env.DATABASE_URL!,
