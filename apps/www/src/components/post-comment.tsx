@@ -140,6 +140,9 @@ export default function PostComment({
                   "fill-primary text-primary",
               )}
             />
+            <h1 className="pl-2 text-sm text-muted-foreground">
+              {`${likes.length} ${likes.length > 1 ? "s" : ""}`}
+            </h1>
           </Toggle>
 
           <Toggle
@@ -161,6 +164,9 @@ export default function PostComment({
             }}
           >
             <MessageCircle className="h-4 w-4" />
+            <p className="pl-2 text-sm text-muted-foreground">
+              {`${post.comments.length} ${post.comments.length > 1 ? "" : ""}`}
+            </p>
           </Toggle>
         </div>
 
@@ -233,13 +239,12 @@ export default function PostComment({
           <p className="pointer-events-none select-none text-sm text-muted-foreground">
             —
           </p>
-          <p className="text-sm text-muted-foreground">
+          {/* <p className="text-sm text-muted-foreground">
             {`${post.comments.length} comment${
               post.comments.length > 1 ? "s" : ""
             }`}
-          </p>
+          </p> */}
           <Badge variant="outline" className="flex items-center gap-x-1">
-            <p className="hidden xs:block">Privacy:</p>
             {post.type === "following"
               ? "Follower"
               : post.type.charAt(0).toUpperCase() + post.type.slice(1)}
