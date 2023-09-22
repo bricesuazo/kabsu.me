@@ -2,7 +2,7 @@ import { Skeleton } from "./ui/skeleton";
 
 export function PostSkeletonNoRandom() {
   return (
-    <div className="animate-pulse space-y-4 border p-4">
+    <div className="animate-pulse space-y-4 border-b p-4">
       <div className="flex gap-x-2">
         <div className="w-max">
           <Skeleton className="h-10 w-10 rounded-full" />

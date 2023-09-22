@@ -3,15 +3,7 @@
 import { POST_TYPE_TABS } from "@cvsu.me/constants";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function PostTypeTab() {
   const searchParams = useSearchParams();
@@ -25,7 +17,33 @@ export default function PostTypeTab() {
   }, [searchParams]);
 
   return (
-    <Select
+    <div className="z-50 w-full border-b">
+      <Tabs
+        className="p-0"
+        defaultValue={tab}
+        value={tab}
+        onValueChange={(value) => {
+          setTab(value);
+          router.push(value !== "following" ? `/?tab=${value}` : "/");
+        }}
+      >
+        <TabsList className="flex h-auto w-full justify-between rounded-none bg-transparent p-0">
+          {POST_TYPE_TABS.map((select) => (
+            <TabsTrigger
+              key={select.id}
+              className="flex w-full gap-x-2 rounded-none border-b-4 border-transparent py-4 hover:text-foreground data-[state=active]:rounded-none data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=active]:bg-transparent data-[state=active]:text-primary"
+              value={select.id}
+            >
+              <div className="block sm:hidden md:block">
+                <select.icon size="20" />
+              </div>
+              <p className="hidden sm:block">{select.name}</p>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+
+      {/* <Select
       defaultValue={tab}
       value={tab}
       required
@@ -47,7 +65,8 @@ export default function PostTypeTab() {
           ))}
         </SelectGroup>
       </SelectContent>
-    </Select>
+    </Select> */}
+    </div>
   );
 
   // return (

@@ -1,4 +1,22 @@
-import { Github, Globe, Instagram, Mail, Twitter } from "lucide-react";
+import {
+  Github,
+  Globe,
+  Instagram,
+  Mail,
+  Twitter,
+  Globe2,
+  School2,
+  School,
+  Book,
+  Users2,
+  Home,
+  HelpCircle,
+  Info,
+  BookOpenCheck,
+  Blocks,
+  MapPin,
+  UserSquare2,
+} from "lucide-react";
 import { nanoid } from "nanoid";
 
 const CAMPUSES = [
@@ -372,58 +390,71 @@ const POST_TYPE = ["following", "program", "college", "campus", "all"] as const;
 
 export const POST_TYPE_TABS: {
   id: (typeof POST_TYPE)[number];
+  icon: any;
   name: string;
 }[] = [
   {
     id: "all",
-    name: "All campus",
+    icon: Globe2,
+    name: "All Campus",
   },
   {
     id: "campus",
+    icon: School2,
     name: "My Campus",
   },
   {
     id: "college",
+    icon: School,
     name: "My College",
   },
   {
     id: "program",
+    icon: Book,
     name: "My Program",
   },
   {
     id: "following",
+    icon: Users2,
     name: "Following",
   },
 ];
 
 export const NAVBAR_LINKS = [
   {
+    icon: Home,
     name: "Home",
     url: "/",
   },
   {
+    icon: HelpCircle,
     name: "About CvSU.me",
     url: "/about",
     hasSeparator: true,
   },
   {
+    icon: Info,
     name: "CvSU Information Center",
     url: "/info",
   },
   {
+    icon: BookOpenCheck,
     name: "University Registrar",
     url: "https://registrar.cvsu.edu.ph/",
   },
   {
+    icon: UserSquare2,
     name: "Student Portal",
     url: "https://myportal.cvsu.edu.ph/",
   },
   {
+    icon: Blocks,
     name: "CvSU LMS",
     url: "https://elearning.cvsu.edu.ph/my/",
     hasSeparator: true,
   },
   {
+    icon: MapPin,
     name: "Play Adventura: An online campus tour",
     url: "/adventura",
   },

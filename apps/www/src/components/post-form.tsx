@@ -114,7 +114,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
   return (
     <div
       // className="xs:flex hidden gap-x-4"
-      className="flex gap-x-2"
+      className="flex gap-x-2 border-b px-4 py-8"
     >
       {!user?.imageUrl ? (
         <Skeleton className="h-10 w-10 rounded-full" />
@@ -147,7 +147,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                 <FormItem className="flex-1">
                   {/* <FormLabel>Post</FormLabel> */}
                   <FormControl>
-                    <div className="p-1 ">
+                    <div className="h-full rounded-lg border p-2">
                       {!isFocused ? (
                         <input
                           style={{

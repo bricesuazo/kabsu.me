@@ -94,7 +94,7 @@ export default function Post({
         e.stopPropagation();
         router.push(`/${post.user.username}/${post.id}`);
       }}
-      className="cursor-pointer space-y-2 border p-4"
+      className="cursor-pointer space-y-2 border-b p-4"
     >
       <div className="flex justify-between">
         <Link
@@ -205,7 +205,7 @@ export default function Post({
       </div>
 
       <div className="space-y-2">
-        <div className="flex">
+        <div className="flex gap-x-1">
           <Toggle
             size="sm"
             pressed={likes.some((like) => like.user_id === userId)}
