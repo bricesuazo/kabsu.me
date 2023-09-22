@@ -1,0 +1,6 @@
+{
+  "name": "@cvsu.me/tsconfig",
+  "files": [
+    "base.json"
+  ]
+}

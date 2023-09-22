@@ -1,0 +1,24 @@
+{
+  "name": "@cvsu.me/constants",
+  "main": "index.ts",
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "lucide-react": "^0.279.0",
+    "nanoid": "^5.0.1"
+  },
+  "devDependencies": {
+    "@cvsu.me/eslint-config": "workspace:*",
+    "@cvsu.me/prettier-config": "workspace:*",
+    "@cvsu.me/tsconfig": "workspace:*"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@cvsu.me/eslint-config/base"
+    ]
+  },
+  "prettier": "@cvsu.me/prettier-config"
+}

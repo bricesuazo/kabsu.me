@@ -1,0 +1,45 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local", "**/.env"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "lint": {},
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "start": {},
+    "db:push": {},
+    "db:studio": {},
+    "db:generate": {},
+    "email:dev": {}
+  },
+  "globalEnv": [
+    "CI",
+    "EXPO_ROUTER_APP_ROOT",
+    "NODE_ENV",
+    "SKIP_ENV_VALIDATION",
+    "VERCEL",
+    "VERCEL_URL",
+    "VERCEL_ENV",
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+    "NEXT_PUBLIC_CLERK_SIGN_IN_URL",
+    "NEXT_PUBLIC_CLERK_SIGN_UP_URL",
+    "NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL",
+    "NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL",
+    "DATABASE_URL",
+    "CLERK_SECRET_KEY",
+    "WEBHOOK_SECRET",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "QSTASH_CURRENT_SIGNING_KEY",
+    "QSTASH_NEXT_SIGNING_KEY",
+    "PUSHER_APP_ID",
+    "PUSHER_KEY",
+    "PUSHER_SECRET",
+    "PUSHER_CLUSTER"
+  ]
+}
