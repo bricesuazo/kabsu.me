@@ -1,19 +1,20 @@
-import { DEVS_INFO } from "@cvsu.me/constants";
 import Image from "next/image";
 import Link from "next/link";
 
+import { DEVS_INFO } from "@cvsu.me/constants";
+
 export default function AboutPage() {
   return (
-    <div className="space-y-4">
-      <p className="text-center text-4xl font-bold text-primary">About</p>
-      <p className="text-base [text-wrap:balance] sm:text-lg">
+    <div className="space-y-8">
+      <h1 className="text-center text-4xl font-bold text-primary">About</h1>
+      <p className="text-center text-base [text-wrap:balance] sm:text-lg">
         We believe that having this platform, is essential for bringing together
         Cavite State University students, faculty, and alumni in a way
-        that&apos;s exclusive and focused. Our website, which is specifically
-        designed for the CvSU community Our goal is to ensure that our platform
-        perfectly integrates with CvSU&apos;s diversified academic environment,
-        allowing users to interact with their campuses, colleges, and programs.
+        that&apos;s exclusive and focused.
       </p>
+      <h4 className=" text-center text-xl font-semibold text-primary">
+        Who are we?
+      </h4>
       <div className="mx-auto grid grid-cols-1 gap-x-4 gap-y-4 self-center pt-4 sm:grid-cols-2 ">
         {DEVS_INFO.map((dev) => {
           return (

@@ -1,12 +1,25 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { useSignIn, useSignUp } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import { Icons } from "./icons";
-import { useForm } from "react-hook-form";
+import Image from "next/image";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { api } from "@/lib/trpc/client";
+import { useSignIn, useSignUp } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle } from "lucide-react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+import { DEVS_INFO } from "@cvsu.me/constants";
+
+import Footer from "./footer";
+import { Icons } from "./icons";
+import ProgramAuth from "./program-auth";
+import { ToggleTheme } from "./toggle-theme";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { Badge } from "./ui/badge";
 import {
   Form,
   FormControl,
@@ -17,18 +30,7 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-import { DEVS_INFO } from "@cvsu.me/constants";
-import ProgramAuth from "./program-auth";
-import Image from "next/image";
-import { ToggleTheme } from "./toggle-theme";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { AlertCircle } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { Separator } from "./ui/separator";
-import Footer from "./footer";
-import { Badge } from "./ui/badge";
-import { api } from "@/lib/trpc/client";
 
 export default function AuthForm() {
   const searchParams = useSearchParams();
@@ -285,10 +287,15 @@ export default function AuthForm() {
         </div>
         {/* ABOUT DEV COMPONENT */}{" "}
         <div>
-          <p className="py-4 text-center text-4xl font-bold text-primary">
+          <h2 className="py-4 text-center text-4xl font-bold text-primary">
             About
+          </h2>
+          <p className="mx-auto max-w-lg text-center">
+            We are a group of passionate computer science students at Cavite
+            State University - Main Campus.
           </p>
-          <div className="mx-auto grid w-fit grid-cols-1 gap-x-20 self-center sm:grid-cols-2">
+
+          <div className="mx-auto mt-4 grid w-fit grid-cols-1 gap-x-20 self-center sm:grid-cols-2">
             {DEVS_INFO.map((dev) => {
               return (
                 <div
