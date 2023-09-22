@@ -90,9 +90,9 @@ export default function UserPageWrapper({
   }, [openReport]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 border-b">
       <div className="space-y-4">
-        <div className="flex w-full flex-col-reverse gap-x-8 gap-y-4 xs:flex-row">
+        <div className="flex w-full flex-row-reverse gap-x-2 gap-y-4 p-4 xs:flex-row">
           <div className="flex-1 space-y-2 xs:w-px">
             <div className="flex items-center gap-x-2">
               <Tooltip delayDuration={250}>
@@ -158,7 +158,8 @@ export default function UserPageWrapper({
             <div className="flex flex-col">
               <div className="flex items-center gap-x-2">
                 <h2 className="truncate  text-2xl font-semibold xs:text-4xl">
-                  @{profileQuery.data.user.username}
+                  {profileQuery.data.user.firstName}{" "}
+                  {profileQuery.data.user.lastName}
                 </h2>
 
                 {profileQuery.data.user.verified_at && (
@@ -167,8 +168,7 @@ export default function UserPageWrapper({
               </div>
 
               <p className="line-clamp-1  ">
-                {profileQuery.data.user.firstName}{" "}
-                {profileQuery.data.user.lastName}
+                @{profileQuery.data.user.username}
               </p>
 
               <p className="break-words text-muted-foreground">
@@ -200,7 +200,7 @@ export default function UserPageWrapper({
             />
           </div>
         </div>
-        <div className="space-y-2">
+        <div className="flex items-center gap-x-4 gap-y-2 border-b px-4 pb-4">
           <div className="flex items-center gap-x-2">
             {profileQuery.data.isFollower !== undefined ? (
               <div className="flex items-center gap-x-2">
