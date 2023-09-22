@@ -1,0 +1,27 @@
+{
+  "name": "@cvsu.me/db",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "db:push": "pnpm with-env drizzle-kit push:mysql -- --verbose",
+    "db:studio": "pnpm with-env drizzle-kit studio --port 3001 --verbose",
+    "db:generate": "pnpm drizzle-kit generate:mysql",
+    "clean": "rm -rf .turbo node_modules",
+    "with-env": "dotenv -e ../../.env --"
+  },
+  "dependencies": {
+    "@cvsu.me/constants": "workspace:*",
+    "@planetscale/database": "^1.11.0",
+    "dotenv": "^16.3.1",
+    "drizzle-orm": "0.28.6",
+    "mysql2": "^3.6.1",
+    "nanoid": "^5.0.1"
+  },
+  "devDependencies": {
+    "@cvsu.me/tsconfig": "workspace:*",
+    "@types/node": "^20.6.2",
+    "dotenv-cli": "^7.3.0",
+    "drizzle-kit": "0.19.13",
+    "typescript": "^5.2.2"
+  }
+}
