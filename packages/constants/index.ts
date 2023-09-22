@@ -519,7 +519,7 @@ export const DEVS_INFO = [
     index: 3,
     name: "Alexis Ken Alvarez",
     role: "Backend Developer",
-    image: "/dev-pics/aki.png",
+    image: "/dev-pics/aki.jpg",
     desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:alexisken.alvarez@cvsu.edu.ph" },
