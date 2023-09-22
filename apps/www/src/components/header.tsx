@@ -50,7 +50,7 @@ export default function Header() {
   const userQuery = api.auth.getCurrentUser.useQuery();
 
   return (
-    <header className="flex items-center justify-between gap-x-2 py-4">
+    <header className="sticky top-0 z-50 flex items-center justify-between gap-x-2 bg-background/70 p-4 backdrop-blur-lg">
       <div className="flex items-center gap-x-2">
         <Sheet>
           <SheetTrigger asChild>
@@ -74,11 +74,13 @@ export default function Header() {
                 >
                   <SheetClose asChild>
                     <Link
+                      className="flex gap-x-2"
                       href={link.url}
                       target={
                         link.url.startsWith("http") ? "_blank" : undefined
                       }
                     >
+                      <link.icon size="1.25rem" />
                       {link.name}
                     </Link>
                   </SheetClose>

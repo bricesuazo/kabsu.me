@@ -107,7 +107,7 @@ export default function PostComment({
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <div className="flex">
+        <div className="flex gap-x-1">
           <Toggle
             size="sm"
             pressed={likes.some((like) => like.user_id === userId)}

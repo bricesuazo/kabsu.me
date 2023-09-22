@@ -33,7 +33,7 @@ export default function NotificationPage() {
     });
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between p-4">
         <h3 className="flex items-center gap-x-2 p-2 font-semibold">
           <Bell size="1rem" />
           Notifications
@@ -65,7 +65,7 @@ export default function NotificationPage() {
           <TooltipContent side="bottom">Mark all as read</TooltipContent>
         </Tooltip>
       </div>
-      <ScrollArea className="">
+      <ScrollArea className="h-full min-h-full p-4">
         {getAllNotificationsQuery.isLoading ||
         !getAllNotificationsQuery.data ? (
           [...(Array(10) as number[])].map((_, i) => (

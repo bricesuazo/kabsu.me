@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import FooterMenu from "@/components/footer-menu";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CommentDropdown from "@/app/(authenticated)/[username]/[post_id]/comment-dropdown";
@@ -34,7 +35,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
   return (
     <>
       {postQuery.isLoading ? (
-        <div className="space-y-2">
+        <div className="min-h-screen space-y-2 p-4">
           <div className="flex justify-between">
             <div className="flex gap-x-2">
               <div className="w-max">
@@ -90,105 +91,109 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
           {postQuery.error.message}
         </p>
       ) : (
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <Link
-              href={`/${postQuery.data.post.user.username}`}
-              className="flex gap-x-2"
-            >
-              <div className="w-max">
-                <Image
-                  src={postQuery.data.post.user.imageUrl}
-                  alt="Image"
-                  width={64}
-                  height={64}
-                  className="rounded-full object-cover"
-                />
-              </div>
-              <div className="flex flex-1 flex-col">
-                <div className="group flex items-center gap-x-2">
-                  <p className="line-clamp-1 group-hover:underline">
-                    {postQuery.data.post.user.firstName}{" "}
-                    {postQuery.data.post.user.lastName}{" "}
-                  </p>
+        <div className="min-h-screen space-y-2">
+          <div className="flex flex-col gap-y-4 p-4">
+            <div className="flex justify-between">
+              <Link
+                href={`/${postQuery.data.post.user.username}`}
+                className="flex gap-x-2"
+              >
+                <div className="w-max">
+                  <Image
+                    src={postQuery.data.post.user.imageUrl}
+                    alt="Image"
+                    width={64}
+                    height={64}
+                    className="rounded-full object-cover"
+                  />
+                </div>
+                <div className="flex flex-1 flex-col">
+                  <div className="group flex items-center gap-x-2">
+                    <div className="flex gap-x-1">
+                      {(() => {
+                        switch (postQuery.data.post.user.type) {
+                          case "student":
+                            return <Album />;
+                          case "alumni":
+                            return <Briefcase />;
+                          case "faculty":
+                            return <GraduationCap />;
+                          default:
+                            return null;
+                        }
+                      })()}
+                      <p className="line-clamp-1 font-semibold group-hover:underline">
+                        {postQuery.data.post.user.firstName}{" "}
+                        {postQuery.data.post.user.lastName}{" "}
+                      </p>
+                    </div>
 
-                  {postQuery.data.post.user.verified_at && <VerifiedBadge />}
+                    {postQuery.data.post.user.verified_at && <VerifiedBadge />}
 
-                  <p className="pointer-events-none hidden select-none sm:block">
-                    ·
-                  </p>
-                  <div className="hidden sm:block">
-                    <Tooltip delayDuration={250}>
-                      <TooltipTrigger>
-                        <p className="text-xs">
-                          {moment(postQuery.data.post.created_at).fromNow()}
-                        </p>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        {moment(postQuery.data.post.created_at).format(
-                          "MMMM Do YYYY, h:mm:ss A",
-                        )}
-                      </TooltipContent>
-                    </Tooltip>
+                    <p className="pointer-events-none hidden select-none sm:block">
+                      ·
+                    </p>
+                    <div className="hidden sm:block">
+                      <Tooltip delayDuration={250}>
+                        <TooltipTrigger>
+                          <p className="text-xs">
+                            {moment(postQuery.data.post.created_at).fromNow()}
+                          </p>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {moment(postQuery.data.post.created_at).format(
+                            "MMMM Do YYYY, h:mm:ss A",
+                          )}
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-x-2">
+                    <p className="line-clamp-1 flex-1 break-all text-sm text-foreground/70">
+                      @{postQuery.data.post.user.username}{" "}
+                    </p>
+                    <div className="flex items-center gap-x-1">
+                      <Tooltip delayDuration={250}>
+                        <TooltipTrigger>
+                          <Badge>
+                            {postQuery.data.post.user.program.college.campus.slug.toUpperCase()}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[12rem]">
+                          {postQuery.data.post.user.program.college.campus.name}
+                        </TooltipContent>
+                      </Tooltip>
+
+                      <Tooltip delayDuration={250}>
+                        <TooltipTrigger>
+                          <Badge variant="outline">
+                            {postQuery.data.post.user.program.slug.toUpperCase()}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[12rem]">
+                          {postQuery.data.post.user.program.name}
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-x-2">
-                  <p className="line-clamp-1 flex-1 break-all text-sm">
-                    @{postQuery.data.post.user.username}{" "}
-                  </p>
-                  <div className="flex items-center gap-x-1">
-                    {(() => {
-                      switch (postQuery.data.post.user.type) {
-                        case "student":
-                          return <Album />;
-                        case "alumni":
-                          return <Briefcase />;
-                        case "faculty":
-                          return <GraduationCap />;
-                        default:
-                          return null;
-                      }
-                    })()}
-                    <Tooltip delayDuration={250}>
-                      <TooltipTrigger>
-                        <Badge>
-                          {postQuery.data.post.user.program.college.campus.slug.toUpperCase()}
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-[12rem]">
-                        {postQuery.data.post.user.program.college.campus.name}
-                      </TooltipContent>
-                    </Tooltip>
+              </Link>
 
-                    <Tooltip delayDuration={250}>
-                      <TooltipTrigger>
-                        <Badge variant="outline">
-                          {postQuery.data.post.user.program.slug.toUpperCase()}
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-[12rem]">
-                        {postQuery.data.post.user.program.name}
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                </div>
-              </div>
-            </Link>
+              <PostDropdown
+                post_id={postQuery.data.post.id}
+                successUrl={`/${postQuery.data.post.user.username}`}
+                isMyPost={postQuery.data.userId === postQuery.data.post.user_id}
+              />
+            </div>
 
-            <PostDropdown
-              post_id={postQuery.data.post.id}
-              successUrl={`/${postQuery.data.post.user.username}`}
-              isMyPost={postQuery.data.userId === postQuery.data.post.user_id}
+            <div className="">{formatText(postQuery.data.post.content)}</div>
+
+            <PostComment
+              userId={postQuery.data.userId}
+              post={postQuery.data.post}
+              data-superjson
             />
           </div>
-
-          <div className="">{formatText(postQuery.data.post.content)}</div>
-
-          <PostComment
-            userId={postQuery.data.userId}
-            post={postQuery.data.post}
-            data-superjson
-          />
 
           <div>
             {postQuery.data.post.comments.map((comment) => (
@@ -247,7 +252,7 @@ function CommentComponent({ comment }: { comment: Comment }) {
           <div className="flex flex-col">
             <div className="flex items-center gap-x-2">
               <Link href={`/${fullCommentQuery.data.comment.user.username}`}>
-                <p className="line-clamp-1 group-hover:underline">
+                <p className="line-clamp-1 font-bold group-hover:underline">
                   {fullCommentQuery.data.comment.user.firstName}{" "}
                   {fullCommentQuery.data.comment.user.lastName}{" "}
                 </p>
@@ -273,7 +278,7 @@ function CommentComponent({ comment }: { comment: Comment }) {
               </div>
             </div>
             <Link href={`/${fullCommentQuery.data.comment.user.username}`}>
-              <p className="line-clamp-1 flex-1 break-all text-sm">
+              <p className="line-clamp-1 flex-1 break-all text-sm text-foreground/70">
                 @{fullCommentQuery.data.comment.user.username}
               </p>
             </Link>
@@ -289,6 +294,8 @@ function CommentComponent({ comment }: { comment: Comment }) {
         />
       </div>
       <div>{formatText(fullCommentQuery.data.comment.content)}</div>
+
+      <FooterMenu />
     </div>
   );
 }
