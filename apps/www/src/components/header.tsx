@@ -1,11 +1,19 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { useClerk, useUser } from "@clerk/nextjs";
+import { Fragment, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment, useState } from "react";
-import { Skeleton } from "./ui/skeleton";
+import { usePathname, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { api } from "@/lib/trpc/client";
+import { useClerk, useUser } from "@clerk/nextjs";
+import { Check, LogOut, Menu, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+
+import { NAVBAR_LINKS } from "@cvsu.me/constants";
+
+import { Icons } from "./icons";
+import Notifications from "./notifications";
 import {
   Menubar,
   MenubarContent,
@@ -18,9 +26,7 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "./ui/menubar";
-import { useTheme } from "next-themes";
-import { Check, LogOut, Menu, Moon, Sun } from "lucide-react";
-import { Icons } from "./icons";
+import { Separator } from "./ui/separator";
 import {
   Sheet,
   SheetClose,
@@ -30,11 +36,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { usePathname, useRouter } from "next/navigation";
-import { NAVBAR_LINKS } from "@cvsu.me/constants";
-import Notifications from "./notifications";
-import { api } from "@/lib/trpc/client";
-import { Separator } from "./ui/separator";
+import { Skeleton } from "./ui/skeleton";
 
 export default function Header() {
   // { userId }: { userId: string | null }
@@ -92,7 +94,7 @@ export default function Header() {
         <Link href="/">
           <div className="w-max">
             <Image
-              src="/logo.png"
+              src="/logo.svg"
               alt=""
               width={40}
               height={40}

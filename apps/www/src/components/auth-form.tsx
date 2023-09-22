@@ -216,7 +216,7 @@ export default function AuthForm() {
       <div className="space-y-10 pt-20">
         <div className="space-y-4">
           <Image
-            src="/logo.png"
+            src="/logo.svg"
             alt="Logo"
             width={256}
             height={256}
