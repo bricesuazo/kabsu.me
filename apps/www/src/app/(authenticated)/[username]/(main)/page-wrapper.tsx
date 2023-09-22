@@ -161,7 +161,9 @@ export default function UserPageWrapper({
                   @{profileQuery.data.user.username}
                 </h2>
 
-                {profileQuery.data.user.verified_at && <VerifiedBadge />}
+                {profileQuery.data.user.verified_at && (
+                  <VerifiedBadge size="lg" />
+                )}
               </div>
 
               <p className="line-clamp-1  ">

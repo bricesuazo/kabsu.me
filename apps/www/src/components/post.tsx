@@ -121,7 +121,7 @@ export default function Post({
                   @{post.user.username}
                 </p>
 
-                {post.user.verified_at && <VerifiedBadge />}
+                {post.user.verified_at && <VerifiedBadge size="sm" />}
               </div>
 
               <p className="pointer-events-none hidden select-none sm:block">

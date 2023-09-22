@@ -16,7 +16,7 @@ export default function Home() {
     <main>
       <header className="flex items-center justify-between p-4">
         <Button variant="link" className="h-auto p-0">
-          CvSU.me Admin Dashboard
+          <span className="hidden xs:contents">CvSU.me Admin</span> Dashboard
         </Button>
         <div className="flex items-center gap-x-2">
           <ToggleTheme />

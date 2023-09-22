@@ -1,8 +1,8 @@
 "use client";
 
-import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 
 export function ToggleTheme({
   ...props
@@ -14,15 +14,11 @@ export function ToggleTheme({
       variant="outline"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       {...props}
+      size="icon"
     >
-      <div className="flex items-center dark:hidden">
-        <Sun size="1.25rem" />
-        <span className="ml-1">Light Mode</span>
-      </div>
-      <div className=" hidden items-center dark:flex">
-        <Moon size="1.25rem" />
-        <span className="ml-1">Dark Mode</span>
-      </div>
+      <Sun className="flex h-4 w-4 items-center dark:hidden" />
+
+      <Moon className="hidden h-4 w-4 items-center dark:flex" />
     </Button>
   );
 }
