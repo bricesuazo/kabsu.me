@@ -1,11 +1,12 @@
 import React from "react";
-import Notifications from "./notifications";
-import { Home, MessageSquare, Search } from "lucide-react";
 import Link from "next/link";
+import { Home, MessageSquare, Search } from "lucide-react";
+
+import Notifications from "./notifications";
 
 export default function FooterMenu() {
   return (
-    <div className="container fixed bottom-0 flex h-auto w-full items-center justify-center border-t bg-background/80 p-4 backdrop-blur-lg sm:hidden">
+    <div className="container sticky bottom-0 flex h-auto w-full items-center justify-center border-t bg-background/80 p-4 backdrop-blur-lg sm:hidden">
       <div className="flex w-full justify-center">
         <Link href="/">
           <Home size="1.25rem" />

@@ -1,11 +1,11 @@
-import { auth } from "@clerk/nextjs";
-import PostForm from "@/components/post-form";
-import Posts from "@/components/posts";
 import type { Metadata } from "next";
-import Header from "@/components/header";
 import AuthForm from "@/components/auth-form";
-import PostTypeTab from "@/components/post-type-tab";
 import FooterMenu from "@/components/footer-menu";
+import Header from "@/components/header";
+import PostForm from "@/components/post-form";
+import PostTypeTab from "@/components/post-type-tab";
+import Posts from "@/components/posts";
+import { auth } from "@clerk/nextjs";
 
 export function generateMetadata(): Metadata {
   const { userId } = auth();
@@ -25,10 +25,10 @@ export default function Home({
   const { userId } = auth();
 
   return (
-    <main className="container min-h-screen border-x px-0">
+    <main className="container min-h-screen px-0">
       {userId ? (
-        <>
-          <div className="sticky top-0 z-50 bg-background/70 backdrop-blur-lg">
+        <div className="border-x">
+          <div className="sticky top-0 z-50 backdrop-blur-lg">
             <Header />
 
             <PostTypeTab />
@@ -41,7 +41,7 @@ export default function Home({
 
             <FooterMenu />
           </div>
-        </>
+        </div>
       ) : (
         <AuthForm />
       )}

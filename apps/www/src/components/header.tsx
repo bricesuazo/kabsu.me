@@ -50,7 +50,7 @@ export default function Header() {
   const userQuery = api.auth.getCurrentUser.useQuery();
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between gap-x-2 bg-background/70 p-4 backdrop-blur-lg">
+    <header className="sticky top-0 z-50 flex items-center justify-between gap-x-2 p-4 backdrop-blur-lg">
       <div className="flex items-center gap-x-2">
         <Sheet>
           <SheetTrigger asChild>
