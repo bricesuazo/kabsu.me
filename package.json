@@ -13,6 +13,7 @@
     "clean:workspaces": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "db:push": "pnpm with-env turbo --filter=@cvsu.me/db db:push --no-daemon",
+    "db:seed": "pnpm with-env turbo --filter=@cvsu.me/db db:seed --no-daemon",
     "db:studio": "pnpm with-env turbo --filter=@cvsu.me/db db:studio --no-daemon",
     "db:generate": "pnpm with-env turbo --filter=@cvsu.me/db db:generate --no-daemon",
     "email:dev": "pnpm with-env turbo --filter=@cvsu.me/email email:dev --no-daemon",

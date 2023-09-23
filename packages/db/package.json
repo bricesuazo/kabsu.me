@@ -6,6 +6,7 @@
     "db:push": "pnpm with-env drizzle-kit push:mysql -- --verbose",
     "db:studio": "pnpm with-env drizzle-kit studio --port 3001 --verbose",
     "db:generate": "pnpm drizzle-kit generate:mysql",
+    "db:seed": "pnpm with-env tsx ./seed.ts",
     "clean": "rm -rf .turbo node_modules",
     "with-env": "dotenv -e ../../.env --"
   },
@@ -15,7 +16,8 @@
     "dotenv": "^16.3.1",
     "drizzle-orm": "0.28.6",
     "mysql2": "^3.6.1",
-    "nanoid": "^5.0.1"
+    "nanoid": "^5.0.1",
+    "tsx": "^3.12.10"
   },
   "devDependencies": {
     "@cvsu.me/tsconfig": "workspace:*",

@@ -534,6 +534,9 @@ importers:
       nanoid:
         specifier: ^5.0.1
         version: registry.npmjs.org/nanoid@5.0.1
+      tsx:
+        specifier: ^3.12.10
+        version: registry.npmjs.org/tsx@3.12.10
     devDependencies:
       '@cvsu.me/tsconfig':
         specifier: workspace:*
@@ -1040,7 +1043,6 @@ packages:
     dependencies:
       '@esbuild-kit/core-utils': registry.npmjs.org/@esbuild-kit/core-utils@3.3.2
       get-tsconfig: registry.npmjs.org/get-tsconfig@4.7.1
-    dev: true
 
   registry.npmjs.org/@esbuild-kit/core-utils@3.3.2:
     resolution: {integrity: sha512-sPRAnw9CdSsRmEtnsl2WXWdyquogVpB3yZ3dgwJfe8zrOzTsV7cJvmwrKVa+0ma5BoiGJ+BoqkMvawbayKUsqQ==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/@esbuild-kit/core-utils/-/core-utils-3.3.2.tgz}
@@ -1049,7 +1051,6 @@ packages:
     dependencies:
       esbuild: registry.npmjs.org/esbuild@0.18.20
       source-map-support: registry.npmjs.org/source-map-support@0.5.21
-    dev: true
 
   registry.npmjs.org/@esbuild-kit/esm-loader@2.6.5:
     resolution: {integrity: sha512-FxEMIkJKnodyA1OaCUoEvbYRkoZlLZ4d/eXFu9Fh8CbBBgP5EmZxrfTRyN0qpXZ4vOvqnE5YdRdcrmUUXuU+dA==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/@esbuild-kit/esm-loader/-/esm-loader-2.6.5.tgz}
@@ -1058,7 +1059,6 @@ packages:
     dependencies:
       '@esbuild-kit/core-utils': registry.npmjs.org/@esbuild-kit/core-utils@3.3.2
       get-tsconfig: registry.npmjs.org/get-tsconfig@4.7.1
-    dev: true
 
   registry.npmjs.org/@esbuild/android-arm64@0.18.20:
     resolution: {integrity: sha512-Nz4rJcchGDtENV0eMKUNa6L12zz2zBDXuhj/Vjh18zGqB44Bi7MBMSXjgunJgjRhCmKOjnPuZp4Mb6OKqtMHLQ==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.18.20.tgz}
@@ -1068,7 +1068,6 @@ packages:
     cpu: [arm64]
     os: [android]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/android-arm@0.18.20:
@@ -1079,7 +1078,6 @@ packages:
     cpu: [arm]
     os: [android]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/android-x64@0.18.20:
@@ -1090,7 +1088,6 @@ packages:
     cpu: [x64]
     os: [android]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/darwin-arm64@0.18.20:
@@ -1101,7 +1098,6 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/darwin-x64@0.18.20:
@@ -1112,7 +1108,6 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/freebsd-arm64@0.18.20:
@@ -1123,7 +1118,6 @@ packages:
     cpu: [arm64]
     os: [freebsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/freebsd-x64@0.18.20:
@@ -1134,7 +1128,6 @@ packages:
     cpu: [x64]
     os: [freebsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/linux-arm64@0.18.20:
@@ -1145,7 +1138,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/linux-arm@0.18.20:
@@ -1156,7 +1148,6 @@ packages:
     cpu: [arm]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/linux-ia32@0.18.20:
@@ -1167,7 +1158,6 @@ packages:
     cpu: [ia32]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/linux-loong64@0.18.20:
@@ -1178,7 +1168,6 @@ packages:
     cpu: [loong64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/linux-mips64el@0.18.20:
@@ -1189,7 +1178,6 @@ packages:
     cpu: [mips64el]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/linux-ppc64@0.18.20:
@@ -1200,7 +1188,6 @@ packages:
     cpu: [ppc64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/linux-riscv64@0.18.20:
@@ -1211,7 +1198,6 @@ packages:
     cpu: [riscv64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/linux-s390x@0.18.20:
@@ -1222,7 +1208,6 @@ packages:
     cpu: [s390x]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/linux-x64@0.18.20:
@@ -1233,7 +1218,6 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/netbsd-x64@0.18.20:
@@ -1244,7 +1228,6 @@ packages:
     cpu: [x64]
     os: [netbsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/openbsd-x64@0.18.20:
@@ -1255,7 +1238,6 @@ packages:
     cpu: [x64]
     os: [openbsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/sunos-x64@0.18.20:
@@ -1266,7 +1248,6 @@ packages:
     cpu: [x64]
     os: [sunos]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/win32-arm64@0.18.20:
@@ -1277,7 +1258,6 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/win32-ia32@0.18.20:
@@ -1288,7 +1268,6 @@ packages:
     cpu: [ia32]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@esbuild/win32-x64@0.18.20:
@@ -1299,7 +1278,6 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   registry.npmjs.org/@eslint-community/eslint-utils@4.4.0(eslint@8.49.0):
@@ -4274,7 +4252,6 @@ packages:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/buffer-from/-/buffer-from-1.1.2.tgz}
     name: buffer-from
     version: 1.1.2
-    dev: true
 
   registry.npmjs.org/buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/buffer/-/buffer-5.7.1.tgz}
@@ -5308,7 +5285,6 @@ packages:
       '@esbuild/win32-arm64': registry.npmjs.org/@esbuild/win32-arm64@0.18.20
       '@esbuild/win32-ia32': registry.npmjs.org/@esbuild/win32-ia32@0.18.20
       '@esbuild/win32-x64': registry.npmjs.org/@esbuild/win32-x64@0.18.20
-    dev: true
 
   registry.npmjs.org/escalade@3.1.1:
     resolution: {integrity: sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/escalade/-/escalade-3.1.1.tgz}
@@ -8773,7 +8749,6 @@ packages:
     dependencies:
       buffer-from: registry.npmjs.org/buffer-from@1.1.2
       source-map: registry.npmjs.org/source-map@0.6.1
-    dev: true
 
   registry.npmjs.org/source-map@0.6.1:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz}
@@ -9372,7 +9347,6 @@ packages:
       '@esbuild-kit/esm-loader': registry.npmjs.org/@esbuild-kit/esm-loader@2.6.5
     optionalDependencies:
       fsevents: registry.npmjs.org/fsevents@2.3.3
-    dev: true
 
   registry.npmjs.org/tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/tunnel-agent/-/tunnel-agent-0.6.0.tgz}
