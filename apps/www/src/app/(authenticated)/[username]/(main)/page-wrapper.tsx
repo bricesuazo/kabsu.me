@@ -167,7 +167,7 @@ export default function UserPageWrapper({
                     return (
                       <>
                         <TooltipTrigger>
-                          <Album className="h-5 w-5 xs:h-8 xs:w-8" />
+                          <Album className="h-5 w-5 text-white xs:h-8 xs:w-8" />
                         </TooltipTrigger>
                         <TooltipContent className="z-50">
                           Student
@@ -178,7 +178,7 @@ export default function UserPageWrapper({
                     return (
                       <>
                         <TooltipTrigger>
-                          <GraduationCap className="h-5 w-5 xs:h-8 xs:w-8" />
+                          <GraduationCap className="h-5 w-5 text-white xs:h-8 xs:w-8" />
                         </TooltipTrigger>
                         <TooltipContent className="z-50">Alumni</TooltipContent>
                       </>
@@ -187,7 +187,7 @@ export default function UserPageWrapper({
                     return (
                       <>
                         <TooltipTrigger>
-                          <Briefcase className="h-5 w-5 xs:h-8 xs:w-8" />
+                          <Briefcase className="h-5 w-5 text-white xs:h-8 xs:w-8" />
                         </TooltipTrigger>
                         <TooltipContent className="z-50">
                           Faculty
