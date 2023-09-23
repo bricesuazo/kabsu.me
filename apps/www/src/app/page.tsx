@@ -19,9 +19,16 @@ export function generateMetadata(): Metadata {
 export default function Home({
   searchParams: { tab },
 }: {
-  searchParams: { tab?: "all" | "program" | "college" };
+  searchParams: { tab?: "all" | "campus" | "program" | "college" };
 }) {
   const { userId } = auth();
+
+  const TEST = {
+    all: "See posts of all campuses.",
+    campus: "See posts of your campus.",
+    college: "See posts of your college.",
+    program: "See posts of your program.",
+  };
 
   return (
     <main className="container px-0">
@@ -31,6 +38,15 @@ export default function Home({
             <Header />
 
             <PostTypeTab />
+          </div>
+
+          <div className="border-b p-3 text-center sm:hidden">
+            <p className="text-sm capitalize text-primary">
+              {tab ? tab : "following"} tab
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {tab ? TEST[tab] : "See posts of who you are following."}
+            </p>
           </div>
 
           <div className="min-h-screen">
