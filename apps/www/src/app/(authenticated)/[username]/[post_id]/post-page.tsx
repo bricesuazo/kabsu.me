@@ -158,7 +158,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                     </Tooltip>
                   </div>
                   <div className="flex items-center gap-x-2">
-                    <p className="line-clamp-1 flex-1 break-all text-sm text-foreground/70">
+                    <p className="line-clamp-1 break-all text-sm text-foreground/70">
                       @{postQuery.data.post.user.username}{" "}
                     </p>
                     <div className="flex items-center gap-x-1">
