@@ -44,7 +44,9 @@ export default async function FollowersPage({
   const followersUsers =
     followers.length !== 0
       ? await clerkClient.users.getUserList({
-          userId: followers.map((follower) => follower.follower_id),
+          userId: followers
+            .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
+            .map((follower) => follower.follower_id),
         })
       : [];
 
