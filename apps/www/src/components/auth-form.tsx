@@ -81,7 +81,7 @@ export default function AuthForm() {
 
   if (signUp?.status === "missing_requirements") {
     return (
-      <div className="space-y-8 px-4 py-20">
+      <div className="space-y-8 py-20">
         <div className="">
           <div className="flex justify-center">
             <ToggleTheme />

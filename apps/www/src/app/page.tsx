@@ -40,7 +40,9 @@ export default function Home({
           </div>
         </div>
       ) : (
-        <AuthForm />
+        <div className="w-full px-4">
+          <AuthForm />
+        </div>
       )}
     </main>
   );
