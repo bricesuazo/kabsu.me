@@ -1,6 +1,6 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 
 export default function FollowsLayout({
   children,
@@ -9,7 +9,7 @@ export default function FollowsLayout({
   params: { username: string };
 }>) {
   return (
-    <>
+    <div className="p-4">
       <div className="flex items-center justify-between">
         <Button asChild variant="outline" size="icon">
           <Link href={`/${username}`}>
@@ -22,6 +22,6 @@ export default function FollowsLayout({
         <div className="h-10 w-10" />
       </div>
       {children}
-    </>
+    </div>
   );
 }
