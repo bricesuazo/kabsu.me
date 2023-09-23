@@ -1,6 +1,9 @@
-import { db } from "@cvsu.me/db";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { auth } from "@clerk/nextjs";
+
+import { db } from "@cvsu.me/db";
+
 import PostPageComponent from "./post-page";
 
 export async function generateMetadata({
@@ -8,15 +11,88 @@ export async function generateMetadata({
 }: {
   params: { username: string; post_id: string };
 }): Promise<Metadata> {
-  const post = await db.query.posts.findFirst({
+  const { userId } = auth();
+
+  if (!userId) notFound();
+
+  const currentUserInDB = await db.query.users.findFirst({
+    where: (user, { eq }) => eq(user.id, userId),
+    with: {
+      program: {
+        with: {
+          college: {
+            with: { campus: true },
+          },
+        },
+      },
+    },
+  });
+
+  if (!currentUserInDB) notFound();
+
+  const post1 = await db.query.posts.findFirst({
     where: (post, { eq, isNull, and }) =>
       and(eq(post.id, params.post_id), isNull(post.deleted_at)),
   });
 
-  if (!post) notFound();
+  if (!post1) notFound();
+
+  const userOfPost = await db.query.users.findFirst({
+    where: (user, { eq }) => eq(user.id, post1.user_id),
+    with: {
+      program: {
+        with: {
+          college: {
+            with: { campus: true },
+          },
+        },
+      },
+    },
+  });
+
+  if (!userOfPost) notFound();
+
+  const isFollower = await db.query.followers.findFirst({
+    where: (follower, { and, eq }) =>
+      and(
+        eq(follower.follower_id, userId),
+        eq(follower.followee_id, userOfPost.id),
+      ),
+  });
+
+  const postFromDB = await db.query.posts.findFirst({
+    where: (post, { or, eq, isNull, and }) =>
+      and(
+        eq(post.id, params.post_id),
+        isNull(post.deleted_at),
+
+        currentUserInDB.id !== userOfPost.id
+          ? or(
+              eq(post.type, "all"),
+              currentUserInDB.program_id === userOfPost.program_id
+                ? eq(post.type, "program")
+                : undefined,
+
+              currentUserInDB.program.college_id ===
+                userOfPost.program.college_id
+                ? eq(post.type, "college")
+                : undefined,
+
+              currentUserInDB.program.college.campus_id ===
+                userOfPost.program.college.campus_id
+                ? eq(post.type, "campus")
+                : undefined,
+
+              isFollower ? eq(post.type, "following") : undefined,
+            )
+          : undefined,
+      ),
+  });
+
+  if (!postFromDB) notFound();
 
   return {
-    title: `${post.content} - @${params.username}`,
+    title: `${postFromDB.content} - @${params.username}`,
   };
 }
 
