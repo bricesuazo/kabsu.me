@@ -1,9 +1,10 @@
 "use client";
 
-import { POST_TYPE_TABS } from "@cvsu.me/constants";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import { POST_TYPE_TABS } from "@cvsu.me/constants";
 
 export default function PostTypeTab() {
   const searchParams = useSearchParams();
