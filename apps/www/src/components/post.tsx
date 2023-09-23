@@ -16,6 +16,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import moment from "moment";
+import momentTwitter from "moment-twitter";
 import { nanoid } from "nanoid";
 
 import type {
@@ -124,14 +125,21 @@ export default function Post({
                 {post.user.verified_at && <VerifiedBadge size="sm" />}
               </div>
 
-              <p className="pointer-events-none hidden select-none sm:block">
-                ·
-              </p>
+              <p className="pointer-events-none select-none">·</p>
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
-                  <p className="hidden text-xs xs:block">
-                    {moment(post.created_at).fromNow()}
+                  <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
+                    {
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+                      momentTwitter(post.created_at).twitterLong()
+                    }
+                  </p>
+                  <p className="text-xs text-muted-foreground hover:underline xs:hidden">
+                    {
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+                      momentTwitter(post.created_at).twitterShort()
+                    }
                   </p>
                 </TooltipTrigger>
                 <TooltipContent>

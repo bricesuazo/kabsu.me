@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import FooterMenu from "@/components/footer-menu";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CommentDropdown from "@/app/(authenticated)/[username]/[post_id]/comment-dropdown";
+import FooterMenu from "@/components/footer-menu";
 import PostComment from "@/components/post-comment";
 import PostDropdown from "@/components/post-dropdown";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +19,7 @@ import { api } from "@/lib/trpc/client";
 import { formatText } from "@/lib/utils";
 import { Album, Briefcase, GraduationCap } from "lucide-react";
 import moment from "moment";
+import momentTwitter from "moment-twitter";
 
 import type { Comment } from "@cvsu.me/db/schema";
 
@@ -108,7 +109,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                   />
                 </div>
                 <div className="flex flex-1 flex-col">
-                  <div className="group flex items-center gap-x-2">
+                  <div className="flex items-center gap-x-2">
                     <div className="flex gap-x-1">
                       {(() => {
                         switch (postQuery.data.post.user.type) {
@@ -122,7 +123,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                             return null;
                         }
                       })()}
-                      <p className="line-clamp-1 font-semibold group-hover:underline">
+                      <p className="line-clamp-1 font-semibold hover:underline">
                         {postQuery.data.post.user.firstName}{" "}
                         {postQuery.data.post.user.lastName}{" "}
                       </p>
@@ -130,23 +131,32 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
 
                     {postQuery.data.post.user.verified_at && <VerifiedBadge />}
 
-                    <p className="pointer-events-none hidden select-none sm:block">
-                      ·
-                    </p>
-                    <div className="hidden sm:block">
-                      <Tooltip delayDuration={250}>
-                        <TooltipTrigger>
-                          <p className="text-xs">
-                            {moment(postQuery.data.post.created_at).fromNow()}
-                          </p>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          {moment(postQuery.data.post.created_at).format(
-                            "MMMM Do YYYY, h:mm:ss A",
-                          )}
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
+                    <p className="pointer-events-none select-none">·</p>
+                    <Tooltip delayDuration={250}>
+                      <TooltipTrigger>
+                        <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
+                          {
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+                            momentTwitter(
+                              postQuery.data.post.created_at,
+                            ).twitterLong()
+                          }
+                        </p>
+                        <p className="text-xs text-muted-foreground hover:underline xs:hidden">
+                          {
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+                            momentTwitter(
+                              postQuery.data.post.created_at,
+                            ).twitterShort()
+                          }
+                        </p>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {moment(postQuery.data.post.created_at).format(
+                          "MMMM Do YYYY, h:mm:ss A",
+                        )}
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                   <div className="flex items-center gap-x-2">
                     <p className="line-clamp-1 flex-1 break-all text-sm text-foreground/70">

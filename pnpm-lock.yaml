@@ -360,6 +360,9 @@ importers:
       moment:
         specifier: ^2.29.4
         version: registry.npmjs.org/moment@2.29.4
+      moment-twitter:
+        specifier: ^0.2.0
+        version: registry.npmjs.org/moment-twitter@0.2.0
       nanoid:
         specifier: ^5.0.1
         version: registry.npmjs.org/nanoid@5.0.1
@@ -7240,10 +7243,24 @@ packages:
       minimist: registry.npmjs.org/minimist@1.2.8
     dev: false
 
+  registry.npmjs.org/moment-twitter@0.2.0:
+    resolution: {integrity: sha512-w/dOVcUmaTNeVTQoJyBm6BcAQz9/1Spgm21zKEHfbEI9K4Cyrf+DkgsLCDxRIWKBS45G6QgX17lauqyznyYeOw==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/moment-twitter/-/moment-twitter-0.2.0.tgz}
+    name: moment-twitter
+    version: 0.2.0
+    dependencies:
+      moment: registry.npmjs.org/moment@2.4.0
+    dev: false
+
   registry.npmjs.org/moment@2.29.4:
     resolution: {integrity: sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/moment/-/moment-2.29.4.tgz}
     name: moment
     version: 2.29.4
+    dev: false
+
+  registry.npmjs.org/moment@2.4.0:
+    resolution: {integrity: sha512-bVt+y7LxXatNEFjwDF3MlyzuS7rETg6Wg37/6n8r1GDK0NtLaFAmGcUbTarqBSdgsLnTA3Ar96iiShEiGQZzng==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/moment/-/moment-2.4.0.tgz}
+    name: moment
+    version: 2.4.0
     dev: false
 
   registry.npmjs.org/ms@2.1.2:
