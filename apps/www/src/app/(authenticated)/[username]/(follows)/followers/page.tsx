@@ -1,8 +1,9 @@
-import UserFollows from "@/components/user-follows";
-import { db } from "@cvsu.me/db";
-import { auth, clerkClient } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import UserFollows from "@/components/user-follows";
+import { auth, clerkClient } from "@clerk/nextjs";
+
+import { db } from "@cvsu.me/db";
 
 export function generateMetadata({
   params: { username },
@@ -33,6 +34,7 @@ export default async function FollowersPage({
 
   const followers = await db.query.followers.findMany({
     where: (follower, { eq }) => eq(follower.followee_id, user.id),
+    orderBy: (follower, { asc }) => asc(follower.created_at),
   });
 
   const myFollowees = await db.query.followees.findMany({

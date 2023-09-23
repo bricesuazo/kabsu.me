@@ -324,6 +324,9 @@ importers:
       '@types/react-dom':
         specifier: 18.2.7
         version: registry.npmjs.org/@types/react-dom@18.2.7
+      '@vercel/analytics':
+        specifier: ^1.0.2
+        version: registry.npmjs.org/@vercel/analytics@1.0.2
       autoprefixer:
         specifier: 10.4.16
         version: registry.npmjs.org/autoprefixer@10.4.16(postcss@8.4.30)
@@ -3831,6 +3834,12 @@ packages:
     dependencies:
       '@typescript-eslint/types': registry.npmjs.org/@typescript-eslint/types@6.7.2
       eslint-visitor-keys: registry.npmjs.org/eslint-visitor-keys@3.4.3
+    dev: false
+
+  registry.npmjs.org/@vercel/analytics@1.0.2:
+    resolution: {integrity: sha512-BZFxVrv24VbNNl5xMxqUojQIegEeXMI6rX3rg1uVLYUEXsuKNBSAEQf4BWEcjQDp/8aYJOj6m8V4PUA3x/cxgg==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/@vercel/analytics/-/analytics-1.0.2.tgz}
+    name: '@vercel/analytics'
+    version: 1.0.2
     dev: false
 
   registry.npmjs.org/abort-controller@3.0.0:

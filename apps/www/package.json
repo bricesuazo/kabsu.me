@@ -51,6 +51,7 @@
     "@trpc/server": "^10.38.3",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
+    "@vercel/analytics": "^1.0.2",
     "autoprefixer": "10.4.16",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",

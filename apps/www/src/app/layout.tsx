@@ -10,6 +10,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import TrpcProvider from "@/lib/trpc/Provider";
 import { cn } from "@/lib/utils";
 import { auth, ClerkProvider } from "@clerk/nextjs";
+import { Analytics } from "@vercel/analytics/react";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
               <TooltipProvider>
                 <TrpcProvider>
                   {children}
+                  <Analytics />
                   {userId && <FooterMenu />}
                 </TrpcProvider>
               </TooltipProvider>

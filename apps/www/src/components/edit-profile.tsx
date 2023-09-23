@@ -191,7 +191,7 @@ export default function EditProfile({
                 )}
               />
             </div>
-            <p className="text-sm [text-wrap:balance]">
+            <p className="text-sm">
               To update your username, first name, and last name, please visit
               the{" "}
               <Link href="/account" className="text-primary hover:underline">
