@@ -1,8 +1,9 @@
-import type { User } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
-import FollowButton from "./follow-button";
 import { auth } from "@clerk/nextjs";
+import type { User } from "@clerk/nextjs/server";
+
+import FollowButton from "./follow-button";
 
 export default function UserFollows({
   user,
@@ -21,7 +22,7 @@ export default function UserFollows({
             alt="Image"
             width={40}
             height={40}
-            className="rounded-full object-cover"
+            className="aspect-square rounded-full object-cover"
           />
         </div>
       </Link>
