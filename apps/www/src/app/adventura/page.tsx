@@ -1,6 +1,6 @@
-import Footer from "@/components/footer";
 import Image from "next/image";
 import Link from "next/link";
+import Footer from "@/components/footer";
 
 export default function AdventuraPage() {
   return (
@@ -46,7 +46,7 @@ export default function AdventuraPage() {
       </div>
 
       <div className="text-center">
-        <h1 className="text-xl font-bold text-primary">ABOUT THE GAME</h1>
+        <h1 className="text-xl font-semibold text-primary">About the Game</h1>
         <p className="[text-wrap:balance]">
           You play as a curious Visitor or a Student of the campus. Navigating
           different places of the campus and learning its history and their
@@ -56,6 +56,30 @@ export default function AdventuraPage() {
         </p>
       </div>
 
+      <div>
+        <h5 className="text-center text-xl font-semibold text-primary">
+          Meet the Creators
+        </h5>
+        <div className="relative aspect-video w-full">
+          <Image
+            src="/adventura-devs.png"
+            alt="Adventura creators"
+            fill
+            className="pointer-events-none select-none object-contain"
+            draggable={false}
+          />
+        </div>
+
+        <p className="text-center [text-wrap:balance]">
+          This game is developed by the Team Sen'Py, consisting of three people
+          which are students from Cavite State University Indang Campus.
+        </p>
+      </div>
+
+      <p className="text-center text-xs [text-wrap:balance]">
+        For more information about the game, please visit the game&apos;s
+        itch.io page.
+      </p>
       <iframe src="https://itch.io/embed/1879915" className="w-full">
         {/* <a href="https://placide.itch.io/adventura">
           Adventura: An Online Interactive Campus Tour by Placide, Von
