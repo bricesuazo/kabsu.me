@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { api } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 import type { User as UserFromClerk } from "@clerk/nextjs/server";
@@ -190,6 +191,15 @@ export default function EditProfile({
                 )}
               />
             </div>
+            <p className="text-sm [text-wrap:balance]">
+              To update your username, first name, and last name, please visit
+              the{" "}
+              <Link href="/account" className="text-primary hover:underline">
+                Account Page
+              </Link>
+              .
+            </p>
+
             <FormField
               control={form.control}
               name="bio"
@@ -206,6 +216,7 @@ export default function EditProfile({
                 </FormItem>
               )}
             />
+
             <CustomProgress
               value={mapToPercentage(bioLength)}
               className={cn("h-2", bioLength > 128 && "-red-500")}

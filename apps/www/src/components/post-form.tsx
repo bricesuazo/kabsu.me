@@ -128,7 +128,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
             alt="Profile picture"
             fill
             sizes="100%"
-            className="rounded-full"
+            className="aspect-square rounded-full object-cover"
           />
         </Link>
       )}
