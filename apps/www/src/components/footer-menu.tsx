@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import { Bell, Home, MessageSquare, Search } from "lucide-react";
 
-import Notifications from "./notifications";
 import { Button } from "./ui/button";
 
 export default function FooterMenu() {
