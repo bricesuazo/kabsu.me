@@ -1,8 +1,11 @@
 import { TRPCError } from "@trpc/server";
-import { protectedProcedure, router } from "../trpc";
-import { comments, notifications, reported_comments } from "@cvsu.me/db/schema";
-import { z } from "zod";
 import { and, eq } from "drizzle-orm";
+import { z } from "zod";
+
+import { comments, notifications, reported_comments } from "@cvsu.me/db/schema";
+
+import { protectedProcedure, router } from "../trpc";
+
 export const commentsRouter = router({
   getFullComment: protectedProcedure
     .input(z.object({ comment_id: z.string().nonempty() }))
@@ -22,7 +25,10 @@ export const commentsRouter = router({
       return {
         comment: {
           ...fullComment,
-          user,
+          user: {
+            ...user,
+            ...fullComment.user,
+          },
         },
         userId: ctx.session.user.id,
       };
