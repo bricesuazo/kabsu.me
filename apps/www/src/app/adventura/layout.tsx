@@ -6,7 +6,7 @@ export default function AdventuraLayout({ children }: React.PropsWithChildren) {
     <main className="container">
       <header className="grid place-items-center p-4">
         <Link href="/">
-          <Image src="/logo.png" priority alt="" width={40} height={40} />
+          <Image src="/logo.svg" priority alt="" width={40} height={40} />
         </Link>
       </header>
       {children}
