@@ -40,7 +40,6 @@ import VerifiedBadge from "@/components/verified-badge";
 import { api } from "@/lib/trpc/client";
 import { getOrdinal } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DialogPortal } from "@radix-ui/react-dialog";
 import { Album, Briefcase, Flag, GraduationCap } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
