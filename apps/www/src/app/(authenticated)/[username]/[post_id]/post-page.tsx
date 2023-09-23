@@ -158,7 +158,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                     </Tooltip>
                   </div>
                   <div className="flex items-center gap-x-2">
-                    <p className="line-clamp-1 break-all text-sm text-foreground/70">
+                    <p className="line-clamp-1 break-all text-sm text-foreground/70 hover:underline">
                       @{postQuery.data.post.user.username}{" "}
                     </p>
                     <div className="flex items-center gap-x-1">
@@ -260,36 +260,51 @@ function CommentComponent({ comment }: { comment: Comment }) {
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-x-2">
-              <Link href={`/${fullCommentQuery.data.comment.user.username}`}>
+              <Link
+                href={`/${fullCommentQuery.data.comment.user.username}`}
+                className="flex items-center gap-x-1"
+              >
                 <p className="line-clamp-1 font-bold group-hover:underline">
                   {fullCommentQuery.data.comment.user.firstName}{" "}
                   {fullCommentQuery.data.comment.user.lastName}{" "}
                 </p>
+                {fullCommentQuery.data.comment.user.verified_at && (
+                  <VerifiedBadge size="sm" />
+                )}
               </Link>
-              <p className="pointer-events-none hidden select-none sm:block">
-                ·
-              </p>
-              <div className="hidden sm:block">
-                <Tooltip delayDuration={250}>
-                  <TooltipTrigger>
-                    <p className="text-xs">
-                      {moment(
+              <p className="pointer-events-none select-none">·</p>
+
+              <Tooltip delayDuration={250}>
+                <TooltipTrigger>
+                  <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
+                    {
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+                      momentTwitter(
                         fullCommentQuery.data.comment.created_at,
-                      ).fromNow()}
-                    </p>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {moment(fullCommentQuery.data.comment.created_at).format(
-                      "MMMM Do YYYY, h:mm:ss A",
-                    )}
-                  </TooltipContent>
-                </Tooltip>
-              </div>
+                      ).twitterLong()
+                    }
+                  </p>
+                  <p className="text-xs text-muted-foreground hover:underline xs:hidden">
+                    {
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+                      momentTwitter(
+                        fullCommentQuery.data.comment.created_at,
+                      ).twitterShort()
+                    }
+                  </p>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {moment(fullCommentQuery.data.comment.created_at).format(
+                    "MMMM Do YYYY, h:mm:ss A",
+                  )}
+                </TooltipContent>
+              </Tooltip>
             </div>
-            <Link href={`/${fullCommentQuery.data.comment.user.username}`}>
-              <p className="line-clamp-1 flex-1 break-all text-sm text-foreground/70">
-                @{fullCommentQuery.data.comment.user.username}
-              </p>
+            <Link
+              href={`/${fullCommentQuery.data.comment.user.username}`}
+              className="line-clamp-1 flex-1 break-all text-sm text-foreground/70 hover:underline"
+            >
+              @{fullCommentQuery.data.comment.user.username}
             </Link>
           </div>
         </div>

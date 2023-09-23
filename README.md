@@ -21,10 +21,10 @@ A social media platform exclusive only for Cavite State University students, fac
 - [x] Follows
 - [x] Notifications
 - [x] React query for infinite scrolling
+- [ ] Search
 - [ ] Realtime
 - [ ] Ratelimit
 - [ ] Messages
-- [ ] Search
 
 ### Development
 

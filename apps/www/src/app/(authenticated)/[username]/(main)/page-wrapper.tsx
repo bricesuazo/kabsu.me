@@ -94,31 +94,31 @@ export default function UserPageWrapper({
       <div>
         <div className="flex w-full flex-row-reverse gap-x-2 gap-y-4 p-4 xs:flex-row">
           <div className="w-px flex-1 space-y-2">
-            <div className="flex items-start gap-2">
-              <div className="flex flex-wrap gap-2">
-                <Tooltip delayDuration={250}>
-                  <TooltipTrigger>
-                    <Badge className="xs:h-full">
-                      {profileQuery.data.user.program.college.campus.slug.toUpperCase()}
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-60">
-                    {profileQuery.data.user.program.college.campus.name}
-                  </TooltipContent>
-                </Tooltip>
+            <div className="flex flex-wrap gap-2">
+              <Tooltip delayDuration={250}>
+                <TooltipTrigger>
+                  <Badge>
+                    {profileQuery.data.user.program.college.campus.slug.toUpperCase()}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-60">
+                  {profileQuery.data.user.program.college.campus.name}
+                </TooltipContent>
+              </Tooltip>
 
-                <Tooltip delayDuration={250}>
-                  <TooltipTrigger>
-                    <Badge variant="outline" className="xs:h-full">
-                      {profileQuery.data.user.program.slug.toUpperCase()}
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-60">
-                    {profileQuery.data.user.program.name}
-                  </TooltipContent>
-                </Tooltip>
+              <Tooltip delayDuration={250}>
+                <TooltipTrigger className="">
+                  <Badge variant="outline">
+                    {profileQuery.data.user.program.slug.toUpperCase()}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-60">
+                  {profileQuery.data.user.program.name}
+                </TooltipContent>
+              </Tooltip>
 
-                <Badge variant="outline" className="xs:h-full">
+              <div>
+                <Badge variant="outline">
                   {getOrdinal(profileQuery.data.user.user_number + 1)} user
                 </Badge>
               </div>
@@ -167,7 +167,7 @@ export default function UserPageWrapper({
                     return (
                       <>
                         <TooltipTrigger>
-                          <Album className="h-5 w-5 xs:h-8 xs:w-8" />
+                          <Album className="h-5 w-5 text-white xs:h-8 xs:w-8" />
                         </TooltipTrigger>
                         <TooltipContent className="z-50">
                           Student
@@ -178,7 +178,7 @@ export default function UserPageWrapper({
                     return (
                       <>
                         <TooltipTrigger>
-                          <GraduationCap className="h-5 w-5 xs:h-8 xs:w-8" />
+                          <GraduationCap className="h-5 w-5 text-white xs:h-8 xs:w-8" />
                         </TooltipTrigger>
                         <TooltipContent className="z-50">Alumni</TooltipContent>
                       </>
@@ -187,7 +187,7 @@ export default function UserPageWrapper({
                     return (
                       <>
                         <TooltipTrigger>
-                          <Briefcase className="h-5 w-5 xs:h-8 xs:w-8" />
+                          <Briefcase className="h-5 w-5 text-white xs:h-8 xs:w-8" />
                         </TooltipTrigger>
                         <TooltipContent className="z-50">
                           Faculty
