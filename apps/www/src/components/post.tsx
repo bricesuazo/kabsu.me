@@ -118,7 +118,7 @@ export default function Post({
                   {post.user.firstName} {post.user.lastName}{" "}
                 </p> */}
               <div className="flex items-center gap-x-1">
-                <p className="text-md line-clamp-1 flex-1 break-all font-medium">
+                <p className="text-md line-clamp-1 flex-1 break-all font-medium hover:underline">
                   @{post.user.username}
                 </p>
 
