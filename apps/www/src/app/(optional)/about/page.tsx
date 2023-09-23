@@ -6,15 +6,23 @@ import { DEVS_INFO } from "@cvsu.me/constants";
 export default function AboutPage() {
   return (
     <div className="space-y-8">
-      <h1 className="text-center text-4xl font-bold text-primary">About</h1>
-      <p className="text-center text-base [text-wrap:balance] sm:text-lg">
-        We believe that having this platform, is essential for bringing together
-        Cavite State University students, faculty, and alumni in a way
-        that&apos;s exclusive and focused.
-      </p>
-      <h4 className=" text-center text-xl font-semibold text-primary">
-        Who are we?
-      </h4>
+      <div>
+        <h1 className="text-center text-4xl font-bold text-primary">About</h1>
+        <p className="text-center text-base [text-wrap:balance] sm:text-lg">
+          We believe that having this platform, is essential for bringing
+          together Cavite State University students, faculty, and alumni in a
+          way that&apos;s exclusive and focused.
+        </p>
+      </div>
+      <div>
+        <h4 className=" text-center text-xl font-semibold text-primary">
+          Who are we?
+        </h4>
+        <p className="mx-auto max-w-lg text-center">
+          We are a group of passionate computer science students at Cavite State
+          University - Main Campus.
+        </p>
+      </div>
       <div className="mx-auto grid grid-cols-1 gap-x-4 gap-y-4 self-center pt-4 sm:grid-cols-2 ">
         {DEVS_INFO.map((dev) => {
           return (
