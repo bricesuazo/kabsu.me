@@ -90,11 +90,11 @@ export default function UserPageWrapper({
   }, [openReport]);
 
   return (
-    <div className="space-y-4 border-b">
-      <div className="space-y-4">
+    <div className="min-h-screen space-y-4 border-b">
+      <div>
         <div className="flex w-full flex-row-reverse gap-x-2 gap-y-4 p-4 xs:flex-row">
-          <div className="flex-1 space-y-2 xs:w-px">
-            <div className="flex items-center gap-x-2">
+          <div className="w-px flex-1 space-y-2">
+            <div className="flex items-start gap-2">
               <Tooltip delayDuration={250}>
                 {(() => {
                   if (profileQuery.data.user.type === "student") {
@@ -128,36 +128,38 @@ export default function UserPageWrapper({
                 })()}
               </Tooltip>
 
-              <Tooltip delayDuration={250}>
-                <TooltipTrigger>
-                  <Badge>
-                    {profileQuery.data.user.program.college.campus.slug.toUpperCase()}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-60">
-                  {profileQuery.data.user.program.college.campus.name}
-                </TooltipContent>
-              </Tooltip>
+              <div className="flex flex-wrap gap-2">
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger>
+                    <Badge className="xs:h-full">
+                      {profileQuery.data.user.program.college.campus.slug.toUpperCase()}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-60">
+                    {profileQuery.data.user.program.college.campus.name}
+                  </TooltipContent>
+                </Tooltip>
 
-              <Tooltip delayDuration={250}>
-                <TooltipTrigger>
-                  <Badge variant="outline">
-                    {profileQuery.data.user.program.slug.toUpperCase()}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-60">
-                  {profileQuery.data.user.program.name}
-                </TooltipContent>
-              </Tooltip>
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger>
+                    <Badge variant="outline" className="xs:h-full">
+                      {profileQuery.data.user.program.slug.toUpperCase()}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-60">
+                    {profileQuery.data.user.program.name}
+                  </TooltipContent>
+                </Tooltip>
 
-              <Badge variant="outline">
-                {getOrdinal(profileQuery.data.user.user_number + 1)} user
-              </Badge>
+                <Badge variant="outline" className="xs:h-full">
+                  {getOrdinal(profileQuery.data.user.user_number + 1)} user
+                </Badge>
+              </div>
             </div>
 
             <div className="flex flex-col">
               <div className="flex items-center gap-x-2">
-                <h2 className="truncate  text-2xl font-semibold xs:text-4xl">
+                <h2 className="truncate text-2xl font-semibold xs:text-4xl">
                   {profileQuery.data.user.firstName}{" "}
                   {profileQuery.data.user.lastName}
                 </h2>
@@ -190,17 +192,17 @@ export default function UserPageWrapper({
             </div>
           </div>
 
-          <div className="min-w-max">
+          <div className="relative aspect-square h-20 min-w-max xs:h-32">
             <Image
               src={profileQuery.data.user.imageUrl}
               alt="Image"
-              width={100}
-              height={100}
+              fill
+              sizes="100%"
               className="rounded-full"
             />
           </div>
         </div>
-        <div className="flex items-center gap-x-4 gap-y-2 border-b px-4 pb-4">
+        <div className="flex flex-col items-start gap-x-4 gap-y-2 border-b px-4 pb-4 sm:flex-row sm:items-center">
           <div className="flex items-center gap-x-2">
             {profileQuery.data.isFollower !== undefined ? (
               <div className="flex items-center gap-x-2">

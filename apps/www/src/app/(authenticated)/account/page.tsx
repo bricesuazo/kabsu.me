@@ -1,8 +1,8 @@
 "use client";
 
 import { UserProfile } from "@clerk/nextjs";
-import { useTheme } from "next-themes";
 import { dark } from "@clerk/themes";
+import { useTheme } from "next-themes";
 
 export default function AccountPage() {
   const { theme } = useTheme();

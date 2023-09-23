@@ -1,8 +1,7 @@
-import FooterMenu from "@/components/footer-menu";
+import { redirect } from "next/navigation";
 import Header from "@/components/header";
 import { env } from "@/lib/env.mjs";
 import { auth } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
 
 export default function AuthenticatedLayout({
   children,
@@ -17,7 +16,6 @@ export default function AuthenticatedLayout({
           <Header />
         </div>
         {children}
-        <FooterMenu />
       </main>
     </>
   );

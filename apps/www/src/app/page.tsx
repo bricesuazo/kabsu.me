@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import AuthForm from "@/components/auth-form";
-import FooterMenu from "@/components/footer-menu";
 import Header from "@/components/header";
 import PostForm from "@/components/post-form";
 import PostTypeTab from "@/components/post-type-tab";
@@ -25,7 +24,7 @@ export default function Home({
   const { userId } = auth();
 
   return (
-    <main className="container min-h-screen px-0">
+    <main className="container px-0">
       {userId ? (
         <div className="border-x">
           <div className="sticky top-0 z-50 backdrop-blur-lg">
@@ -34,12 +33,10 @@ export default function Home({
             <PostTypeTab />
           </div>
 
-          <div>
+          <div className="min-h-screen">
             <PostForm hasRedirect />
 
             <Posts tab={!tab ? "following" : tab} />
-
-            <FooterMenu />
           </div>
         </div>
       ) : (
