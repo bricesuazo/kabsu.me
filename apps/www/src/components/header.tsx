@@ -90,7 +90,7 @@ export default function Header() {
             ))}
           </SheetContent>
         </Sheet>
-        <div className="h-9 w-9" />
+        <div className="hidden h-9 w-9 sm:block" />
       </div>
       <Button variant="link" size="icon" asChild className="px-0">
         <Link href="/">
@@ -108,7 +108,9 @@ export default function Header() {
       </Button>
 
       <div className="flex items-center gap-x-2">
-        <Notifications />
+        <div className="hidden sm:block">
+          <Notifications />
+        </div>
 
         {userQuery.isLoading ? (
           <Skeleton className="m-1 h-8 w-8 rounded-full" />
