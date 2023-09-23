@@ -2,13 +2,14 @@ import "@cvsu.me/tailwind-config/globals.css";
 
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import FooterMenu from "@/components/footer-menu";
 import QueryProvider from "@/components/query-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import TrpcProvider from "@/lib/trpc/Provider";
 import { cn } from "@/lib/utils";
-import { ClerkProvider } from "@clerk/nextjs";
+import { auth, ClerkProvider } from "@clerk/nextjs";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -31,6 +32,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: React.PropsWithChildren) {
+  const { userId } = auth();
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
@@ -38,9 +40,10 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
           <QueryProvider>
             <ThemeProvider attribute="class" defaultTheme="light">
               <TooltipProvider>
-                <div>
-                  <TrpcProvider>{children}</TrpcProvider>
-                </div>
+                <TrpcProvider>
+                  {children}
+                  {userId && <FooterMenu />}
+                </TrpcProvider>
               </TooltipProvider>
 
               <Toaster />

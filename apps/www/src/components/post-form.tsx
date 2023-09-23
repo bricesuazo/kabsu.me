@@ -147,7 +147,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                 <FormItem className="flex-1">
                   {/* <FormLabel>Post</FormLabel> */}
                   <FormControl>
-                    <div className="h-full rounded-lg border p-2">
+                    <div className="h-full p-2">
                       {!isFocused ? (
                         <input
                           style={{

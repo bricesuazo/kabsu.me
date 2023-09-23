@@ -291,7 +291,7 @@ export default function AuthForm() {
             About
           </h2>
           <p className="mx-auto max-w-lg text-center">
-            We are a group of passionate computer science students at Cavite
+            We are a group of passionate Computer Science students at Cavite
             State University - Main Campus.
           </p>
 

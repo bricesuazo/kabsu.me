@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CommentDropdown from "@/app/(authenticated)/[username]/[post_id]/comment-dropdown";
-import FooterMenu from "@/components/footer-menu";
 import PostComment from "@/components/post-comment";
 import PostDropdown from "@/components/post-dropdown";
 import { Badge } from "@/components/ui/badge";
@@ -304,8 +303,6 @@ function CommentComponent({ comment }: { comment: Comment }) {
         />
       </div>
       <div>{formatText(fullCommentQuery.data.comment.content)}</div>
-
-      <FooterMenu />
     </div>
   );
 }

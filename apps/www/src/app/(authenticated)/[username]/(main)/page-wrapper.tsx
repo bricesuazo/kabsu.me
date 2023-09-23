@@ -90,74 +90,43 @@ export default function UserPageWrapper({
   }, [openReport]);
 
   return (
-    <div className="space-y-4 border-b">
-      <div className="space-y-4">
+    <div className="min-h-screen space-y-4 border-b">
+      <div>
         <div className="flex w-full flex-row-reverse gap-x-2 gap-y-4 p-4 xs:flex-row">
-          <div className="flex-1 space-y-2 xs:w-px">
-            <div className="flex items-center gap-x-2">
-              <Tooltip delayDuration={250}>
-                {(() => {
-                  if (profileQuery.data.user.type === "student") {
-                    return (
-                      <>
-                        <TooltipTrigger>
-                          <Album />
-                        </TooltipTrigger>
-                        <TooltipContent>Student</TooltipContent>
-                      </>
-                    );
-                  } else if (profileQuery.data.user.type === "alumni") {
-                    return (
-                      <>
-                        <TooltipTrigger>
-                          <GraduationCap />
-                        </TooltipTrigger>
-                        <TooltipContent>Alumni</TooltipContent>
-                      </>
-                    );
-                  } else if (profileQuery.data.user.type === "faculty") {
-                    return (
-                      <>
-                        <TooltipTrigger>
-                          <Briefcase />
-                        </TooltipTrigger>
-                        <TooltipContent>Faculty</TooltipContent>
-                      </>
-                    );
-                  }
-                })()}
-              </Tooltip>
+          <div className="w-px flex-1 space-y-2">
+            <div className="flex items-start gap-2">
+              <div className="flex flex-wrap gap-2">
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger>
+                    <Badge className="xs:h-full">
+                      {profileQuery.data.user.program.college.campus.slug.toUpperCase()}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-60">
+                    {profileQuery.data.user.program.college.campus.name}
+                  </TooltipContent>
+                </Tooltip>
 
-              <Tooltip delayDuration={250}>
-                <TooltipTrigger>
-                  <Badge>
-                    {profileQuery.data.user.program.college.campus.slug.toUpperCase()}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-60">
-                  {profileQuery.data.user.program.college.campus.name}
-                </TooltipContent>
-              </Tooltip>
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger>
+                    <Badge variant="outline" className="xs:h-full">
+                      {profileQuery.data.user.program.slug.toUpperCase()}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-60">
+                    {profileQuery.data.user.program.name}
+                  </TooltipContent>
+                </Tooltip>
 
-              <Tooltip delayDuration={250}>
-                <TooltipTrigger>
-                  <Badge variant="outline">
-                    {profileQuery.data.user.program.slug.toUpperCase()}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-60">
-                  {profileQuery.data.user.program.name}
-                </TooltipContent>
-              </Tooltip>
-
-              <Badge variant="outline">
-                {getOrdinal(profileQuery.data.user.user_number + 1)} user
-              </Badge>
+                <Badge variant="outline" className="xs:h-full">
+                  {getOrdinal(profileQuery.data.user.user_number + 1)} user
+                </Badge>
+              </div>
             </div>
 
             <div className="flex flex-col">
               <div className="flex items-center gap-x-2">
-                <h2 className="truncate  text-2xl font-semibold xs:text-4xl">
+                <h2 className="truncate text-2xl font-semibold xs:text-4xl">
                   {profileQuery.data.user.firstName}{" "}
                   {profileQuery.data.user.lastName}
                 </h2>
@@ -190,17 +159,55 @@ export default function UserPageWrapper({
             </div>
           </div>
 
-          <div className="min-w-max">
+          <div className="relative aspect-square h-20 min-w-max overflow-clip rounded-full xs:h-32">
+            <div className="absolute bottom-0 flex w-full justify-center bg-gradient-to-t from-black to-transparent p-2">
+              <Tooltip delayDuration={250}>
+                {(() => {
+                  if (profileQuery.data.user.type === "student") {
+                    return (
+                      <>
+                        <TooltipTrigger>
+                          <Album className="h-5 w-5 xs:h-8 xs:w-8" />
+                        </TooltipTrigger>
+                        <TooltipContent className="z-50">
+                          Student
+                        </TooltipContent>
+                      </>
+                    );
+                  } else if (profileQuery.data.user.type === "alumni") {
+                    return (
+                      <>
+                        <TooltipTrigger>
+                          <GraduationCap className="h-5 w-5 xs:h-8 xs:w-8" />
+                        </TooltipTrigger>
+                        <TooltipContent className="z-50">Alumni</TooltipContent>
+                      </>
+                    );
+                  } else if (profileQuery.data.user.type === "faculty") {
+                    return (
+                      <>
+                        <TooltipTrigger>
+                          <Briefcase className="h-5 w-5 xs:h-8 xs:w-8" />
+                        </TooltipTrigger>
+                        <TooltipContent className="z-50">
+                          Faculty
+                        </TooltipContent>
+                      </>
+                    );
+                  }
+                })()}
+              </Tooltip>
+            </div>
             <Image
               src={profileQuery.data.user.imageUrl}
               alt="Image"
-              width={100}
-              height={100}
-              className="rounded-full"
+              fill
+              sizes="100%"
+              className="-z-10"
             />
           </div>
         </div>
-        <div className="flex items-center gap-x-4 gap-y-2 border-b px-4 pb-4">
+        <div className="flex flex-col items-start gap-x-4 gap-y-2 border-b px-4 pb-4 sm:flex-row sm:items-center">
           <div className="flex items-center gap-x-2">
             {profileQuery.data.isFollower !== undefined ? (
               <div className="flex items-center gap-x-2">

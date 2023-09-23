@@ -68,7 +68,7 @@ export default function Posts({
             </Fragment>
           ))}
           <div
-            className="flex justify-center p-8 text-center text-sm text-muted-foreground"
+            className="flex justify-center border-b p-8 text-center text-sm text-muted-foreground"
             ref={ref}
           >
             {posts.isFetchingNextPage && posts.hasNextPage ? (

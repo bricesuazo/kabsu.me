@@ -50,7 +50,7 @@ export default function Header() {
   const userQuery = api.auth.getCurrentUser.useQuery();
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between gap-x-2 bg-background/70 p-4 backdrop-blur-lg">
+    <header className="sticky top-0 z-50 flex items-center justify-between gap-x-2 p-4 backdrop-blur-lg">
       <div className="flex items-center gap-x-2">
         <Sheet>
           <SheetTrigger asChild>
@@ -90,7 +90,7 @@ export default function Header() {
             ))}
           </SheetContent>
         </Sheet>
-        <div className="h-9 w-9" />
+        <div className="hidden h-9 w-9 sm:block" />
       </div>
       <Button variant="link" size="icon" asChild className="px-0">
         <Link href="/">
@@ -108,7 +108,9 @@ export default function Header() {
       </Button>
 
       <div className="flex items-center gap-x-2">
-        <Notifications />
+        <div className="hidden sm:block">
+          <Notifications />
+        </div>
 
         {userQuery.isLoading ? (
           <Skeleton className="m-1 h-8 w-8 rounded-full" />
