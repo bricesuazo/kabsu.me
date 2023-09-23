@@ -1,11 +1,15 @@
 import "@cvsu.me/tailwind-config/globals.css";
 
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { cn } from "@/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
 
-const inter = Inter({ subsets: ["latin"] });
+const font = Poppins({
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "Admin - CvSU.me",
@@ -22,7 +26,7 @@ export default function RootLayout({
       publishableKey={process.env.NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY}
     >
       <html lang="en">
-        <body className={inter.className}>
+        <body className={cn(font.className)}>
           <ThemeProvider attribute="class">{children}</ThemeProvider>
         </body>
       </html>
