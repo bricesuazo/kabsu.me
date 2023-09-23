@@ -104,7 +104,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                     alt="Image"
                     width={64}
                     height={64}
-                    className="rounded-full object-cover"
+                    className="aspect-square rounded-full object-cover"
                   />
                 </div>
                 <div className="flex flex-1 flex-col">

@@ -101,7 +101,7 @@ export default function Header() {
               width={40}
               height={40}
               priority
-              className="object-contain"
+              className="object-cover"
             />
           </div>
         </Link>
@@ -128,7 +128,7 @@ export default function Header() {
                       alt="Image"
                       fill
                       sizes="100%"
-                      className="rounded-full"
+                      className="rounded-full object-cover"
                     />
                   </div>
                 </MenubarTrigger>

@@ -200,10 +200,10 @@ export default function UserPageWrapper({
             </div>
             <Image
               src={profileQuery.data.user.imageUrl}
-              alt="Image"
+              alt={`${profileQuery.data.user.firstName} ${profileQuery.data.user.lastName} profile picture`}
               fill
               sizes="100%"
-              className="-z-10"
+              className="-z-10 object-cover"
             />
           </div>
         </div>
