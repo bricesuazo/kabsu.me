@@ -44,9 +44,7 @@ export default async function FollowersPage({
   const followersUsers =
     followers.length !== 0
       ? await clerkClient.users.getUserList({
-          userId: followers
-            .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
-            .map((follower) => follower.follower_id),
+          userId: followers.map((follower) => follower.follower_id),
         })
       : [];
 
@@ -56,17 +54,25 @@ export default async function FollowersPage({
       {followersUsers.length === 0 ? (
         <p className="text-center">No followers yet.</p>
       ) : (
-        followersUsers.map((follower) => (
-          <UserFollows
-            key={follower.id}
-            user={follower}
-            isFollower={
-              myFollowees.filter(
-                (followee) => followee.follower_id === follower.id,
-              ).length !== 0
-            }
-          />
-        ))
+        followers
+          .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
+          .map((follower) => {
+            const followerUser = followersUsers.find(
+              (user) => user.id === follower.follower_id,
+            );
+
+            if (!followerUser) return null;
+
+            return (
+              <UserFollows
+                key={followerUser.id}
+                user={followerUser}
+                isFollower={myFollowees.some(
+                  (followee) => followee.followee_id === followerUser.id,
+                )}
+              />
+            );
+          })
       )}
     </div>
   );

@@ -1,8 +1,9 @@
-import UserFollows from "@/components/user-follows";
-import { db } from "@cvsu.me/db";
-import { auth, clerkClient } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import UserFollows from "@/components/user-follows";
+import { auth, clerkClient } from "@clerk/nextjs";
+
+import { db } from "@cvsu.me/db";
 
 export function generateMetadata({
   params: { username },
@@ -54,19 +55,25 @@ export default async function FollowingPage({
         {followeesUsers.length === 0 ? (
           <p className="text-center">No following yet.</p>
         ) : (
-          followeesUsers.map((followee) => {
-            return (
-              <UserFollows
-                key={followee.id}
-                user={followee}
-                isFollower={
-                  myFollowers.filter(
-                    (myFollower) => myFollower.followee_id === followee.id,
-                  ).length !== 0
-                }
-              />
-            );
-          })
+          followees
+            .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
+            .map((followee) => {
+              const followeeUser = followeesUsers.find(
+                (user) => user.id === followee.follower_id,
+              );
+
+              if (!followeeUser) return null;
+
+              return (
+                <UserFollows
+                  key={followeeUser.id}
+                  user={followeeUser}
+                  isFollower={myFollowers.some(
+                    (follower) => follower.follower_id === followeeUser.id,
+                  )}
+                />
+              );
+            })
         )}
       </div>
     </div>
