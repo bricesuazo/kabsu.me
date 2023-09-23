@@ -76,7 +76,7 @@ export default function EditProfile({
       .max(64, { message: "Link must be less than 64 characters" })
       .transform((value) => {
         if (value === "") return undefined;
-        return value.startsWith("http://") ? value : `https://${value}`;
+        return value.match("http") ? value : `https://${value}`;
       })
       .optional(),
   });
