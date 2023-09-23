@@ -95,39 +95,6 @@ export default function UserPageWrapper({
         <div className="flex w-full flex-row-reverse gap-x-2 gap-y-4 p-4 xs:flex-row">
           <div className="w-px flex-1 space-y-2">
             <div className="flex items-start gap-2">
-              <Tooltip delayDuration={250}>
-                {(() => {
-                  if (profileQuery.data.user.type === "student") {
-                    return (
-                      <>
-                        <TooltipTrigger>
-                          <Album />
-                        </TooltipTrigger>
-                        <TooltipContent>Student</TooltipContent>
-                      </>
-                    );
-                  } else if (profileQuery.data.user.type === "alumni") {
-                    return (
-                      <>
-                        <TooltipTrigger>
-                          <GraduationCap />
-                        </TooltipTrigger>
-                        <TooltipContent>Alumni</TooltipContent>
-                      </>
-                    );
-                  } else if (profileQuery.data.user.type === "faculty") {
-                    return (
-                      <>
-                        <TooltipTrigger>
-                          <Briefcase />
-                        </TooltipTrigger>
-                        <TooltipContent>Faculty</TooltipContent>
-                      </>
-                    );
-                  }
-                })()}
-              </Tooltip>
-
               <div className="flex flex-wrap gap-2">
                 <Tooltip delayDuration={250}>
                   <TooltipTrigger>
@@ -192,13 +159,51 @@ export default function UserPageWrapper({
             </div>
           </div>
 
-          <div className="relative aspect-square h-20 min-w-max xs:h-32">
+          <div className="relative aspect-square h-20 min-w-max overflow-clip rounded-full xs:h-32">
+            <div className="absolute bottom-0 flex w-full justify-center bg-gradient-to-t from-black to-transparent p-2">
+              <Tooltip delayDuration={250}>
+                {(() => {
+                  if (profileQuery.data.user.type === "student") {
+                    return (
+                      <>
+                        <TooltipTrigger>
+                          <Album className="h-5 w-5 xs:h-8 xs:w-8" />
+                        </TooltipTrigger>
+                        <TooltipContent className="z-50">
+                          Student
+                        </TooltipContent>
+                      </>
+                    );
+                  } else if (profileQuery.data.user.type === "alumni") {
+                    return (
+                      <>
+                        <TooltipTrigger>
+                          <GraduationCap className="h-5 w-5 xs:h-8 xs:w-8" />
+                        </TooltipTrigger>
+                        <TooltipContent className="z-50">Alumni</TooltipContent>
+                      </>
+                    );
+                  } else if (profileQuery.data.user.type === "faculty") {
+                    return (
+                      <>
+                        <TooltipTrigger>
+                          <Briefcase className="h-5 w-5 xs:h-8 xs:w-8" />
+                        </TooltipTrigger>
+                        <TooltipContent className="z-50">
+                          Faculty
+                        </TooltipContent>
+                      </>
+                    );
+                  }
+                })()}
+              </Tooltip>
+            </div>
             <Image
               src={profileQuery.data.user.imageUrl}
               alt="Image"
               fill
               sizes="100%"
-              className="rounded-full"
+              className="-z-10"
             />
           </div>
         </div>
