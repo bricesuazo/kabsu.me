@@ -84,10 +84,9 @@ export const usersRouter = router({
 
       if (ctx.session.user.id !== input.user_id) {
         await ctx.db.insert(notifications).values({
+          from_id: ctx.session.user.id,
           to_id: input.user_id,
           type: "follow",
-          from_id: ctx.session.user.id,
-          link: user.username ?? "",
         });
       }
     }),

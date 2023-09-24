@@ -623,7 +623,7 @@ export const postsRouter = router({
         .delete(notifications)
         .where(
           and(
-            eq(notifications.link, post.id),
+            eq(notifications.content_id, post.id),
             or(
               eq(notifications.type, "like"),
               eq(notifications.type, "comment"),
@@ -735,7 +735,7 @@ export const postsRouter = router({
           to_id: post.user_id,
           type: "like",
           from_id: ctx.session.user.id,
-          link: input.post_id,
+          content_id: post.id,
         });
       }
     }),
@@ -778,7 +778,7 @@ export const postsRouter = router({
               eq(notifications.to_id, post.user_id),
               eq(notifications.from_id, ctx.session.user.id),
               eq(notifications.type, "like"),
-              eq(notifications.link, input.post_id),
+              eq(notifications.content_id, input.post_id),
             ),
           );
       }

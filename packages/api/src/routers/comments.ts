@@ -60,7 +60,7 @@ export const commentsRouter = router({
           to_id: post.user_id,
           type: "comment",
           from_id: ctx.session.user.id,
-          link: input.post_id,
+          content_id: input.post_id,
         });
       }
     }),
