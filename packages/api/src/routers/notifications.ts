@@ -19,14 +19,13 @@ export const notificationsRouter = router({
         limit: !input.all ? 8 : undefined,
       });
 
+      const postsToFetch = notifications
+        .filter((notification) => notification.type !== "follow")
+        .map((notification) => notification.content_id!);
+
       const posts = await ctx.db.query.posts.findMany({
         where: (post, { inArray }) =>
-          inArray(
-            post.id,
-            notifications
-              .filter((notification) => notification.type !== "follow")
-              .map((notification) => notification.content_id!),
-          ),
+          inArray(post.id, !postsToFetch.length ? [""] : postsToFetch),
       });
 
       const users = await ctx.clerk.users.getUserList({
