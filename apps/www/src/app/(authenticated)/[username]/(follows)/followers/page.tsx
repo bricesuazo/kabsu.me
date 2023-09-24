@@ -45,6 +45,7 @@ export default async function FollowersPage({
     followers.length !== 0
       ? await clerkClient.users.getUserList({
           userId: followers.map((follower) => follower.follower_id),
+          limit: followers.length,
         })
       : [];
 
