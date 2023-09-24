@@ -68,9 +68,11 @@ export default async function FollowersPage({
               <UserFollows
                 key={followerUser.id}
                 user={followerUser}
-                isFollower={myFollowees.some(
-                  (followee) => followee.followee_id === followerUser.id,
-                )}
+                isFollower={
+                  myFollowees.some(
+                    (followee) => followee.follower_id === followerUser.id,
+                  ) ?? false
+                }
               />
             );
           })
