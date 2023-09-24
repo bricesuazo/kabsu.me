@@ -111,15 +111,10 @@ export default function Notifications() {
                 <Link
                   key={notification.id}
                   href={(() => {
-                    switch (notification.type) {
-                      case "follow":
-                        return `/${notification.from.username}`;
-                      case "like":
-                        return `/${notification.from.username}/${notification.link}`;
-                      case "comment":
-                        return `/${notification.from.username}//${notification.link}`;
-                      default:
-                        return "";
+                    if (notification.type === "follow") {
+                      return `/${notification.from.username}`;
+                    } else {
+                      return `/${notification.from.username}/${notification.content.id}`;
                     }
                   })()}
                   onClick={(e) => {
