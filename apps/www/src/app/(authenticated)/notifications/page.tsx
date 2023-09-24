@@ -104,17 +104,17 @@ export default function NotificationPage() {
                 className="flex items-center justify-between gap-x-2 rounded p-2 hover:bg-muted"
               >
                 <div className="flex gap-x-2">
-                  <Link href={`/${notification.from.username}`}>
-                    <div className="relative h-10 w-10">
-                      <Image
-                        src={notification.from.imageUrl}
-                        alt="Image"
-                        fill
-                        sizes="100%"
-                        className="rounded-full"
-                      />
-                    </div>
-                  </Link>
+                  {/* <Link href={`/${notification.from.username}`}> */}
+                  <div className="relative h-10 w-10">
+                    <Image
+                      src={notification.from.imageUrl}
+                      alt="Image"
+                      fill
+                      sizes="100%"
+                      className="rounded-full"
+                    />
+                  </div>
+                  {/* </Link> */}
                   <div className="flex flex-col gap-1">
                     <p className="line-clamp-2 text-sm font-medium">
                       @{notification.from.username}{" "}
