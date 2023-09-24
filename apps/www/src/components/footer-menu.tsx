@@ -29,8 +29,8 @@ export default function FooterMenu() {
           asChild
           className="flex h-12 w-12 items-center justify-center rounded-full bg-primary p-4"
         >
-          <Link href="/new" className="text-2xl text-foreground">
-            +
+          <Link href="/new">
+            <p className="text-2xl text-foreground">+</p>
           </Link>
         </Button>
       </div>
@@ -40,17 +40,16 @@ export default function FooterMenu() {
       </div>
 
       <div className="flex w-full justify-center">
-        {/* <Button
+        <Button
           size="icon"
           variant="ghost"
           className="relative h-9 w-9 rounded-full"
           asChild
-          disabled
         >
-          <Link href="/notifications" className="text-center text-xs "> */}
-        <Bell size="1.25rem" className="text-muted" />
-        {/* </Link> */}
-        {/* </Button> */}
+          <Link href="/notifications" className="text-center text-xs">
+            <Bell size="1.25rem" />
+          </Link>
+        </Button>
       </div>
     </div>
   );

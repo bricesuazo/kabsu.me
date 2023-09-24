@@ -167,10 +167,10 @@ export default function Notifications() {
             })
           )}
         </ScrollArea>
-        <Button variant="link" className="w-full" size="sm" disabled>
-          {/* <Link href="/notifications" className="text-center text-xs"> */}
-          Show all notifications
-          {/* </Link> */}
+        <Button asChild variant="link" className="w-full" size="sm">
+          <Link href="/notifications" className="text-center text-xs">
+            Show all notifications
+          </Link>
         </Button>
       </PopoverContent>
     </Popover>

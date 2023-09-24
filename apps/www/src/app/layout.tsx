@@ -30,6 +30,7 @@ export const metadata: Metadata = {
     name: "Brice Suazo",
     url: "https://bricesuazo.com",
   },
+  metadataBase: new URL("https://cvsu.me/"),
 };
 
 export default function RootLayout({ children }: React.PropsWithChildren) {
