@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -90,7 +91,7 @@ export default function UserPageWrapper({
   }, [openReport]);
 
   return (
-    <div className="min-h-screen space-y-4 border-b">
+    <div className="relative min-h-screen space-y-4 border-b">
       <div>
         <div className="flex w-full flex-row-reverse gap-x-2 gap-y-4 p-4 xs:flex-row">
           <div className="w-px flex-1 space-y-2">
@@ -159,54 +160,75 @@ export default function UserPageWrapper({
             </div>
           </div>
 
-          <div className="relative aspect-square h-20 min-w-max overflow-clip rounded-full xs:h-32">
-            <div className="absolute bottom-0 flex w-full justify-center bg-gradient-to-t from-black to-transparent p-2">
-              <Tooltip delayDuration={250}>
-                {(() => {
-                  if (profileQuery.data.user.type === "student") {
-                    return (
-                      <>
-                        <TooltipTrigger>
-                          <Album className="h-5 w-5 text-white xs:h-8 xs:w-8" />
-                        </TooltipTrigger>
-                        <TooltipContent className="z-50">
-                          Student
-                        </TooltipContent>
-                      </>
-                    );
-                  } else if (profileQuery.data.user.type === "alumni") {
-                    return (
-                      <>
-                        <TooltipTrigger>
-                          <GraduationCap className="h-5 w-5 text-white xs:h-8 xs:w-8" />
-                        </TooltipTrigger>
-                        <TooltipContent className="z-50">Alumni</TooltipContent>
-                      </>
-                    );
-                  } else if (profileQuery.data.user.type === "faculty") {
-                    return (
-                      <>
-                        <TooltipTrigger>
-                          <Briefcase className="h-5 w-5 text-white xs:h-8 xs:w-8" />
-                        </TooltipTrigger>
-                        <TooltipContent className="z-50">
-                          Faculty
-                        </TooltipContent>
-                      </>
-                    );
-                  }
-                })()}
-              </Tooltip>
-            </div>
-            <Image
-              src={profileQuery.data.user.imageUrl}
-              alt={`${profileQuery.data.user.firstName} ${profileQuery.data.user.lastName} profile picture`}
-              fill
-              sizes="100%"
-              className="-z-10 object-cover"
-            />
-          </div>
+          <Dialog>
+            <DialogTrigger asChild className="hover:cursor-pointer">
+              <div className="relative aspect-square h-20 min-w-max overflow-clip rounded-full xs:h-32">
+                <div className="absolute bottom-0 flex w-full justify-center bg-gradient-to-t from-black to-transparent p-2">
+                  <Tooltip delayDuration={250}>
+                    {(() => {
+                      if (profileQuery.data.user.type === "student") {
+                        return (
+                          <>
+                            <TooltipTrigger>
+                              <Album className="h-5 w-5 text-white xs:h-8 xs:w-8" />
+                            </TooltipTrigger>
+                            <TooltipContent className="z-50">
+                              Student
+                            </TooltipContent>
+                          </>
+                        );
+                      } else if (profileQuery.data.user.type === "alumni") {
+                        return (
+                          <>
+                            <TooltipTrigger>
+                              <GraduationCap className="h-5 w-5 text-white xs:h-8 xs:w-8" />
+                            </TooltipTrigger>
+                            <TooltipContent className="z-50">
+                              Alumni
+                            </TooltipContent>
+                          </>
+                        );
+                      } else if (profileQuery.data.user.type === "faculty") {
+                        return (
+                          <>
+                            <TooltipTrigger>
+                              <Briefcase className="h-5 w-5 text-white xs:h-8 xs:w-8" />
+                            </TooltipTrigger>
+                            <TooltipContent className="z-50">
+                              Faculty
+                            </TooltipContent>
+                          </>
+                        );
+                      }
+                    })()}
+                  </Tooltip>
+                </div>
+
+                <Image
+                  src={profileQuery.data.user.imageUrl}
+                  alt={`${profileQuery.data.user.firstName} ${profileQuery.data.user.lastName} profile picture`}
+                  fill
+                  sizes="100%"
+                  className="-z-10 object-cover"
+                />
+              </div>
+            </DialogTrigger>
+
+            <DialogContent className="border-transparent bg-transparent">
+              <div className="p-4">
+                <Image
+                  src={profileQuery.data.user.imageUrl}
+                  alt={`${profileQuery.data.user.firstName} ${profileQuery.data.user.lastName} profile picture`}
+                  width={500}
+                  height={500}
+                  sizes="100%"
+                  className="rounded-lg"
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
+
         <div className="flex flex-col items-start gap-x-4 gap-y-2 border-b px-4 pb-4 sm:flex-row sm:items-center">
           <div className="flex items-center gap-x-2">
             {profileQuery.data.isFollower !== undefined ? (
