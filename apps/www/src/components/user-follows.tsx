@@ -28,7 +28,7 @@ export default function UserFollows({
             />
           ) : (
             <Image
-              src="/logo.svg"
+              src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.username}`}
               alt="Image"
               width={40}
               height={40}

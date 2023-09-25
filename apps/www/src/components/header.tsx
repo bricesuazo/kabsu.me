@@ -59,7 +59,7 @@ export default function Header() {
   const [loadingSignout, setLoadingSignout] = useState(false);
   const [open, setOpen] = useState("");
   const [type, setType] = useState<"bug" | "feature">("bug");
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const userQuery = api.auth.getCurrentUser.useQuery();
 
   const [openFeedbackForm, setOpenFeedbackForm] = useState(false);
@@ -136,7 +136,7 @@ export default function Header() {
             <Notifications />
           </div>
 
-          {userQuery.isLoading ? (
+          {!isLoaded || userQuery.isLoading ? (
             <Skeleton className="m-1 h-8 w-8 rounded-full" />
           ) : (
             userQuery.data && (
@@ -148,7 +148,11 @@ export default function Header() {
                   >
                     <div className="relative h-8 w-8">
                       <Image
-                        src={userQuery.data.imageUrl}
+                        src={
+                          user?.hasImage
+                            ? userQuery.data.imageUrl
+                            : `https://api.dicebear.com/7.x/initials/svg?seed=${userQuery.data.username}`
+                        }
                         alt="Image"
                         fill
                         sizes="100%"

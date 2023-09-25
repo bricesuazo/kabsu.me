@@ -72,7 +72,7 @@ export default function SearchPage() {
                       />
                     ) : (
                       <Image
-                        src="/logo.svg"
+                        src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.username}`}
                         alt=""
                         width={40}
                         height={40}

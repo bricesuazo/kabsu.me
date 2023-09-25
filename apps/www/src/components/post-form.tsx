@@ -124,7 +124,11 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
           className="relative aspect-square h-8 w-8 min-w-max xs:h-10 xs:w-10"
         >
           <Image
-            src={user.imageUrl}
+            src={
+              user?.hasImage
+                ? user.imageUrl
+                : `https://api.dicebear.com/7.x/initials/svg?seed=${user.username}`
+            }
             alt="Profile picture"
             fill
             sizes="100%"

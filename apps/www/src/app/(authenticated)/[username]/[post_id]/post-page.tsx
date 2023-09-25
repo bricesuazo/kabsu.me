@@ -110,7 +110,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                     />
                   ) : (
                     <Image
-                      src="/logo.svg"
+                      src={`https://api.dicebear.com/7.x/initials/svg?seed=${postQuery.data.post.user.username}`}
                       alt="Logo"
                       width={64}
                       height={64}
@@ -270,7 +270,7 @@ function CommentComponent({ comment }: { comment: Comment }) {
                 />
               ) : (
                 <Image
-                  src="/logo.svg"
+                  src={`https://api.dicebear.com/7.x/initials/svg?seed=${fullCommentQuery.data.comment.user.username}`}
                   alt=""
                   width={40}
                   height={40}

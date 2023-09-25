@@ -224,7 +224,7 @@ export default function PostComment({
                           />
                         ) : (
                           <Image
-                            src="/logo.svg"
+                            src={`https://api.dicebear.com/7.x/initials/svg?seed=${like.user.username}`}
                             alt="Image"
                             width={40}
                             height={40}
