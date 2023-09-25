@@ -51,13 +51,7 @@ export default function PostsWrapper({ user }: { user: User }) {
         postsQuery.data.pages.map((page, i) => (
           <Fragment key={i}>
             {page.posts.map((post) => (
-              <Post
-                key={post.id}
-                post={post}
-                // userId={page.userId}
-                // isMyPost={page.userId === post.user.id}
-                // data-superjson
-              />
+              <Post key={post.id} post={post} />
             ))}
           </Fragment>
         ))

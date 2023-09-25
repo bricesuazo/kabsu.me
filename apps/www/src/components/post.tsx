@@ -1,6 +1,6 @@
 "use client";
 
-import { experimental_useOptimistic as useOptimistic } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -31,7 +31,9 @@ export default function Post({ post }: { post: Post }) {
   const getPostQuery = api.posts.getPost.useQuery({ post_id: post.id });
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [likes, setLikes] = useOptimistic<Like[]>([]);
+  const [likes, setLikes] = useState<Like[]>(
+    getPostQuery.data?.post.likes ?? [],
+  );
   const unlikeMutation = api.posts.unlike.useMutation({
     onMutate: ({ post_id, userId }) => {
       setLikes(
@@ -39,11 +41,6 @@ export default function Post({ post }: { post: Post }) {
           (like) => like.post_id !== post_id && like.user_id !== userId,
         ),
       );
-      // await context.posts.getPosts.invalidate({
-      //   type:
-      //     ((searchParams.get("tab") as (typeof POST_TYPE)[number]) || null) ??
-      //     "following",
-      // });
     },
   });
   const likeMutation = api.posts.like.useMutation({
@@ -57,13 +54,14 @@ export default function Post({ post }: { post: Post }) {
           created_at: new Date(),
         },
       ]);
-      // await context.posts.getPosts.invalidate({
-      //   type:
-      //     ((searchParams.get("tab") as (typeof POST_TYPE)[number]) || null) ??
-      //     "following",
-      // });
     },
   });
+
+  useEffect(() => {
+    if (getPostQuery.data) {
+      setLikes(getPostQuery.data.post.likes);
+    }
+  }, [getPostQuery.data]);
 
   if (!getPostQuery.data || getPostQuery.isLoading)
     return <PostSkeletonNoRandom />;
@@ -223,8 +221,10 @@ export default function Post({ post }: { post: Post }) {
             <Heart
               className={cn(
                 "h-4 w-4",
-                getPostQuery.data.post.likes.some(
-                  (like) => like.user_id === getPostQuery.data.userId,
+                likes.some(
+                  (like) =>
+                    like.user_id === getPostQuery.data.userId &&
+                    like.post_id === post.id,
                 ) && "fill-primary text-primary",
               )}
             />
@@ -246,11 +246,9 @@ export default function Post({ post }: { post: Post }) {
 
         <div className="flex items-center gap-x-4">
           <p className="text-sm text-muted-foreground">
-            {`${getPostQuery.data.post.likes.length} like${
-              getPostQuery.data.post.likes.length > 1 ? "s" : ""
-            } — ${getPostQuery.data.post.comments.length} comment${
-              getPostQuery.data.post.comments.length > 1 ? "s" : ""
-            }`}
+            {`${likes.length} like${likes.length > 1 ? "s" : ""} — ${
+              getPostQuery.data.post.comments.length
+            } comment${getPostQuery.data.post.comments.length > 1 ? "s" : ""}`}
           </p>
           <Badge variant="outline" className="flex items-center gap-x-1">
             <p className="hidden xs:block">Privacy:</p>
