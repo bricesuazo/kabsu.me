@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
@@ -32,8 +31,8 @@ export default function NotificationPage() {
       },
     });
   return (
-    <>
-      <div className="flex items-center justify-between p-4">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between px-4 pt-4">
         <h3 className="flex items-center gap-x-2 p-2 font-semibold">
           <Bell size="1rem" />
           Notifications
@@ -65,14 +64,14 @@ export default function NotificationPage() {
           <TooltipContent side="bottom">Mark all as read</TooltipContent>
         </Tooltip>
       </div>
-      <ScrollArea className="h-full min-h-full p-4">
+      <div className="h-full min-h-full px-4">
         {getAllNotificationsQuery.isLoading ||
         !getAllNotificationsQuery.data ? (
           [...(Array(10) as number[])].map((_, i) => (
             <div key={i} className="flex items-center gap-x-2 p-2">
-              <Skeleton className="h-8 w-8 rounded-full" />
+              <Skeleton className="h-10 w-10 rounded-full" />
               <div className="flex flex-col gap-2">
-                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-40" />
                 <Skeleton className="h-3 w-16" />
               </div>
             </div>
@@ -139,7 +138,7 @@ export default function NotificationPage() {
             ))}
           </>
         )}
-      </ScrollArea>
-    </>
+      </div>
+    </div>
   );
 }

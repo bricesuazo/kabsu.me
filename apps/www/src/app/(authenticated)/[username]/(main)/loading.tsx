@@ -8,8 +8,7 @@ export default function UserLoading() {
         <div className="flex w-full flex-col-reverse gap-x-8 gap-y-4 xs:flex-row">
           <div className="flex-1 space-y-2 xs:w-px">
             <div className="flex items-center gap-x-2">
-              <Skeleton className="h-6 w-6" />
-              <Skeleton className="h-5 w-14 rounded-full bg-primary" />
+              <Skeleton className="h-5 w-14 rounded-full border border-transparent bg-primary" />
               <Skeleton className="h-5 w-14 rounded-full border bg-transparent" />
               <Skeleton className="h-5 w-14 rounded-full border bg-transparent" />
             </div>

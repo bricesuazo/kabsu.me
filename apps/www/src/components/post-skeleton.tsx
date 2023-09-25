@@ -8,13 +8,17 @@ export function PostSkeletonNoRandom() {
           <Skeleton className="h-10 w-10 rounded-full" />
         </div>
 
-        <div className="flex-1">
+        <div className="flex-1 space-y-2">
           <div className="flex items-center gap-x-2">
             <Skeleton className="h-4 w-1/4" />
             <Skeleton className="hidden h-1 w-1 sm:block" />
-            <Skeleton className="hidden h-3 w-32 sm:block" />
+            <Skeleton className="hidden h-3 w-10 sm:block" />
           </div>
-          <Skeleton className="mt-2 h-3" />
+          <div className="flex items-center gap-x-2">
+            <Skeleton className="h-6 w-6" />
+            <Skeleton className="h-5 w-14 rounded-full bg-primary" />
+            <Skeleton className="h-5 w-14 rounded-full border bg-transparent" />
+          </div>
         </div>
       </div>
       <div className="space-y-2">
@@ -30,10 +34,13 @@ export function PostSkeletonNoRandom() {
           <Skeleton className="h-8 w-8" />
         </div>
 
-        <div className="flex items-center gap-x-2">
-          <Skeleton className="h-4 w-14" />
-          <Skeleton className="h-1 w-4" />
-          <Skeleton className="h-4 w-20" />
+        <div className="flex items-center gap-x-4">
+          <div className="flex items-center gap-x-1">
+            <Skeleton className="h-4 w-14" />
+            <Skeleton className="h-1 w-4" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+          <Skeleton className="h-4 w-24" />
         </div>
       </div>
     </div>

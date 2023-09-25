@@ -83,7 +83,9 @@ export default function Post({ post }: { post: Post }) {
     <div
       onClick={(e) => {
         e.stopPropagation();
-        router.push(`/${getPostQuery.data.post.user.username}/${post.id}`);
+        router.push(`/${getPostQuery.data.post.user.username}/${post.id}`, {
+          scroll: true,
+        });
       }}
       className="cursor-pointer space-y-2 border-b p-4"
     >

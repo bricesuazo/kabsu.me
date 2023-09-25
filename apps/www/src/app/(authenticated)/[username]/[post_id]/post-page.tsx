@@ -42,17 +42,15 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                 <Skeleton className="h-16 w-16 rounded-full" />
               </div>
               <div className="flex flex-1 flex-col gap-2">
-                <div className="group flex items-center gap-x-2">
-                  <Skeleton className="h-4 w-36" />
-                  <Skeleton className="h-5 w-5" />
+                <div className="group flex items-center gap-x-1">
+                  <Skeleton className="h-6 w-6" />
+                  <Skeleton className="h-4 w-32" />
                   <Skeleton className="h-1 w-1" />
-                  <div className="hidden sm:block">
-                    <Skeleton className="h-4 w-20" />
-                  </div>
+
+                  <Skeleton className="h-3 w-10" />
                 </div>
                 <div className="flex items-center gap-x-1">
-                  <Skeleton className="h-5 w-16" />
-                  <Skeleton className="h-5 w-5" />
+                  <Skeleton className="h-4 w-40" />
                   <Skeleton className="h-5 w-12 rounded-full bg-primary" />
                   <Skeleton className="h-5 w-12 rounded-full border" />
                 </div>
@@ -73,10 +71,13 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
               <Skeleton className="h-8 w-8" />
             </div>
 
-            <div className="flex items-center gap-x-2">
-              <Skeleton className="h-4 w-14" />
-              <Skeleton className="h-1 w-4" />
-              <Skeleton className="h-4 w-20" />
+            <div className="flex items-center gap-x-4">
+              <div className="flex items-center gap-x-1">
+                <Skeleton className="h-4 w-14" />
+                <Skeleton className="h-1 w-4" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+              <Skeleton className="h-4 w-24" />
             </div>
           </div>
 
