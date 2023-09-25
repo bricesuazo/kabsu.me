@@ -5,8 +5,9 @@ import { Icons } from "@/components/icons";
 import Post from "@/components/post";
 import { PostSkeletonNoRandom } from "@/components/post-skeleton";
 import { api } from "@/lib/trpc/client";
-import type { User } from "@clerk/nextjs/server";
 import { useInView } from "react-intersection-observer";
+
+import type { User } from "@cvsu.me/db/schema";
 
 export default function PostsWrapper({ user }: { user: User }) {
   const { ref, inView } = useInView();

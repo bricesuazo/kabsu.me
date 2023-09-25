@@ -100,13 +100,23 @@ export default function NotificationPage() {
                 <div className="flex gap-x-2">
                   {/* <Link href={`/${notification.from.username}`}> */}
                   <div className="relative h-10 w-10">
-                    <Image
-                      src={notification.from.imageUrl}
-                      alt="Image"
-                      fill
-                      sizes="100%"
-                      className="rounded-full"
-                    />
+                    {notification.from.profile_picture_url ? (
+                      <Image
+                        src={notification.from.profile_picture_url}
+                        alt="Image"
+                        fill
+                        sizes="100%"
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <Image
+                        src="/logo.svg"
+                        alt="Image"
+                        fill
+                        sizes="100%"
+                        className="rounded-full"
+                      />
+                    )}
                   </div>
                   {/* </Link> */}
                   <div className="flex flex-col gap-1">

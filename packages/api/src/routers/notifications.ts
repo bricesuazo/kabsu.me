@@ -17,6 +17,10 @@ export const notificationsRouter = router({
           ),
         orderBy: (notification, { desc }) => desc(notification.created_at),
         limit: !input.all ? 8 : undefined,
+        with: {
+          from: true,
+          to: true,
+        },
       });
 
       const postsToFetch = notifications

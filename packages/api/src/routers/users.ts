@@ -241,25 +241,25 @@ export const usersRouter = router({
   search: protectedProcedure
     .input(z.object({ query: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      // TODO: Implement search
-      // const users = await ctx.clerk.users.getUserList({
-      //   query: input.query,
-      //   orderBy: "created_at",
-      // });
+      const users = await ctx.db.query.users.findMany({
+        where: (user, { or, and, eq }) =>
+          or(
+            and(
+              eq(user.first_name, input.query),
+              eq(user.last_name, input.query),
+              eq(user.username, input.query),
+            ),
+          ),
+      });
 
-      // const usersFromDB = await ctx.db.query.users.findMany({
-      //   where: (user, { inArray }) =>
-
-      // });
-
-      // return users.map((user) => ({
-      //   id: user.id,
-      //   username: user.username,
-      //   firstName: user.firstName,
-      //   lastName: user.lastName,
-      //   imageUrl: user.imageUrl,
-      //   isVerified: !!usersFromDB.find((u) => u.id === user.id)?.verified_at,
-      // }));
+      return users.map((user) => ({
+        id: user.id,
+        username: user.username,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        imageUrl: user.profile_picture_url,
+        isVerified: !!user.verified_at,
+      }));
       return [];
     }),
   getTotalUsers: publicProcedure.query(

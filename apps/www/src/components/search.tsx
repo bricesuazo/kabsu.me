@@ -84,13 +84,23 @@ export default function Search() {
                     onClick={() => setOpen(false)}
                   >
                     <div className="min-w-max">
-                      <Image
-                        src={user.imageUrl}
-                        alt=""
-                        width={40}
-                        height={40}
-                        className="aspect-square rounded-full object-cover"
-                      />
+                      {user.imageUrl ? (
+                        <Image
+                          src={user.imageUrl}
+                          alt=""
+                          width={40}
+                          height={40}
+                          className="aspect-square rounded-full object-cover"
+                        />
+                      ) : (
+                        <Image
+                          src="/logo.svg"
+                          alt=""
+                          width={40}
+                          height={40}
+                          className="aspect-square rounded-full object-cover"
+                        />
+                      )}
                     </div>
                     <div>
                       <div className="flex items-center gap-x-1">

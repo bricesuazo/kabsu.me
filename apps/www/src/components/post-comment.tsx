@@ -214,17 +214,27 @@ export default function PostComment({
                       className="flex items-center gap-x-2 rounded p-2 hover:bg-muted"
                     >
                       <div className="min-w-max">
-                        <Image
-                          src={like.user.imageUrl}
-                          alt="Image"
-                          width={40}
-                          height={40}
-                          className="aspect-square rounded-full"
-                        />
+                        {like.user.profile_picture_url ? (
+                          <Image
+                            src={like.user.profile_picture_url}
+                            alt="Image"
+                            width={40}
+                            height={40}
+                            className="aspect-square rounded-full"
+                          />
+                        ) : (
+                          <Image
+                            src="/logo.svg"
+                            alt="Image"
+                            width={40}
+                            height={40}
+                            className="aspect-square rounded-full"
+                          />
+                        )}
                       </div>
                       <div className="flex flex-col">
                         <p className="line-clamp-1 group-hover:underline">
-                          {like.user.firstName} {like.user.lastName}{" "}
+                          {like.user.first_name} {like.user.last_name}{" "}
                         </p>
                         <p className="line-clamp-1 flex-1 break-all text-sm">
                           @{like.user.username}
