@@ -168,6 +168,22 @@ export const reported_comments = mysqlTable("reported_comments", {
   created_at,
 });
 
+export const reported_problems = mysqlTable("reported_problems", {
+  id,
+  problem: text("problem").notNull(),
+  reported_by_id: varchar("reported_by_id", { length: 256 }).notNull(),
+
+  created_at,
+});
+
+export const suggested_features = mysqlTable("suggested_features", {
+  id,
+  feature: text("feature").notNull(),
+  suggested_by_id: varchar("suggested_by_id", { length: 256 }).notNull(),
+
+  created_at,
+});
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Post = typeof posts.$inferSelect;

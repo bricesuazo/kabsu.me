@@ -1,4 +1,4 @@
-import { reported_comments } from "./schema";
+import { reported_comments, reported_problems, suggested_features } from "./schema";
 import { relations } from "drizzle-orm";
 import {
   colleges,
@@ -159,6 +159,26 @@ export const reported_commentsRelations = relations(
     }),
     reported_by: one(users, {
       fields: [reported_comments.reported_by_id],
+      references: [users.id],
+    }),
+  }),
+);
+
+export const reported_problemsRelations = relations(
+  reported_problems,
+  ({ one, many }) => ({
+    reported_by: one(users, {
+      fields: [reported_problems.reported_by_id],
+      references: [users.id],
+    }),
+  }),
+);
+
+export const suggested_featuresRelations = relations(
+  suggested_features,
+  ({ one, many }) => ({
+    suggested_by: one(users, {
+      fields: [suggested_features.suggested_by_id],
       references: [users.id],
     }),
   }),

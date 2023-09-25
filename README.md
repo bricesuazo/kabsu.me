@@ -20,11 +20,14 @@ A social media platform exclusive only for Cavite State University students, fac
 - [x] Likes
 - [x] Follows
 - [x] Notifications
-- [x] React query for infinite scrolling
+- [x] Infinite scrolling
 - [x] Search
-- [ ] Realtime
 - [ ] Ratelimit
+- [ ] Account settings
+- [ ] Realtime
 - [ ] Messages
+- [ ] Tasks management
+- [ ] Mobile app?
 
 ### Development
 
