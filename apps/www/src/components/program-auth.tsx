@@ -122,6 +122,11 @@ export default function ProgramAuth({
               userId: new_user.createdUserId ?? "",
               program_id: values.program_id,
               type: values.type ?? "",
+              email: new_user.emailAddress ?? "",
+              first_name: new_user.firstName ?? "",
+              last_name: new_user.lastName ?? "",
+              username: new_user.username ?? "",
+              profile_picture_url: null,
             });
 
             await setActive({

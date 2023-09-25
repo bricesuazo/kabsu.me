@@ -45,14 +45,20 @@ export const deleted_users = mysqlTable("deleted_users", {
 export const users = mysqlTable("users", {
   id: varchar("id", { length: 256 }).primaryKey().unique().notNull(),
   user_number: int("user_number").notNull().default(0),
+  first_name: varchar("first_name", { length: 256 }).notNull(),
+  last_name: varchar("last_name", { length: 256 }).notNull(),
+  email: varchar("email", { length: 256 }).notNull().unique(),
+  username: varchar("username", { length: 256 }).notNull().unique(),
+  profile_picture_url: text("image_url"),
 
-  program_id: varchar("program_id", { length: 256 }).notNull(),
   bio: longtext("bio"),
   type: mysqlEnum("type", ACCOUNT_TYPE).notNull(),
   link: text("link"),
   verified_at: timestamp("verified_at"),
   is_email_displayed: boolean("is_email_displayed").notNull().default(false),
 
+  program_id: varchar("program_id", { length: 256 }).notNull(),
+  
   created_at,
 });
 export const likes = mysqlTable("likes", {

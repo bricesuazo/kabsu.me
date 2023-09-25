@@ -23,6 +23,11 @@ export const usersRouter = router({
         userId: z.string(),
         program_id: z.string(),
         type: z.enum(ACCOUNT_TYPE),
+        first_name: z.string().nonempty(),
+        last_name: z.string().nonempty(),
+        username: z.string().nonempty(),
+        email: z.string().email(),
+        profile_picture_url: z.string().nullable(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -32,6 +37,11 @@ export const usersRouter = router({
         program_id: input.program_id,
         type: input.type,
         user_number: usersFromDB.length,
+        email: input.email,
+        first_name: input.first_name,
+        last_name: input.last_name,
+        username: input.username,
+        profile_picture_url: input.profile_picture_url,
       });
     }),
 
