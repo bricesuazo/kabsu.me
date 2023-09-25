@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/trpc/client";
 import { cn, formatText } from "@/lib/utils";
 // import UpdatePost from "./update-post";
-import type { User as UserFromClerk } from "@clerk/nextjs/server";
 import {
   Album,
   Briefcase,
@@ -17,17 +15,8 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import momentTwitter from "moment-twitter";
-import { nanoid } from "nanoid";
 
-import type {
-  Campus,
-  College,
-  Comment,
-  Like,
-  Post,
-  Program,
-  User as UserFromDB,
-} from "@cvsu.me/db/schema";
+import type { Post } from "@cvsu.me/db/schema";
 
 import PostDropdown from "./post-dropdown";
 import { Badge } from "./ui/badge";
@@ -36,76 +25,81 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import VerifiedBadge from "./verified-badge";
 
 export default function Post({
-  post,
-  isMyPost,
-  userId,
+  post, // isMyPost,
+  // userId,
 }: {
-  post: Post & {
-    likes: Like[];
-    comments: Comment[];
-    user: UserFromDB &
-      UserFromClerk & {
-        program: Program & { college: College & { campus: Campus } };
-      };
-  };
-  isMyPost: boolean;
-  userId: string;
+  post: Post;
+  //   & {
+  //   likes: Like[];
+  //   comments: Comment[];
+  //   user: UserFromDB &
+  //     UserFromClerk & {
+  //       program: Program & { college: College & { campus: Campus } };
+  //     };
+  // };
+  // isMyPost: boolean;
+  // userId: string;
 }) {
+  const getPostQuery = api.posts.getPost.useQuery({ post_id: post.id });
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [likes, setLikes] = useState<Like[]>(post.likes);
+  // const [likes, setLikes] = useState<Like[]>(post.likes);
   const unlikeMutation = api.posts.unlike.useMutation({
-    onMutate: ({ post_id }) => {
-      setLikes(
-        likes.filter(
-          (like) => like.post_id !== post_id && like.user_id !== userId,
-        ),
-      );
-
-      // await context.posts.getPosts.invalidate({
-      //   type:
-      //     ((searchParams.get("tab") as (typeof POST_TYPE)[number]) || null) ??
-      //     "following",
-      // });
-    },
+    // onMutate: ({ post_id }) => {
+    //   // setLikes(
+    //   //   likes.filter(
+    //   //     (like) => like.post_id !== post_id && like.user_id !== userId,
+    //   //   ),
+    //   // );
+    //   // await context.posts.getPosts.invalidate({
+    //   //   type:
+    //   //     ((searchParams.get("tab") as (typeof POST_TYPE)[number]) || null) ??
+    //   //     "following",
+    //   // });
+    // },
   });
   const likeMutation = api.posts.like.useMutation({
-    onMutate: ({ post_id }) => {
-      setLikes([
-        ...likes,
-        {
-          id: nanoid(),
-          post_id,
-          user_id: userId,
-          created_at: new Date(),
-        },
-      ]);
-
-      // await context.posts.getPosts.invalidate({
-      //   type:
-      //     ((searchParams.get("tab") as (typeof POST_TYPE)[number]) || null) ??
-      //     "following",
-      // });
-    },
+    // onMutate: ({ post_id }) => {
+    //   // setLikes([
+    //   //   ...likes,
+    //   //   {
+    //   //     id: nanoid(),
+    //   //     post_id,
+    //   //     user_id: userId,
+    //   //     created_at: new Date(),
+    //   //   },
+    //   // ]);
+    //   // await context.posts.getPosts.invalidate({
+    //   //   type:
+    //   //     ((searchParams.get("tab") as (typeof POST_TYPE)[number]) || null) ??
+    //   //     "following",
+    //   // });
+    // },
   });
+
+  if (!getPostQuery.data) return null;
+
+  if (getPostQuery.data.post.id !== post.id) return null;
+
+  if (getPostQuery.isLoading) return "Loading...";
 
   return (
     <div
       onClick={(e) => {
         e.stopPropagation();
-        router.push(`/${post.user.username}/${post.id}`);
+        router.push(`/${getPostQuery.data.post.user.username}/${post.id}`);
       }}
       className="cursor-pointer space-y-2 border-b p-4"
     >
       <div className="flex justify-between">
         <Link
-          href={`/${post.user.username}`}
+          href={`/${getPostQuery.data.post.user.username}`}
           onClick={(e) => e.stopPropagation()}
           className="flex gap-x-2"
         >
           <div className="w-max">
             <Image
-              src={post.user.imageUrl}
+              src={getPostQuery.data.post.user.imageUrl}
               alt="Image"
               width={40}
               height={40}
@@ -119,10 +113,12 @@ export default function Post({
                 </p> */}
               <div className="flex items-center gap-x-1">
                 <p className="text-md line-clamp-1 flex-1 break-all font-medium hover:underline">
-                  @{post.user.username}
+                  @{getPostQuery.data.post.user.username}
                 </p>
 
-                {post.user.verified_at && <VerifiedBadge size="sm" />}
+                {getPostQuery.data.post.user.verified_at && (
+                  <VerifiedBadge size="sm" />
+                )}
               </div>
 
               <p className="pointer-events-none select-none">·</p>
@@ -152,7 +148,7 @@ export default function Post({
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   {(() => {
-                    switch (post.user.type) {
+                    switch (getPostQuery.data.post.user.type) {
                       case "student":
                         return <Album />;
                       case "alumni":
@@ -165,43 +161,46 @@ export default function Post({
                   })()}
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
-                  {post.user.type.charAt(0).toUpperCase() +
-                    post.user.type.slice(1)}
+                  {getPostQuery.data.post.user.type.charAt(0).toUpperCase() +
+                    getPostQuery.data.post.user.type.slice(1)}
                 </TooltipContent>
               </Tooltip>
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge>
                     {searchParams.get("tab") === "college"
-                      ? post.user.program.college.slug.toUpperCase()
-                      : post.user.program.college.campus.slug.toUpperCase()}
+                      ? getPostQuery.data.post.user.program.college.slug.toUpperCase()
+                      : getPostQuery.data.post.user.program.college.campus.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
                   {searchParams.get("tab") === "college"
-                    ? post.user.program.college.name
-                    : post.user.program.college.campus.name}
+                    ? getPostQuery.data.post.user.program.college.name
+                    : getPostQuery.data.post.user.program.college.campus.name}
                 </TooltipContent>
               </Tooltip>
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge variant="outline">
-                    {post.user.program.slug.toUpperCase()}
+                    {getPostQuery.data.post.user.program.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
-                  {post.user.program.name}
+                  {getPostQuery.data.post.user.program.name}
                 </TooltipContent>
               </Tooltip>
             </div>
             {/* <p className="line-clamp-1 flex-1 break-all text-sm">
-                @{post.user.username}
+                @{getPostQuery.data.post.user.username}
               </p> */}
           </div>
         </Link>
 
-        <PostDropdown post_id={post.id} isMyPost={isMyPost} />
+        <PostDropdown
+          post_id={post.id}
+          isMyPost={getPostQuery.data.post.user.id === getPostQuery.data.userId}
+        />
       </div>
 
       <div className="">
@@ -216,7 +215,9 @@ export default function Post({
         <div className="flex gap-x-1">
           <Toggle
             size="sm"
-            pressed={likes.some((like) => like.user_id === userId)}
+            pressed={getPostQuery.data.post.likes.some(
+              (like) => like.user_id === getPostQuery.data.userId,
+            )}
             onClick={(e) => e.stopPropagation()}
             onPressedChange={(pressed) => {
               if (pressed) {
@@ -229,8 +230,9 @@ export default function Post({
             <Heart
               className={cn(
                 "h-4 w-4",
-                likes.some((like) => like.user_id === userId) &&
-                  "fill-primary text-primary",
+                getPostQuery.data.post.likes.some(
+                  (like) => like.user_id === getPostQuery.data.userId,
+                ) && "fill-primary text-primary",
               )}
             />
           </Toggle>
@@ -241,7 +243,9 @@ export default function Post({
             asChild
             onClick={(e) => e.stopPropagation()}
           >
-            <Link href={`/${post.user.username}/${post.id}?comment`}>
+            <Link
+              href={`/${getPostQuery.data.post.user.username}/${post.id}?comment`}
+            >
               <MessageCircle className="h-4 w-4" />
             </Link>
           </Toggle>
@@ -249,9 +253,11 @@ export default function Post({
 
         <div className="flex items-center gap-x-4">
           <p className="text-sm text-muted-foreground">
-            {`${likes.length} like${likes.length > 1 ? "s" : ""} — ${
-              post.comments.length
-            } comment${post.comments.length > 1 ? "s" : ""}`}
+            {`${getPostQuery.data.post.likes.length} like${
+              getPostQuery.data.post.likes.length > 1 ? "s" : ""
+            } — ${getPostQuery.data.post.comments.length} comment${
+              getPostQuery.data.post.comments.length > 1 ? "s" : ""
+            }`}
           </p>
           <Badge variant="outline" className="flex items-center gap-x-1">
             <p className="hidden xs:block">Privacy:</p>

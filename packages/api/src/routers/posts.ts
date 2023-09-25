@@ -200,13 +200,7 @@ export const postsRouter = router({
       //     and(isNull(post.deleted_at), eq(post.type, input.type)),
       // });
       const limit = 10;
-      let posts: (Post & {
-        likes: Like[];
-        comments: Comment[];
-        user: User & {
-          program: Program & { college: College & { campus: Campus } };
-        };
-      })[] = [];
+      let posts: Post[] = [];
 
       if (input.type === "all") {
         posts = await ctx.db.query.posts.findMany({
@@ -216,25 +210,25 @@ export const postsRouter = router({
           limit,
           offset: (input.cursor - 1) * limit,
 
-          with: {
-            comments: {
-              where: (comment, { isNull }) => isNull(comment.deleted_at),
-            },
-            likes: true,
-            user: {
-              with: {
-                program: {
-                  with: {
-                    college: {
-                      with: {
-                        campus: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
+          // with: {
+          //   comments: {
+          //     where: (comment, { isNull }) => isNull(comment.deleted_at),
+          //   },
+          //   likes: true,
+          //   user: {
+          //     with: {
+          //       program: {
+          //         with: {
+          //           college: {
+          //             with: {
+          //               campus: true,
+          //             },
+          //           },
+          //         },
+          //       },
+          //     },
+          //   },
+          // },
         });
       } else if (input.type === "campus") {
         const user = await ctx.db.query.users.findFirst({
@@ -298,25 +292,25 @@ export const postsRouter = router({
           limit,
           offset: (input.cursor - 1) * limit,
           orderBy: (post, { desc }) => desc(post.created_at),
-          with: {
-            comments: {
-              where: (comment, { isNull }) => isNull(comment.deleted_at),
-            },
-            likes: true,
-            user: {
-              with: {
-                program: {
-                  with: {
-                    college: {
-                      with: {
-                        campus: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
+          // with: {
+          //   comments: {
+          //     where: (comment, { isNull }) => isNull(comment.deleted_at),
+          //   },
+          //   likes: true,
+          //   user: {
+          //     with: {
+          //       program: {
+          //         with: {
+          //           college: {
+          //             with: {
+          //               campus: true,
+          //             },
+          //           },
+          //         },
+          //       },
+          //     },
+          //   },
+          // },
         });
       } else if (input.type === "college") {
         const user = await ctx.db.query.users.findFirst({
@@ -371,25 +365,25 @@ export const postsRouter = router({
           limit,
           offset: (input.cursor - 1) * limit,
           orderBy: (post, { desc }) => desc(post.created_at),
-          with: {
-            comments: {
-              where: (comment, { isNull }) => isNull(comment.deleted_at),
-            },
-            likes: true,
-            user: {
-              with: {
-                program: {
-                  with: {
-                    college: {
-                      with: {
-                        campus: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
+          // with: {
+          //   comments: {
+          //     where: (comment, { isNull }) => isNull(comment.deleted_at),
+          //   },
+          //   likes: true,
+          //   user: {
+          //     with: {
+          //       program: {
+          //         with: {
+          //           college: {
+          //             with: {
+          //               campus: true,
+          //             },
+          //           },
+          //         },
+          //       },
+          //     },
+          //   },
+          // },
         });
       } else if (input.type === "program") {
         const user = await ctx.db.query.users.findFirst({
@@ -426,25 +420,25 @@ export const postsRouter = router({
           orderBy: (post, { desc }) => desc(post.created_at),
           limit,
           offset: (input.cursor - 1) * limit,
-          with: {
-            comments: {
-              where: (comment, { isNull }) => isNull(comment.deleted_at),
-            },
-            likes: true,
-            user: {
-              with: {
-                program: {
-                  with: {
-                    college: {
-                      with: {
-                        campus: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
+          // with: {
+          //   comments: {
+          //     where: (comment, { isNull }) => isNull(comment.deleted_at),
+          //   },
+          //   likes: true,
+          //   user: {
+          //     with: {
+          //       program: {
+          //         with: {
+          //           college: {
+          //             with: {
+          //               campus: true,
+          //             },
+          //           },
+          //         },
+          //       },
+          //     },
+          //   },
+          // },
         });
       } else if (input.type === "following") {
         const user = await ctx.db.query.users.findFirst({
@@ -489,38 +483,38 @@ export const postsRouter = router({
           limit,
           offset: (input.cursor - 1) * limit,
           orderBy: (post, { desc }) => desc(post.created_at),
-          with: {
-            comments: {
-              where: (comment, { isNull }) => isNull(comment.deleted_at),
-            },
-            likes: true,
-            user: {
-              with: {
-                program: {
-                  with: {
-                    college: {
-                      with: {
-                        campus: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
+          // with: {
+          //   comments: {
+          //     where: (comment, { isNull }) => isNull(comment.deleted_at),
+          //   },
+          //   likes: true,
+          //   user: {
+          //     with: {
+          //       program: {
+          //         with: {
+          //           college: {
+          //             with: {
+          //               campus: true,
+          //             },
+          //           },
+          //         },
+          //       },
+          //     },
+          //   },
+          // },
         });
       }
 
-      const usersFromPosts = await ctx.clerk.users.getUserList({
-        userId: posts.map((post) => post.user && post.user.id),
-      });
+      // const usersFromPosts = await ctx.clerk.users.getUserList({
+      //   userId: posts.map((post) => post.user && post.user.id),
+      // });
 
       const returnPosts = posts.map((post) => ({
         ...post,
-        user: {
-          ...post.user,
-          ...usersFromPosts.find((user) => user.id === post.user.id)!,
-        },
+        // user: {
+        //   ...post.user,
+        //   ...usersFromPosts.find((user) => user.id === post.user.id)!,
+        // },
       }));
 
       let nextCursor: typeof input.cursor | undefined = undefined;

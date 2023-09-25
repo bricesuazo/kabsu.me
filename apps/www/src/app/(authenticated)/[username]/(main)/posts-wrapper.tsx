@@ -53,10 +53,10 @@ export default function PostsWrapper({ user }: { user: User }) {
             {page.posts.map((post) => (
               <Post
                 key={post.id}
-                userId={page.userId}
                 post={post}
-                isMyPost={page.userId === post.user.id}
-                data-superjson
+                // userId={page.userId}
+                // isMyPost={page.userId === post.user.id}
+                // data-superjson
               />
             ))}
           </Fragment>

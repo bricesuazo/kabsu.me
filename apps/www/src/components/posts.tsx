@@ -1,8 +1,8 @@
 "use client";
 
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { api } from "@/lib/trpc/client";
-import { useInView } from "react-intersection-observer";
+import { InView } from "react-intersection-observer";
 
 import type { POST_TYPE_TABS } from "@cvsu.me/constants";
 
@@ -15,7 +15,6 @@ export default function Posts({
 }: {
   tab: (typeof POST_TYPE_TABS)[number]["id"];
 }) {
-  const { ref, inView } = useInView();
   const posts = api.posts.getPosts.useInfiniteQuery(
     { type: tab },
     {
@@ -28,16 +27,11 @@ export default function Posts({
   //   ReturnType<typeof api.posts.getPosts.useInfiniteQuery>["data"]
   // >([]);
 
-  useEffect(() => {
-    void (async () => {
-      if (inView) {
-        await posts.fetchNextPage();
-      }
-    })();
-  }, [inView]);
-
   return (
     <div className="">
+      <InView as="div" onChange={(saf) => console.log(saf)}>
+        jifbsihdfn
+      </InView>
       {posts.isLoading ? (
         <>
           {[...(Array(6) as number[])].map((_, i) => (
@@ -60,23 +54,33 @@ export default function Posts({
                 <Post
                   key={post.id}
                   post={post}
-                  isMyPost={post.user.id === page.userId}
-                  userId={page.userId}
-                  data-superjson
+                  // isMyPost={post.user.id === page.userId}
+                  // userId={page.userId}
+                  // data-superjson
                 />
               ))}
             </Fragment>
           ))}
-          <div
+          <InView
+            as="div"
+            onChange={async (inView, en) => {
+              console.log("🚀 ~ file: posts.tsx:64 ~ onChange={ ~ en:", en);
+              console.log(
+                "🚀 ~ file: posts.tsx:64 ~ onChange={ ~ inView:",
+                inView,
+              );
+              if (inView) {
+                await posts.fetchNextPage();
+              }
+            }}
             className="flex justify-center border-b p-8 text-center text-sm text-muted-foreground"
-            ref={ref}
           >
             {posts.isFetchingNextPage && posts.hasNextPage ? (
               <Icons.spinner className="animate-spin" />
             ) : (
               "You've reached the end of the page."
             )}
-          </div>
+          </InView>
         </>
       )}
     </div>
