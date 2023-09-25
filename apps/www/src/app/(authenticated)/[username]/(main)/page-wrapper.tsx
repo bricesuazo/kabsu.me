@@ -214,7 +214,7 @@ export default function UserPageWrapper({
                   />
                 ) : (
                   <Image
-                    src="/logo.svg"
+                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${profileQuery.data.user.username}`}
                     alt="Logo"
                     fill
                     sizes="100%"
@@ -237,7 +237,7 @@ export default function UserPageWrapper({
                   />
                 ) : (
                   <Image
-                    src="/logo.svg"
+                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${profileQuery.data.user.username}`}
                     alt="Logo"
                     fill
                     sizes="100%"

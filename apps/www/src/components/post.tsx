@@ -106,7 +106,7 @@ export default function Post({ post }: { post: Post }) {
               />
             ) : (
               <Image
-                src="/logo.svg"
+                src={`https://api.dicebear.com/7.x/initials/svg?seed=${getPostQuery.data.post.user.username}`}
                 alt="Image"
                 width={40}
                 height={40}
