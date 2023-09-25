@@ -124,11 +124,17 @@ export default function PostComment({
                   },
                 ]);
 
-                await likePostMutation.mutateAsync({ post_id: post.id });
+                await likePostMutation.mutateAsync({
+                  post_id: post.id,
+                  userId,
+                });
               } else {
                 setLikes(likes.filter((like) => like.user_id !== userId));
 
-                await unlikePostMutation.mutateAsync({ post_id: post.id });
+                await unlikePostMutation.mutateAsync({
+                  post_id: post.id,
+                  userId,
+                });
               }
               await getLikesInPostQuery.refetch();
             }}

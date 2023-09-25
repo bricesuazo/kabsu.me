@@ -8,14 +8,12 @@ import type { POST_TYPE_TABS } from "@cvsu.me/constants";
 
 import { Icons } from "./icons";
 import Post from "./post";
-import { PostSkeletonNoRandom } from "./post-skeleton";
 
 export default function Posts({
   tab,
 }: {
   tab: (typeof POST_TYPE_TABS)[number]["id"];
 }) {
-  const { ref, inView } = useInView();
   const posts = api.posts.getPosts.useInfiniteQuery(
     { type: tab },
     {
@@ -24,9 +22,7 @@ export default function Posts({
     },
   );
 
-  // const [page, setPage] = useState<
-  //   ReturnType<typeof api.posts.getPosts.useInfiniteQuery>["data"]
-  // >([]);
+  const { ref, inView } = useInView();
 
   useEffect(() => {
     void (async () => {
@@ -39,11 +35,9 @@ export default function Posts({
   return (
     <div className="">
       {posts.isLoading ? (
-        <>
-          {[...(Array(6) as number[])].map((_, i) => (
-            <PostSkeletonNoRandom key={i} />
-          ))}
-        </>
+        <div className="grid h-full w-full place-items-center p-40">
+          <Icons.spinner className="animate-spin" />
+        </div>
       ) : !posts.data && posts.isError ? (
         <p className="text-center text-sm text-muted-foreground">
           {posts.error.message}
@@ -57,26 +51,20 @@ export default function Posts({
           {posts.data.pages.map((page) => (
             <Fragment key={page.nextCursor}>
               {page.posts.map((post) => (
-                <Post
-                  key={post.id}
-                  post={post}
-                  isMyPost={post.user.id === page.userId}
-                  userId={page.userId}
-                  data-superjson
-                />
+                <Post key={post.id} post={post} />
               ))}
             </Fragment>
           ))}
-          <div
-            className="flex justify-center border-b p-8 text-center text-sm text-muted-foreground"
+          <span
             ref={ref}
+            className="flex justify-center border-b p-8 text-center text-sm text-muted-foreground"
           >
             {posts.isFetchingNextPage && posts.hasNextPage ? (
               <Icons.spinner className="animate-spin" />
             ) : (
               "You've reached the end of the page."
             )}
-          </div>
+          </span>
         </>
       )}
     </div>
