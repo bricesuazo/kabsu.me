@@ -4,6 +4,11 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { api } from "@/lib/trpc/client";
 import { cn, formatText } from "@/lib/utils";
 // import UpdatePost from "./update-post";
@@ -20,6 +25,7 @@ import { nanoid } from "nanoid";
 
 import type { Like, Post } from "@cvsu.me/db/schema";
 
+import FollowButton from "./follow-button";
 import PostDropdown from "./post-dropdown";
 import { PostSkeletonNoRandom } from "./post-skeleton";
 import { Badge } from "./ui/badge";
@@ -90,121 +96,233 @@ export default function Post({ post }: { post: Post }) {
       className="cursor-pointer space-y-2 border-b p-4"
     >
       <div className="flex justify-between">
-        <Link
-          href={`/${getPostQuery.data.post.user.username}`}
-          onClick={(e) => e.stopPropagation()}
-          className="flex gap-x-2"
-        >
-          <div className="w-max">
-            {getPostQuery.data.post.user.profile_picture_url ? (
-              <Image
-                src={getPostQuery.data.post.user.profile_picture_url}
-                alt="Image"
-                width={40}
-                height={40}
-                className="aspect-square rounded-full object-cover"
-              />
-            ) : (
-              <Image
-                src="/logo.svg"
-                alt="Image"
-                width={40}
-                height={40}
-                className="aspect-square rounded-full object-cover"
-              />
-            )}
-          </div>
-          <div className="flex flex-1 flex-col gap-y-1">
-            <div className="group flex items-center gap-x-2">
-              {/* <p className="line-clamp-1 group-hover:underline">
+        <div>
+          <HoverCard openDelay={100}>
+            <HoverCardTrigger>
+              <HoverCardContent side="top">
+                <Link
+                  href={`/${getPostQuery.data.post.user.username}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex gap-x-2"
+                >
+                  <div className="w-max">
+                    {getPostQuery.data.post.user.profile_picture_url ? (
+                      <Image
+                        src={getPostQuery.data.post.user.profile_picture_url}
+                        alt="Image"
+                        width={40}
+                        height={40}
+                        className="aspect-square rounded-full object-cover"
+                      />
+                    ) : (
+                      <Image
+                        src="/logo.svg"
+                        alt="Image"
+                        width={40}
+                        height={40}
+                        className="aspect-square rounded-full object-cover"
+                      />
+                    )}
+                  </div>
+                  <div className="flex flex-1 flex-col gap-y-1">
+                    <div className="group flex items-center gap-x-2">
+                      {/* <p className="line-clamp-1 group-hover:underline">
                   {post.user.firstName} {post.user.lastName}{" "}
                 </p> */}
-              <div className="flex items-center gap-x-1">
-                <p className="text-md line-clamp-1 flex-1 break-all font-medium hover:underline">
-                  @{getPostQuery.data.post.user.username}
-                </p>
+                      <div className="flex items-center gap-x-1">
+                        <p className="text-md line-clamp-1 flex-1 break-all font-medium hover:underline">
+                          @{getPostQuery.data.post.user.username}
+                        </p>
 
-                {getPostQuery.data.post.user.verified_at && (
-                  <VerifiedBadge size="sm" />
-                )}
-              </div>
+                        {getPostQuery.data.post.user.verified_at && (
+                          <VerifiedBadge size="sm" />
+                        )}
+                      </div>
 
-              <p className="pointer-events-none select-none">·</p>
+                      <Tooltip delayDuration={250}></Tooltip>
+                    </div>
 
-              <Tooltip delayDuration={250}>
-                <TooltipTrigger>
-                  <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                    {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                      momentTwitter(post.created_at).twitterLong()
-                    }
-                  </p>
-                  <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                    {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                      momentTwitter(post.created_at).twitterShort()
-                    }
-                  </p>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {moment(post.created_at).format("MMMM Do YYYY, h:mm:ss A")}
-                </TooltipContent>
-              </Tooltip>
-            </div>
+                    <div className="flex items-center gap-x-1 ">
+                      <Tooltip delayDuration={250}>
+                        <TooltipTrigger>
+                          {(() => {
+                            switch (getPostQuery.data.post.user.type) {
+                              case "student":
+                                return <Album />;
+                              case "alumni":
+                                return <Briefcase />;
+                              case "faculty":
+                                return <GraduationCap />;
+                              default:
+                                return null;
+                            }
+                          })()}
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[12rem]">
+                          {getPostQuery.data.post.user.type
+                            .charAt(0)
+                            .toUpperCase() +
+                            getPostQuery.data.post.user.type.slice(1)}
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip delayDuration={250}>
+                        <TooltipTrigger>
+                          <Badge>
+                            {searchParams.get("tab") === "college"
+                              ? getPostQuery.data.post.user.program.college.slug.toUpperCase()
+                              : getPostQuery.data.post.user.program.college.campus.slug.toUpperCase()}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[12rem]">
+                          {searchParams.get("tab") === "college"
+                            ? getPostQuery.data.post.user.program.college.name
+                            : getPostQuery.data.post.user.program.college.campus
+                                .name}
+                        </TooltipContent>
+                      </Tooltip>
 
-            <div className="flex items-center gap-x-1 ">
-              <Tooltip delayDuration={250}>
-                <TooltipTrigger>
-                  {(() => {
-                    switch (getPostQuery.data.post.user.type) {
-                      case "student":
-                        return <Album />;
-                      case "alumni":
-                        return <Briefcase />;
-                      case "faculty":
-                        return <GraduationCap />;
-                      default:
-                        return null;
-                    }
-                  })()}
-                </TooltipTrigger>
-                <TooltipContent className="max-w-[12rem]">
-                  {getPostQuery.data.post.user.type.charAt(0).toUpperCase() +
-                    getPostQuery.data.post.user.type.slice(1)}
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip delayDuration={250}>
-                <TooltipTrigger>
-                  <Badge>
-                    {searchParams.get("tab") === "college"
-                      ? getPostQuery.data.post.user.program.college.slug.toUpperCase()
-                      : getPostQuery.data.post.user.program.college.campus.slug.toUpperCase()}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-[12rem]">
-                  {searchParams.get("tab") === "college"
-                    ? getPostQuery.data.post.user.program.college.name
-                    : getPostQuery.data.post.user.program.college.campus.name}
-                </TooltipContent>
-              </Tooltip>
-
-              <Tooltip delayDuration={250}>
-                <TooltipTrigger>
-                  <Badge variant="outline">
-                    {getPostQuery.data.post.user.program.slug.toUpperCase()}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-[12rem]">
-                  {getPostQuery.data.post.user.program.name}
-                </TooltipContent>
-              </Tooltip>
-            </div>
-            {/* <p className="line-clamp-1 flex-1 break-all text-sm">
+                      <Tooltip delayDuration={250}>
+                        <TooltipTrigger>
+                          <Badge variant="outline">
+                            {getPostQuery.data.post.user.program.slug.toUpperCase()}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[12rem]">
+                          {getPostQuery.data.post.user.program.name}
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                    {/* <p className="line-clamp-1 flex-1 break-all text-sm">
                 @{getPostQuery.data.post.user.username}
               </p> */}
-          </div>
-        </Link>
+                  </div>
+                  {/* <div className="flex flex-col justify-center">
+                    <FollowButton isFollower={false} user_id={""} />
+                  </div> */}
+                </Link>
+              </HoverCardContent>
+              <Link
+                href={`/${getPostQuery.data.post.user.username}`}
+                onClick={(e) => e.stopPropagation()}
+                className="flex gap-x-2"
+              >
+                <div className="w-max">
+                  {getPostQuery.data.post.user.profile_picture_url ? (
+                    <Image
+                      src={getPostQuery.data.post.user.profile_picture_url}
+                      alt="Image"
+                      width={40}
+                      height={40}
+                      className="aspect-square rounded-full object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src="/logo.svg"
+                      alt="Image"
+                      width={40}
+                      height={40}
+                      className="aspect-square rounded-full object-cover"
+                    />
+                  )}
+                </div>
+                <div className="flex flex-1 flex-col gap-y-1">
+                  <div className="group flex items-center gap-x-2">
+                    {/* <p className="line-clamp-1 group-hover:underline">
+                  {post.user.firstName} {post.user.lastName}{" "}
+                </p> */}
+                    <div className="flex items-center gap-x-1">
+                      <p className="text-md line-clamp-1 flex-1 break-all font-medium hover:underline">
+                        @{getPostQuery.data.post.user.username}
+                      </p>
 
+                      {getPostQuery.data.post.user.verified_at && (
+                        <VerifiedBadge size="sm" />
+                      )}
+                    </div>
+
+                    <p className="pointer-events-none select-none">·</p>
+
+                    <Tooltip delayDuration={250}>
+                      <TooltipTrigger>
+                        <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
+                          {
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+                            momentTwitter(post.created_at).twitterLong()
+                          }
+                        </p>
+                        <p className="text-xs text-muted-foreground hover:underline xs:hidden">
+                          {
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+                            momentTwitter(post.created_at).twitterShort()
+                          }
+                        </p>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {moment(post.created_at).format(
+                          "MMMM Do YYYY, h:mm:ss A",
+                        )}
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+
+                  <div className="flex items-center gap-x-1 ">
+                    <Tooltip delayDuration={250}>
+                      <TooltipTrigger>
+                        {(() => {
+                          switch (getPostQuery.data.post.user.type) {
+                            case "student":
+                              return <Album />;
+                            case "alumni":
+                              return <Briefcase />;
+                            case "faculty":
+                              return <GraduationCap />;
+                            default:
+                              return null;
+                          }
+                        })()}
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-[12rem]">
+                        {getPostQuery.data.post.user.type
+                          .charAt(0)
+                          .toUpperCase() +
+                          getPostQuery.data.post.user.type.slice(1)}
+                      </TooltipContent>
+                    </Tooltip>
+                    <Tooltip delayDuration={250}>
+                      <TooltipTrigger>
+                        <Badge>
+                          {searchParams.get("tab") === "college"
+                            ? getPostQuery.data.post.user.program.college.slug.toUpperCase()
+                            : getPostQuery.data.post.user.program.college.campus.slug.toUpperCase()}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-[12rem]">
+                        {searchParams.get("tab") === "college"
+                          ? getPostQuery.data.post.user.program.college.name
+                          : getPostQuery.data.post.user.program.college.campus
+                              .name}
+                      </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip delayDuration={250}>
+                      <TooltipTrigger>
+                        <Badge variant="outline">
+                          {getPostQuery.data.post.user.program.slug.toUpperCase()}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-[12rem]">
+                        {getPostQuery.data.post.user.program.name}
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  {/* <p className="line-clamp-1 flex-1 break-all text-sm">
+                @{getPostQuery.data.post.user.username}
+              </p> */}
+                </div>
+              </Link>
+            </HoverCardTrigger>
+          </HoverCard>
+        </div>
         <PostDropdown
           post_id={post.id}
           isMyPost={getPostQuery.data.post.user.id === getPostQuery.data.userId}
