@@ -160,9 +160,9 @@ export default function Post({ post }: { post: Post }) {
                       case "student":
                         return <Album />;
                       case "alumni":
-                        return <Briefcase />;
-                      case "faculty":
                         return <GraduationCap />;
+                      case "faculty":
+                        return <Briefcase />;
                       default:
                         return null;
                     }
