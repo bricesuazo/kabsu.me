@@ -138,7 +138,7 @@ export default function Notifications() {
                           />
                         ) : (
                           <Image
-                            src="/logo.svg"
+                            src={`https://api.dicebear.com/7.x/initials/svg?seed=${notification.from.username}`}
                             alt="Image"
                             fill
                             sizes="100%"

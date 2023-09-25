@@ -233,13 +233,13 @@ export default function UserPageWrapper({
                     width={500}
                     height={500}
                     sizes="100%"
-                    className="rounded-lg"
                   />
                 ) : (
                   <Image
                     src={`https://api.dicebear.com/7.x/initials/svg?seed=${profileQuery.data.user.username}`}
                     alt="Logo"
-                    fill
+                    width={500}
+                    height={500}
                     sizes="100%"
                     className="-z-10 object-cover"
                   />
