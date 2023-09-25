@@ -20,8 +20,17 @@ export default function FooterMenu() {
         </Button>
       </div>
 
-      <div className="flex w-full justify-center text-muted">
-        <Search size="1.25rem" />
+      <div className="flex w-full justify-center">
+        <Button
+          size="icon"
+          variant="ghost"
+          className="relative h-9 w-9 rounded-full"
+          asChild
+        >
+          <Link href="/search" className="text-center text-xs">
+            <Search size="1.25rem" />
+          </Link>
+        </Button>
       </div>
 
       <div className="flex w-full justify-center">
