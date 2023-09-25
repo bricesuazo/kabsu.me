@@ -4,6 +4,8 @@ import Header from "@/components/header";
 import PostForm from "@/components/post-form";
 import PostTypeTab from "@/components/post-type-tab";
 import Posts from "@/components/posts";
+import SideNavMenu from "@/components/side-nav-menu";
+import SideNavUpdates from "@/components/side-nav-updates";
 import { auth } from "@clerk/nextjs";
 
 export function generateMetadata(): Metadata {
@@ -31,28 +33,38 @@ export default function Home({
   };
 
   return (
-    <main className="container px-0">
+    <main className="grid place-content-center px-0">
       {userId ? (
-        <div className="border-x">
-          <div className="sticky top-0 z-50 backdrop-blur-lg">
-            <Header />
-
-            <PostTypeTab />
+        <div className="flex">
+          <div className="sticky top-0">
+            <SideNavMenu />
           </div>
 
-          <div className="border-b p-3 text-center sm:hidden">
-            <p className="text-sm capitalize text-primary">
-              {tab ? tab : "following"} tab
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {tab ? TEST[tab] : "See posts of who you are following."}
-            </p>
+          <div className="container border-x p-0">
+            <div className="sticky top-0 z-50 backdrop-blur-lg">
+              <Header />
+
+              <PostTypeTab />
+            </div>
+
+            <div className="border-b p-3 text-center sm:hidden">
+              <p className="text-sm capitalize text-primary">
+                {tab ? tab : "following"} tab
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {tab ? TEST[tab] : "See posts of who you are following."}
+              </p>
+            </div>
+
+            <div className="min-h-screen">
+              <PostForm hasRedirect />
+
+              <Posts tab={!tab ? "following" : tab} />
+            </div>
           </div>
 
-          <div className="min-h-screen">
-            <PostForm hasRedirect />
-
-            <Posts tab={!tab ? "following" : tab} />
+          <div className="sticky top-0">
+            <SideNavUpdates />
           </div>
         </div>
       ) : (
