@@ -8,7 +8,6 @@ import type { POST_TYPE_TABS } from "@cvsu.me/constants";
 
 import { Icons } from "./icons";
 import Post from "./post";
-import { PostSkeletonNoRandom } from "./post-skeleton";
 
 export default function Posts({
   tab,
