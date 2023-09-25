@@ -92,7 +92,9 @@ export default function Header() {
           </SheetContent>
         </Sheet>
 
-        <Search />
+        <div className="hidden sm:block">
+          <Search />
+        </div>
       </div>
       <Button variant="link" size="icon" asChild className="px-0">
         <Link href="/">
