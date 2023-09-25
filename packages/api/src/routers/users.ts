@@ -8,7 +8,9 @@ import {
   followees,
   followers,
   notifications,
+  reported_problems,
   reported_users,
+  suggested_features,
   users,
 } from "@cvsu.me/db/schema";
 
@@ -262,4 +264,28 @@ export const usersRouter = router({
   getTotalUsers: publicProcedure.query(
     async ({ ctx }) => await ctx.clerk.users.getCount(),
   ),
+  reportAProblem: protectedProcedure
+    .input(
+      z.object({
+        content: z.string().nonempty(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(reported_problems).values({
+        problem: input.content,
+        reported_by_id: ctx.session.user.id,
+      });
+    }),
+  suggestAFeature: protectedProcedure
+    .input(
+      z.object({
+        content: z.string().nonempty(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(suggested_features).values({
+        feature: input.content,
+        suggested_by_id: ctx.session.user.id,
+      });
+    }),
 });
