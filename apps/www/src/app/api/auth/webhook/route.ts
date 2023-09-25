@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { env } from "@/lib/env.mjs";
+import { clerkClient } from "@clerk/nextjs/server";
 import type { WebhookEvent } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { Webhook } from "svix";
@@ -83,36 +84,32 @@ export async function POST(req: Request) {
 
       await db.delete(users).where(eq(users.id, id));
     }
-    // } else if (eventType === "user.updated") {
-    //   console.log(`User ${id} was ${eventType}`);
+  } else if (eventType === "user.updated") {
+    console.log(`User ${id} was ${eventType}`);
 
-    //   const username =
-    //     evt.data.username ??
-    //     evt.data.email_addresses[0].email_address.split("@")[0];
+    const user = await clerkClient.users.getUser(id);
 
-    //   const user = await clerkClient.users.getUser(id);
+    if (user.imageUrl !== evt.data.image_url) {
+      await db
+        .update(users)
+        .set({
+          profile_picture_url: user.imageUrl,
+        })
+        .where(eq(users.id, id));
+    }
 
-    //   if (user.imageUrl !== evt.data.image_url) {
-    //     await db
-    //       .update(users)
-    //       .set({
-    //         image_url: evt.data.image_url,
-    //       })
-    //       .where(eq(users.id, id));
-    //   }
+    // if (user.username !== username) {
+    //   await clerkClient.users.updateUser(id, {
+    //     username,
+    //   });
 
-    //   if (user.username !== username) {
-    //     await clerkClient.users.updateUser(id, {
+    //   await db
+    //     .update(users)
+    //     .set({
     //       username,
-    //     });
-
-    //     await db
-    //       .update(users)
-    //       .set({
-    //         username,
-    //       })
-    //       .where(eq(users.id, id));
-    //   }
+    //     })
+    //     .where(eq(users.id, id));
+    // }
   } else {
     console.log(`User ${id} was ${eventType}`);
   }
