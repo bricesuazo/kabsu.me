@@ -12,6 +12,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const user = await clerkClient.users.getUserList({
     username: [params.username],
+    limit: 1,
   });
 
   if (user.length === 0) notFound();
