@@ -423,6 +423,9 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: registry.npmjs.org/tailwindcss-animate@1.0.7(tailwindcss@3.3.3)
+      use-debounce:
+        specifier: ^9.0.4
+        version: registry.npmjs.org/use-debounce@9.0.4(react@18.2.0)
       zod:
         specifier: ^3.22.2
         version: registry.npmjs.org/zod@3.22.2
@@ -9656,6 +9659,18 @@ packages:
     version: 1.3.0
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: registry.npmjs.org/react@18.2.0
+    dev: false
+
+  registry.npmjs.org/use-debounce@9.0.4(react@18.2.0):
+    resolution: {integrity: sha512-6X8H/mikbrt0XE8e+JXRtZ8yYVvKkdYRfmIhWZYsP8rcNs9hk3APV8Ua2mFkKRLcJKVdnX2/Vwrmg2GWKUQEaQ==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/use-debounce/-/use-debounce-9.0.4.tgz}
+    id: registry.npmjs.org/use-debounce/9.0.4
+    name: use-debounce
+    version: 9.0.4
+    engines: {node: '>= 10.0.0'}
+    peerDependencies:
+      react: '>=16.8.0'
     dependencies:
       react: registry.npmjs.org/react@18.2.0
     dev: false

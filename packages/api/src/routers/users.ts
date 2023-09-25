@@ -232,4 +232,19 @@ export const usersRouter = router({
         user_id: input.user_id,
       });
     }),
+  search: protectedProcedure
+    .input(z.object({ query: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const users = await ctx.clerk.users.getUserList({
+        query: input.query,
+      });
+
+      return users.map((user) => ({
+        id: user.id,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        imageUrl: user.imageUrl,
+      }));
+    }),
 });

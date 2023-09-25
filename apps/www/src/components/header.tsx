@@ -14,6 +14,7 @@ import { NAVBAR_LINKS } from "@cvsu.me/constants";
 
 import { Icons } from "./icons";
 import Notifications from "./notifications";
+import Search from "./search";
 import {
   Menubar,
   MenubarContent,
@@ -90,7 +91,10 @@ export default function Header() {
             ))}
           </SheetContent>
         </Sheet>
-        <div className="hidden h-9 w-9 sm:block" />
+
+        <div className="hidden sm:block">
+          <Search />
+        </div>
       </div>
       <Button variant="link" size="icon" asChild className="px-0">
         <Link href="/">
