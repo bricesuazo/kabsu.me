@@ -51,17 +51,9 @@ export const postsRouter = router({
       if (!post)
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
 
-      const user = await ctx.clerk.users.getUser(post.user.id);
-
       return {
         userId: ctx.session.user.id,
-        post: {
-          ...post,
-          user: {
-            ...post.user,
-            ...user,
-          },
-        },
+        post,
       };
     }),
 
@@ -164,25 +156,13 @@ export const postsRouter = router({
         },
       });
 
-      const usersFromPosts = await ctx.clerk.users.getUserList({
-        userId: posts.map((post) => post.user.id),
-      });
-
-      const returnPosts = posts.map((post) => ({
-        ...post,
-        user: {
-          ...post.user,
-          ...usersFromPosts.find((user) => user.id === post.user.id)!,
-        },
-      }));
-
       let nextCursor: typeof input.cursor | undefined = undefined;
       if (posts.length > limit - 1) {
         nextCursor = input.cursor + 1;
       }
 
       return {
-        posts: returnPosts,
+        posts,
         userId: ctx.session.user.id,
         nextCursor,
       };
@@ -506,25 +486,13 @@ export const postsRouter = router({
         });
       }
 
-      // const usersFromPosts = await ctx.clerk.users.getUserList({
-      //   userId: posts.map((post) => post.user && post.user.id),
-      // });
-
-      const returnPosts = posts.map((post) => ({
-        ...post,
-        // user: {
-        //   ...post.user,
-        //   ...usersFromPosts.find((user) => user.id === post.user.id)!,
-        // },
-      }));
-
       let nextCursor: typeof input.cursor | undefined = undefined;
       if (posts.length > limit - 1) {
         nextCursor = input.cursor + 1;
       }
 
       return {
-        posts: returnPosts,
+        posts,
         userId: ctx.session.user.id,
         nextCursor,
       };
@@ -685,19 +653,7 @@ export const postsRouter = router({
   //       },
   //     });
 
-  //     const usersFromPosts = await ctx.clerk.users.getUserList({
-  //       userId: posts.map((post) => post.user && post.user.id),
-  //     });
-
-  //     const returnPosts = posts.map((post) => ({
-  //       ...post,
-  //       user: {
-  //         ...post.user,
-  //         ...usersFromPosts.find((user) => user.id === post.user.id)!,
-  //       },
-  //     }));
-
-  //     return returnPosts;
+  //     return posts;
   //   }),
 
   like: protectedProcedure
@@ -816,13 +772,6 @@ export const postsRouter = router({
         orderBy: (like, { desc }) => desc(like.created_at),
       });
 
-      const users = await ctx.clerk.users.getUserList({
-        userId: likes.map((like) => like.user_id),
-      });
-
-      return likes.map((like) => ({
-        ...like,
-        user: users.find((user) => user.id === like.user_id)!,
-      }));
+      return likes;
     }),
 });

@@ -4,13 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
-import type { User as UserFromClerk } from "@clerk/nextjs/server";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PenSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { User as UserFromDB } from "@cvsu.me/db/schema";
+import type { User } from "@cvsu.me/db/schema";
 
 import { Icons } from "./icons";
 import { AlertDialogHeader } from "./ui/alert-dialog";
@@ -35,18 +34,12 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { toast } from "./ui/use-toast";
 
-export default function EditProfile({
-  userFromDB,
-  userFromClerk,
-}: {
-  userFromDB: UserFromDB;
-  userFromClerk: UserFromClerk;
-}) {
+export default function EditProfile({ user }: { user: User }) {
   const context = api.useContext();
   const updateProfileMutation = api.users.updateProfile.useMutation({
     onSuccess: async () => {
       await context.users.getUserProfile.invalidate({
-        username: userFromClerk.username ?? "",
+        username: user.username ?? "",
       });
     },
   });
@@ -84,11 +77,11 @@ export default function EditProfile({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      bio: userFromDB.bio ?? "",
-      firstName: userFromClerk.firstName ?? "",
-      lastName: userFromClerk.lastName ?? "",
-      username: userFromClerk.username ?? "",
-      link: userFromDB.link?.split("https://")[1] ?? "",
+      bio: user.bio ?? "",
+      firstName: user.first_name ?? "",
+      lastName: user.last_name ?? "",
+      username: user.username ?? "",
+      link: user.link?.split("https://")[1] ?? "",
     },
   });
 
@@ -97,13 +90,13 @@ export default function EditProfile({
   // useEffect(() => {
   //   if (open) {
   //     form.reset();
-  //     form.setValue("bio", userFromDB.bio ?? "");
-  //     form.setValue("firstName", userFromClerk.firstName ?? "");
-  //     form.setValue("lastName", userFromClerk.lastName ?? "");
-  //     form.setValue("username", userFromClerk.username ?? "");
-  //     form.setValue("link", userFromDB.link?.split("https://")[1] ?? "");
+  //     form.setValue("bio", user.bio ?? "");
+  //     form.setValue("firstName", user.firstName ?? "");
+  //     form.setValue("lastName", user.lastName ?? "");
+  //     form.setValue("username", user.username ?? "");
+  //     form.setValue("link", user.link?.split("https://")[1] ?? "");
   //   }
-  // }, [open, userFromDB, userFromClerk, form]);
+  // }, [open, user, user, form]);
 
   function mapToPercentage(value: number) {
     return (Math.min(128, Math.max(0, value)) / 128) * 100;

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { api } from "@/lib/trpc/server";
-import { clerkClient } from "@clerk/nextjs/server";
+
+import { db } from "@cvsu.me/db";
 
 import PageWrapper from "./page-wrapper";
 
@@ -10,12 +11,11 @@ export async function generateMetadata({
 }: {
   params: { username: string };
 }): Promise<Metadata> {
-  const user = await clerkClient.users.getUserList({
-    username: [params.username],
-    limit: 1,
+  const user = await db.query.users.findFirst({
+    where: (user, { eq }) => eq(user.username, params.username),
   });
 
-  if (user.length === 0) notFound();
+  if (!user) notFound();
 
   return {
     title: `@${params.username}`,

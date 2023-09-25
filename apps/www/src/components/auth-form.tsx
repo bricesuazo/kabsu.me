@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 // import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/trpc/client";
@@ -34,14 +35,11 @@ import { Separator } from "./ui/separator";
 import { Skeleton } from "./ui/skeleton";
 
 export default function AuthForm() {
-  // const searchParams = useSearchParams();
+  const searchParams = useSearchParams();
   const { data } = api.users.getProgramForAuth.useQuery();
   const isUsernameExistsMutation = api.users.isUsernameExists.useMutation();
   const [page, setPage] = useState(0);
-  const [
-    isLoading,
-    // setLoading
-  ] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const { isLoaded: isLoadedSignIn, signIn } = useSignIn();
   const { isLoaded: isLoadedSignUp, signUp } = useSignUp();
   const getTotalUsersQuery = api.users.getTotalUsers.useQuery();
@@ -248,34 +246,34 @@ export default function AuthForm() {
           </div>
           <Button
             // variant="outline"
-            // onClick={async () => {
-            //   if (!isLoadedSignIn) return;
-            //   setLoading(true);
+            onClick={async () => {
+              if (!isLoadedSignIn) return;
+              setLoading(true);
 
-            //   await signIn.authenticateWithRedirect({
-            //     strategy: "oauth_google",
-            //     redirectUrl: "/sso-callback",
-            //     redirectUrlComplete: searchParams.get("callback_url")
-            //       ? `/${searchParams.get("callback_url")}`
-            //       : "/",
-            //   });
+              await signIn.authenticateWithRedirect({
+                strategy: "oauth_google",
+                redirectUrl: "/sso-callback",
+                redirectUrlComplete: searchParams.get("callback_url")
+                  ? `/${searchParams.get("callback_url")}`
+                  : "/",
+              });
 
-            //   setLoading(false);
-            // }}
-            disabled={!isLoadedSignIn || isLoading || true}
+              setLoading(false);
+            }}
+            disabled={!isLoadedSignIn || isLoading}
           >
             {isLoading ? (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <Icons.google className="mr-2 h-4 w-4" />
             )}
-            {/* Sign in with CvSU Account */}
-            Under maintenance :(
+            Sign in with CvSU Account
+            {/* Under maintenance :( */}
           </Button>
 
-          <p className="text-sm">
+          {/* <p className="text-sm">
             Sorry, we are currently under maintenance due to high traffic.
-          </p>
+          </p> */}
 
           {signIn?.firstFactorVerification.error && (
             <Alert variant="destructive">

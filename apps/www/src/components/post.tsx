@@ -96,13 +96,23 @@ export default function Post({ post }: { post: Post }) {
           className="flex gap-x-2"
         >
           <div className="w-max">
-            <Image
-              src={getPostQuery.data.post.user.imageUrl}
-              alt="Image"
-              width={40}
-              height={40}
-              className="aspect-square rounded-full object-cover"
-            />
+            {getPostQuery.data.post.user.profile_picture_url ? (
+              <Image
+                src={getPostQuery.data.post.user.profile_picture_url}
+                alt="Image"
+                width={40}
+                height={40}
+                className="aspect-square rounded-full object-cover"
+              />
+            ) : (
+              <Image
+                src="/logo.svg"
+                alt="Image"
+                width={40}
+                height={40}
+                className="aspect-square rounded-full object-cover"
+              />
+            )}
           </div>
           <div className="flex flex-1 flex-col gap-y-1">
             <div className="group flex items-center gap-x-2">

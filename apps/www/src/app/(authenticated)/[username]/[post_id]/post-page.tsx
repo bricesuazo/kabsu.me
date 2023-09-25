@@ -100,13 +100,23 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                 className="flex gap-x-2"
               >
                 <div className="w-max">
-                  <Image
-                    src={postQuery.data.post.user.imageUrl}
-                    alt="Image"
-                    width={64}
-                    height={64}
-                    className="aspect-square rounded-full object-cover"
-                  />
+                  {postQuery.data.post.user.profile_picture_url ? (
+                    <Image
+                      src={postQuery.data.post.user.profile_picture_url}
+                      alt="Image"
+                      width={64}
+                      height={64}
+                      className="aspect-square rounded-full object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src="/logo.svg"
+                      alt="Logo"
+                      width={64}
+                      height={64}
+                      className="aspect-square rounded-full object-cover"
+                    />
+                  )}
                 </div>
                 <div className="flex flex-1 flex-col">
                   <div className="flex items-center gap-x-2">
@@ -124,8 +134,8 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                         }
                       })()}
                       <p className="line-clamp-1 font-semibold hover:underline">
-                        {postQuery.data.post.user.firstName}{" "}
-                        {postQuery.data.post.user.lastName}{" "}
+                        {postQuery.data.post.user.first_name}{" "}
+                        {postQuery.data.post.user.last_name}{" "}
                       </p>
                     </div>
 
@@ -250,13 +260,23 @@ function CommentComponent({ comment }: { comment: Comment }) {
         <div className="flex gap-x-2">
           <div className="min-w-max">
             <Link href={`/${fullCommentQuery.data.comment.user.username}`}>
-              <Image
-                src={fullCommentQuery.data.comment.user.imageUrl}
-                alt=""
-                width={40}
-                height={40}
-                className="aspect-square rounded-full"
-              />
+              {fullCommentQuery.data.comment.user.profile_picture_url ? (
+                <Image
+                  src={fullCommentQuery.data.comment.user.profile_picture_url}
+                  alt=""
+                  width={40}
+                  height={40}
+                  className="aspect-square rounded-full"
+                />
+              ) : (
+                <Image
+                  src="/logo.svg"
+                  alt=""
+                  width={40}
+                  height={40}
+                  className="aspect-square rounded-full"
+                />
+              )}
             </Link>
           </div>
           <div className="flex flex-col">
@@ -266,8 +286,8 @@ function CommentComponent({ comment }: { comment: Comment }) {
                 className="flex items-center gap-x-1"
               >
                 <p className="line-clamp-1 font-bold group-hover:underline">
-                  {fullCommentQuery.data.comment.user.firstName}{" "}
-                  {fullCommentQuery.data.comment.user.lastName}{" "}
+                  {fullCommentQuery.data.comment.user.first_name}{" "}
+                  {fullCommentQuery.data.comment.user.last_name}{" "}
                 </p>
                 {fullCommentQuery.data.comment.user.verified_at && (
                   <VerifiedBadge size="sm" />

@@ -17,6 +17,10 @@ export const notificationsRouter = router({
           ),
         orderBy: (notification, { desc }) => desc(notification.created_at),
         limit: !input.all ? 8 : undefined,
+        with: {
+          from: true,
+          to: true,
+        },
       });
 
       const postsToFetch = notifications
@@ -28,17 +32,8 @@ export const notificationsRouter = router({
           inArray(post.id, !postsToFetch.length ? [""] : postsToFetch),
       });
 
-      const users = await ctx.clerk.users.getUserList({
-        userId: [
-          ...new Set([
-            ...notifications.map((notification) => notification.from_id),
-          ]),
-        ],
-      });
-
       return notifications.map((notification) => ({
         ...notification,
-        from: users.find((user) => user.id === notification.from_id)!,
         content: posts.find((post) => post.id === notification.content_id)!,
       }));
     }),

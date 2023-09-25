@@ -11,7 +11,6 @@ export default function SSOCallback(props: {
   const { handleRedirectCallback } = useClerk();
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     void handleRedirectCallback(props.params);
   }, [props.params, handleRedirectCallback]);
 

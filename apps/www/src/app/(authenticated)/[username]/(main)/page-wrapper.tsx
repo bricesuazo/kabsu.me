@@ -128,8 +128,8 @@ export default function UserPageWrapper({
             <div className="flex flex-col">
               <div className="flex items-center gap-x-2">
                 <h2 className="truncate text-2xl font-semibold xs:text-4xl">
-                  {profileQuery.data.user.firstName}{" "}
-                  {profileQuery.data.user.lastName}
+                  {profileQuery.data.user.first_name}{" "}
+                  {profileQuery.data.user.last_name}
                 </h2>
 
                 {profileQuery.data.user.verified_at && (
@@ -204,26 +204,46 @@ export default function UserPageWrapper({
                   </Tooltip>
                 </div>
 
-                <Image
-                  src={profileQuery.data.user.imageUrl}
-                  alt={`${profileQuery.data.user.firstName} ${profileQuery.data.user.lastName} profile picture`}
-                  fill
-                  sizes="100%"
-                  className="-z-10 object-cover"
-                />
+                {profileQuery.data.user.profile_picture_url ? (
+                  <Image
+                    src={profileQuery.data.user.profile_picture_url}
+                    alt={`${profileQuery.data.user.first_name} ${profileQuery.data.user.last_name} profile picture`}
+                    fill
+                    sizes="100%"
+                    className="-z-10 object-cover"
+                  />
+                ) : (
+                  <Image
+                    src="/logo.svg"
+                    alt="Logo"
+                    fill
+                    sizes="100%"
+                    className="-z-10 object-cover"
+                  />
+                )}
               </div>
             </DialogTrigger>
 
             <DialogContent className="border-transparent bg-transparent">
               <div className="p-4">
-                <Image
-                  src={profileQuery.data.user.imageUrl}
-                  alt={`${profileQuery.data.user.firstName} ${profileQuery.data.user.lastName} profile picture`}
-                  width={500}
-                  height={500}
-                  sizes="100%"
-                  className="rounded-lg"
-                />
+                {profileQuery.data.user.profile_picture_url ? (
+                  <Image
+                    src={profileQuery.data.user.profile_picture_url}
+                    alt={`${profileQuery.data.user.first_name} ${profileQuery.data.user.last_name} profile picture`}
+                    width={500}
+                    height={500}
+                    sizes="100%"
+                    className="rounded-lg"
+                  />
+                ) : (
+                  <Image
+                    src="/logo.svg"
+                    alt="Logo"
+                    fill
+                    sizes="100%"
+                    className="-z-10 object-cover"
+                  />
+                )}
               </div>
             </DialogContent>
           </Dialog>
@@ -307,11 +327,7 @@ export default function UserPageWrapper({
                 </AlertDialog>
               </div>
             ) : (
-              <EditProfile
-                userFromDB={profileQuery.data.user}
-                userFromClerk={profileQuery.data.user}
-                data-superjson
-              />
+              <EditProfile user={profileQuery.data.user} data-superjson />
             )}
           </div>
 
