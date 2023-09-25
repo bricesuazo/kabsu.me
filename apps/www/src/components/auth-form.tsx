@@ -245,29 +245,34 @@ export default function AuthForm() {
           </div>
           <Button
             // variant="outline"
-            onClick={async () => {
-              if (!isLoadedSignIn) return;
-              setLoading(true);
+            // onClick={async () => {
+            //   if (!isLoadedSignIn) return;
+            //   setLoading(true);
 
-              await signIn.authenticateWithRedirect({
-                strategy: "oauth_google",
-                redirectUrl: "/sso-callback",
-                redirectUrlComplete: searchParams.get("callback_url")
-                  ? `/${searchParams.get("callback_url")}`
-                  : "/",
-              });
+            //   await signIn.authenticateWithRedirect({
+            //     strategy: "oauth_google",
+            //     redirectUrl: "/sso-callback",
+            //     redirectUrlComplete: searchParams.get("callback_url")
+            //       ? `/${searchParams.get("callback_url")}`
+            //       : "/",
+            //   });
 
-              setLoading(false);
-            }}
-            disabled={!isLoadedSignIn || isLoading}
+            //   setLoading(false);
+            // }}
+            disabled={!isLoadedSignIn || isLoading || true}
           >
             {isLoading ? (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <Icons.google className="mr-2 h-4 w-4" />
             )}
-            Sign in with CvSU Account
+            {/* Sign in with CvSU Account */}
+            Under maintenance :(
           </Button>
+
+          <p className="text-sm">
+            Sorry, we are currently under maintenance due to high traffic.
+          </p>
 
           {signIn?.firstFactorVerification.error && (
             <Alert variant="destructive">
