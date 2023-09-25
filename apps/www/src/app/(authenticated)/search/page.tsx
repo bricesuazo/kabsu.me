@@ -40,10 +40,10 @@ export default function SearchPage() {
         <div className="flex max-h-80 flex-col gap-4">
           {searchMutation.isLoading ? (
             <div className="flex flex-col gap-y-1">
-              <Skeleton className="mb-2 h-16" />
-              <Skeleton className="mb-2 h-16" />
-              <Skeleton className="mb-2 h-16" />
-              <Skeleton className="mb-2 h-16" />
+              <Skeleton className="h-16" />
+              <Skeleton className="h-16" />
+              <Skeleton className="h-16" />
+              <Skeleton className="h-16" />
             </div>
           ) : !searchMutation.data ? (
             <p className="my-4 text-center text-sm text-muted-foreground">
