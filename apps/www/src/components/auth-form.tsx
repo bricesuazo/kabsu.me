@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/trpc/client";
 import { useSignIn, useSignUp } from "@clerk/nextjs";
@@ -34,11 +34,14 @@ import { Separator } from "./ui/separator";
 import { Skeleton } from "./ui/skeleton";
 
 export default function AuthForm() {
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
   const { data } = api.users.getProgramForAuth.useQuery();
   const isUsernameExistsMutation = api.users.isUsernameExists.useMutation();
   const [page, setPage] = useState(0);
-  const [isLoading, setLoading] = useState(false);
+  const [
+    isLoading,
+    // setLoading
+  ] = useState(false);
   const { isLoaded: isLoadedSignIn, signIn } = useSignIn();
   const { isLoaded: isLoadedSignUp, signUp } = useSignUp();
   const getTotalUsersQuery = api.users.getTotalUsers.useQuery();
