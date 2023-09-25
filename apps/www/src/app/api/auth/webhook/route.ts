@@ -98,18 +98,32 @@ export async function POST(req: Request) {
         .where(eq(users.id, id));
     }
 
-    // if (user.username !== username) {
-    //   await clerkClient.users.updateUser(id, {
-    //     username,
-    //   });
+    if (user.username !== evt.data.username) {
+      await db
+        .update(users)
+        .set({
+          username: user.username ?? evt.data.username ?? "",
+        })
+        .where(eq(users.id, id));
+    }
 
-    //   await db
-    //     .update(users)
-    //     .set({
-    //       username,
-    //     })
-    //     .where(eq(users.id, id));
-    // }
+    if (user.firstName !== evt.data.first_name) {
+      await db
+        .update(users)
+        .set({
+          first_name: user.firstName ?? evt.data.first_name ?? "",
+        })
+        .where(eq(users.id, id));
+    }
+
+    if (user.lastName !== evt.data.last_name) {
+      await db
+        .update(users)
+        .set({
+          last_name: user.lastName ?? evt.data.last_name ?? "",
+        })
+        .where(eq(users.id, id));
+    }
   } else {
     console.log(`User ${id} was ${eventType}`);
   }
