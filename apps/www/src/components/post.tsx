@@ -1,5 +1,6 @@
 "use client";
 
+import { experimental_useOptimistic as useOptimistic } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -15,73 +16,57 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import momentTwitter from "moment-twitter";
+import { nanoid } from "nanoid";
 
-import type { Post } from "@cvsu.me/db/schema";
+import type { Like, Post } from "@cvsu.me/db/schema";
 
 import PostDropdown from "./post-dropdown";
+import { PostSkeletonNoRandom } from "./post-skeleton";
 import { Badge } from "./ui/badge";
 import { Toggle } from "./ui/toggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import VerifiedBadge from "./verified-badge";
 
-export default function Post({
-  post, // isMyPost,
-  // userId,
-}: {
-  post: Post;
-  //   & {
-  //   likes: Like[];
-  //   comments: Comment[];
-  //   user: UserFromDB &
-  //     UserFromClerk & {
-  //       program: Program & { college: College & { campus: Campus } };
-  //     };
-  // };
-  // isMyPost: boolean;
-  // userId: string;
-}) {
+export default function Post({ post }: { post: Post }) {
   const getPostQuery = api.posts.getPost.useQuery({ post_id: post.id });
   const router = useRouter();
   const searchParams = useSearchParams();
-  // const [likes, setLikes] = useState<Like[]>(post.likes);
+  const [likes, setLikes] = useOptimistic<Like[]>([]);
   const unlikeMutation = api.posts.unlike.useMutation({
-    // onMutate: ({ post_id }) => {
-    //   // setLikes(
-    //   //   likes.filter(
-    //   //     (like) => like.post_id !== post_id && like.user_id !== userId,
-    //   //   ),
-    //   // );
-    //   // await context.posts.getPosts.invalidate({
-    //   //   type:
-    //   //     ((searchParams.get("tab") as (typeof POST_TYPE)[number]) || null) ??
-    //   //     "following",
-    //   // });
-    // },
+    onMutate: ({ post_id, userId }) => {
+      setLikes(
+        likes.filter(
+          (like) => like.post_id !== post_id && like.user_id !== userId,
+        ),
+      );
+      // await context.posts.getPosts.invalidate({
+      //   type:
+      //     ((searchParams.get("tab") as (typeof POST_TYPE)[number]) || null) ??
+      //     "following",
+      // });
+    },
   });
   const likeMutation = api.posts.like.useMutation({
-    // onMutate: ({ post_id }) => {
-    //   // setLikes([
-    //   //   ...likes,
-    //   //   {
-    //   //     id: nanoid(),
-    //   //     post_id,
-    //   //     user_id: userId,
-    //   //     created_at: new Date(),
-    //   //   },
-    //   // ]);
-    //   // await context.posts.getPosts.invalidate({
-    //   //   type:
-    //   //     ((searchParams.get("tab") as (typeof POST_TYPE)[number]) || null) ??
-    //   //     "following",
-    //   // });
-    // },
+    onMutate: ({ post_id, userId }) => {
+      setLikes([
+        ...likes,
+        {
+          id: nanoid(),
+          post_id,
+          user_id: userId,
+          created_at: new Date(),
+        },
+      ]);
+      // await context.posts.getPosts.invalidate({
+      //   type:
+      //     ((searchParams.get("tab") as (typeof POST_TYPE)[number]) || null) ??
+      //     "following",
+      // });
+    },
   });
 
-  if (!getPostQuery.data) return null;
-
-  if (getPostQuery.data.post.id !== post.id) return null;
-
-  if (getPostQuery.isLoading) return "Loading...";
+  if (!getPostQuery.data || getPostQuery.isLoading)
+    return <PostSkeletonNoRandom />;
 
   return (
     <div
@@ -215,15 +200,23 @@ export default function Post({
         <div className="flex gap-x-1">
           <Toggle
             size="sm"
-            pressed={getPostQuery.data.post.likes.some(
-              (like) => like.user_id === getPostQuery.data.userId,
+            pressed={likes.some(
+              (like) =>
+                like.user_id === getPostQuery.data.userId &&
+                like.post_id === post.id,
             )}
             onClick={(e) => e.stopPropagation()}
             onPressedChange={(pressed) => {
               if (pressed) {
-                likeMutation.mutate({ post_id: post.id });
+                likeMutation.mutate({
+                  post_id: post.id,
+                  userId: getPostQuery.data.userId,
+                });
               } else {
-                unlikeMutation.mutate({ post_id: post.id });
+                unlikeMutation.mutate({
+                  post_id: post.id,
+                  userId: getPostQuery.data.userId,
+                });
               }
             }}
           >

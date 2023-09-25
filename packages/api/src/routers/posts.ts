@@ -700,7 +700,12 @@ export const postsRouter = router({
   //   }),
 
   like: protectedProcedure
-    .input(z.object({ post_id: z.string().min(1) }))
+    .input(
+      z.object({
+        post_id: z.string().nonempty(),
+        userId: z.string().nonempty(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const like = await ctx.db.query.likes.findFirst({
         where: (likes, { and, eq }) =>
@@ -735,7 +740,12 @@ export const postsRouter = router({
     }),
 
   unlike: protectedProcedure
-    .input(z.object({ post_id: z.string().nonempty() }))
+    .input(
+      z.object({
+        post_id: z.string().nonempty(),
+        userId: z.string().nonempty(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const unlike = await ctx.db.query.likes.findFirst({
         where: (likes, { and, eq }) =>

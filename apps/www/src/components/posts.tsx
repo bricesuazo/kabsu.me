@@ -1,8 +1,8 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { api } from "@/lib/trpc/client";
-import { InView } from "react-intersection-observer";
+import { useInView } from "react-intersection-observer";
 
 import type { POST_TYPE_TABS } from "@cvsu.me/constants";
 
@@ -23,21 +23,22 @@ export default function Posts({
     },
   );
 
-  // const [page, setPage] = useState<
-  //   ReturnType<typeof api.posts.getPosts.useInfiniteQuery>["data"]
-  // >([]);
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    void (async () => {
+      if (inView) {
+        await posts.fetchNextPage();
+      }
+    })();
+  }, [inView]);
 
   return (
     <div className="">
-      <InView as="div" onChange={(saf) => console.log(saf)}>
-        jifbsihdfn
-      </InView>
       {posts.isLoading ? (
-        <>
-          {[...(Array(6) as number[])].map((_, i) => (
-            <PostSkeletonNoRandom key={i} />
-          ))}
-        </>
+        <div className="grid h-full w-full place-items-center p-40">
+          <Icons.spinner className="animate-spin" />
+        </div>
       ) : !posts.data && posts.isError ? (
         <p className="text-center text-sm text-muted-foreground">
           {posts.error.message}
@@ -51,28 +52,12 @@ export default function Posts({
           {posts.data.pages.map((page) => (
             <Fragment key={page.nextCursor}>
               {page.posts.map((post) => (
-                <Post
-                  key={post.id}
-                  post={post}
-                  // isMyPost={post.user.id === page.userId}
-                  // userId={page.userId}
-                  // data-superjson
-                />
+                <Post key={post.id} post={post} />
               ))}
             </Fragment>
           ))}
-          <InView
-            as="div"
-            onChange={async (inView, en) => {
-              console.log("🚀 ~ file: posts.tsx:64 ~ onChange={ ~ en:", en);
-              console.log(
-                "🚀 ~ file: posts.tsx:64 ~ onChange={ ~ inView:",
-                inView,
-              );
-              if (inView) {
-                await posts.fetchNextPage();
-              }
-            }}
+          <span
+            ref={ref}
             className="flex justify-center border-b p-8 text-center text-sm text-muted-foreground"
           >
             {posts.isFetchingNextPage && posts.hasNextPage ? (
@@ -80,7 +65,7 @@ export default function Posts({
             ) : (
               "You've reached the end of the page."
             )}
-          </InView>
+          </span>
         </>
       )}
     </div>
