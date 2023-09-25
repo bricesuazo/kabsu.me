@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import UserFollows from "@/components/user-follows";
-import { auth, clerkClient } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
 
 import { db } from "@cvsu.me/db";
 
@@ -24,11 +24,9 @@ export default async function FollowersPage({
 
   if (!userId) notFound();
 
-  const users = await clerkClient.users.getUserList({
-    username: [username],
+  const user = await db.query.users.findFirst({
+    where: (user, { eq }) => eq(user.username, username),
   });
-
-  const user = users[0];
 
   if (!user) notFound();
 
@@ -43,9 +41,12 @@ export default async function FollowersPage({
 
   const followersUsers =
     followers.length !== 0
-      ? await clerkClient.users.getUserList({
-          userId: followers.map((follower) => follower.follower_id),
-          limit: followers.length,
+      ? await db.query.users.findMany({
+          where: (user, { inArray }) =>
+            inArray(
+              user.id,
+              followers.map((f) => f.follower_id),
+            ),
         })
       : [];
 

@@ -20,16 +20,8 @@ export const commentsRouter = router({
 
       if (!fullComment) return null;
 
-      const user = await ctx.clerk.users.getUser(fullComment.user_id);
-
       return {
-        comment: {
-          ...fullComment,
-          user: {
-            ...user,
-            ...fullComment.user,
-          },
-        },
+        comment: fullComment,
         userId: ctx.session.user.id,
       };
     }),

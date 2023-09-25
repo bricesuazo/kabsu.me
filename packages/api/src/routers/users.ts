@@ -92,8 +92,6 @@ export const usersRouter = router({
         followee_id: ctx.session.user.id,
       });
 
-      const user = await ctx.clerk.users.getUser(ctx.session.user.id);
-
       if (ctx.session.user.id !== input.user_id) {
         await ctx.db.insert(notifications).values({
           from_id: ctx.session.user.id,
@@ -154,13 +152,11 @@ export const usersRouter = router({
     .mutation(async ({ ctx, input }) => {
       if (BLOCKED_USERNAMES.has(input.username)) return true;
 
-      const users = await ctx.clerk.users.getUserList({
-        username: [input.username],
+      const user = await ctx.db.query.users.findFirst({
+        where: (user, { eq }) => eq(user.username, input.username),
       });
 
-      const user = users[0];
-
-      return !!user || users.length > 0;
+      return !!user;
     }),
 
   isFollower: protectedProcedure
@@ -180,11 +176,9 @@ export const usersRouter = router({
   getUserProfile: protectedProcedure
     .input(z.object({ username: z.string().nonempty() }))
     .query(async ({ ctx, input }) => {
-      const users = await ctx.clerk.users.getUserList({
-        username: [input.username],
+      const user = await ctx.db.query.users.findFirst({
+        where: (user, { eq }) => eq(user.username, input.username),
       });
-
-      const user = users[0];
 
       if (!user) throw new TRPCError({ code: "NOT_FOUND" });
 
@@ -247,32 +241,29 @@ export const usersRouter = router({
   search: protectedProcedure
     .input(z.object({ query: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const users = await ctx.clerk.users.getUserList({
-        query: input.query,
-        orderBy: "created_at",
-      });
+      // TODO: Implement search
+      // const users = await ctx.clerk.users.getUserList({
+      //   query: input.query,
+      //   orderBy: "created_at",
+      // });
 
-      const usersFromDB = await ctx.db.query.users.findMany({
-        where: (user, { inArray }) =>
-          !!users.length
-            ? inArray(
-                user.id,
-                users.map((u) => u.id),
-              )
-            : undefined,
-      });
+      // const usersFromDB = await ctx.db.query.users.findMany({
+      //   where: (user, { inArray }) =>
 
-      return users.map((user) => ({
-        id: user.id,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        imageUrl: user.imageUrl,
-        isVerified: !!usersFromDB.find((u) => u.id === user.id)?.verified_at,
-      }));
+      // });
+
+      // return users.map((user) => ({
+      //   id: user.id,
+      //   username: user.username,
+      //   firstName: user.firstName,
+      //   lastName: user.lastName,
+      //   imageUrl: user.imageUrl,
+      //   isVerified: !!usersFromDB.find((u) => u.id === user.id)?.verified_at,
+      // }));
+      return [];
     }),
   getTotalUsers: publicProcedure.query(
-    async ({ ctx }) => await ctx.clerk.users.getCount(),
+    async ({ ctx }) => (await ctx.db.query.users.findMany()).length,
   ),
   reportAProblem: protectedProcedure
     .input(
