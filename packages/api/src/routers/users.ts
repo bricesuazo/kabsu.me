@@ -247,4 +247,7 @@ export const usersRouter = router({
         imageUrl: user.imageUrl,
       }));
     }),
+  getTotalUsers: publicProcedure.query(
+    async ({ ctx }) => await ctx.clerk.users.getCount(),
+  ),
 });

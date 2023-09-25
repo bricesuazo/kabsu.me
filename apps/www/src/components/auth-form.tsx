@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/lib/trpc/client";
 import { useSignIn, useSignUp } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Github } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -40,6 +40,9 @@ export default function AuthForm() {
   const [isLoading, setLoading] = useState(false);
   const { isLoaded: isLoadedSignIn, signIn } = useSignIn();
   const { isLoaded: isLoadedSignUp, signUp } = useSignUp();
+  const getTotalUsersQuery = api.users.getTotalUsers.useQuery(undefined, {
+    initialData: 0,
+  });
 
   const form1Schema = z.object({
     username: z
@@ -224,11 +227,6 @@ export default function AuthForm() {
             className="pointer-events-none mx-auto select-none"
           />
 
-          <div className="flex justify-center">
-            <Link href="https://github.com/bricesuazo/cvsu.me" target="_blank">
-              <Badge>Beta Testing Phase</Badge>
-            </Link>
-          </div>
           <h1 className="text-center text-6xl font-bold text-primary">
             CvSU.me
           </h1>
@@ -238,6 +236,14 @@ export default function AuthForm() {
           </h4>
         </div>
         <div className="flex flex-col items-center justify-center gap-y-4 ">
+          <div className="flex justify-center">
+            <Link href="https://github.com/bricesuazo/cvsu.me" target="_blank">
+              <Badge variant="outline" className="h-8 text-sm">
+                <Github size="1rem" className="mr-1" />
+                Source Code
+              </Badge>
+            </Link>
+          </div>
           <Button
             // variant="outline"
             onClick={async () => {
@@ -284,6 +290,10 @@ export default function AuthForm() {
           )}
 
           <ToggleTheme />
+
+          <p className="text-center text-sm text-muted-foreground">
+            {getTotalUsersQuery.data} users registered.
+          </p>
         </div>
         {/* ABOUT DEV COMPONENT */}{" "}
         <div>
