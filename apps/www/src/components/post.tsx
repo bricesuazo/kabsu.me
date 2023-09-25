@@ -35,24 +35,37 @@ export default function Post({ post }: { post: Post }) {
     getPostQuery.data?.post.likes ?? [],
   );
   const unlikeMutation = api.posts.unlike.useMutation({
-    onMutate: ({ post_id, userId }) => {
-      setLikes(
-        likes.filter(
-          (like) => like.post_id !== post_id && like.user_id !== userId,
+    onMutate: ({ userId }) => {
+      setLikes((prev) =>
+        prev.filter(
+          (like) => like.post_id !== post.id || like.user_id !== userId,
         ),
+      );
+    },
+    onSuccess: ({ like, userId }) => {
+      setLikes((prev) =>
+        prev.filter((l) => l.post_id !== like.post_id || l.user_id !== userId),
       );
     },
   });
   const likeMutation = api.posts.like.useMutation({
     onMutate: ({ post_id, userId }) => {
-      setLikes([
-        ...likes,
+      setLikes((prev) => [
+        ...prev,
         {
           id: nanoid(),
           post_id,
           user_id: userId,
           created_at: new Date(),
         },
+      ]);
+    },
+    onSuccess: ({ like, userId }) => {
+      setLikes((prev) => [
+        ...prev.filter(
+          (l) => l.post_id !== like.post_id || l.user_id !== userId,
+        ),
+        like,
       ]);
     },
   });

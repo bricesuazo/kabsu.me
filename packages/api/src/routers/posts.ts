@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { and, eq, or } from "drizzle-orm";
+import { nanoid } from "nanoid";
 import { z } from "zod";
 
 import {
@@ -725,9 +726,10 @@ export const postsRouter = router({
       if (!post)
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
 
+      const id = nanoid();
       await ctx.db
         .insert(likes)
-        .values({ user_id: ctx.session.user.id, post_id: input.post_id });
+        .values({ id, user_id: ctx.session.user.id, post_id: input.post_id });
 
       if (post.user_id !== ctx.session.user.id) {
         await ctx.db.insert(notifications).values({
@@ -737,6 +739,19 @@ export const postsRouter = router({
           content_id: post.id,
         });
       }
+
+      const returnLike = await ctx.db.query.likes.findFirst({
+        where: (likes, { and, eq }) =>
+          and(eq(likes.id, id), eq(likes.user_id, ctx.session.user.id)),
+      });
+
+      if (!returnLike)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Something went wrong.",
+        });
+
+      return { like: returnLike, userId: ctx.session.user.id };
     }),
 
   unlike: protectedProcedure
@@ -786,6 +801,8 @@ export const postsRouter = router({
             ),
           );
       }
+
+      return { like: unlike, userId: ctx.session.user.id };
     }),
 
   getLikesInPost: protectedProcedure
