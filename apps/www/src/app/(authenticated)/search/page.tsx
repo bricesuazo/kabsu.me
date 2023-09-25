@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import VerifiedBadge from "@/components/verified-badge";
 import { api } from "@/lib/trpc/client";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -40,10 +41,9 @@ export default function SearchPage() {
         <div className="flex max-h-80 flex-col gap-4">
           {searchMutation.isLoading ? (
             <div className="flex flex-col gap-y-1">
-              <Skeleton className="h-16" />
-              <Skeleton className="h-16" />
-              <Skeleton className="h-16" />
-              <Skeleton className="h-16" />
+              {[...(Array(8) as undefined[])].map((_, i) => (
+                <Skeleton key={i} className="h-16" />
+              ))}
             </div>
           ) : !searchMutation.data ? (
             <p className="my-4 text-center text-sm text-muted-foreground">
@@ -71,9 +71,12 @@ export default function SearchPage() {
                     />
                   </div>
                   <div>
-                    <p className="line-clamp-1">
-                      {user.firstName} {user.lastName}
-                    </p>
+                    <div className="flex items-center gap-x-1">
+                      <p className="line-clamp-1 flex-1">
+                        {user.firstName} {user.lastName}{" "}
+                      </p>
+                      {user.isVerified && <VerifiedBadge size="sm" />}
+                    </div>
                     <p className="line-clamp-1 text-sm text-muted-foreground">
                       @{user.username}
                     </p>

@@ -237,6 +237,15 @@ export const usersRouter = router({
     .mutation(async ({ ctx, input }) => {
       const users = await ctx.clerk.users.getUserList({
         query: input.query,
+        orderBy: "created_at",
+      });
+
+      const usersFromDB = await ctx.db.query.users.findMany({
+        where: (user, { inArray }) =>
+          inArray(
+            user.id,
+            users.map((u) => u.id),
+          ),
       });
 
       return users.map((user) => ({
@@ -245,6 +254,7 @@ export const usersRouter = router({
         firstName: user.firstName,
         lastName: user.lastName,
         imageUrl: user.imageUrl,
+        isVerified: !!usersFromDB.find((u) => u.id === user.id)?.verified_at,
       }));
     }),
   getTotalUsers: publicProcedure.query(

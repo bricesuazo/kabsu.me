@@ -12,6 +12,7 @@ import { Input } from "./ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
 import { Skeleton } from "./ui/skeleton";
+import VerifiedBadge from "./verified-badge";
 
 export default function Search() {
   const searchMutation = api.users.search.useMutation();
@@ -29,6 +30,13 @@ export default function Search() {
       searchMutation.reset();
     }
   }, [value]);
+
+  useEffect(() => {
+    if (open) {
+      setValue("");
+      searchMutation.reset();
+    }
+  }, [open]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -85,9 +93,12 @@ export default function Search() {
                       />
                     </div>
                     <div>
-                      <p className="line-clamp-1">
-                        {user.firstName} {user.lastName}
-                      </p>
+                      <div className="flex items-center gap-x-1">
+                        <p className="line-clamp-1 flex-1">
+                          {user.firstName} {user.lastName}{" "}
+                        </p>
+                        {user.isVerified && <VerifiedBadge size="sm" />}
+                      </div>
                       <p className="line-clamp-1 text-sm text-muted-foreground">
                         @{user.username}
                       </p>
