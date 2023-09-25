@@ -88,6 +88,7 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
+    "@clerk/types": "^3.52.0",
     "@cvsu.me/eslint-config": "workspace:*",
     "@cvsu.me/prettier-config": "workspace:*",
     "@cvsu.me/tailwind-config": "workspace:*",

@@ -242,10 +242,12 @@ export const usersRouter = router({
 
       const usersFromDB = await ctx.db.query.users.findMany({
         where: (user, { inArray }) =>
-          inArray(
-            user.id,
-            users.map((u) => u.id),
-          ),
+          !!users.length
+            ? inArray(
+                user.id,
+                users.map((u) => u.id),
+              )
+            : undefined,
       });
 
       return users.map((user) => ({
