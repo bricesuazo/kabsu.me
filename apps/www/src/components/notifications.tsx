@@ -134,7 +134,7 @@ export default function Notifications() {
                             alt="Image"
                             fill
                             sizes="100%"
-                            className="rounded-full"
+                            className="rounded-full object-cover object-center"
                           />
                         ) : (
                           <Image
@@ -142,7 +142,7 @@ export default function Notifications() {
                             alt="Image"
                             fill
                             sizes="100%"
-                            className="rounded-full"
+                            className="rounded-full object-cover object-center"
                           />
                         )}
                       </div>
