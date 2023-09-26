@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -56,6 +57,20 @@ export default function CampusPageWrapper({
     resolver: zodResolver(formSchema),
   });
 
+  useEffect(() => {
+    if (addCampusMutation.error) {
+      form.setError("name", {
+        message: addCampusMutation.error.message,
+      });
+    }
+  }, [addCampusMutation.error, form]);
+
+  useEffect(() => {
+    if (openAddDialog) {
+      form.reset();
+    }
+  }, [openAddDialog]);
+
   return (
     <div className="space-y-2">
       <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
@@ -81,7 +96,11 @@ export default function CampusPageWrapper({
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Main Campus" {...field} />
+                      <Input
+                        placeholder="Main Campus"
+                        disabled={addCampusMutation.isLoading}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -94,7 +113,11 @@ export default function CampusPageWrapper({
                   <FormItem>
                     <FormLabel>Acronym</FormLabel>
                     <FormControl>
-                      <Input placeholder="MAIN" {...field} />
+                      <Input
+                        placeholder="MAIN"
+                        disabled={addCampusMutation.isLoading}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -102,7 +125,12 @@ export default function CampusPageWrapper({
               />
 
               <DialogFooter>
-                <Button type="submit">Confirm</Button>
+                <Button type="submit">
+                  {addCampusMutation.isLoading && (
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Confirm
+                </Button>
               </DialogFooter>
             </form>
           </Form>

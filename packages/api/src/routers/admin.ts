@@ -50,6 +50,49 @@ export const adminRouter = router({
           message: "Campus not found",
         });
 
+      if (campus.slug === "main" || campus.slug === "ccat")
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Cannot delete campus",
+        });
+
       await ctx.db.delete(campuses).where(eq(campuses.id, input.campus_id));
+    }),
+  editCampus: protectedProcedure
+    .input(
+      z.object({
+        campus_id: z.string().nonempty(),
+        name: z.string().min(2, {
+          message: "name must be at least 2 characters.",
+        }),
+        slug: z.string().min(2, {
+          message: "slug must be at least 2 characters.",
+        }),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const campus = await ctx.db.query.campuses.findFirst({
+        where: (campuses, { eq }) => eq(campuses.id, input.campus_id),
+      });
+
+      if (!campus)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Campus not found",
+        });
+
+      if (campus.slug === "main" && input.slug !== "main")
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Cannot edit main campus",
+        });
+
+      await ctx.db
+        .update(campuses)
+        .set({
+          name: input.name,
+          slug: input.slug,
+        })
+        .where(eq(campuses.id, input.campus_id));
     }),
 });
