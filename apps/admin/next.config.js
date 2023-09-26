@@ -1,4 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = { transpilePackages: ["@eboto-mo/db", "@eboto-mo/api"] };
 
-module.exports = nextConfig
+module.exports = nextConfig;
