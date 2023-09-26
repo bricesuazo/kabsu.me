@@ -32,7 +32,7 @@ import { Skeleton } from "./ui/skeleton";
 import { Textarea } from "./ui/textarea";
 import { Toggle } from "./ui/toggle";
 
-export default function PostCommentPage({
+export default function PostCommentPageBot({
   userId,
   post,
 }: {
@@ -106,7 +106,7 @@ export default function PostCommentPage({
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
+      {/* <div className="space-y-2">
         <div className="flex gap-x-1">
           <Toggle
             size="sm"
@@ -261,9 +261,9 @@ export default function PostCommentPage({
               : post.type.charAt(0).toUpperCase() + post.type.slice(1)}
           </Badge>
         </div>
-      </div>
+      </div> */}
 
-      {/* <div className="flex flex-col items-end gap-2">
+      <div className="flex flex-col items-end gap-2">
         {isFocused ? (
           <Form {...form}>
             <form
@@ -291,7 +291,7 @@ export default function PostCommentPage({
                       alt="Image"
                       width={40}
                       height={40}
-                      className="rounded-full"
+                      className="aspect-square rounded-full"
                     />
                   ) : (
                     <Skeleton className="h-10 w-10 rounded-full" />
@@ -363,7 +363,7 @@ export default function PostCommentPage({
             </Button>
           </div>
         )}
-      </div> */}
+      </div>
     </div>
   );
 }

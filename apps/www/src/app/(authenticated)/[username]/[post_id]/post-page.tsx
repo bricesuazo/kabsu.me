@@ -5,8 +5,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import CommentDropdown from "@/app/(authenticated)/[username]/[post_id]/comment-dropdown";
 import PostComment from "@/components/post-comment";
+import PostCommentPageBot from "@/components/post-comments-bot";
 import PostDropdown from "@/components/post-dropdown";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
@@ -92,7 +94,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
           {postQuery.error.message}
         </p>
       ) : (
-        <div className="min-h-screen space-y-2">
+        <div className=" space-y-2">
           <div className="flex flex-col gap-y-4 p-4">
             <div className="flex justify-between">
               <Link
@@ -209,7 +211,6 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
             <div className="whitespace-pre-wrap break-words">
               {formatText(postQuery.data.post.content)}
             </div>
-
             <PostComment
               userId={postQuery.data.userId}
               post={postQuery.data.post}
@@ -217,10 +218,21 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
             />
           </div>
 
-          <div>
-            {postQuery.data.post.comments.map((comment) => (
-              <CommentComponent key={comment.id} comment={comment} />
-            ))}
+          <ScrollArea className="max-h-[500px] overflow-y-auto">
+            {postQuery.data.post.comments
+              .slice()
+              .reverse()
+              .map((comment) => (
+                <CommentComponent key={comment.id} comment={comment} />
+              ))}
+          </ScrollArea>
+
+          <div className="sticky p-3">
+            <PostCommentPageBot
+              userId={postQuery.data.userId}
+              post={postQuery.data.post}
+              data-superjson
+            />
           </div>
         </div>
       )}
