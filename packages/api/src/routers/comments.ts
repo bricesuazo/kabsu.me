@@ -9,7 +9,6 @@ import { protectedProcedure, router } from "../trpc";
 export const commentsRouter = router({
   getFullComment: protectedProcedure
     .input(z.object({ comment_id: z.string().nonempty() }))
-
     .query(async ({ ctx, input }) => {
       const fullComment = await ctx.db.query.comments.findFirst({
         where: (comment, { eq }) => eq(comment.id, input.comment_id),
