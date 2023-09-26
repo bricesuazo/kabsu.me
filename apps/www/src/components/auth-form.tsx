@@ -234,6 +234,15 @@ export default function AuthForm() {
             A social media platform that&apos;s only exclusive for Cavite State
             University students, faculty, and alumni.
           </h4>
+          <div>
+            <p className="text-center font-bold italic text-primary">
+              DISCLAIMER:
+            </p>
+            <p className="mx-auto max-w-xs text-center italic [text-wrap:balance] ">
+              This website is unofficial and not affiliated with Cavite State
+              University.
+            </p>
+          </div>
         </div>
         <div className="flex flex-col items-center justify-center gap-y-4 ">
           <div className="flex justify-center">
