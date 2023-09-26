@@ -592,7 +592,7 @@ export const DEVS_INFO = [
     links: [
       { icon: Mail, url: "mailto:rodclarence.cotines@cvsu.edu.ph" },
       { icon: Globe, url: "https://rodcotines.vercel.app/" },
-      { icon: Github, url: "https://github.com/Ayenzcc" },
+      { icon: Github, url: "https://github.com/rodcotines" },
       { icon: Instagram, url: "https://www.instagram.com/dururuyeye/" },
     ],
   },
