@@ -19,9 +19,9 @@ export default function Posts({
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 1, // <-- optional you can pass an initialCursor
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
+      // refetchOnMount: false,
+      // refetchOnWindowFocus: false,
+      // refetchOnReconnect: false,
     },
   );
 
