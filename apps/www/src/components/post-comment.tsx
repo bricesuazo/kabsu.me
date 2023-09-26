@@ -31,6 +31,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import { Skeleton } from "./ui/skeleton";
 import { Textarea } from "./ui/textarea";
 import { Toggle } from "./ui/toggle";
+import VerifiedBadge from "./verified-badge";
 
 export default function PostComment({
   userId,
@@ -233,9 +234,12 @@ export default function PostComment({
                         )}
                       </div>
                       <div className="flex flex-col">
-                        <p className="line-clamp-1 group-hover:underline">
-                          {like.user.first_name} {like.user.last_name}{" "}
-                        </p>
+                        <div className="flex space-x-2">
+                          <p className="line-clamp-1 group-hover:underline">
+                            {like.user.first_name} {like.user.last_name}{" "}
+                          </p>
+                          {like.user.verified_at && <VerifiedBadge size="md" />}
+                        </div>
                         <p className="line-clamp-1 flex-1 break-all text-sm">
                           @{like.user.username}
                         </p>
