@@ -10,6 +10,32 @@ export const adminRouter = router({
   getAllCampuses: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.campuses.findMany();
   }),
+  getAllColleges: protectedProcedure.query(async ({ ctx }) => {
+    const campuses = await ctx.db.query.campuses.findMany();
+    const colleges = await ctx.db.query.colleges.findMany();
+
+    return campuses.map((campus) => ({
+      ...campus,
+      colleges: colleges.filter((college) => college.campus_id === campus.id),
+    }));
+  }),
+  getAllPrograms: protectedProcedure.query(async ({ ctx }) => {
+    const colleges = await ctx.db.query.colleges.findMany();
+    const campuses = await ctx.db.query.campuses.findMany();
+    const programs = await ctx.db.query.programs.findMany();
+
+    return campuses.map((campus) => ({
+      ...campus,
+      colleges: colleges
+        .filter((college) => college.campus_id === campus.id)
+        .map((college) => ({
+          ...college,
+          programs: programs.filter(
+            (program) => program.college_id === college.id,
+          ),
+        })),
+    }));
+  }),
   addCampus: protectedProcedure
     .input(
       z.object({
