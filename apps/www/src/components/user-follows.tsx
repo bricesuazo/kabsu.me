@@ -48,6 +48,9 @@ export default function UserFollows({
           <p className="line-clamp-1 text-sm text-muted-foreground">
             {user.first_name} {user.last_name}
           </p>
+          <p className="line-clamp-1 text-sm text-muted-foreground">
+            {user.bio}
+          </p>
         </div>
 
         {user.id !== userId && (
