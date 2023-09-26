@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { env } from "@/lib/env.mjs";
 import { clerkClient } from "@clerk/nextjs/server";
 import type { WebhookEvent } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
@@ -7,7 +8,7 @@ import { Webhook } from "svix";
 import { db } from "@cvsu.me/db";
 import { deleted_users, users } from "@cvsu.me/db/schema";
 
-const webhookSecret: string = process.env.WEBHOOK_SECRET ?? "";
+const webhookSecret: string = env.WEBHOOK_SECRET || "";
 
 export async function POST(req: Request) {
   const payload = (await req.json()) as Record<string, unknown>;
