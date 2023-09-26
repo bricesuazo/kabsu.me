@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Icons } from "@/components/icons";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/trpc/client";
 import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,6 +39,8 @@ const formSchema = z.object({
 export default function AccountPage() {
   const { user, isLoaded } = useUser();
   const [isEditing, setIsEditing] = useState(false);
+  const [loadingImage, setLoadingImage] = useState(false);
+  const context = api.useContext();
 
   const updateAccountSettingsMutation =
     api.users.updateAccountSettings.useMutation({
@@ -46,6 +49,8 @@ export default function AccountPage() {
         await user?.update(values);
       },
     });
+  const updateProfilePictureMutation =
+    api.users.updateProfilePicture.useMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,6 +64,7 @@ export default function AccountPage() {
       form.setValue("lastName", user?.lastName ?? "");
     }
   }, [isEditing]);
+
   useEffect(() => {
     if (isLoaded) {
       form.setValue("username", user?.username ?? "");
@@ -67,25 +73,10 @@ export default function AccountPage() {
     }
   }, [isLoaded, user]);
 
+  const ref = useRef<HTMLInputElement>(null);
+
   return (
     <div>
-      {/* <UserProfile
-        path="/account"
-        routing="virtual"
-        appearance={{
-          baseTheme: theme === "dark" ? dark : undefined,
-          elements: {
-            rootBox: {
-              width: "100%",
-              height: "100%",
-            },
-            card: {
-              width: "100%",
-              maxWidth: "100%",
-            },
-          },
-        }}
-      /> */}
       <Card className="rounded-none border-none">
         <CardHeader>
           <CardTitle>Account Settings</CardTitle>
@@ -108,20 +99,70 @@ export default function AccountPage() {
 
                   <div className="mt-2 flex items-center gap-x-4">
                     <div className="flex flex-col items-center gap-y-2">
-                      <Image
-                        src={
-                          user?.hasImage
-                            ? user.imageUrl
-                            : `https://api.dicebear.com/7.x/initials/svg?seed=${user?.username}`
-                        }
-                        alt=""
-                        width={80}
-                        height={80}
-                        className="rounded-full"
+                      {loadingImage ? (
+                        <div className="grid h-20 w-20 place-items-center">
+                          <Icons.spinner className="animate-spin" />
+                        </div>
+                      ) : (
+                        <>
+                          {user?.username ? (
+                            <Image
+                              src={
+                                user?.hasImage
+                                  ? user.imageUrl
+                                  : `https://api.dicebear.com/7.x/initials/svg?seed=${user.username}`
+                              }
+                              alt=""
+                              width={80}
+                              height={80}
+                              className="aspect-square rounded-full object-cover"
+                            />
+                          ) : (
+                            <Skeleton className="aspect-square h-20 w-20 rounded-full" />
+                          )}
+                        </>
+                      )}
+
+                      <input
+                        ref={ref}
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        onChange={(e) => {
+                          setLoadingImage(true);
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+
+                          // convert file to base64 string
+                          const reader = new FileReader();
+                          reader.readAsDataURL(file);
+
+                          reader.onload = async () => {
+                            const base64String = reader.result
+                              ?.toString()
+                              .split(",")[1];
+
+                            if (!base64String) return;
+
+                            await updateProfilePictureMutation.mutateAsync({
+                              image: base64String,
+                            });
+                            await user?.setProfileImage({ file });
+                            await context.auth.getCurrentUser.invalidate();
+                            setLoadingImage(false);
+                          };
+                        }}
                       />
-                      {/* <Button size="sm" variant="ghost">
-                        Change
-                      </Button> */}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        disabled={loadingImage}
+                        onClick={() => {
+                          ref.current?.click();
+                        }}
+                      >
+                        Upload image
+                      </Button>
                     </div>
                     <Form {...form}>
                       <form

@@ -336,18 +336,42 @@ export const usersRouter = router({
 
       return input;
     }),
-  // updateProfilePicture: protectedProcedure
-  //   .input(z.object({ url: z.string() }))
-  //   .mutation(async ({ ctx, input }) => {
-  //     const user = await ctx.clerk.users.updateUserProfileImage(
-  //       ctx.session.user.id,
-  //       {
-  //         file: input.url,
-  //       },
-  //     );
-  //     await ctx.db
-  //       .update(users)
-  //       .set({ profile_picture_url: user.imageUrl })
-  //       .where(eq(users.id, ctx.session.user.id));
-  //   }),
+  updateProfilePicture: protectedProcedure
+    .input(z.object({ image: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const base64 = input.image;
+      await ctx.db.transaction(async (trx) => {
+        const byteCharsArray = Array.from(
+          atob(base64.substr(base64.indexOf(",") + 1)),
+        );
+        const chunksIterator = new Array(
+          Math.ceil(byteCharsArray.length / 512),
+        );
+        const bytesArrays = [];
+
+        for (let c = 0; c < chunksIterator.length; c++) {
+          bytesArrays.push(
+            new Uint8Array(
+              byteCharsArray
+                .slice(c * 512, 512 * (c + 1))
+                .map((s) => s.charCodeAt(0)),
+            ),
+          );
+        }
+
+        const file = new Blob(bytesArrays, { type: "image/png" });
+
+        const user = await ctx.clerk.users.updateUserProfileImage(
+          ctx.session.user.id,
+          {
+            file,
+          },
+        );
+
+        await trx
+          .update(users)
+          .set({ profile_picture_url: user.imageUrl })
+          .where(eq(users.id, ctx.session.user.id));
+      });
+    }),
 });
