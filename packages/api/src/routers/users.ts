@@ -289,4 +289,65 @@ export const usersRouter = router({
         suggested_by_id: ctx.session.user.id,
       });
     }),
+  updateAccountSettings: protectedProcedure
+    .input(
+      z.object({
+        firstName: z.string().nonempty(),
+        lastName: z.string().nonempty(),
+        username: z.string().nonempty(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.transaction(async (trx) => {
+        const currentUser = await ctx.clerk.users.getUser(ctx.session.user.id);
+
+        if (currentUser.username !== input.username) {
+          if (BLOCKED_USERNAMES.has(input.username))
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Username is not allowed",
+            });
+
+          const user = await ctx.db.query.users.findFirst({
+            where: (user, { eq }) => eq(user.username, input.username),
+          });
+
+          if (user)
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Username is already taken",
+            });
+        }
+
+        await trx
+          .update(users)
+          .set({
+            first_name: input.firstName,
+            last_name: input.lastName,
+            username: input.username,
+          })
+          .where(eq(users.id, ctx.session.user.id));
+        await ctx.clerk.users.updateUser(ctx.session.user.id, {
+          firstName: input.firstName,
+          lastName: input.lastName,
+          username: input.username,
+        });
+      });
+
+      return input;
+    }),
+  // updateProfilePicture: protectedProcedure
+  //   .input(z.object({ url: z.string() }))
+  //   .mutation(async ({ ctx, input }) => {
+  //     const user = await ctx.clerk.users.updateUserProfileImage(
+  //       ctx.session.user.id,
+  //       {
+  //         file: input.url,
+  //       },
+  //     );
+  //     await ctx.db
+  //       .update(users)
+  //       .set({ profile_picture_url: user.imageUrl })
+  //       .where(eq(users.id, ctx.session.user.id));
+  //   }),
 });
