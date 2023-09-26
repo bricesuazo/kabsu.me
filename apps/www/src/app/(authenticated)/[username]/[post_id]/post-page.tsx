@@ -268,7 +268,7 @@ function CommentComponent({ comment }: { comment: Comment }) {
                   alt=""
                   width={40}
                   height={40}
-                  className="aspect-square rounded-full"
+                  className="aspect-square rounded-full object-cover object-center"
                 />
               ) : (
                 <Image
@@ -340,7 +340,9 @@ function CommentComponent({ comment }: { comment: Comment }) {
           }
         />
       </div>
-      <div>{formatText(fullCommentQuery.data.comment.content)}</div>
+      <div className="whitespace-pre-wrap break-words">
+        {formatText(fullCommentQuery.data.comment.content)}
+      </div>
     </div>
   );
 }
