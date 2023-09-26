@@ -211,7 +211,7 @@ export default function Post({ post }: { post: Post }) {
         />
       </div>
 
-      <div className="">
+      <div className="whitespace-pre-wrap break-words">
         {formatText(
           post.content.length > 512
             ? post.content.slice(0, 512) + "..."
