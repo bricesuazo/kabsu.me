@@ -767,7 +767,11 @@ export const postsRouter = router({
       const likes = await ctx.db.query.likes.findMany({
         where: (like, { eq }) => eq(like.post_id, input.post_id),
         with: {
-          user: true,
+          user: {
+            with: {
+              program: { with: { college: { with: { campus: true } } } },
+            },
+          },
         },
         orderBy: (like, { desc }) => desc(like.created_at),
       });

@@ -8,7 +8,13 @@ import { api } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Heart, MessageCircle } from "lucide-react";
+import {
+  Album,
+  Briefcase,
+  GraduationCap,
+  Heart,
+  MessageCircle,
+} from "lucide-react";
 import { nanoid } from "nanoid";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -234,15 +240,38 @@ export default function PostComment({
                         )}
                       </div>
                       <div className="flex flex-col">
-                        <div className="flex space-x-2">
-                          <p className="line-clamp-1 group-hover:underline">
-                            {like.user.first_name} {like.user.last_name}{" "}
+                        <div className="flex items-center">
+                          <p>
+                            {like.user.first_name} {like.user.last_name}
                           </p>
-                          {like.user.verified_at && <VerifiedBadge size="md" />}
+                          <p className="ml-2 line-clamp-1 flex gap-x-2 group-hover:underline">
+                            {like.user.verified_at && (
+                              <VerifiedBadge size="md" />
+                            )}
+                            {(() => {
+                              switch (like.user.type) {
+                                case "student":
+                                  return <Album />;
+                                case "alumni":
+                                  return <GraduationCap />;
+                                case "faculty":
+                                  return <Briefcase />;
+                                default:
+                                  return null;
+                              }
+                            })()}
+                            <Badge>
+                              {like.user.program.college.campus.slug.toUpperCase()}
+                            </Badge>
+                            <Badge>
+                              {like.user.program.slug.toUpperCase()}
+                            </Badge>
+                          </p>
                         </div>
                         <p className="line-clamp-1 flex-1 break-all text-sm">
                           @{like.user.username}
                         </p>
+                        <div className="flex-1 space-x-2"></div>
                       </div>
                     </Link>
                   ))}
