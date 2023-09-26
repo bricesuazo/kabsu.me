@@ -241,26 +241,25 @@ export const usersRouter = router({
   search: protectedProcedure
     .input(z.object({ query: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const users = await ctx.db.query.users.findMany({
-        where: (user, { or, and, eq }) =>
-          or(
-            and(
-              eq(user.first_name, input.query),
-              eq(user.last_name, input.query),
-              eq(user.username, input.query),
-            ),
-          ),
-      });
+      // TODO: optimize this
+      const users = await ctx.db.query.users.findMany();
 
-      return users.map((user) => ({
-        id: user.id,
-        username: user.username,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        imageUrl: user.profile_picture_url,
-        isVerified: !!user.verified_at,
-      }));
-      return [];
+      return users
+        .filter(
+          (user) =>
+            user.username.toLowerCase().includes(input.query.toLowerCase()) ||
+            user.first_name.toLowerCase().includes(input.query.toLowerCase()) ||
+            user.last_name.toLowerCase().includes(input.query.toLowerCase()),
+        )
+        .map((user) => ({
+          id: user.id,
+          username: user.username,
+          firstName: user.first_name,
+          lastName: user.last_name,
+          imageUrl: user.profile_picture_url,
+          isVerified: !!user.verified_at,
+        }))
+        .slice(0, 10);
     }),
   getTotalUsers: publicProcedure.query(
     async ({ ctx }) => (await ctx.db.query.users.findMany()).length,
