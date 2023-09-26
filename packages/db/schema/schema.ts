@@ -107,7 +107,7 @@ export const posts = mysqlTable("posts", {
 export const campuses = mysqlTable("campuses", {
   id,
   name: text("name").notNull(),
-  slug,
+ slug: varchar("slug", { length: 256 }).notNull(),
 
   created_at,
   updated_at,
@@ -116,7 +116,7 @@ export const campuses = mysqlTable("campuses", {
 export const colleges = mysqlTable("colleges", {
   id,
   name: text("name").notNull(),
-  slug,
+  slug: varchar("slug", { length: 256 }).notNull(),
   campus_id: varchar("campus_id", { length: 256 }).notNull(),
 
   created_at,
@@ -126,8 +126,7 @@ export const colleges = mysqlTable("colleges", {
 export const programs = mysqlTable("programs", {
   id,
   name: text("name").notNull(),
-  slug,
-
+  slug: varchar("slug", { length: 256 }).notNull(),
   college_id: varchar("college_id", { length: 256 }).notNull(),
 
   created_at,
