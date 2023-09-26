@@ -126,9 +126,9 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                           case "student":
                             return <Album />;
                           case "alumni":
-                            return <Briefcase />;
-                          case "faculty":
                             return <GraduationCap />;
+                          case "faculty":
+                            return <Briefcase />;
                           default:
                             return null;
                         }
