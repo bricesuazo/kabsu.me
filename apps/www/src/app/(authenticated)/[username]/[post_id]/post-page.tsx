@@ -206,9 +206,9 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
               />
             </div>
 
-            <div className="break-words">
+            <pre className="break-words">
               {formatText(postQuery.data.post.content)}
-            </div>
+            </pre>
 
             <PostComment
               userId={postQuery.data.userId}
