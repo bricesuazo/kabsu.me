@@ -106,7 +106,7 @@ export default function NotificationPage() {
                         alt="Image"
                         fill
                         sizes="100%"
-                        className="rounded-full"
+                        className="rounded-full object-cover object-center"
                       />
                     ) : (
                       <Image
