@@ -220,7 +220,7 @@ export default function PostComment({
                             alt="Image"
                             width={40}
                             height={40}
-                            className="aspect-square rounded-full"
+                            className="aspect-square rounded-full object-cover object-center"
                           />
                         ) : (
                           <Image
@@ -291,10 +291,10 @@ export default function PostComment({
                       alt="Image"
                       width={40}
                       height={40}
-                      className="rounded-full"
+                      className="rounded-full object-cover object-center"
                     />
                   ) : (
-                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <Skeleton className="h-10 w-10 rounded-full object-cover object-center" />
                   )}
                 </div>
                 <FormField
@@ -345,7 +345,7 @@ export default function PostComment({
                   alt="Image"
                   width={40}
                   height={40}
-                  className="aspect-square rounded-full"
+                  className="aspect-square rounded-full object-cover object-center"
                 />
               ) : (
                 <Skeleton className="h-10 w-10 rounded-full" />

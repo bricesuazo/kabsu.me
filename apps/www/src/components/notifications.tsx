@@ -48,11 +48,18 @@ export default function Notifications() {
           className="relative h-9 w-9 rounded-full"
         >
           <Bell size="1.25rem" className="" />
-          <p className="absolute right-0 top-0 flex aspect-square h-4 w-4 items-center justify-center rounded-full bg-primary text-[0.5rem] text-white">
-            {getAllNotificationsQuery.data?.filter(
-              (notification) => !notification.read,
-            ).length ?? 0}
-          </p>
+
+          {getAllNotificationsQuery &&
+          getAllNotificationsQuery?.data &&
+          getAllNotificationsQuery?.data.filter(
+            (notification) => !notification.read,
+          ).length > 0 ? (
+            <p className="absolute right-0 top-0 flex aspect-square h-4 w-4 items-center justify-center rounded-full bg-primary text-[0.5rem] text-white">
+              {getAllNotificationsQuery.data?.filter(
+                (notification) => !notification.read,
+              ).length ?? 0}
+            </p>
+          ) : null}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-2" align="end">
