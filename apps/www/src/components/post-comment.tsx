@@ -4,6 +4,11 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { api } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
@@ -241,36 +246,107 @@ export default function PostComment({
                       </div>
                       <div className="flex flex-col">
                         <div className="flex items-center">
-                          <p>
-                            {like.user.first_name} {like.user.last_name}
-                          </p>
-                          <p className="ml-2 line-clamp-1 flex gap-x-2 group-hover:underline">
+                          <div className="flex gap-x-1">
+                            <p className="line-clamp-1">
+                              {like.user.first_name} {like.user.last_name}
+                            </p>
+
                             {like.user.verified_at && (
                               <VerifiedBadge size="md" />
                             )}
-                            {(() => {
-                              switch (like.user.type) {
-                                case "student":
-                                  return <Album />;
-                                case "alumni":
-                                  return <GraduationCap />;
-                                case "faculty":
-                                  return <Briefcase />;
-                                default:
-                                  return null;
-                              }
-                            })()}
-                            <Badge>
-                              {like.user.program.college.campus.slug.toUpperCase()}
-                            </Badge>
-                            <Badge>
-                              {like.user.program.slug.toUpperCase()}
-                            </Badge>
-                          </p>
+
+                            <Tooltip delayDuration={250}>
+                              {(() => {
+                                switch (like.user.type) {
+                                  case "student":
+                                    return (
+                                      <>
+                                        <TooltipTrigger>
+                                          <Album />
+                                        </TooltipTrigger>
+                                        <TooltipContent className="z-50">
+                                          Student
+                                        </TooltipContent>
+                                      </>
+                                    );
+                                  case "alumni":
+                                    return (
+                                      <>
+                                        <TooltipTrigger>
+                                          <GraduationCap />
+                                        </TooltipTrigger>
+                                        <TooltipContent className="z-50">
+                                          Alumni
+                                        </TooltipContent>
+                                      </>
+                                    );
+                                  case "faculty":
+                                    return (
+                                      <>
+                                        <TooltipTrigger>
+                                          <Briefcase />
+                                        </TooltipTrigger>
+                                        <TooltipContent className="z-50">
+                                          Faculty
+                                        </TooltipContent>
+                                      </>
+                                    );
+                                  default:
+                                    return null;
+                                }
+                              })()}
+                            </Tooltip>
+                          </div>
+                          <div className="ml-2 hidden gap-x-2 group-hover:underline md:flex ">
+                            <Tooltip delayDuration={250}>
+                              <TooltipTrigger>
+                                <Badge>
+                                  {like.user.program.college.campus.slug.toUpperCase()}
+                                </Badge>
+                                <TooltipContent className="max-w-[12rem]">
+                                  {like.user.program.college.campus.name}
+                                </TooltipContent>
+                              </TooltipTrigger>
+                            </Tooltip>
+                            <Tooltip delayDuration={250}>
+                              <TooltipTrigger>
+                                <Badge variant="outline">
+                                  {like.user.program.slug.toUpperCase()}
+                                </Badge>
+                                <TooltipContent className="max-w-[12rem]">
+                                  {like.user.program.name}
+                                </TooltipContent>
+                              </TooltipTrigger>
+                            </Tooltip>
+                          </div>
                         </div>
-                        <p className="line-clamp-1 flex-1 break-all text-sm">
-                          @{like.user.username}
-                        </p>
+                        <div className="flex items-center">
+                          <p className="line-clamp-1  break-all text-sm">
+                            @{like.user.username}
+                          </p>
+                          <div className="ml-2 flex gap-x-2 group-hover:underline md:hidden">
+                            <Tooltip delayDuration={250}>
+                              <TooltipTrigger>
+                                <Badge className="hidden xs:block">
+                                  {like.user.program.college.campus.slug.toUpperCase()}
+                                </Badge>
+                                <TooltipContent className="max-w-[12rem]">
+                                  {like.user.program.college.campus.name}
+                                </TooltipContent>
+                              </TooltipTrigger>
+                            </Tooltip>
+                            <Tooltip delayDuration={250}>
+                              <TooltipTrigger>
+                                <Badge variant="outline">
+                                  {like.user.program.slug.toUpperCase()}
+                                </Badge>
+                                <TooltipContent className="max-w-[12rem]">
+                                  {like.user.program.name}
+                                </TooltipContent>
+                              </TooltipTrigger>
+                            </Tooltip>
+                          </div>
+                        </div>
                         <div className="flex-1 space-x-2"></div>
                       </div>
                     </Link>
