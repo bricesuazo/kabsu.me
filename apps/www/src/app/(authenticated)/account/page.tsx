@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -20,7 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import { api } from "@/lib/trpc/client";
 import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, Check, Pencil, X } from "lucide-react";
+import { AlertCircle, Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
