@@ -7,18 +7,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/trpc/client";
 import { cn, formatText } from "@/lib/utils";
 // import UpdatePost from "./update-post";
-import {
-  Album,
-  Briefcase,
-  GraduationCap,
-  Heart,
-  MessageCircle,
-} from "lucide-react";
+import { Album, Briefcase, GraduationCap, Heart, MessageCircle } from "lucide-react";
 import moment from "moment";
 import momentTwitter from "moment-twitter";
 import { nanoid } from "nanoid";
 
+
+
 import type { Like, Post } from "@cvsu.me/db/schema";
+
+
 
 import PostDropdown from "./post-dropdown";
 import { PostSkeletonNoRandom } from "./post-skeleton";
@@ -27,8 +25,16 @@ import { Toggle } from "./ui/toggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import VerifiedBadge from "./verified-badge";
 
+
 export default function Post({ post }: { post: Post }) {
-  const getPostQuery = api.posts.getPost.useQuery({ post_id: post.id });
+  const getPostQuery = api.posts.getPost.useQuery(
+    { post_id: post.id },
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    },
+  );
   const router = useRouter();
   const searchParams = useSearchParams();
   const [likes, setLikes] = useState<Like[]>(

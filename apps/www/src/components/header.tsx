@@ -7,48 +7,24 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/trpc/client";
 import { useClerk, useUser } from "@clerk/nextjs";
-import {
-  AlertTriangle,
-  AtSign,
-  Check,
-  LogOut,
-  Menu,
-  Moon,
-  MousePointerSquare,
-  Sun,
-  UserCog,
-} from "lucide-react";
+import { AlertTriangle, AtSign, Check, LogOut, Menu, Moon, MousePointerSquare, Sun, UserCog } from "lucide-react";
 import { useTheme } from "next-themes";
 
+
+
 import { NAVBAR_LINKS } from "@cvsu.me/constants";
+
+
 
 import FeedbackForm from "./feedback-form";
 import { Icons } from "./icons";
 import Notifications from "./notifications";
 import Search from "./search";
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarShortcut,
-  MenubarSub,
-  MenubarSubContent,
-  MenubarSubTrigger,
-  MenubarTrigger,
-} from "./ui/menubar";
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger } from "./ui/menubar";
 import { Separator } from "./ui/separator";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "./ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { Skeleton } from "./ui/skeleton";
+
 
 export default function Header() {
   // { userId }: { userId: string | null }
@@ -60,7 +36,11 @@ export default function Header() {
   const [open, setOpen] = useState("");
   const [type, setType] = useState<"bug" | "feature">("bug");
   const { user, isLoaded } = useUser();
-  const userQuery = api.auth.getCurrentUser.useQuery();
+  const userQuery = api.auth.getCurrentUser.useQuery(undefined, {
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
 
   const [openFeedbackForm, setOpenFeedbackForm] = useState(false);
 
