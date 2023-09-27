@@ -2,14 +2,14 @@ import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { campuses, colleges } from "@cvsu.me/db/schema";
+import { campuses, colleges, programs } from "@cvsu.me/db/schema";
 
 import { protectedProcedure, router } from "../trpc";
 
 export const adminRouter = router({
   getAllCampuses: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.campuses.findMany({
-      orderBy: (campuses, { asc }) => asc(campuses.created_at),
+      orderBy: (campuses, { desc }) => desc(campuses.created_at),
     });
   }),
   getCampus: protectedProcedure
@@ -36,10 +36,10 @@ export const adminRouter = router({
     }),
   getAllColleges: protectedProcedure.query(async ({ ctx }) => {
     const campuses = await ctx.db.query.campuses.findMany({
-      orderBy: (campuses, { asc }) => asc(campuses.created_at),
+      orderBy: (campuses, { desc }) => desc(campuses.created_at),
     });
     const colleges = await ctx.db.query.colleges.findMany({
-      orderBy: (colleges, { asc }) => asc(colleges.created_at),
+      orderBy: (colleges, { desc }) => desc(colleges.created_at),
     });
 
     return campuses
@@ -52,9 +52,15 @@ export const adminRouter = router({
       }));
   }),
   getAllPrograms: protectedProcedure.query(async ({ ctx }) => {
-    const colleges = await ctx.db.query.colleges.findMany();
-    const campuses = await ctx.db.query.campuses.findMany();
-    const programs = await ctx.db.query.programs.findMany();
+    const colleges = await ctx.db.query.colleges.findMany({
+      orderBy: (colleges, { desc }) => desc(colleges.created_at),
+    });
+    const campuses = await ctx.db.query.campuses.findMany({
+      orderBy: (campuses, { desc }) => desc(campuses.created_at),
+    });
+    const programs = await ctx.db.query.programs.findMany({
+      orderBy: (programs, { desc }) => desc(programs.created_at),
+    });
 
     return campuses.map((campus) => ({
       ...campus,
@@ -128,6 +134,39 @@ export const adminRouter = router({
         slug: input.slug,
       });
     }),
+  addProgram: protectedProcedure
+    .input(
+      z.object({
+        college_id: z.string().nonempty(),
+        name: z.string().min(2, {
+          message: "name must be at least 2 characters.",
+        }),
+        slug: z.string().min(2, {
+          message: "slug must be at least 2 characters.",
+        }),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const program = await ctx.db.query.programs.findFirst({
+        where: (programs, { eq, and }) =>
+          and(
+            eq(programs.college_id, input.college_id),
+            eq(programs.slug, input.slug),
+          ),
+      });
+
+      if (program)
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Program acronym already exists",
+        });
+
+      await ctx.db.insert(programs).values({
+        college_id: input.college_id,
+        name: input.name,
+        slug: input.slug,
+      });
+    }),
   deleteCampus: protectedProcedure
     .input(z.object({ campus_id: z.string().nonempty() }))
     .mutation(async ({ ctx, input }) => {
@@ -159,10 +198,25 @@ export const adminRouter = router({
       if (!college)
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Campus not found",
+          message: "College not found",
         });
 
       await ctx.db.delete(colleges).where(eq(colleges.id, college.id));
+    }),
+  deleteProgram: protectedProcedure
+    .input(z.object({ program_id: z.string().nonempty() }))
+    .mutation(async ({ ctx, input }) => {
+      const program = await ctx.db.query.programs.findFirst({
+        where: (programs, { eq }) => eq(programs.id, input.program_id),
+      });
+
+      if (!program)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Program not found",
+        });
+
+      await ctx.db.delete(programs).where(eq(programs.id, program.id));
     }),
   editCampus: protectedProcedure
     .input(
@@ -251,5 +305,56 @@ export const adminRouter = router({
           name: input.name,
         })
         .where(eq(colleges.id, input.id));
+    }),
+  editProgram: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().nonempty(),
+        college_id: z.string().nonempty(),
+        name: z.string().min(2, {
+          message: "name must be at least 2 characters.",
+        }),
+        slug: z.string().min(2, {
+          message: "slug must be at least 2 characters.",
+        }),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const program = await ctx.db.query.programs.findFirst({
+        where: (programs, { eq, and }) =>
+          and(
+            eq(programs.id, input.id),
+            eq(programs.college_id, input.college_id),
+          ),
+      });
+
+      if (!program)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "College not found",
+        });
+
+      if (program.slug !== input.slug) {
+        const program = await ctx.db.query.programs.findFirst({
+          where: (programs, { eq, and }) =>
+            and(
+              eq(programs.college_id, input.college_id),
+              eq(programs.slug, input.slug),
+            ),
+        });
+
+        if (program)
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Program acronym already exists",
+          });
+      }
+
+      await ctx.db
+        .update(programs)
+        .set({
+          name: input.name,
+        })
+        .where(eq(programs.id, input.id));
     }),
 });

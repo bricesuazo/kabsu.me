@@ -14,10 +14,14 @@ export default function Campus({
   const getCampusQuery = api.admin.getCampus.useQuery({ campus_id: campus.id });
 
   return (
-    <div>
-      {getCampusQuery.data?.colleges.map((college) => (
-        <College key={college.id} college={college} />
-      ))}
-    </div>
+    <>
+      {getCampusQuery.data?.colleges.length === 0 ? (
+        <p>No colleges found.</p>
+      ) : (
+        getCampusQuery.data?.colleges.map((college) => (
+          <College key={college.id} college={college} />
+        ))
+      )}
+    </>
   );
 }
