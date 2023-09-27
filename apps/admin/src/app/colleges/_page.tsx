@@ -33,10 +33,7 @@ import { z } from "zod";
 
 import type { RouterOutput } from "@cvsu.me/api/root";
 
-import Campus from "./campus";
 import College from "./college";
-
-// import College from "./campus";
 
 const formSchema = z.object({
   name: z.string().min(2, {

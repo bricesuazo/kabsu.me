@@ -51,7 +51,7 @@ const formSchema = z.object({
 export default function College({
   college,
 }: {
-  college: RouterOutput["admin"]["getCampus"]["colleges"][number];
+  college: RouterOutput["admin"]["getAllColleges"][number]["colleges"][number];
 }) {
   const [openDelete, setopenDelete] = useState(false);
   const [openEdit, setopenEdit] = useState(false);
