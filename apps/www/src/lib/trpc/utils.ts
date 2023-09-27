@@ -1,3 +1,4 @@
+import { env } from "@/lib/env.mjs";
 import type { HTTPBatchLinkOptions, HTTPHeaders, TRPCLink } from "@trpc/client";
 import { httpBatchLink } from "@trpc/client";
 
@@ -5,7 +6,7 @@ import type { AppRouter } from "@cvsu.me/api/root";
 
 function getBaseUrl() {
   if (typeof window !== "undefined") return "";
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  if (env.VERCEL_URL) return `https://${env.VERCEL_URL}`;
   return "http://localhost:3000";
 }
 

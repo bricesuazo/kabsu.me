@@ -60,7 +60,11 @@ export default function Header() {
   const [open, setOpen] = useState("");
   const [type, setType] = useState<"bug" | "feature">("bug");
   const { user, isLoaded } = useUser();
-  const userQuery = api.auth.getCurrentUser.useQuery();
+  const userQuery = api.auth.getCurrentUser.useQuery(undefined, {
+    // refetchOnMount: false,
+    // refetchOnWindowFocus: false,
+    // refetchOnReconnect: false,
+  });
 
   const [openFeedbackForm, setOpenFeedbackForm] = useState(false);
 

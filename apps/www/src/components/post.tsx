@@ -28,7 +28,14 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import VerifiedBadge from "./verified-badge";
 
 export default function Post({ post }: { post: Post }) {
-  const getPostQuery = api.posts.getPost.useQuery({ post_id: post.id });
+  const getPostQuery = api.posts.getPost.useQuery(
+    { post_id: post.id },
+    {
+      // refetchOnMount: false,
+      // refetchOnWindowFocus: false,
+      // refetchOnReconnect: false,
+    },
+  );
   const router = useRouter();
   const searchParams = useSearchParams();
   const [likes, setLikes] = useState<Like[]>(
