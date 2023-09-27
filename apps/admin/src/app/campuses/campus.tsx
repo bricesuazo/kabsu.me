@@ -53,9 +53,9 @@ export default function Campus({
 }: {
   campus: RouterOutput["admin"]["getAllCampuses"][number];
 }) {
+  const context = api.useContext();
   const [openDelete, setopenDelete] = useState(false);
   const [openEdit, setopenEdit] = useState(false);
-  const context = api.useContext();
   const editCampusMutation = api.admin.editCampus.useMutation({
     onSuccess: async () => {
       await context.admin.getAllCampuses.invalidate();
@@ -97,13 +97,13 @@ export default function Campus({
   return (
     <div className="flex items-center justify-between rounded border p-4">
       <p>
-        {campus.name} ({campus.slug})
+        {campus.name} ({campus.slug.toUpperCase()})
       </p>
 
       <div className="flex items-center gap-x-2">
         <Dialog open={openEdit} onOpenChange={setopenEdit}>
           <DialogTrigger asChild>
-            <Button size="icon">
+            <Button size="icon" className="h-8 w-8">
               <Pencil size="1rem" />
             </Button>
           </DialogTrigger>
@@ -178,7 +178,7 @@ export default function Campus({
         </Dialog>
         <AlertDialog open={openDelete} onOpenChange={setopenDelete}>
           <AlertDialogTrigger asChild>
-            <Button size="icon">
+            <Button size="icon" className="h-8 w-8">
               <Trash size="1rem" />
             </Button>
           </AlertDialogTrigger>

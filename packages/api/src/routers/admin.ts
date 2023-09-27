@@ -12,28 +12,6 @@ export const adminRouter = router({
       orderBy: (campuses, { desc }) => desc(campuses.created_at),
     });
   }),
-  getCampus: protectedProcedure
-    .input(z.object({ campus_id: z.string().nonempty() }))
-    .query(async ({ ctx, input }) => {
-      const campus = await ctx.db.query.campuses.findFirst({
-        where: (campuses, { eq }) => eq(campuses.id, input.campus_id),
-      });
-
-      if (!campus)
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Campus not found",
-        });
-
-      const colleges = await ctx.db.query.colleges.findMany({
-        where: (colleges, { eq }) => eq(colleges.campus_id, campus.id),
-      });
-
-      return {
-        ...campus,
-        colleges,
-      };
-    }),
   getAllColleges: protectedProcedure.query(async ({ ctx }) => {
     const campuses = await ctx.db.query.campuses.findMany({
       orderBy: (campuses, { desc }) => desc(campuses.created_at),
@@ -354,6 +332,7 @@ export const adminRouter = router({
         .update(programs)
         .set({
           name: input.name,
+          slug: input.slug,
         })
         .where(eq(programs.id, input.id));
     }),

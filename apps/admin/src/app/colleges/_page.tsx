@@ -34,6 +34,7 @@ import { z } from "zod";
 import type { RouterOutput } from "@cvsu.me/api/root";
 
 import Campus from "./campus";
+import College from "./college";
 
 // import College from "./campus";
 
@@ -162,7 +163,9 @@ export default function CollegesPageWrapper({
             </div>
 
             <AccordionContent>
-              <Campus campus={campus} />
+              {campus.colleges.map((college) => (
+                <College key={college.id} college={college} />
+              ))}
             </AccordionContent>
           </AccordionItem>
         </Accordion>

@@ -88,7 +88,8 @@ export default function ProgramsPageWrapper({
         >
           <AccordionItem value={campus.id}>
             <AccordionTrigger className="flex-1">
-              {campus.name}
+              {campus.name} ({campus.slug.toUpperCase()}) - (
+              {campus.colleges.length})
             </AccordionTrigger>
 
             <AccordionContent>
@@ -99,7 +100,8 @@ export default function ProgramsPageWrapper({
                   {campus.colleges.map((college) => (
                     <AccordionItem key={college.id} value={college.id}>
                       <AccordionTrigger className="flex-1">
-                        {college.name}
+                        {college.name} ({college.slug.toUpperCase()}) - (
+                        {college.programs.length})
                       </AccordionTrigger>
                       <AccordionContent>
                         <Dialog

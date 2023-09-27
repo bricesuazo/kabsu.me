@@ -75,7 +75,7 @@ export default function CampusPageWrapper({
     <div className="space-y-2">
       <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
         <DialogTrigger asChild>
-          <Button>Add</Button>
+          <Button>Add campus</Button>
         </DialogTrigger>
         <DialogContent>
           <Form {...form}>

@@ -79,7 +79,7 @@ export default function Program({
 
   useEffect(() => {
     if (editProgramMutation.error) {
-      form.setError("name", {
+      form.setError("slug", {
         message: editProgramMutation.error.message,
       });
     }
@@ -103,7 +103,7 @@ export default function Program({
       <div className="flex items-center gap-x-2">
         <Dialog open={openEdit} onOpenChange={setopenEdit}>
           <DialogTrigger asChild>
-            <Button size="icon">
+            <Button size="icon" className="h-8 w-8">
               <Pencil size="1rem" />
             </Button>
           </DialogTrigger>
@@ -179,7 +179,7 @@ export default function Program({
         </Dialog>
         <AlertDialog open={openDelete} onOpenChange={setopenDelete}>
           <AlertDialogTrigger asChild>
-            <Button size="icon">
+            <Button size="icon" className="h-8 w-8">
               <Trash size="1rem" />
             </Button>
           </AlertDialogTrigger>

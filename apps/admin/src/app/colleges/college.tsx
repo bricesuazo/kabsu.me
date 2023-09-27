@@ -97,13 +97,13 @@ export default function College({
   return (
     <div className="flex items-center justify-between gap-x-2 rounded border p-4">
       <p>
-        {college.name} ({college.slug})
+        {college.name} ({college.slug.toUpperCase()})
       </p>
 
       <div className="flex items-center gap-x-2">
         <Dialog open={openEdit} onOpenChange={setopenEdit}>
           <DialogTrigger asChild>
-            <Button size="icon">
+            <Button size="icon" className="h-8 w-8">
               <Pencil size="1rem" />
             </Button>
           </DialogTrigger>
@@ -179,7 +179,7 @@ export default function College({
         </Dialog>
         <AlertDialog open={openDelete} onOpenChange={setopenDelete}>
           <AlertDialogTrigger asChild>
-            <Button size="icon">
+            <Button size="icon" className="h-8 w-8" variant="destructive">
               <Trash size="1rem" />
             </Button>
           </AlertDialogTrigger>
