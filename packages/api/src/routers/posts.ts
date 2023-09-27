@@ -440,7 +440,7 @@ export const postsRouter = router({
         if (!user)
           throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
-        const following: Follower[] = await ctx.db.query.followers.findMany({
+        const following = await ctx.db.query.followers.findMany({
           where: (follower, { eq }) =>
             eq(follower.follower_id, ctx.session.user.id),
         });
