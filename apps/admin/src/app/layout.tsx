@@ -105,7 +105,7 @@ export default function RootLayout({
                         <ToggleTheme />
                         <UserButton />
                       </header>
-                      <div className="p-4">{children}</div>
+                      <div className="h-full  p-4">{children}</div>
                     </div>
                   </div>
                 )}

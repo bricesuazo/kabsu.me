@@ -51,20 +51,20 @@ const formSchema = z.object({
 export default function College({
   college,
 }: {
-  college: RouterOutput["admin"]["getAllColleges"][number];
+  college: RouterOutput["admin"]["getCampus"]["colleges"][number];
 }) {
   const [openDelete, setopenDelete] = useState(false);
   const [openEdit, setopenEdit] = useState(false);
   const context = api.useContext();
-  const editCampusMutation = api.admin.editCampus.useMutation({
+  const editCollegeMutation = api.admin.editCollege.useMutation({
     onSuccess: async () => {
-      await context.admin.getAllCampuses.invalidate();
+      await context.admin.getAllColleges.invalidate();
       setopenEdit(false);
     },
   });
-  const deleteCampusMutation = api.admin.deleteCampus.useMutation({
+  const deleteCollegeMutation = api.admin.deleteCollege.useMutation({
     onSuccess: async () => {
-      await context.admin.getAllCampuses.invalidate();
+      await context.admin.getAllColleges.invalidate();
       setopenDelete(false);
     },
   });
@@ -78,12 +78,12 @@ export default function College({
   });
 
   useEffect(() => {
-    if (editCampusMutation.error) {
+    if (editCollegeMutation.error) {
       form.setError("name", {
-        message: editCampusMutation.error.message,
+        message: editCollegeMutation.error.message,
       });
     }
-  }, [editCampusMutation.error, form]);
+  }, [editCollegeMutation.error, form]);
 
   useEffect(() => {
     if (openEdit) {
@@ -95,7 +95,7 @@ export default function College({
   }, [openEdit, college]);
 
   return (
-    <div className="flex items-center justify-between rounded border p-4">
+    <div className="flex items-center justify-between gap-x-2 rounded border p-4">
       <p>
         {college.name} ({college.slug})
       </p>
@@ -118,8 +118,9 @@ export default function College({
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit((values) => {
-                  editCampusMutation.mutate({
-                    campus_id: college.id,
+                  editCollegeMutation.mutate({
+                    id: college.id,
+                    campus_id: college.campus_id,
                     name: values.name,
                     slug: values.slug,
                   });
@@ -135,7 +136,7 @@ export default function College({
                       <FormControl>
                         <Input
                           placeholder="Main Campus"
-                          disabled={editCampusMutation.isLoading}
+                          disabled={editCollegeMutation.isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -152,7 +153,7 @@ export default function College({
                       <FormControl>
                         <Input
                           placeholder="MAIN"
-                          disabled={editCampusMutation.isLoading}
+                          disabled={editCollegeMutation.isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -164,10 +165,10 @@ export default function College({
                 <Button
                   type="submit"
                   disabled={
-                    editCampusMutation.isLoading || !form.formState.isDirty
+                    editCollegeMutation.isLoading || !form.formState.isDirty
                   }
                 >
-                  {editCampusMutation.isLoading && (
+                  {editCollegeMutation.isLoading && (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                   )}
                   Update
@@ -190,12 +191,12 @@ export default function College({
                 account and remove your data from our servers.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            {deleteCampusMutation.isError && (
+            {deleteCollegeMutation.isError && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Error</AlertTitle>
                 <AlertDescription>
-                  {deleteCampusMutation.error.message}
+                  {deleteCollegeMutation.error.message}
                 </AlertDescription>
               </Alert>
             )}
@@ -203,12 +204,12 @@ export default function College({
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <Button
                 variant="destructive"
-                disabled={deleteCampusMutation.isLoading}
+                disabled={deleteCollegeMutation.isLoading}
                 onClick={() =>
-                  deleteCampusMutation.mutate({ campus_id: college.id })
+                  deleteCollegeMutation.mutate({ college_id: college.id })
                 }
               >
-                {deleteCampusMutation.isLoading && (
+                {deleteCollegeMutation.isLoading && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 Delete

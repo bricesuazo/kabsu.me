@@ -1,6 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Icons } from "@/components/icons";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { api } from "@/lib/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -8,7 +27,9 @@ import { z } from "zod";
 
 import type { RouterOutput } from "@cvsu.me/api/root";
 
-// import College from "./college";
+import Campus from "./campus";
+
+// import College from "./campus";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -27,7 +48,7 @@ export default function CollegesPageWrapper({
   const getAllCollegesMutation = api.admin.getAllColleges.useQuery(undefined, {
     initialData: campuses,
   });
-  const addCampusMutation = api.admin.addCampus.useMutation({
+  const addCollegeMutation = api.admin.addCollege.useMutation({
     onSuccess: async () => {
       await getAllCollegesMutation.refetch();
       setOpenAddDialog(false);
@@ -39,12 +60,12 @@ export default function CollegesPageWrapper({
   });
 
   useEffect(() => {
-    if (addCampusMutation.error) {
+    if (addCollegeMutation.error) {
       form.setError("name", {
-        message: addCampusMutation.error.message,
+        message: addCollegeMutation.error.message,
       });
     }
-  }, [addCampusMutation.error, form]);
+  }, [addCollegeMutation.error, form]);
 
   useEffect(() => {
     if (openAddDialog) {
@@ -53,12 +74,81 @@ export default function CollegesPageWrapper({
   }, [openAddDialog]);
 
   return (
-    <div className="space-y-2">
+    <>
       {getAllCollegesMutation.data.map((campus) => (
-        <div key={campus.id}>
-          <p>{campus.name}</p>
+        <div key={campus.id} className="space-y-2">
+          <div className="flex items-center gap-x-2">
+            <p>{campus.name}</p>
+            <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
+              <DialogTrigger asChild>
+                <Button>Add</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit((values) => {
+                      addCollegeMutation.mutate({
+                        ...values,
+                        campus_id: campus.id,
+                      });
+                    })}
+                    className="space-y-4"
+                  >
+                    <DialogHeader>
+                      <DialogTitle>Add campus</DialogTitle>
+                    </DialogHeader>
+
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="College of Engineering and Information Technology"
+                              disabled={addCollegeMutation.isLoading}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="slug"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Acronym</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="CEIT"
+                              disabled={addCollegeMutation.isLoading}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <DialogFooter>
+                      <Button type="submit">
+                        {addCollegeMutation.isLoading && (
+                          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                        Confirm
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          </div>
+          <Campus campus={campus} />
         </div>
       ))}
-    </div>
+    </>
   );
 }
