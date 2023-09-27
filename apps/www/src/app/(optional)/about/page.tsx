@@ -9,7 +9,7 @@ export default function AboutPage() {
       <div>
         <h1 className="text-center text-4xl font-bold text-primary">About</h1>
         <p className="text-center text-base [text-wrap:balance] sm:text-lg">
-          We believe that having this platform, is essential for bringing
+          We believe that having this platform is essential for bringing
           together Cavite State University students, faculty, and alumni in a
           way that&apos;s exclusive and focused.
         </p>
