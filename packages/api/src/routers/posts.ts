@@ -445,20 +445,90 @@ export const postsRouter = router({
             eq(follower.follower_id, ctx.session.user.id),
         });
 
+        const users = await ctx.db.query.users.findMany({
+          where: (userInDB, { inArray }) =>
+            inArray(
+              userInDB.id,
+              following.map((f) => f.followee_id),
+            ),
+          with: {
+            program: {
+              with: {
+                college: {
+                  with: {
+                    campus: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+        console.log("🚀 ~ file: posts.ts:447 ~ .query ~ following:", following);
+
         posts = await ctx.db.query.posts.findMany({
           where: (post, { or, and, eq, isNull, inArray }) =>
             and(
               isNull(post.deleted_at),
               or(
-                following.length > 0
-                  ? inArray(
-                      post.user_id,
-                      following.map((f) => f.followee_id),
-                    )
-                  : undefined,
                 eq(post.user_id, ctx.session.user.id),
+                and(
+                  following.length > 0
+                    ? inArray(
+                        post.user_id,
+                        following.map((f) => f.followee_id),
+                      )
+                    : undefined,
+
+                  or(eq(post.type, "following"), eq(post.type, "all")),
+                ),
+                and(
+                  users.filter((u) => u.program_id === user.program_id).length >
+                    0
+                    ? inArray(
+                        post.user_id,
+                        users
+                          .filter((u) => u.program_id === user.program_id)
+                          .map((f) => f.id),
+                      )
+                    : undefined,
+                  eq(post.type, "program"),
+                ),
+                and(
+                  users.filter(
+                    (u) => u.program.college_id === user.program.college_id,
+                  ).length > 0
+                    ? inArray(
+                        post.user_id,
+                        users
+                          .filter(
+                            (u) =>
+                              u.program.college_id === user.program.college_id,
+                          )
+                          .map((f) => f.id),
+                      )
+                    : undefined,
+                  eq(post.type, "college"),
+                ),
+                and(
+                  users.filter(
+                    (u) =>
+                      u.program.college.campus_id ===
+                      user.program.college.campus_id,
+                  ).length > 0
+                    ? inArray(
+                        post.user_id,
+                        users
+                          .filter(
+                            (u) =>
+                              u.program.college.campus_id ===
+                              user.program.college.campus_id,
+                          )
+                          .map((f) => f.id),
+                      )
+                    : undefined,
+                  eq(post.type, "campus"),
+                ),
               ),
-              eq(post.type, "following"),
             ),
 
           limit,
