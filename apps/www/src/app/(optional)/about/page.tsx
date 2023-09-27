@@ -40,7 +40,15 @@ export default function AboutPage() {
 
               <div className="flex  flex-col items-start gap-y-1 text-left">
                 <p className="font-semibold text-primary ">{dev.name}</p>
+                <Link
+                  href={dev.link}
+                  target="_blank"
+                  className="hover:text-primary"
+                >
+                  <p className="text-[12px] font-medium ">{dev.username}</p>
+                </Link>
                 <p className="text-[12px] ">{dev.role}</p>
+
                 {/* <p className="text-[10px] text-foreground/70">{dev.desc}</p> */}
                 <div className="flex items-center gap-x-4 rounded-full pt-1 ">
                   {dev.links.map((link, i) => {
