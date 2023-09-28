@@ -432,11 +432,11 @@ export const NAVBAR_LINKS = [
     url: "/about",
     hasSeparator: true,
   },
-  {
-    icon: Info,
-    name: "CvSU Information Center",
-    url: "/info",
-  },
+  // {
+  //   icon: Info,
+  //   name: "CvSU Information Center",
+  //   url: "/info",
+  // },
   {
     icon: BookOpenCheck,
     name: "University Registrar",
