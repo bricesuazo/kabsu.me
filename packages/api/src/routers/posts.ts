@@ -32,7 +32,7 @@ export const postsRouter = router({
           likes: true,
           comments: {
             where: (comment, { isNull }) => isNull(comment.deleted_at),
-            orderBy: (comment, { desc }) => desc(comment.created_at),
+            orderBy: (comment, { asc }) => asc(comment.created_at),
           },
           user: {
             with: {
@@ -463,7 +463,6 @@ export const postsRouter = router({
             },
           },
         });
-        console.log("🚀 ~ file: posts.ts:447 ~ .query ~ following:", following);
 
         posts = await ctx.db.query.posts.findMany({
           where: (post, { or, and, eq, isNull, inArray }) =>
