@@ -438,6 +438,9 @@ importers:
       react-intersection-observer:
         specifier: ^9.5.2
         version: registry.npmjs.org/react-intersection-observer@9.5.2(react@18.2.0)
+      react-scrollable-feed:
+        specifier: ^1.3.2
+        version: registry.npmjs.org/react-scrollable-feed@1.3.2(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)
       react-textarea-autosize:
         specifier: ^8.5.3
         version: registry.npmjs.org/react-textarea-autosize@8.5.3(@types/react@18.2.22)(react@18.2.0)
@@ -8313,6 +8316,22 @@ packages:
       tslib: registry.npmjs.org/tslib@2.6.2
       use-callback-ref: registry.npmjs.org/use-callback-ref@1.3.0(@types/react@18.2.22)(react@18.2.0)
       use-sidecar: registry.npmjs.org/use-sidecar@1.1.2(@types/react@18.2.22)(react@18.2.0)
+    dev: false
+
+  registry.npmjs.org/react-scrollable-feed@1.3.2(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-uX+DJ2/h5Z3eIcgrY+OG/lIqvWjq92g1lZgEoY4ZWOjK8xXKR1628QqkhyByHeij1/ztmF946I+0ijlvPlpMYA==, registry: http://registry.npmjs.com/, tarball: https://registry.npmjs.org/react-scrollable-feed/-/react-scrollable-feed-1.3.2.tgz}
+    id: registry.npmjs.org/react-scrollable-feed/1.3.2
+    name: react-scrollable-feed
+    version: 1.3.2
+    engines: {node: '>=8', npm: '>=5'}
+    peerDependencies:
+      prop-types: ^15.7.2
+      react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      prop-types: registry.npmjs.org/prop-types@15.8.1
+      react: registry.npmjs.org/react@18.2.0
+      react-dom: registry.npmjs.org/react-dom@18.2.0(react@18.2.0)
     dev: false
 
   registry.npmjs.org/react-ssr-prepass@1.5.0(react@18.2.0):

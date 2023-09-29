@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -54,19 +54,13 @@ import moment from "moment";
 import momentTwitter from "moment-twitter";
 import { nanoid } from "nanoid";
 import { useForm } from "react-hook-form";
+import ScrollableFeed from "react-scrollable-feed";
 import { z } from "zod";
 
 import type { Comment as CommentType, Like, Post } from "@cvsu.me/db/schema";
 
 export default function PostPageComponent({ post_id }: { post_id: string }) {
-  const ref = useRef<HTMLDivElement>(null);
   const postQuery = api.posts.getPost.useQuery({ post_id }, { retry: 1 });
-
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.scrollTop = ref.current.scrollHeight;
-    }
-  }, [postQuery.data?.post.comments.length]);
 
   if (
     (postQuery.isSuccess && !postQuery.data) ||
@@ -76,7 +70,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
   }
 
   return (
-    <div className="min-h-[calc(100vh-10rem)]">
+    <>
       {postQuery.isLoading ? (
         <div className="min-h-screen space-y-2 p-4">
           <div className="flex justify-between">
@@ -135,7 +129,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
           {postQuery.error.message}
         </p>
       ) : (
-        <div className="flex h-[calc(100vh-10rem)] flex-col gap-y-2 sm:h-[calc(100vh-4.60rem)]">
+        <div className="flex flex-col gap-y-2 sm:h-[calc(100vh-4.60rem)]">
           <div className="flex flex-col gap-y-4 p-4">
             <div className="flex justify-between">
               <Link
@@ -262,16 +256,18 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
             />
           </div>
 
-          <ScrollArea ref={ref}>
+          {/* <ScrollArea > */}
+          <ScrollableFeed>
             {postQuery.data.post.comments.map((comment) => (
               <Comment key={comment.id} comment={comment} />
             ))}
-          </ScrollArea>
+          </ScrollableFeed>
+          {/* </ScrollArea> */}
 
           <CommentForm post={postQuery.data.post} />
         </div>
       )}
-    </div>
+    </>
   );
 }
 
