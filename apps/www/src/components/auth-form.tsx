@@ -244,6 +244,22 @@ export default function AuthForm() {
             </p>
           </div>
         </div>
+        <div>
+          <h2 className="text-center text-xl font-semibold text-primary">
+            CvSU.me will shut down for now. :(
+          </h2>
+          <p className="text-center">
+            For more information, please read{" "}
+            <Link
+              href="https://www.facebook.com/BriceSuazo/posts/pfbid033xuUAobX7btj6uwnt7zxLZx9UWynwdearWVFQTRFs6jqJhMozSoUmuWWqGVhmxp9l"
+              className="text-primary underline"
+              target="_blank"
+            >
+              this post
+            </Link>
+            .
+          </p>
+        </div>
         <div className="flex flex-col items-center justify-center gap-y-4 ">
           <div className="flex justify-center">
             <Link href="https://github.com/bricesuazo/cvsu.me" target="_blank">
@@ -255,21 +271,21 @@ export default function AuthForm() {
           </div>
           <Button
             // variant="outline"
-            onClick={async () => {
-              if (!isLoadedSignIn) return;
-              setLoading(true);
+            // onClick={async () => {
+            //   if (!isLoadedSignIn) return;
+            //   setLoading(true);
 
-              await signIn.authenticateWithRedirect({
-                strategy: "oauth_google",
-                redirectUrl: "/sso-callback",
-                redirectUrlComplete: searchParams.get("callback_url")
-                  ? `/${searchParams.get("callback_url")}`
-                  : "/",
-              });
+            //   await signIn.authenticateWithRedirect({
+            //     strategy: "oauth_google",
+            //     redirectUrl: "/sso-callback",
+            //     redirectUrlComplete: searchParams.get("callback_url")
+            //       ? `/${searchParams.get("callback_url")}`
+            //       : "/",
+            //   });
 
-              setLoading(false);
-            }}
-            disabled={!isLoadedSignIn || isLoading}
+            //   setLoading(false);
+            // }}
+            disabled={!isLoadedSignIn || isLoading || true}
           >
             {isLoading ? (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
@@ -277,7 +293,6 @@ export default function AuthForm() {
               <Icons.google className="mr-2 h-4 w-4" />
             )}
             Sign in with CvSU Account
-            {/* Under maintenance :( */}
           </Button>
 
           {/* <p className="text-sm">
