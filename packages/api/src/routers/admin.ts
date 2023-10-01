@@ -7,6 +7,15 @@ import { campuses, colleges, programs } from "@cvsu.me/db/schema";
 import { protectedProcedure, router } from "../trpc";
 
 export const adminRouter = router({
+  removeAllSessions: protectedProcedure.mutation(async ({ ctx }) => {
+    const sessions = await ctx.clerk.sessions.getSessionList({
+      status: "active",
+    });
+
+    sessions.forEach(async (session) => {
+      await ctx.clerk.sessions.revokeSession(session.id);
+    });
+  }),
   getAllCampuses: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.campuses.findMany({
       orderBy: (campuses, { desc }) => desc(campuses.created_at),
