@@ -32,7 +32,6 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
-import { Skeleton } from "./ui/skeleton";
 
 export default function AuthForm() {
   // const searchParams = useSearchParams();
@@ -42,7 +41,7 @@ export default function AuthForm() {
   const [isLoading] = useState(false);
   const { isLoaded: isLoadedSignIn, signIn } = useSignIn();
   const { isLoaded: isLoadedSignUp, signUp } = useSignUp();
-  const getTotalUsersQuery = api.users.getTotalUsers.useQuery();
+  // const getTotalUsersQuery = api.users.getTotalUsers.useQuery();
 
   const form1Schema = z.object({
     username: z
@@ -320,13 +319,14 @@ export default function AuthForm() {
 
           <ToggleTheme />
 
-          {getTotalUsersQuery.isLoading ? (
+          {/* {getTotalUsersQuery.isLoading ? (
             <Skeleton className="my-1 h-3 w-36 rounded-full" />
           ) : (
-            <p className="text-center text-sm text-muted-foreground">
-              {getTotalUsersQuery.data} users registered.
-            </p>
-          )}
+          )} */}
+          <p className="text-center text-sm text-muted-foreground">
+            {/* {getTotalUsersQuery.data} */}
+            2,443 users registered.
+          </p>
         </div>
         {/* ABOUT DEV COMPONENT */}{" "}
         <div>
