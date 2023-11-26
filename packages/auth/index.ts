@@ -42,10 +42,10 @@ export const {
   adapter: DrizzleAdapter(db),
   providers: [Google],
   callbacks: {
-    signIn: ({ user }) => {
+    signIn: ({ profile }) => {
       if (
-        user.email === "cvsudotme@gmail.com" ||
-        user.email?.endsWith("@cvsu.edu.ph")
+        profile?.email === "cvsudotme@gmail.com" ||
+        profile?.email?.endsWith("@cvsu.edu.ph")
       )
         return true;
 
@@ -63,30 +63,30 @@ export const {
         },
       };
     },
-    jwt: ({
-      token,
-      user,
-      // trigger, session
-    }) => {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.username = user.username;
-        token.image = user.image;
-        token.program_id = user.program_id;
-        token.type = user.type;
-      }
-
-      // if (trigger === "update" && session) {
-      //   console.log("🚀 ~ file: auth.ts:80 ~ session:", session);
-
-      //   return token;
-      // }
-
-      return token;
-    },
+    // jwt: ({
+    //   token,
+    //   user,
+    //   // trigger, session
+    // }) => {
+    //   if (user) {
+    //     token.id = user.id;
+    //     token.email = user.email;
+    //     token.username = user.username;
+    //     token.image = user.image;
+    //     token.program_id = user.program_id;
+    //     token.type = user.type;
+    //   }
+    //   // if (trigger === "update" && session) {
+    //   //   console.log("🚀 ~ file: auth.ts:80 ~ session:", session);
+    //   //   return token;
+    //   // }
+    //   return token;
+    // },
   },
   pages: {
+    signIn: "/",
+    newUser: "/",
+    signOut: "/",
     error: "/",
   },
 });

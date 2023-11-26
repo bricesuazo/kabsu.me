@@ -35,6 +35,7 @@ export default async function Home({
 }: {
   searchParams: {
     tab?: "all" | "campus" | "program" | "college";
+    callback_url?: string;
     [key: string]: string | string[] | undefined;
   };
 }) {
@@ -138,15 +139,7 @@ export default async function Home({
             <form
               action={async () => {
                 "use server";
-                await signIn(
-                  "google",
-                  //       {
-                  //   redirect: !!callback_url,
-                  //   redirectTo: callback_url
-                  //     ? `/${typeof callback_url === "string" ? callback_url : ""}`
-                  //     : "/",
-                  // }
-                );
+                await signIn("google");
               }}
             >
               {/* <Icons.spinner className="mr-2 h-4 w-4 animate-spin" /> */}

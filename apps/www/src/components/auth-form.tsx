@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { signOut } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -75,6 +76,16 @@ export default function AuthForm({ session }: { session: Session }) {
         <p className="text-center text-sm text-muted-foreground">
           {session.user.email}
         </p>
+
+        <div className="flex justify-center">
+          <form
+            action={async () => signOut({ redirect: true, redirectTo: "/" })}
+          >
+            <Button size="sm" variant="outline" className="mt-4">
+              Sign out
+            </Button>
+          </form>
+        </div>
       </div>
       {page === 0 ? (
         <>

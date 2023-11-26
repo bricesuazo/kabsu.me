@@ -19,13 +19,6 @@
     "email:dev": {}
   },
   "globalEnv": [
-    "CI",
-    "EXPO_ROUTER_APP_ROOT",
-    "NODE_ENV",
-    "SKIP_ENV_VALIDATION",
-    "VERCEL",
-    "VERCEL_URL",
-    "VERCEL_ENV",
     "DATABASE_URL",
     "QSTASH_CURRENT_SIGNING_KEY",
     "QSTASH_NEXT_SIGNING_KEY",
@@ -35,6 +28,8 @@
     "PUSHER_CLUSTER",
     "AUTH_SECRET",
     "AUTH_GOOGLE_ID",
-    "AUTH_GOOGLE_SECRET"
+    "AUTH_GOOGLE_SECRET",
+    "AUTH_URL",
+    "AUTH_REDIRECT_PROXY_URL"
   ]
 }

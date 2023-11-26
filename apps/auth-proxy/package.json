@@ -1,0 +1,35 @@
+{
+  "name": "@cvsu.me/auth-proxy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nitro build",
+    "clean": "rm -rf .turbo node_modules",
+    "dev": "nitro dev --port 3001",
+    "lint": "eslint .",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@auth/core": "^0.18.3",
+    "h3": "^1.9.0"
+  },
+  "devDependencies": {
+    "@cvsu.me/eslint-config": "workspace:*",
+    "@cvsu.me/prettier-config": "workspace:*",
+    "@cvsu.me/tailwind-config": "workspace:*",
+    "@cvsu.me/tsconfig": "workspace:*",
+    "@types/node": "20.10.0",
+    "eslint": "^8.54.0",
+    "nitropack": "^2.7.2",
+    "prettier": "^3.1.0",
+    "typescript": "^5.3.2"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@cvsu.me/eslint-config/base"
+    ]
+  },
+  "prettier": "@cvsu.me/prettier-config"
+}
