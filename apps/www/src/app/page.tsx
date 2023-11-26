@@ -4,24 +4,25 @@ import Header from "@/components/header";
 import PostForm from "@/components/post-form";
 import PostTypeTab from "@/components/post-type-tab";
 import Posts from "@/components/posts";
-import { auth } from "@clerk/nextjs";
 
-export function generateMetadata(): Metadata {
-  const { userId } = auth();
+import { auth } from "@cvsu.me/auth";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const session = await auth();
 
   return {
-    title: userId
+    title: session
       ? "Home - CvSU.me"
       : "Welcome! - CvSU.me | Social Media for Cavite State University",
   };
 }
 
-export default function Home({
+export default async function Home({
   searchParams: { tab },
 }: {
   searchParams: { tab?: "all" | "campus" | "program" | "college" };
 }) {
-  const { userId } = auth();
+  const session = await auth();
 
   const TEST = {
     all: "See posts of all campuses.",
@@ -32,7 +33,7 @@ export default function Home({
 
   return (
     <main className="container px-0">
-      {userId ? (
+      {session ? (
         <div className="border-x">
           <div className="sticky top-0 z-50 backdrop-blur-lg">
             <Header />

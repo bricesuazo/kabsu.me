@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import UserFollows from "@/components/user-follows";
-import { auth } from "@clerk/nextjs";
 
+import { auth } from "@cvsu.me/auth";
 import { db } from "@cvsu.me/db";
 
 export function generateMetadata({
@@ -20,9 +20,9 @@ export default async function FollowingPage({
 }: {
   params: { username: string };
 }) {
-  const { userId } = auth();
+  const session = await auth();
 
-  if (!userId) notFound();
+  if (!session) notFound();
 
   const user = await db.query.users.findFirst({
     where: (user, { eq }) => eq(user.username, username),
@@ -47,7 +47,7 @@ export default async function FollowingPage({
 
   // TODO: This is a hacky way to get the followers of the user
   const myFollowers = await db.query.followers.findMany({
-    where: (follower, { eq }) => eq(follower.follower_id, userId),
+    where: (follower, { eq }) => eq(follower.follower_id, session.user.id),
   });
 
   return (

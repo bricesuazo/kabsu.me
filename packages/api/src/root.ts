@@ -1,4 +1,4 @@
-import { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
+import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
 import { adminRouter } from "./routers/admin";
 import { authRouter } from "./routers/auth";

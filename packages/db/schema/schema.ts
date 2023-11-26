@@ -1,13 +1,15 @@
+import type { AdapterAccount } from "@auth/core/adapters";
 import { sql } from "drizzle-orm";
 import {
-  mysqlTable,
-  varchar,
-  longtext,
-  timestamp,
-  int,
-  text,
-  mysqlEnum,
   boolean,
+  int,
+  longtext,
+  mysqlEnum,
+  mysqlTable,
+  primaryKey,
+  text,
+  timestamp,
+  varchar,
 } from "drizzle-orm/mysql-core";
 import { nanoid } from "nanoid";
 
@@ -19,7 +21,13 @@ export const POST_TYPE = [
   "campus",
   "all",
 ] as const;
-export const NOTIFICATION_TYPE = ["like", "comment", "follow","mention_post","mention_comment"] as const;
+export const NOTIFICATION_TYPE = [
+  "like",
+  "comment",
+  "follow",
+  "mention_post",
+  "mention_comment",
+] as const;
 
 const id = varchar("id", { length: 256 })
   .primaryKey()
@@ -45,6 +53,8 @@ export const deleted_users = mysqlTable("deleted_users", {
 export const users = mysqlTable("users", {
   id: varchar("id", { length: 256 }).primaryKey().unique().notNull(),
   user_number: int("user_number").notNull().default(0),
+  name: varchar("name", { length: 255 }),
+  image: varchar("image", { length: 255 }),
   first_name: varchar("first_name", { length: 256 }).notNull(),
   last_name: varchar("last_name", { length: 256 }).notNull(),
   email: varchar("email", { length: 256 }).notNull().unique(),
@@ -58,9 +68,53 @@ export const users = mysqlTable("users", {
   is_email_displayed: boolean("is_email_displayed").notNull().default(false),
 
   program_id: varchar("program_id", { length: 256 }).notNull(),
-  
+
   created_at,
 });
+
+export const accounts = mysqlTable(
+  "account",
+  {
+    userId: varchar("userId", { length: 255 })
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: varchar("type", { length: 255 })
+      .$type<AdapterAccount["type"]>()
+      .notNull(),
+    provider: varchar("provider", { length: 255 }).notNull(),
+    providerAccountId: varchar("providerAccountId", { length: 255 }).notNull(),
+    refresh_token: varchar("refresh_token", { length: 255 }),
+    access_token: varchar("access_token", { length: 255 }),
+    expires_at: int("expires_at"),
+    token_type: varchar("token_type", { length: 255 }),
+    scope: varchar("scope", { length: 255 }),
+    id_token: varchar("id_token", { length: 2048 }),
+    session_state: varchar("session_state", { length: 255 }),
+  },
+  (account) => ({
+    compoundKey: primaryKey(account.provider, account.providerAccountId),
+  }),
+);
+
+export const sessions = mysqlTable("session", {
+  sessionToken: varchar("sessionToken", { length: 255 }).notNull().primaryKey(),
+  userId: varchar("userId", { length: 255 })
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expires: timestamp("expires", { mode: "date" }).notNull(),
+});
+
+export const verificationTokens = mysqlTable(
+  "verificationToken",
+  {
+    identifier: varchar("identifier", { length: 255 }).notNull(),
+    token: varchar("token", { length: 255 }).notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+  },
+  (vt) => ({
+    compoundKey: primaryKey(vt.identifier, vt.token),
+  }),
+);
 export const likes = mysqlTable("likes", {
   id,
   user_id: varchar("user_id", { length: 256 }).notNull(),
@@ -107,7 +161,7 @@ export const posts = mysqlTable("posts", {
 export const campuses = mysqlTable("campuses", {
   id,
   name: text("name").notNull(),
-  slug:varchar("slug", { length: 256 }).notNull() ,
+  slug: varchar("slug", { length: 256 }).notNull(),
 
   created_at,
   updated_at,
@@ -116,7 +170,7 @@ export const campuses = mysqlTable("campuses", {
 export const colleges = mysqlTable("colleges", {
   id,
   name: text("name").notNull(),
- slug:varchar("slug", { length: 256 }).notNull() ,
+  slug: varchar("slug", { length: 256 }).notNull(),
   campus_id: varchar("campus_id", { length: 256 }).notNull(),
 
   created_at,
@@ -126,7 +180,7 @@ export const colleges = mysqlTable("colleges", {
 export const programs = mysqlTable("programs", {
   id,
   name: text("name").notNull(),
-  slug:varchar("slug", { length: 256 }).notNull() ,
+  slug: varchar("slug", { length: 256 }).notNull(),
 
   college_id: varchar("college_id", { length: 256 }).notNull(),
 

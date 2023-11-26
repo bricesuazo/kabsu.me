@@ -9,9 +9,8 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@clerk/nextjs": "^4.24.0",
-    "@clerk/themes": "^1.7.6",
     "@cvsu.me/api": "workspace:*",
+    "@cvsu.me/auth": "workspace:*",
     "@cvsu.me/constants": "workspace:*",
     "@cvsu.me/db": "workspace:*",
     "@hookform/resolvers": "^3.3.1",
@@ -66,7 +65,7 @@
     "moment": "^2.29.4",
     "moment-twitter": "^0.2.0",
     "nanoid": "^5.0.1",
-    "next": "13.5.2",
+    "next": "14.0.3",
     "next-superjson-plugin": "^0.5.9",
     "next-themes": "^0.2.1",
     "postcss": "8.4.30",
@@ -88,7 +87,6 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
-    "@clerk/types": "^3.52.0",
     "@cvsu.me/eslint-config": "workspace:*",
     "@cvsu.me/prettier-config": "workspace:*",
     "@cvsu.me/tailwind-config": "workspace:*",

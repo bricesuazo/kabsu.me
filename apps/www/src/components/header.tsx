@@ -3,10 +3,10 @@
 import { Fragment, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { signOut } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/trpc/client";
-import { useClerk, useUser } from "@clerk/nextjs";
 import {
   AlertTriangle,
   AtSign,
@@ -51,20 +51,12 @@ import {
 import { Skeleton } from "./ui/skeleton";
 
 export default function Header() {
-  // { userId }: { userId: string | null }
-  const router = useRouter();
   const pathname = usePathname();
   const { setTheme } = useTheme();
-  const { signOut } = useClerk();
   const [loadingSignout, setLoadingSignout] = useState(false);
   const [open, setOpen] = useState("");
   const [type, setType] = useState<"bug" | "feature">("bug");
-  const { user, isLoaded } = useUser();
-  const userQuery = api.auth.getCurrentUser.useQuery(undefined, {
-    // refetchOnMount: false,
-    // refetchOnWindowFocus: false,
-    // refetchOnReconnect: false,
-  });
+  const sessionQuery = api.auth.getCurrentSession.useQuery();
 
   const [openFeedbackForm, setOpenFeedbackForm] = useState(false);
 
@@ -140,10 +132,10 @@ export default function Header() {
             <Notifications />
           </div>
 
-          {!isLoaded || userQuery.isLoading ? (
+          {sessionQuery.isLoading ? (
             <Skeleton className="m-1 h-8 w-8 rounded-full" />
           ) : (
-            userQuery.data && (
+            sessionQuery.data && (
               <Menubar asChild value={open}>
                 <MenubarMenu value="open">
                   <MenubarTrigger
@@ -153,9 +145,9 @@ export default function Header() {
                     <div className="relative h-8 w-8">
                       <Image
                         src={
-                          user?.hasImage
-                            ? userQuery.data.imageUrl
-                            : `https://api.dicebear.com/7.x/initials/svg?seed=${userQuery.data.username}`
+                          sessionQuery.data.user.image
+                            ? sessionQuery.data.user.image
+                            : "/default-avatar.jpg"
                         }
                         alt="Image"
                         fill
@@ -175,14 +167,12 @@ export default function Header() {
                       onClick={() => setOpen("")}
                     >
                       <Link
-                        href={`/${user?.username ?? userQuery.data.username}`}
+                        href={`/${sessionQuery.data.user.username}`}
                         className="w-full"
                       >
                         <AtSign className="mr-2" size="1rem" />
-                        {user?.username
-                          ? `${user.username}`
-                          : userQuery.data.username
-                          ? `${userQuery.data.username}`
+                        {sessionQuery.data.user.username.length
+                          ? `${sessionQuery.data.user.username}`
                           : "My Profile"}
                       </Link>
                     </MenubarItem>
@@ -244,25 +234,25 @@ export default function Header() {
 
                     <MenubarSeparator />
 
-                    <MenubarItem
-                      onClick={async () => {
+                    <form
+                      action={async () => {
                         setLoadingSignout(true);
                         await signOut();
-                        router.push("/");
                         setLoadingSignout(false);
                         setOpen("");
                       }}
-                      disabled={loadingSignout}
                     >
-                      <div className="mr-2">
-                        {loadingSignout ? (
-                          <Icons.spinner className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <LogOut size="1rem" />
-                        )}
-                      </div>
-                      Sign out
-                    </MenubarItem>
+                      <MenubarItem disabled={loadingSignout} asChild>
+                        <button className="mr-2">
+                          {loadingSignout ? (
+                            <Icons.spinner className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <LogOut size="1rem" />
+                          )}
+                        </button>
+                        Sign out
+                      </MenubarItem>
+                    </form>
                   </MenubarContent>
                 </MenubarMenu>
               </Menubar>

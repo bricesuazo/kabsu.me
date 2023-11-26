@@ -1,19 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
-import { auth } from "@clerk/nextjs";
 
+import { auth } from "@cvsu.me/auth";
 import type { User } from "@cvsu.me/db/schema";
 
 import FollowButton from "./follow-button";
 
-export default function UserFollows({
+export default async function UserFollows({
   user,
   isFollower,
 }: {
   user: User;
   isFollower: boolean;
 }) {
-  const { userId } = auth();
+  const session = await auth();
   return (
     <div className="flex gap-x-2 rounded border border-transparent p-2 hover:border-inherit">
       <Link href={`/${user.username}`}>
@@ -53,7 +53,7 @@ export default function UserFollows({
           </p>
         </div>
 
-        {user.id !== userId && (
+        {user.id !== session?.user.id && (
           <FollowButton user_id={user.id} isFollower={isFollower} />
         )}
       </div>

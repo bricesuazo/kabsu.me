@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { api } from "@/lib/trpc/client";
+import { signIn } from "@/actions/auth";
+// import { api } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
-import { useSignUp } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Album,
@@ -41,15 +41,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
 
 export default function ProgramAuth({
-  form1,
+  // form,
   data,
   page,
   setPage,
 }: {
-  form1: {
+  form: {
     username: string;
-    first_name: string;
-    last_name: string;
+    display_name: string;
   };
   data: {
     campuses: Campus[];
@@ -59,8 +58,7 @@ export default function ProgramAuth({
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
 }) {
-  const signUpMutation = api.users.signUp.useMutation();
-  const { isLoaded, signUp, setActive } = useSignUp();
+  // const signUpMutation = api.users.signUp.useMutation();
   const [opens, setOpens] = useState<{
     campuses: boolean;
     colleges: boolean;
@@ -107,31 +105,25 @@ export default function ProgramAuth({
     <>
       <Form {...form2}>
         <form
-          onSubmit={form2.handleSubmit(async (values) => {
-            if (!isLoaded) return;
-
-            const new_user = await signUp.update({
-              username: form1.username,
-              firstName: form1.first_name,
-              lastName: form1.last_name,
-              redirectUrl: "/",
-              actionCompleteRedirectUrl: "/",
-            });
-
-            await signUpMutation.mutateAsync({
-              userId: new_user.createdUserId ?? "",
-              program_id: values.program_id,
-              type: values.type ?? "",
-              email: new_user.emailAddress ?? "",
-              first_name: new_user.firstName ?? "",
-              last_name: new_user.lastName ?? "",
-              username: new_user.username ?? "",
-              profile_picture_url: null,
-            });
-
-            await setActive({
-              session: signUp.createdSessionId ?? "",
-            });
+          onSubmit={form2.handleSubmit(async () => {
+            await signIn("google");
+            // const new_user = await signUp.update({
+            //   username: form.username,
+            //   firstName: form.first_name,
+            //   lastName: form.last_name,
+            //   redirectUrl: "/",
+            //   actionCompleteRedirectUrl: "/",
+            // });
+            // await signUpMutation.mutateAsync({
+            //   userId: new_user.createdUserId ?? "",
+            //   program_id: values.program_id,
+            //   type: values.type ?? "",
+            //   email: new_user.emailAddress ?? "",
+            //   first_name: new_user.firstName ?? "",
+            //   last_name: new_user.lastName ?? "",
+            //   username: new_user.username ?? "",
+            //   profile_picture_url: null,
+            // });
           })}
           className="space-y-8"
         >

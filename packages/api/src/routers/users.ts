@@ -298,9 +298,7 @@ export const usersRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.transaction(async (trx) => {
-        const currentUser = await ctx.clerk.users.getUser(ctx.session.user.id);
-
-        if (currentUser.username !== input.username) {
+        if (ctx.session.user.username !== input.username) {
           if (BLOCKED_USERNAMES.has(input.username))
             throw new TRPCError({
               code: "BAD_REQUEST",
@@ -326,51 +324,49 @@ export const usersRouter = router({
             username: input.username,
           })
           .where(eq(users.id, ctx.session.user.id));
-        await ctx.clerk.users.updateUser(ctx.session.user.id, {
-          firstName: input.firstName,
-          lastName: input.lastName,
-          username: input.username,
-        });
+        // await ctx.clerk.users.updateUser(ctx.session.user.id, {
+        //   firstName: input.firstName,
+        //   lastName: input.lastName,
+        //   username: input.username,
+        // });
       });
 
       return input;
     }),
   updateProfilePicture: protectedProcedure
     .input(z.object({ image: z.string() }))
-    .mutation(async ({ ctx, input }) => {
+    .mutation(({ input }) => {
       const base64 = input.image;
-      await ctx.db.transaction(async (trx) => {
-        const byteCharsArray = Array.from(
-          atob(base64.substr(base64.indexOf(",") + 1)),
+      // await ctx.db.transaction(async (trx) => {
+      const byteCharsArray = Array.from(
+        atob(base64.substr(base64.indexOf(",") + 1)),
+      );
+      const chunksIterator = new Array(Math.ceil(byteCharsArray.length / 512));
+      const bytesArrays = [];
+
+      for (let c = 0; c < chunksIterator.length; c++) {
+        bytesArrays.push(
+          new Uint8Array(
+            byteCharsArray
+              .slice(c * 512, 512 * (c + 1))
+              .map((s) => s.charCodeAt(0)),
+          ),
         );
-        const chunksIterator = new Array(
-          Math.ceil(byteCharsArray.length / 512),
-        );
-        const bytesArrays = [];
+      }
 
-        for (let c = 0; c < chunksIterator.length; c++) {
-          bytesArrays.push(
-            new Uint8Array(
-              byteCharsArray
-                .slice(c * 512, 512 * (c + 1))
-                .map((s) => s.charCodeAt(0)),
-            ),
-          );
-        }
+      // const file = new Blob(bytesArrays, { type: "image/png" });
 
-        const file = new Blob(bytesArrays, { type: "image/png" });
+      // const user = await ctx.clerk.users.updateUserProfileImage(
+      //   ctx.session.user.id,
+      //   {
+      //     file,
+      //   },
+      // );
 
-        const user = await ctx.clerk.users.updateUserProfileImage(
-          ctx.session.user.id,
-          {
-            file,
-          },
-        );
-
-        await trx
-          .update(users)
-          .set({ profile_picture_url: user.imageUrl })
-          .where(eq(users.id, ctx.session.user.id));
-      });
+      //   await trx
+      //     .update(users)
+      //     .set({ profile_picture_url: user.imageUrl })
+      //     .where(eq(users.id, ctx.session.user.id));
+      // });
     }),
 });

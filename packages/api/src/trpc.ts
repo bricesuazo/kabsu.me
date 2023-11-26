@@ -1,36 +1,15 @@
-import { auth, clerkClient } from "@clerk/nextjs/server";
 import { initTRPC, TRPCError } from "@trpc/server";
-import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
+import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
+import { auth } from "@cvsu.me/auth";
 import { db } from "@cvsu.me/db";
 
 export async function createTRPCContext(opts?: FetchCreateContextFnOptions) {
-  const { userId } = auth();
-
-  let session: {
-    user: {
-      id: string;
-      name?: string;
-      email?: string;
-    };
-  } | null = null;
-
-  if (userId) {
-    session = {
-      user: {
-        id: userId,
-      },
-    };
-  } else {
-    session = null;
-  }
-
   return {
-    session,
+    session: await auth(),
     db,
-    clerk: clerkClient,
     headers: opts && Object.fromEntries(opts.req.headers),
   };
 }
@@ -61,7 +40,7 @@ export const router = t.router;
 export const publicProcedure = t.procedure;
 
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session?.user.id) {
+  if (!ctx.session) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({

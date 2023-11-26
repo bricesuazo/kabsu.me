@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/tooltip";
 import { api } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
-import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Album,
@@ -52,6 +51,7 @@ export default function PostComment({
   post: Post & { likes: Like[]; comments: Comment[] };
 }) {
   const context = api.useContext();
+  const getCurrentSessionQuery = api.auth.getCurrentSession.useQuery();
   const [open, setOpen] = useState(false);
   const likePostMutation = api.posts.like.useMutation({
     onSuccess: async () =>
@@ -92,8 +92,6 @@ export default function PostComment({
       comment: "",
     },
   });
-
-  const { user } = useUser();
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -394,9 +392,9 @@ export default function PostComment({
             >
               <div className="flex w-full gap-x-2">
                 <div className="min-w-max">
-                  {user?.imageUrl ? (
+                  {getCurrentSessionQuery.data?.user.image ? (
                     <Image
-                      src={user.imageUrl}
+                      src={getCurrentSessionQuery.data.user.image}
                       alt="Image"
                       width={40}
                       height={40}
@@ -448,9 +446,9 @@ export default function PostComment({
         ) : (
           <div className="flex w-full gap-x-2">
             <div className="min-w-max">
-              {user?.imageUrl ? (
+              {getCurrentSessionQuery.data?.user.image ? (
                 <Image
-                  src={user.imageUrl}
+                  src={getCurrentSessionQuery.data.user.image}
                   alt="Image"
                   width={40}
                   height={40}

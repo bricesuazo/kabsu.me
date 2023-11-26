@@ -9,8 +9,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import TrpcProvider from "@/lib/trpc/Provider";
 import { cn } from "@/lib/utils";
-import { auth, ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/react";
+
+import { auth } from "@cvsu.me/auth";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -33,27 +34,27 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://cvsu.me/"),
 };
 
-export default function RootLayout({ children }: React.PropsWithChildren) {
-  const { userId } = auth();
+export default async function RootLayout({
+  children,
+}: React.PropsWithChildren) {
+  const session = await auth();
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={cn(font.className)}>
-          <QueryProvider>
-            <ThemeProvider attribute="class" defaultTheme="light">
-              <TooltipProvider>
-                <TrpcProvider>
-                  {children}
-                  <Analytics />
-                  {userId && <FooterMenu />}
-                </TrpcProvider>
-              </TooltipProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={cn(font.className)}>
+        <QueryProvider>
+          <ThemeProvider attribute="class" defaultTheme="light">
+            <TooltipProvider>
+              <TrpcProvider>
+                {children}
+                <Analytics />
+                {session && <FooterMenu />}
+              </TrpcProvider>
+            </TooltipProvider>
 
-              <Toaster />
-            </ThemeProvider>
-          </QueryProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+            <Toaster />
+          </ThemeProvider>
+        </QueryProvider>
+      </body>
+    </html>
   );
 }

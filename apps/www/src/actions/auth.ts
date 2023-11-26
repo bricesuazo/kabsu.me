@@ -1,0 +1,50 @@
+"use server";
+
+import type { OAuthProviders, Session } from "@cvsu.me/auth";
+import {
+  signIn as signInAuth,
+  signOut as signOutAuth,
+  update as updateAuth,
+} from "@cvsu.me/auth";
+
+export async function signIn(
+  provider?: OAuthProviders,
+  options?: {
+    redirectTo?: string | undefined;
+    redirect?: true | undefined;
+  },
+) {
+  return await signInAuth(provider, options);
+}
+
+export async function signOut(
+  options?:
+    | {
+        redirectTo?: string | undefined;
+        redirect?: true | undefined;
+      }
+    | undefined,
+) {
+  return await signOutAuth(options);
+}
+
+export async function update(
+  data: Partial<
+    | Session
+    | {
+        user: Partial<
+          {
+            id: string;
+            username: string;
+            email: string;
+          } & {
+            name?: string | null | undefined;
+            email?: string | null | undefined;
+            image?: string | null | undefined;
+          }
+        >;
+      }
+  >,
+) {
+  return await updateAuth(data);
+}

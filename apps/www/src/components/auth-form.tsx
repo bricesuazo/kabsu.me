@@ -3,11 +3,10 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-// import { useSearchParams } from "next/navigation";
-// import { useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { signIn } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/trpc/client";
-import { useSignIn, useSignUp } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Github } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -32,18 +31,18 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
+import { Skeleton } from "./ui/skeleton";
 
 export default function AuthForm() {
-  // const searchParams = useSearchParams();
-  const { data } = api.users.getProgramForAuth.useQuery();
+  const searchParams = useSearchParams();
+  const getCurrentSessionQuery = api.auth.getCurrentSession.useQuery();
+  const getTotalUsersQuery = api.users.getTotalUsers.useQuery();
   const isUsernameExistsMutation = api.users.isUsernameExists.useMutation();
+  const { data } = api.users.getProgramForAuth.useQuery();
   const [page, setPage] = useState(0);
-  const [isLoading] = useState(false);
-  const { isLoaded: isLoadedSignIn, signIn } = useSignIn();
-  const { isLoaded: isLoadedSignUp, signUp } = useSignUp();
-  // const getTotalUsersQuery = api.users.getTotalUsers.useQuery();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const form1Schema = z.object({
+  const formSchema = z.object({
     username: z
       .string()
       .min(4, { message: "Username must be at least 4 characters long." })
@@ -56,32 +55,33 @@ export default function AuthForm() {
         },
       )
       .nonempty({ message: "Username is required." }),
-    first_name: z.string().nonempty({ message: "First name is required." }),
-    last_name: z.string().nonempty({ message: "Last name is required." }),
+    display_name: z.string().nonempty({ message: "Display name is required." }),
   });
 
-  const form1 = useForm<z.infer<typeof form1Schema>>({
-    resolver: zodResolver(form1Schema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      username: signUp?.emailAddress?.split("@")[0]?.replace(".", "-") ?? "",
-      first_name: signUp?.firstName ?? "",
-      last_name: signUp?.lastName ?? "",
+      username:
+        getCurrentSessionQuery.data?.user.email
+          .split("@")[0]
+          ?.replace(".", "-") ?? "",
+      display_name: getCurrentSessionQuery.data?.user.name ?? "",
     },
   });
+
   useEffect(() => {
-    if (!signUp) return;
+    if (!getCurrentSessionQuery.data || getCurrentSessionQuery.isLoading)
+      return;
 
-    if (!isLoadedSignUp) return;
-
-    form1.setValue(
+    form.setValue(
       "username",
-      signUp.emailAddress?.split("@")[0]?.replace(".", "-") ?? "",
+      getCurrentSessionQuery.data.user.email.split("@")[0]?.replace(".", "-") ??
+        "",
     );
-    form1.setValue("first_name", signUp.firstName ?? "");
-    form1.setValue("last_name", signUp.lastName ?? "");
-  }, [signUp, isLoadedSignUp, form1]);
+    form.setValue("display_name", getCurrentSessionQuery.data.user.name ?? "");
+  }, [form]);
 
-  if (signUp?.status === "missing_requirements") {
+  if (searchParams.has("missing_info")) {
     return (
       <div className="space-y-8 py-20">
         <div className="">
@@ -95,21 +95,21 @@ export default function AuthForm() {
             Fill out the form below to continue.
           </h4>
           <p className="text-center text-sm text-muted-foreground">
-            {signUp?.emailAddress}
+            {getCurrentSessionQuery.data?.user.email}
           </p>
         </div>
         {page === 0 ? (
           <>
-            <Form {...form1}>
+            <Form {...form}>
               <form
-                onSubmit={form1.handleSubmit(async (values) => {
+                onSubmit={form.handleSubmit(async (values) => {
                   const isUsernameExists =
                     await isUsernameExistsMutation.mutateAsync({
                       username: values.username,
                     });
 
                   if (isUsernameExists) {
-                    form1.setError("username", {
+                    form.setError("username", {
                       type: "manual",
                       message: "Username is already taken.",
                     });
@@ -120,7 +120,7 @@ export default function AuthForm() {
                 className="space-y-8"
               >
                 <FormField
-                  control={form1.control}
+                  control={form.control}
                   name="username"
                   render={({ field }) => (
                     <FormItem>
@@ -128,7 +128,7 @@ export default function AuthForm() {
                       <FormControl>
                         <Input
                           placeholder="bricesuazo"
-                          disabled={form1.formState.isSubmitting}
+                          disabled={form.formState.isSubmitting}
                           {...field}
                           value={field.value}
                           onChange={(e) => {
@@ -147,36 +147,16 @@ export default function AuthForm() {
 
                 <div className="flex items-center gap-x-2">
                   <FormField
-                    control={form1.control}
-                    name="first_name"
+                    control={form.control}
+                    name="display_name"
                     render={({ field }) => (
                       <FormItem className="flex-1">
-                        <FormLabel>First name</FormLabel>
+                        <FormLabel>Display name</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Brice"
+                            placeholder="Brice Suazo"
                             {...field}
-                            disabled={form1.formState.isSubmitting}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          This is how your name will appear on your posts.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form1.control}
-                    name="last_name"
-                    render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormLabel>Last name</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Suazo"
-                            {...field}
-                            disabled={form1.formState.isSubmitting}
+                            disabled={form.formState.isSubmitting}
                           />
                         </FormControl>
                         <FormDescription>
@@ -191,9 +171,9 @@ export default function AuthForm() {
                 <Button
                   variant="outline"
                   type="submit"
-                  disabled={form1.formState.isSubmitting}
+                  disabled={form.formState.isSubmitting}
                 >
-                  {form1.formState.isSubmitting && (
+                  {form.formState.isSubmitting && (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                   )}
                   Next
@@ -204,7 +184,7 @@ export default function AuthForm() {
         ) : (
           data && (
             <ProgramAuth
-              form1={form1.getValues()}
+              form={form.getValues()}
               data={data}
               page={page}
               setPage={setPage}
@@ -268,67 +248,52 @@ export default function AuthForm() {
               </Badge>
             </Link>
           </div>
-          <Button
-            // variant="outline"
-            // onClick={async () => {
-            //   if (!isLoadedSignIn) return;
-            //   setLoading(true);
 
-            //   await signIn.authenticateWithRedirect({
-            //     strategy: "oauth_google",
-            //     redirectUrl: "/sso-callback",
-            //     redirectUrlComplete: searchParams.get("callback_url")
-            //       ? `/${searchParams.get("callback_url")}`
-            //       : "/",
-            //   });
-
-            //   setLoading(false);
-            // }}
-            disabled={!isLoadedSignIn || isLoading || true}
+          <form
+            action={async () => {
+              setIsLoading(true);
+              await signIn("google", {
+                redirect: true,
+                redirectTo: searchParams.has("callback_url")
+                  ? `/${searchParams.get("callback_url")}`
+                  : "/",
+              });
+              setIsLoading(false);
+            }}
           >
-            {isLoading ? (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Icons.google className="mr-2 h-4 w-4" />
-            )}
-            Sign in with CvSU Account
-          </Button>
+            <Button disabled={isLoading}>
+              {isLoading ? (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Icons.google className="mr-2 h-4 w-4" />
+              )}
+              Sign in with CvSU Account
+            </Button>
+          </form>
 
-          {/* <p className="text-sm">
-            Sorry, we are currently under maintenance due to high traffic.
-          </p> */}
-
-          {signIn?.firstFactorVerification.error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>
-                {signIn.firstFactorVerification.error.message}
-              </AlertTitle>
-              <AlertDescription>
-                {signIn?.firstFactorVerification.error?.code ===
-                  "not_allowed_access" && (
-                  <>
-                    Please use your CvSU account.
-                    <br />
-                  </>
-                )}{" "}
-                {signIn.firstFactorVerification.error.longMessage}
-              </AlertDescription>
-            </Alert>
-          )}
+          {searchParams.has("error") ||
+            (searchParams.has("error_description") && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>{searchParams.get("error") ?? "Error"}</AlertTitle>
+                <AlertDescription>
+                  {searchParams.get("error_description") ??
+                    "Something went wrong."}
+                </AlertDescription>
+              </Alert>
+            ))}
 
           <ToggleTheme />
 
-          {/* {getTotalUsersQuery.isLoading ? (
+          {getTotalUsersQuery.isLoading ? (
             <Skeleton className="my-1 h-3 w-36 rounded-full" />
           ) : (
-          )} */}
-          <p className="text-center text-sm text-muted-foreground">
-            {/* {getTotalUsersQuery.data} */}
-            2,443 users registered.
-          </p>
+            <p className="text-center text-sm text-muted-foreground">
+              {getTotalUsersQuery.data}
+            </p>
+          )}
         </div>
-        {/* ABOUT DEV COMPONENT */}{" "}
+        {/* ABOUT DEV COMPONENT */}
         <div>
           <h2 className="py-4 text-center text-4xl font-bold text-primary">
             About

@@ -11,6 +11,7 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
+    "@auth/core": "^0.18.3",
     "@cvsu.me/constants": "workspace:*",
     "@planetscale/database": "^1.11.0",
     "dotenv": "^16.3.1",
@@ -20,10 +21,12 @@
     "tsx": "^3.12.10"
   },
   "devDependencies": {
+    "@cvsu.me/prettier-config": "workspace:*",
     "@cvsu.me/tsconfig": "workspace:*",
     "@types/node": "^20.6.2",
     "dotenv-cli": "^7.3.0",
     "drizzle-kit": "0.19.13",
     "typescript": "^5.2.2"
-  }
+  },
+  "prettier": "@cvsu.me/prettier-config"
 }
