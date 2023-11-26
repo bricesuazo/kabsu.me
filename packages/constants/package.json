@@ -6,8 +6,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "lucide-react": "^0.279.0",
-    "nanoid": "^5.0.1"
+    "lucide-react": "^0.293.0",
+    "nanoid": "^5.0.3"
   },
   "devDependencies": {
     "@cvsu.me/eslint-config": "workspace:*",

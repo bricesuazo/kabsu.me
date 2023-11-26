@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react";
 import {
   Blocks,
   Book,
@@ -7,7 +8,6 @@ import {
   Globe2,
   HelpCircle,
   Home,
-  Info,
   Instagram,
   Mail,
   MapPin,
@@ -390,7 +390,7 @@ const POST_TYPE = ["following", "program", "college", "campus", "all"] as const;
 
 export const POST_TYPE_TABS: {
   id: (typeof POST_TYPE)[number];
-  icon: any;
+  icon: LucideIcon;
   name: string;
 }[] = [
   {

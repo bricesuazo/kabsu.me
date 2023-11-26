@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
+import { update } from "@cvsu.me/auth";
 import { BLOCKED_USERNAMES } from "@cvsu.me/constants";
 import {
   ACCOUNT_TYPE,
@@ -27,15 +28,26 @@ export const usersRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .update(users)
-        .set({
-          program_id: input.program_id,
-          type: input.type,
-          name: input.name,
-          username: input.username,
-        })
-        .where(eq(users.id, ctx.session.user.id));
+      await ctx.db.transaction(async (trx) => {
+        await trx
+          .update(users)
+          .set({
+            program_id: input.program_id,
+            type: input.type,
+            name: input.name,
+            username: input.username,
+          })
+          .where(eq(users.id, ctx.session.user.id));
+
+        await update({
+          user: {
+            program_id: input.program_id,
+            type: input.type,
+            name: input.name,
+            username: input.username,
+          },
+        });
+      });
     }),
 
   updateProfile: protectedProcedure

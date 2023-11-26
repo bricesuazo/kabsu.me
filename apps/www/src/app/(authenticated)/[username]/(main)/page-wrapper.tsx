@@ -304,7 +304,7 @@ export default function UserPageWrapper({
 
                         <AlertDialogFooter>
                           <AlertDialogCancel
-                            disabled={reportUserMutation.isLoading}
+                            disabled={reportUserMutation.isPending}
                           >
                             Cancel
                           </AlertDialogCancel>
@@ -312,9 +312,9 @@ export default function UserPageWrapper({
                           <Button
                             variant="destructive"
                             type="submit"
-                            disabled={reportUserMutation.isLoading}
+                            disabled={reportUserMutation.isPending}
                           >
-                            {reportUserMutation.isLoading && (
+                            {reportUserMutation.isPending && (
                               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                             )}
                             Report

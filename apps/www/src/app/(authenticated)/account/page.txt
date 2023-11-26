@@ -206,7 +206,7 @@ export default function AccountPage() {
                                             user?.firstName ?? "First name"
                                           }
                                           disabled={
-                                            updateAccountSettingsMutation.isLoading
+                                            updateAccountSettingsMutation.isPending
                                           }
                                           {...field}
                                         />
@@ -227,7 +227,7 @@ export default function AccountPage() {
                                             user?.lastName ?? "Last name"
                                           }
                                           disabled={
-                                            updateAccountSettingsMutation.isLoading
+                                            updateAccountSettingsMutation.isPending
                                           }
                                           {...field}
                                         />
@@ -249,7 +249,7 @@ export default function AccountPage() {
                                           user?.username ?? "Username"
                                         }
                                         disabled={
-                                          updateAccountSettingsMutation.isLoading
+                                          updateAccountSettingsMutation.isPending
                                         }
                                         {...field}
                                       />
@@ -277,10 +277,10 @@ export default function AccountPage() {
                                   disabled={
                                     !form.formState.isValid ||
                                     !form.formState.isDirty ||
-                                    updateAccountSettingsMutation.isLoading
+                                    updateAccountSettingsMutation.isPending
                                   }
                                 >
-                                  {updateAccountSettingsMutation.isLoading && (
+                                  {updateAccountSettingsMutation.isPending && (
                                     <Icons.spinner className="mr-1 h-3 w-3 animate-spin" />
                                   )}
                                   Update
@@ -289,7 +289,7 @@ export default function AccountPage() {
                                   size="sm"
                                   variant="ghost"
                                   disabled={
-                                    updateAccountSettingsMutation.isLoading
+                                    updateAccountSettingsMutation.isPending
                                   }
                                   onClick={() => setIsEditing(false)}
                                 >

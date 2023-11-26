@@ -14,11 +14,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import VerifiedBadge from "@/components/verified-badge";
+import { momentTwitter } from "@/lib/moment-twitter";
 import { api } from "@/lib/trpc/client";
 import { formatText } from "@/lib/utils";
 import { Album, Briefcase, GraduationCap } from "lucide-react";
 import moment from "moment";
-import momentTwitter from "moment-twitter";
 
 import type { Comment } from "@cvsu.me/db/schema";
 
@@ -87,9 +87,9 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
             <Skeleton className="h-10 w-24" />
           </div>
         </div>
-      ) : !postQuery.data && postQuery.isError ? (
+      ) : !postQuery.data || postQuery.isError ? (
         <p className="text-center text-sm text-muted-foreground">
-          {postQuery.error.message}
+          {postQuery.error?.message ?? "Something went wrong."}
         </p>
       ) : (
         <div className="min-h-screen space-y-2">
@@ -150,20 +150,11 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                     <Tooltip delayDuration={250}>
                       <TooltipTrigger>
                         <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                          {
-                            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                            momentTwitter(
-                              postQuery.data.post.created_at,
-                            ).twitterLong()
-                          }
+                          {momentTwitter(postQuery.data.post.created_at)}
                         </p>
                         <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                          {
-                            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                            momentTwitter(
-                              postQuery.data.post.created_at,
-                            ).twitterShort()
-                          }
+                          {}
+                          {momentTwitter(postQuery.data.post.created_at)}
                         </p>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -311,20 +302,12 @@ function CommentComponent({ comment }: { comment: Comment }) {
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                    {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                      momentTwitter(
-                        fullCommentQuery.data.comment.created_at,
-                      ).twitterLong()
-                    }
+                    {}
+                    {momentTwitter(fullCommentQuery.data.comment.created_at)}
                   </p>
                   <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                    {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                      momentTwitter(
-                        fullCommentQuery.data.comment.created_at,
-                      ).twitterShort()
-                    }
+                    {}
+                    {momentTwitter(fullCommentQuery.data.comment.created_at)}
                   </p>
                 </TooltipTrigger>
                 <TooltipContent>

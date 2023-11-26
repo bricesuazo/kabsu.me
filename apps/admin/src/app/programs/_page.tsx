@@ -136,7 +136,7 @@ export default function ProgramsPageWrapper({
                                         <Input
                                           placeholder="Bachelor of Science in Computer Science"
                                           disabled={
-                                            addProgramMutation.isLoading
+                                            addProgramMutation.isPending
                                           }
                                           {...field}
                                         />
@@ -155,7 +155,7 @@ export default function ProgramsPageWrapper({
                                         <Input
                                           placeholder="BSCS"
                                           disabled={
-                                            addProgramMutation.isLoading
+                                            addProgramMutation.isPending
                                           }
                                           {...field}
                                         />
@@ -167,7 +167,7 @@ export default function ProgramsPageWrapper({
 
                                 <DialogFooter>
                                   <Button type="submit">
-                                    {addProgramMutation.isLoading && (
+                                    {addProgramMutation.isPending && (
                                       <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                     )}
                                     Confirm

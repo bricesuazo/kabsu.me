@@ -2,12 +2,13 @@ import "@cvsu.me/tailwind-config/globals.css";
 
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import { headers } from "next/headers";
 import FooterMenu from "@/components/footer-menu";
 import QueryProvider from "@/components/query-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import TrpcProvider from "@/lib/trpc/Provider";
+import TRPCProvider from "@/lib/trpc/Provider";
 import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -38,17 +39,18 @@ export default async function RootLayout({
   children,
 }: React.PropsWithChildren) {
   const session = await auth();
+  console.log("🚀 ~ file: layout.tsx:42 ~ session:", session);
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(font.className)}>
         <QueryProvider>
           <ThemeProvider attribute="class" defaultTheme="light">
             <TooltipProvider>
-              <TrpcProvider>
+              <TRPCProvider headers={headers()}>
                 {children}
                 <Analytics />
                 {session && <FooterMenu />}
-              </TrpcProvider>
+              </TRPCProvider>
             </TooltipProvider>
 
             <Toaster />

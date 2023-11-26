@@ -119,7 +119,7 @@ export default function CollegesPageWrapper({
                             <FormControl>
                               <Input
                                 placeholder="College of Engineering and Information Technology"
-                                disabled={addCollegeMutation.isLoading}
+                                disabled={addCollegeMutation.isPending}
                                 {...field}
                               />
                             </FormControl>
@@ -136,7 +136,7 @@ export default function CollegesPageWrapper({
                             <FormControl>
                               <Input
                                 placeholder="CEIT"
-                                disabled={addCollegeMutation.isLoading}
+                                disabled={addCollegeMutation.isPending}
                                 {...field}
                               />
                             </FormControl>
@@ -147,7 +147,7 @@ export default function CollegesPageWrapper({
 
                       <DialogFooter>
                         <Button type="submit">
-                          {addCollegeMutation.isLoading && (
+                          {addCollegeMutation.isPending && (
                             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                           )}
                           Confirm

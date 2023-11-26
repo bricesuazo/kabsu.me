@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { momentTwitter } from "@/lib/moment-twitter";
 import { api } from "@/lib/trpc/client";
 import { cn, formatText } from "@/lib/utils";
 // import UpdatePost from "./update-post";
@@ -15,7 +16,6 @@ import {
   MessageCircle,
 } from "lucide-react";
 import moment from "moment";
-import momentTwitter from "moment-twitter";
 import { nanoid } from "nanoid";
 
 import type { Like, Post } from "@cvsu.me/db/schema";
@@ -137,16 +137,10 @@ export default function Post({ post }: { post: Post }) {
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                    {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                      momentTwitter(post.created_at).twitterLong()
-                    }
+                    {momentTwitter(post.created_at)}
                   </p>
                   <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                    {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                      momentTwitter(post.created_at).twitterShort()
-                    }
+                    {momentTwitter(post.created_at)}
                   </p>
                 </TooltipTrigger>
                 <TooltipContent>

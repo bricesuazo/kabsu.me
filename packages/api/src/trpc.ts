@@ -1,18 +1,35 @@
 import { initTRPC, TRPCError } from "@trpc/server";
-import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
+import type { Session } from "@cvsu.me/auth";
 import { auth } from "@cvsu.me/auth";
 import { db } from "@cvsu.me/db";
 
-export async function createTRPCContext(opts?: FetchCreateContextFnOptions) {
-  return {
-    session: await auth(),
-    db,
-    headers: opts && Object.fromEntries(opts.req.headers),
-  };
+interface CreateContextOptions {
+  session: Session | null;
 }
+
+const createInnerTRPCContext = (opts: CreateContextOptions) => {
+  return {
+    session: opts.session,
+    db,
+  };
+};
+
+export const createTRPCContext = async (opts: {
+  req?: Request;
+  auth: Session | null;
+}) => {
+  const session = opts.auth ?? (await auth());
+  const source = opts.req?.headers.get("x-trpc-source") ?? "unknown";
+
+  console.log(">>> tRPC Request from", source, "by", session?.user);
+
+  return createInnerTRPCContext({
+    session,
+  });
+};
 
 export type Context = Awaited<ReturnType<typeof createTRPCContext>>;
 

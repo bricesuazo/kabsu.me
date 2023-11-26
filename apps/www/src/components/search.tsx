@@ -59,7 +59,7 @@ export default function Search() {
           </div>
 
           <ScrollArea className="flex max-h-80 flex-col gap-4">
-            {searchMutation.isLoading ? (
+            {searchMutation.isPending ? (
               <div className="flex flex-col gap-y-1">
                 <Skeleton className="h-16" />
                 <Skeleton className="h-16" />

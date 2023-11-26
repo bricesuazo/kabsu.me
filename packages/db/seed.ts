@@ -54,10 +54,10 @@ async function main() {
     //     })),
     //   ));
 
-    console.log("Users inserted!");
+    // console.log("Users inserted!");
   });
 
   console.log("Done seeding!");
 }
 
-await main();
+void main();

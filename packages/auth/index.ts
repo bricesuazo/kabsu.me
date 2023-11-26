@@ -17,6 +17,14 @@ declare module "next-auth" {
       email: string;
     } & DefaultSession["user"];
   }
+
+  interface User {
+    // ...other properties
+    // role: UserRole;
+    username?: string | null;
+    program_id?: string | null;
+    type?: (typeof ACCOUNT_TYPE)[number] | null;
+  }
 }
 
 export const providers = ["google"] as const;
@@ -34,13 +42,52 @@ export const {
   adapter: DrizzleAdapter(db),
   providers: [Google],
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    signIn: ({ user }) => {
+      if (
+        user.email === "cvsudotme@gmail.com" ||
+        user.email?.endsWith("@cvsu.edu.ph")
+      )
+        return true;
+
+      return false;
+    },
+    session: ({ session, user }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+          program_id: user.program_id,
+          type: user.type,
+          email: user.email,
+        },
+      };
+    },
+    jwt: ({
+      token,
+      user,
+      // trigger, session
+    }) => {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.username = user.username;
+        token.image = user.image;
+        token.program_id = user.program_id;
+        token.type = user.type;
+      }
+
+      // if (trigger === "update" && session) {
+      //   console.log("🚀 ~ file: auth.ts:80 ~ session:", session);
+
+      //   return token;
+      // }
+
+      return token;
+    },
+  },
+  pages: {
+    error: "/",
   },
 });
 

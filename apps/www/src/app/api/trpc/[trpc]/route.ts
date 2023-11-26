@@ -2,18 +2,38 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { appRouter } from "@cvsu.me/api/root";
 import { createTRPCContext } from "@cvsu.me/api/trpc";
+import { auth } from "@cvsu.me/auth";
 
-// export const dynamic = "force-dynamic";
-// export const revalidate = 0;
-// export const fetchCache = "only-no-store";
 // export const runtime = "edge";
 
-const handler = (req: Request) =>
-  fetchRequestHandler({
-    endpoint: "/api/trpc",
-    req,
-    router: appRouter,
-    createContext:createTRPCContext,
+function setCorsHeaders(res: Response) {
+  res.headers.set("Access-Control-Allow-Origin", "*");
+  res.headers.set("Access-Control-Request-Method", "*");
+  res.headers.set("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
+  res.headers.set("Access-Control-Allow-Headers", "*");
+}
+
+export function OPTIONS() {
+  const response = new Response(null, {
+    status: 204,
   });
+  setCorsHeaders(response);
+  return response;
+}
+
+const handler = async (req: Request) => {
+  const response = await fetchRequestHandler({
+    endpoint: "/api/trpc",
+    router: appRouter,
+    req,
+    createContext: async () => createTRPCContext({ auth: await auth(), req }),
+    onError({ error, path }) {
+      console.error(`>>> tRPC Error on '${path}'`, error);
+    },
+  });
+
+  setCorsHeaders(response);
+  return response;
+};
 
 export { handler as GET, handler as POST };

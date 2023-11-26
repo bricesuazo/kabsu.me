@@ -76,7 +76,7 @@ export default function Notifications() {
                 className="h-8 w-8"
                 onClick={() => markAllNotificationAsReadMutation.mutate()}
                 disabled={
-                  markAllNotificationAsReadMutation.isLoading ||
+                  markAllNotificationAsReadMutation.isPending ||
                   getAllNotificationsQuery.isLoading ||
                   !getAllNotificationsQuery.data ||
                   getAllNotificationsQuery.data.length === 0 ||
@@ -85,7 +85,7 @@ export default function Notifications() {
                   ).length === 0
                 }
               >
-                {markAllNotificationAsReadMutation.isLoading ? (
+                {markAllNotificationAsReadMutation.isPending ? (
                   <Icons.spinner className="h-4 w-4 animate-spin" />
                 ) : (
                   <BookOpenCheckIcon size="1rem" />

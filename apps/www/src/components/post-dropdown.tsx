@@ -115,7 +115,7 @@ export default function PostDropdown({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel disabled={deletePostMutation.isLoading}>
+              <AlertDialogCancel disabled={deletePostMutation.isPending}>
                 Cancel
               </AlertDialogCancel>
               <Button
@@ -137,9 +137,9 @@ export default function PostDropdown({
                         | undefined) ?? "following",
                   });
                 }}
-                disabled={deletePostMutation.isLoading}
+                disabled={deletePostMutation.isPending}
               >
-                {deletePostMutation.isLoading && (
+                {deletePostMutation.isPending && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 Delete
@@ -228,16 +228,16 @@ export default function PostDropdown({
                 )}
 
                 <AlertDialogFooter>
-                  <AlertDialogCancel disabled={reportPostMutation.isLoading}>
+                  <AlertDialogCancel disabled={reportPostMutation.isPending}>
                     Cancel
                   </AlertDialogCancel>
 
                   <Button
                     variant="destructive"
                     type="submit"
-                    disabled={reportPostMutation.isLoading}
+                    disabled={reportPostMutation.isPending}
                   >
-                    {reportPostMutation.isLoading && (
+                    {reportPostMutation.isPending && (
                       <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                     )}
                     Report

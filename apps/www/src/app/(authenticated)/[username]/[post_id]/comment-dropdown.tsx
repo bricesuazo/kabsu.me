@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,8 +11,32 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { api } from "@/lib/trpc/client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { MoreVertical } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { REPORT_POST_REASONS } from "@cvsu.me/constants";
+
+import { Icons } from "../../../../components/icons";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -21,30 +47,6 @@ import {
   AlertDialogTitle,
 } from "../../../../components/ui/alert-dialog";
 import { toast } from "../../../../components/ui/use-toast";
-import { Icons } from "../../../../components/icons";
-import { api } from "@/lib/trpc/client";
-import { useParams } from "next/navigation";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { REPORT_POST_REASONS } from "@cvsu.me/constants";
-import { Input } from "@/components/ui/input";
 
 export default function CommentDropdown({
   comment_id,
@@ -210,16 +212,16 @@ export default function CommentDropdown({
                 )}
 
                 <AlertDialogFooter>
-                  <AlertDialogCancel disabled={reportCommentMutation.isLoading}>
+                  <AlertDialogCancel disabled={reportCommentMutation.isPending}>
                     Cancel
                   </AlertDialogCancel>
 
                   <Button
                     variant="destructive"
                     type="submit"
-                    disabled={reportCommentMutation.isLoading}
+                    disabled={reportCommentMutation.isPending}
                   >
-                    {reportCommentMutation.isLoading && (
+                    {reportCommentMutation.isPending && (
                       <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                     )}
                     Report

@@ -77,9 +77,9 @@ export default function FollowButton({
               onClick={async () => {
                 await unfollowMutation.mutateAsync({ user_id });
               }}
-              disabled={unfollowMutation.isLoading}
+              disabled={unfollowMutation.isPending}
             >
-              {unfollowMutation.isLoading && (
+              {unfollowMutation.isPending && (
                 <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
               )}
               Unfollow
@@ -98,9 +98,9 @@ export default function FollowButton({
             user_id,
           });
         }}
-        disabled={followMutation.isLoading}
+        disabled={followMutation.isPending}
       >
-        {followMutation.isLoading && (
+        {followMutation.isPending && (
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
         )}
         Follow

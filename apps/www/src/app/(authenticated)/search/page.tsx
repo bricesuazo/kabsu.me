@@ -39,7 +39,7 @@ export default function SearchPage() {
         </div>
 
         <div className="flex max-h-80 flex-col gap-4">
-          {searchMutation.isLoading ? (
+          {searchMutation.isPending ? (
             <div className="flex flex-col gap-y-1">
               {[...(Array(8) as undefined[])].map((_, i) => (
                 <Skeleton key={i} className="h-16" />

@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home({
-  searchParams: { tab, callback_url },
+  searchParams: { tab },
 }: {
   searchParams: {
     tab?: "all" | "campus" | "program" | "college";
@@ -40,7 +40,7 @@ export default async function Home({
 }) {
   const session = await auth();
 
-  const TEST = {
+  const TABS_TITLE = {
     all: "See posts of all campuses.",
     campus: "See posts of your campus.",
     college: "See posts of your college.",
@@ -48,7 +48,7 @@ export default async function Home({
   };
 
   return (
-    <main className="container px-0">
+    <main className="container px-4">
       {session &&
       (!session.user.username ||
         !session.user.type ||
@@ -67,7 +67,7 @@ export default async function Home({
               {tab ? tab : "following"} tab
             </p>
             <p className="text-xs text-muted-foreground">
-              {tab ? TEST[tab] : "See posts of who you are following."}
+              {tab ? TABS_TITLE[tab] : "See posts of who you are following."}
             </p>
           </div>
 
@@ -138,12 +138,15 @@ export default async function Home({
             <form
               action={async () => {
                 "use server";
-                await signIn("google", {
-                  redirect: !!callback_url,
-                  redirectTo: callback_url
-                    ? `/${typeof callback_url === "string" ? callback_url : ""}`
-                    : "/",
-                });
+                await signIn(
+                  "google",
+                  //       {
+                  //   redirect: !!callback_url,
+                  //   redirectTo: callback_url
+                  //     ? `/${typeof callback_url === "string" ? callback_url : ""}`
+                  //     : "/",
+                  // }
+                );
               }}
             >
               {/* <Icons.spinner className="mr-2 h-4 w-4 animate-spin" /> */}
