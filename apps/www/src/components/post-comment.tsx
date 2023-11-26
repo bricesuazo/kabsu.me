@@ -249,7 +249,7 @@ export default function PostComment({
                               {like.user.first_name} {like.user.last_name}
                             </p>
 
-                            {like.user.verified_at && (
+                            {like.user.emailVerified && (
                               <VerifiedBadge size="md" />
                             )}
 

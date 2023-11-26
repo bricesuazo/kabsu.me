@@ -131,7 +131,7 @@ export default function Post({ post }: { post: Post }) {
                   @{getPostQuery.data.post.user.username}
                 </p>
 
-                {getPostQuery.data.post.user.verified_at && (
+                {getPostQuery.data.post.user.emailVerified && (
                   <VerifiedBadge size="sm" />
                 )}
               </div>

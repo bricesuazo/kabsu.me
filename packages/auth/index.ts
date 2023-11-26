@@ -4,12 +4,16 @@ import type { DefaultSession } from "next-auth";
 import Google from "next-auth/providers/google";
 
 import { db } from "@cvsu.me/db";
+import type { ACCOUNT_TYPE } from "@cvsu.me/db/schema";
 
 declare module "next-auth" {
   interface Session {
     user: {
       id: string;
-      username: string;
+      name: string;
+      username: string | null;
+      program_id: string | null;
+      type: (typeof ACCOUNT_TYPE)[number] | null;
       email: string;
     } & DefaultSession["user"];
   }

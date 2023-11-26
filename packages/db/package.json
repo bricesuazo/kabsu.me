@@ -28,5 +28,11 @@
     "drizzle-kit": "0.19.13",
     "typescript": "^5.2.2"
   },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@cvsu.me/eslint-config/base"
+    ]
+  },
   "prettier": "@cvsu.me/prettier-config"
 }

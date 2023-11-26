@@ -29,6 +29,13 @@ export const NOTIFICATION_TYPE = [
   "mention_comment",
 ] as const;
 
+interface File {
+  name: string;
+  key: string;
+  size: number;
+  url: string;
+}
+
 const id = varchar("id", { length: 256 })
   .primaryKey()
   .notNull()
@@ -42,42 +49,60 @@ const updated_at = timestamp("updated_at")
   .onUpdateNow()
   .notNull();
 const deleted_at = timestamp("deleted_at");
-const slug = varchar("slug", { length: 256 }).unique().notNull();
+// const slug = varchar("slug", { length: 256 }).unique().notNull();
 
-export const deleted_users = mysqlTable("deleted_users", {
+export const deleted_users = mysqlTable("deletedUser", {
   id: varchar("id", { length: 256 }).primaryKey().unique().notNull(),
-  user_number: int("user_number").notNull().default(0),
 
   created_at,
 });
-export const users = mysqlTable("users", {
-  id: varchar("id", { length: 256 }).primaryKey().unique().notNull(),
-  user_number: int("user_number").notNull().default(0),
-  name: varchar("name", { length: 255 }),
-  image: varchar("image", { length: 255 }),
-  first_name: varchar("first_name", { length: 256 }).notNull(),
-  last_name: varchar("last_name", { length: 256 }).notNull(),
-  email: varchar("email", { length: 256 }).notNull().unique(),
-  username: varchar("username", { length: 256 }).notNull().unique(),
-  profile_picture_url: text("image_url"),
 
+export const users = mysqlTable("user", {
+  id,
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  emailVerified: timestamp("emailVerified", {
+    mode: "date",
+    fsp: 3,
+  }).defaultNow(),
+  // image: varchar("image", { length: 255 }),
+  image: varchar("image", { length: 255 }).$type<string | File>(),
+
+  created_at,
   bio: longtext("bio"),
-  type: mysqlEnum("type", ACCOUNT_TYPE).notNull(),
   link: text("link"),
-  verified_at: timestamp("verified_at"),
-  is_email_displayed: boolean("is_email_displayed").notNull().default(false),
-
-  program_id: varchar("program_id", { length: 256 }).notNull(),
-
-  created_at,
+  username: varchar("username", { length: 256 }).unique(),
+  type: mysqlEnum("type", ACCOUNT_TYPE),
+  program_id: varchar("program_id", { length: 256 }),
 });
+// export const users = mysqlTable("user", {
+//   id: varchar("id", { length: 256 }).primaryKey().unique().notNull(),
+//   name: varchar("name", { length: 255 }),
+//   image: varchar("image", { length: 255 }),
+//   first_name: varchar("first_name", { length: 256 }).notNull(),
+//   last_name: varchar("last_name", { length: 256 }).notNull(),
+//   email: varchar("email", { length: 256 }).notNull().unique(),
+//   username: varchar("username", { length: 256 }).notNull().unique(),
+//   profile_picture_url: text("image_url"),
+
+//   bio: longtext("bio"),
+//   type: mysqlEnum("type", ACCOUNT_TYPE).notNull(),
+//   link: text("link"),
+//   is_email_displayed: boolean("is_email_displayed").notNull().default(false),
+//   emailVerified: timestamp("emailVerified", {
+//     mode: "date",
+//     fsp: 3,
+//   }).defaultNow(),
+
+//   program_id: varchar("program_id", { length: 256 }).notNull(),
+
+//   created_at,
+// });
 
 export const accounts = mysqlTable(
   "account",
   {
-    userId: varchar("userId", { length: 255 })
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+    userId: varchar("userId", { length: 255 }).notNull(),
     type: varchar("type", { length: 255 })
       .$type<AdapterAccount["type"]>()
       .notNull(),
@@ -98,9 +123,7 @@ export const accounts = mysqlTable(
 
 export const sessions = mysqlTable("session", {
   sessionToken: varchar("sessionToken", { length: 255 }).notNull().primaryKey(),
-  userId: varchar("userId", { length: 255 })
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+  userId: varchar("userId", { length: 255 }).notNull(),
   expires: timestamp("expires", { mode: "date" }).notNull(),
 });
 
@@ -115,14 +138,15 @@ export const verificationTokens = mysqlTable(
     compoundKey: primaryKey(vt.identifier, vt.token),
   }),
 );
-export const likes = mysqlTable("likes", {
+
+export const likes = mysqlTable("like", {
   id,
   user_id: varchar("user_id", { length: 256 }).notNull(),
   post_id: varchar("post_id", { length: 256 }).notNull(),
 
   created_at,
 });
-export const comments = mysqlTable("comments", {
+export const comments = mysqlTable("comment", {
   id,
   user_id: varchar("user_id", { length: 256 }).notNull(),
   post_id: varchar("post_id", { length: 256 }).notNull(),
@@ -134,21 +158,21 @@ export const comments = mysqlTable("comments", {
   deleted_at,
 });
 
-export const followers = mysqlTable("followers", {
+export const followers = mysqlTable("follower", {
   id,
   follower_id: varchar("follower_id", { length: 256 }).notNull(),
   followee_id: varchar("followee_id", { length: 256 }).notNull(),
 
   created_at,
 });
-export const followees = mysqlTable("followees", {
+export const followees = mysqlTable("followee", {
   id,
   followee_id: varchar("followee_id", { length: 256 }).notNull(),
   follower_id: varchar("follower_id", { length: 256 }).notNull(),
 
   created_at,
 });
-export const posts = mysqlTable("posts", {
+export const posts = mysqlTable("post", {
   id,
   user_id: varchar("user_id", { length: 256 }).notNull(),
   content: longtext("content").notNull(),
@@ -158,7 +182,7 @@ export const posts = mysqlTable("posts", {
   updated_at,
   deleted_at,
 });
-export const campuses = mysqlTable("campuses", {
+export const campuses = mysqlTable("campus", {
   id,
   name: text("name").notNull(),
   slug: varchar("slug", { length: 256 }).notNull(),
@@ -167,7 +191,7 @@ export const campuses = mysqlTable("campuses", {
   updated_at,
   deleted_at,
 });
-export const colleges = mysqlTable("colleges", {
+export const colleges = mysqlTable("college", {
   id,
   name: text("name").notNull(),
   slug: varchar("slug", { length: 256 }).notNull(),
@@ -177,7 +201,7 @@ export const colleges = mysqlTable("colleges", {
   updated_at,
   deleted_at,
 });
-export const programs = mysqlTable("programs", {
+export const programs = mysqlTable("program", {
   id,
   name: text("name").notNull(),
   slug: varchar("slug", { length: 256 }).notNull(),
@@ -189,7 +213,7 @@ export const programs = mysqlTable("programs", {
   deleted_at,
 });
 
-export const notifications = mysqlTable("notifications", {
+export const notifications = mysqlTable("notification", {
   id,
   from_id: varchar("from_id", { length: 256 }).notNull(),
   to_id: varchar("to_id", { length: 256 }).notNull(),
@@ -201,7 +225,7 @@ export const notifications = mysqlTable("notifications", {
   created_at,
 });
 
-export const reported_users = mysqlTable("reported_users", {
+export const reported_users = mysqlTable("reportedUser", {
   id,
   user_id: varchar("user_id", { length: 256 }).notNull(),
   reported_by_id: varchar("reported_by_id", { length: 256 }).notNull(),
@@ -210,7 +234,7 @@ export const reported_users = mysqlTable("reported_users", {
   created_at,
 });
 
-export const reported_posts = mysqlTable("reported_posts", {
+export const reported_posts = mysqlTable("reportedPost", {
   id,
   post_id: varchar("post_id", { length: 256 }).notNull(),
   reported_by_id: varchar("reported_by_id", { length: 256 }).notNull(),
@@ -219,7 +243,7 @@ export const reported_posts = mysqlTable("reported_posts", {
   created_at,
 });
 
-export const reported_comments = mysqlTable("reported_comments", {
+export const reported_comments = mysqlTable("reportedComment", {
   id,
   comment_id: varchar("comment_id", { length: 256 }).notNull(),
   reported_by_id: varchar("reported_by_id", { length: 256 }).notNull(),
@@ -228,7 +252,7 @@ export const reported_comments = mysqlTable("reported_comments", {
   created_at,
 });
 
-export const reported_problems = mysqlTable("reported_problems", {
+export const reported_problems = mysqlTable("reportedProblem", {
   id,
   problem: text("problem").notNull(),
   reported_by_id: varchar("reported_by_id", { length: 256 }).notNull(),
@@ -236,7 +260,7 @@ export const reported_problems = mysqlTable("reported_problems", {
   created_at,
 });
 
-export const suggested_features = mysqlTable("suggested_features", {
+export const suggested_features = mysqlTable("suggestedFeature", {
   id,
   feature: text("feature").notNull(),
   suggested_by_id: varchar("suggested_by_id", { length: 256 }).notNull(),

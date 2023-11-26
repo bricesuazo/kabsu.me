@@ -1,19 +1,26 @@
-import { reported_comments, reported_problems, suggested_features } from "./schema";
 import { relations } from "drizzle-orm";
+
 import {
+  campuses,
   colleges,
-  followers,
+  comments,
   followees,
+  followers,
+  likes,
+  notifications,
   posts,
   programs,
-  users,
-  likes,
-  comments,
-  campuses,
-  notifications,
-  reported_users,
   reported_posts,
+  reported_users,
+  users,
 } from ".";
+import {
+  accounts,
+  reported_comments,
+  reported_problems,
+  sessions,
+  suggested_features,
+} from "./schema";
 
 export const usersRelations = relations(users, ({ one, many }) => ({
   program: one(programs, {
@@ -24,7 +31,22 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   followers: many(followers),
   followees: many(followees),
 }));
-export const likesRelations = relations(likes, ({ one, many }) => ({
+
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
+  }),
+}));
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const likesRelations = relations(likes, ({ one }) => ({
   user: one(users, {
     fields: [likes.user_id],
     references: [users.id],
@@ -34,7 +56,7 @@ export const likesRelations = relations(likes, ({ one, many }) => ({
     references: [posts.id],
   }),
 }));
-export const commentsRelations = relations(comments, ({ one, many }) => ({
+export const commentsRelations = relations(comments, ({ one }) => ({
   user: one(users, {
     fields: [comments.user_id],
     references: [users.id],
@@ -50,7 +72,7 @@ export const commentsRelations = relations(comments, ({ one, many }) => ({
   }),
 }));
 
-export const followersRelations = relations(followers, ({ one, many }) => ({
+export const followersRelations = relations(followers, ({ one }) => ({
   follower: one(users, {
     fields: [followers.follower_id],
     references: [users.id],
@@ -62,7 +84,7 @@ export const followersRelations = relations(followers, ({ one, many }) => ({
   }),
 }));
 
-export const followeesRelations = relations(followees, ({ one, many }) => ({
+export const followeesRelations = relations(followees, ({ one }) => ({
   followee: one(users, {
     fields: [followees.followee_id],
     references: [users.id],
@@ -83,8 +105,8 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
   comments: many(comments),
 }));
 
-export const campusesRelations = relations(campuses, ({ one, many }) => ({}));
-export const collegesRelations = relations(colleges, ({ one, many }) => ({
+// export const campusesRelations = relations(campuses, ({}) => ({}));
+export const collegesRelations = relations(colleges, ({ one }) => ({
   campus: one(campuses, {
     fields: [colleges.campus_id],
     references: [campuses.id],
@@ -101,58 +123,49 @@ export const collegesRelations = relations(colleges, ({ one, many }) => ({
 //   }),
 // );
 
-export const programsRelations = relations(programs, ({ one, many }) => ({
+export const programsRelations = relations(programs, ({ one }) => ({
   college: one(colleges, {
     fields: [programs.college_id],
     references: [colleges.id],
   }),
 }));
 
-export const notificationsRelations = relations(
-  notifications,
-  ({ one, many }) => ({
-    from: one(users, {
-      fields: [notifications.from_id],
-      references: [users.id],
-    }),
-    to: one(users, {
-      fields: [notifications.to_id],
-      references: [users.id],
-    }),
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  from: one(users, {
+    fields: [notifications.from_id],
+    references: [users.id],
   }),
-);
+  to: one(users, {
+    fields: [notifications.to_id],
+    references: [users.id],
+  }),
+}));
 
-export const reported_usersRelations = relations(
-  reported_users,
-  ({ one, many }) => ({
-    user: one(users, {
-      fields: [reported_users.user_id],
-      references: [users.id],
-    }),
-    reported_by: one(users, {
-      fields: [reported_users.reported_by_id],
-      references: [users.id],
-    }),
+export const reported_usersRelations = relations(reported_users, ({ one }) => ({
+  user: one(users, {
+    fields: [reported_users.user_id],
+    references: [users.id],
   }),
-);
+  reported_by: one(users, {
+    fields: [reported_users.reported_by_id],
+    references: [users.id],
+  }),
+}));
 
-export const reported_postsRelations = relations(
-  reported_posts,
-  ({ one, many }) => ({
-    post: one(posts, {
-      fields: [reported_posts.post_id],
-      references: [posts.id],
-    }),
-    reported_by: one(users, {
-      fields: [reported_posts.reported_by_id],
-      references: [users.id],
-    }),
+export const reported_postsRelations = relations(reported_posts, ({ one }) => ({
+  post: one(posts, {
+    fields: [reported_posts.post_id],
+    references: [posts.id],
   }),
-);
+  reported_by: one(users, {
+    fields: [reported_posts.reported_by_id],
+    references: [users.id],
+  }),
+}));
 
 export const reported_commentsRelations = relations(
   reported_comments,
-  ({ one, many }) => ({
+  ({ one }) => ({
     comment: one(comments, {
       fields: [reported_comments.comment_id],
       references: [comments.id],
@@ -166,7 +179,7 @@ export const reported_commentsRelations = relations(
 
 export const reported_problemsRelations = relations(
   reported_problems,
-  ({ one, many }) => ({
+  ({ one }) => ({
     reported_by: one(users, {
       fields: [reported_problems.reported_by_id],
       references: [users.id],
@@ -176,7 +189,7 @@ export const reported_problemsRelations = relations(
 
 export const suggested_featuresRelations = relations(
   suggested_features,
-  ({ one, many }) => ({
+  ({ one }) => ({
     suggested_by: one(users, {
       fields: [suggested_features.suggested_by_id],
       references: [users.id],

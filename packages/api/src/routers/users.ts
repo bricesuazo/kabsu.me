@@ -31,12 +31,10 @@ export const usersRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const usersFromDB = await ctx.db.query.users.findMany();
       await ctx.db.insert(users).values({
         id: input.userId,
         program_id: input.program_id,
         type: input.type,
-        user_number: usersFromDB.length,
         email: input.email,
         first_name: input.first_name,
         last_name: input.last_name,
@@ -257,7 +255,7 @@ export const usersRouter = router({
           firstName: user.first_name,
           lastName: user.last_name,
           imageUrl: user.profile_picture_url,
-          isVerified: !!user.verified_at,
+          isVerified: !!user.emailVerified,
         }))
         .slice(0, 10);
     }),

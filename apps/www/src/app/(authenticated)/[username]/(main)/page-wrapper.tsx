@@ -38,7 +38,6 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import VerifiedBadge from "@/components/verified-badge";
 import { api } from "@/lib/trpc/client";
-import { getOrdinal } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Album, Briefcase, Flag, GraduationCap } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -117,12 +116,6 @@ export default function UserPageWrapper({
                   {profileQuery.data.user.program.name}
                 </TooltipContent>
               </Tooltip>
-
-              <div>
-                <Badge variant="outline">
-                  {getOrdinal(profileQuery.data.user.user_number + 1)} user
-                </Badge>
-              </div>
             </div>
 
             <div className="flex flex-col">
@@ -132,7 +125,7 @@ export default function UserPageWrapper({
                   {profileQuery.data.user.last_name}
                 </h2>
 
-                {profileQuery.data.user.verified_at && (
+                {profileQuery.data.user.emailVerified && (
                   <VerifiedBadge size="lg" />
                 )}
               </div>

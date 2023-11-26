@@ -1,6 +1,7 @@
-import { campuses, colleges, programs, users } from "./schema";
 import { SEED_DATA } from "@cvsu.me/constants";
+
 import { db } from ".";
+import { campuses, colleges, programs } from "./schema";
 
 async function main() {
   await db.transaction(async (trx) => {
@@ -42,17 +43,16 @@ async function main() {
 
     console.log("Programs inserted!");
 
-    const usersFromDB = await db.query.users.findMany();
+    // const usersFromDB = await db.query.users.findMany();
 
-    usersFromDB.length !== 0 &&
-      (await trx.insert(users).values(
-        usersFromDB.map((user, index) => ({
-          id: user.id,
-          user_number: index + 1,
-          program_id: "VHShXyNIG041O-4GHKcXK",
-          type: user.type,
-        })),
-      ));
+    // usersFromDB.length !== 0 &&
+    //   (await trx.insert(users).values(
+    //     usersFromDB.map((user, index) => ({
+    //       id: user.id,
+    //       program_id: user.program_id,
+    //       type: user.type,
+    //     })),
+    //   ));
 
     console.log("Users inserted!");
   });
@@ -60,4 +60,4 @@ async function main() {
   console.log("Done seeding!");
 }
 
-main();
+await main();
