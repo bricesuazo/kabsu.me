@@ -10,7 +10,6 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@auth/drizzle-adapter": "^0.3.8",
     "@cvsu.me/db": "workspace:*",
     "@t3-oss/env-nextjs": "^0.7.1",
     "drizzle-orm": "0.29.0",

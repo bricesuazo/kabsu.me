@@ -15,10 +15,8 @@ import {
   users,
 } from ".";
 import {
-  accounts,
   reported_comments,
   reported_problems,
-  sessions,
   suggested_features,
 } from "./schema";
 
@@ -30,20 +28,6 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   posts: many(posts),
   followers: many(followers),
   followees: many(followees),
-}));
-
-export const accountsRelations = relations(accounts, ({ one }) => ({
-  user: one(users, {
-    fields: [accounts.userId],
-    references: [users.id],
-  }),
-}));
-
-export const sessionsRelations = relations(sessions, ({ one }) => ({
-  user: one(users, {
-    fields: [sessions.userId],
-    references: [users.id],
-  }),
 }));
 
 export const likesRelations = relations(likes, ({ one }) => ({
