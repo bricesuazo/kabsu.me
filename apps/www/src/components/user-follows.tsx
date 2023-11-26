@@ -18,23 +18,19 @@ export default async function UserFollows({
     <div className="flex gap-x-2 rounded border border-transparent p-2 hover:border-inherit">
       <Link href={`/${user.username}`}>
         <div className="min-w-max">
-          {user.profile_picture_url ? (
-            <Image
-              src={user.profile_picture_url}
-              alt="Image"
-              width={40}
-              height={40}
-              className="aspect-square rounded-full object-cover"
-            />
-          ) : (
-            <Image
-              src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.username}`}
-              alt="Image"
-              width={40}
-              height={40}
-              className="aspect-square rounded-full object-cover"
-            />
-          )}
+          <Image
+            src={
+              user.image
+                ? typeof user.image === "string"
+                  ? user.image
+                  : user.image.url
+                : "/default-avatar.jpg"
+            }
+            alt={`${user.name} profile picture`}
+            width={40}
+            height={40}
+            className="aspect-square rounded-full object-cover"
+          />
         </div>
       </Link>
       <div className="flex flex-1 justify-between gap-x-2">
@@ -46,7 +42,7 @@ export default async function UserFollows({
             @{user.username}
           </Link>
           <p className="line-clamp-1 text-sm text-muted-foreground">
-            {user.first_name} {user.last_name}
+            {user.name}
           </p>
           <p className="line-clamp-1 text-sm text-muted-foreground">
             {user.bio}

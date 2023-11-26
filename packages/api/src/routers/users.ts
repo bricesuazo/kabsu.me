@@ -17,30 +17,25 @@ import {
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const usersRouter = router({
-  signUp: publicProcedure
+  signUp: protectedProcedure
     .input(
       z.object({
-        userId: z.string(),
         program_id: z.string(),
         type: z.enum(ACCOUNT_TYPE),
-        first_name: z.string().nonempty(),
-        last_name: z.string().nonempty(),
+        name: z.string().nonempty(),
         username: z.string().nonempty(),
-        email: z.string().email(),
-        profile_picture_url: z.string().nullable(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(users).values({
-        id: input.userId,
-        program_id: input.program_id,
-        type: input.type,
-        email: input.email,
-        first_name: input.first_name,
-        last_name: input.last_name,
-        username: input.username,
-        profile_picture_url: input.profile_picture_url,
-      });
+      await ctx.db
+        .update(users)
+        .set({
+          program_id: input.program_id,
+          type: input.type,
+          name: input.name,
+          username: input.username,
+        })
+        .where(eq(users.id, ctx.session.user.id));
     }),
 
   updateProfile: protectedProcedure
@@ -245,16 +240,17 @@ export const usersRouter = router({
       return users
         .filter(
           (user) =>
-            user.username.toLowerCase().includes(input.query.toLowerCase()) ||
-            user.first_name.toLowerCase().includes(input.query.toLowerCase()) ||
-            user.last_name.toLowerCase().includes(input.query.toLowerCase()),
+            user.name.toLowerCase().includes(input.query.toLowerCase()) ||
+            user.username?.toLowerCase().includes(input.query.toLowerCase()),
         )
         .map((user) => ({
           id: user.id,
           username: user.username,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          imageUrl: user.profile_picture_url,
+          name: user.name,
+          imageUrl:
+            typeof user.image === "string"
+              ? user.image
+              : user.image?.url ?? null,
           isVerified: !!user.emailVerified,
         }))
         .slice(0, 10);
@@ -289,8 +285,7 @@ export const usersRouter = router({
   updateAccountSettings: protectedProcedure
     .input(
       z.object({
-        firstName: z.string().nonempty(),
-        lastName: z.string().nonempty(),
+        name: z.string().nonempty(),
         username: z.string().nonempty(),
       }),
     )
@@ -317,16 +312,10 @@ export const usersRouter = router({
         await trx
           .update(users)
           .set({
-            first_name: input.firstName,
-            last_name: input.lastName,
+            name: input.name,
             username: input.username,
           })
           .where(eq(users.id, ctx.session.user.id));
-        // await ctx.clerk.users.updateUser(ctx.session.user.id, {
-        //   firstName: input.firstName,
-        //   lastName: input.lastName,
-        //   username: input.username,
-        // });
       });
 
       return input;

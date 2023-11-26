@@ -73,13 +73,13 @@ export async function generateMetadata({
                 ? eq(post.type, "program")
                 : undefined,
 
-              currentUserInDB.program.college_id ===
-                userOfPost.program.college_id
+              currentUserInDB.program!.college_id ===
+                userOfPost.program!.college_id
                 ? eq(post.type, "college")
                 : undefined,
 
-              currentUserInDB.program.college.campus_id ===
-                userOfPost.program.college.campus_id
+              currentUserInDB.program!.college.campus_id ===
+                userOfPost.program!.college.campus_id
                 ? eq(post.type, "campus")
                 : undefined,
 

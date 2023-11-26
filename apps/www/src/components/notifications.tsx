@@ -135,23 +135,19 @@ export default function Notifications() {
                   <div className="flex gap-x-2">
                     <Link href={`/${notification.from.username}`}>
                       <div className="relative h-8 w-8">
-                        {notification.from.profile_picture_url ? (
-                          <Image
-                            src={notification.from.profile_picture_url}
-                            alt="Image"
-                            fill
-                            sizes="100%"
-                            className="rounded-full object-cover object-center"
-                          />
-                        ) : (
-                          <Image
-                            src={`https://api.dicebear.com/7.x/initials/svg?seed=${notification.from.username}`}
-                            alt="Image"
-                            fill
-                            sizes="100%"
-                            className="rounded-full object-cover object-center"
-                          />
-                        )}
+                        <Image
+                          src={
+                            notification.from.image
+                              ? typeof notification.from.image === "string"
+                                ? notification.from.image
+                                : notification.from.image.url
+                              : "/default-avatar.jpg"
+                          }
+                          alt={`${notification.from.name} profile picture`}
+                          fill
+                          sizes="100%"
+                          className="rounded-full object-cover object-center"
+                        />
                       </div>
                     </Link>
                     <div className="flex flex-col gap-1">

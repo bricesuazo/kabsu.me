@@ -224,30 +224,24 @@ export default function PostComment({
                       className="flex items-center gap-x-2 rounded p-2 hover:bg-muted"
                     >
                       <div className="min-w-max">
-                        {like.user.profile_picture_url ? (
-                          <Image
-                            src={like.user.profile_picture_url}
-                            alt="Image"
-                            width={40}
-                            height={40}
-                            className="aspect-square rounded-full object-cover object-center"
-                          />
-                        ) : (
-                          <Image
-                            src={`https://api.dicebear.com/7.x/initials/svg?seed=${like.user.username}`}
-                            alt="Image"
-                            width={40}
-                            height={40}
-                            className="aspect-square rounded-full"
-                          />
-                        )}
+                        <Image
+                          src={
+                            like.user.image
+                              ? typeof like.user.image === "string"
+                                ? like.user.image
+                                : like.user.image.url
+                              : "/default-avatar.jpg"
+                          }
+                          alt={`${like.user.name} profile picture`}
+                          width={40}
+                          height={40}
+                          className="aspect-square rounded-full object-cover object-center"
+                        />
                       </div>
                       <div className="flex flex-col">
                         <div className="flex items-center">
                           <div className="flex gap-x-1">
-                            <p className="line-clamp-1">
-                              {like.user.first_name} {like.user.last_name}
-                            </p>
+                            <p className="line-clamp-1">{like.user.name}</p>
 
                             {like.user.emailVerified && (
                               <VerifiedBadge size="md" />
@@ -299,20 +293,20 @@ export default function PostComment({
                             <Tooltip delayDuration={250}>
                               <TooltipTrigger>
                                 <Badge>
-                                  {like.user.program.college.campus.slug.toUpperCase()}
+                                  {like.user.program!.college.campus.slug.toUpperCase()}
                                 </Badge>
                                 <TooltipContent className="max-w-[12rem]">
-                                  {like.user.program.college.campus.name}
+                                  {like.user.program!.college.campus.name}
                                 </TooltipContent>
                               </TooltipTrigger>
                             </Tooltip>
                             <Tooltip delayDuration={250}>
                               <TooltipTrigger>
                                 <Badge variant="outline">
-                                  {like.user.program.slug.toUpperCase()}
+                                  {like.user.program!.slug.toUpperCase()}
                                 </Badge>
                                 <TooltipContent className="max-w-[12rem]">
-                                  {like.user.program.name}
+                                  {like.user.program!.name}
                                 </TooltipContent>
                               </TooltipTrigger>
                             </Tooltip>
@@ -326,20 +320,20 @@ export default function PostComment({
                             <Tooltip delayDuration={250}>
                               <TooltipTrigger>
                                 <Badge className="hidden xs:block">
-                                  {like.user.program.college.campus.slug.toUpperCase()}
+                                  {like.user.program!.college.campus.slug.toUpperCase()}
                                 </Badge>
                                 <TooltipContent className="max-w-[12rem]">
-                                  {like.user.program.college.campus.name}
+                                  {like.user.program!.college.campus.name}
                                 </TooltipContent>
                               </TooltipTrigger>
                             </Tooltip>
                             <Tooltip delayDuration={250}>
                               <TooltipTrigger>
                                 <Badge variant="outline">
-                                  {like.user.program.slug.toUpperCase()}
+                                  {like.user.program!.slug.toUpperCase()}
                                 </Badge>
                                 <TooltipContent className="max-w-[12rem]">
-                                  {like.user.program.name}
+                                  {like.user.program!.name}
                                 </TooltipContent>
                               </TooltipTrigger>
                             </Tooltip>

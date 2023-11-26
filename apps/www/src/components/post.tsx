@@ -103,23 +103,19 @@ export default function Post({ post }: { post: Post }) {
           className="flex gap-x-2"
         >
           <div className="w-max">
-            {getPostQuery.data.post.user.profile_picture_url ? (
-              <Image
-                src={getPostQuery.data.post.user.profile_picture_url}
-                alt="Image"
-                width={40}
-                height={40}
-                className="aspect-square rounded-full object-cover"
-              />
-            ) : (
-              <Image
-                src={`https://api.dicebear.com/7.x/initials/svg?seed=${getPostQuery.data.post.user.username}`}
-                alt="Image"
-                width={40}
-                height={40}
-                className="aspect-square rounded-full object-cover"
-              />
-            )}
+            <Image
+              src={
+                getPostQuery.data.post.user.image
+                  ? typeof getPostQuery.data.post.user.image === "string"
+                    ? getPostQuery.data.post.user.image
+                    : getPostQuery.data.post.user.image.url
+                  : "/default-avatar.jpg"
+              }
+              alt={`${getPostQuery.data.post.user.name} profile picture`}
+              width={40}
+              height={40}
+              className="aspect-square rounded-full object-cover"
+            />
           </div>
           <div className="flex flex-1 flex-col gap-y-1">
             <div className="group flex items-center gap-x-2">
@@ -176,33 +172,33 @@ export default function Post({ post }: { post: Post }) {
                   })()}
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
-                  {getPostQuery.data.post.user.type.charAt(0).toUpperCase() +
-                    getPostQuery.data.post.user.type.slice(1)}
+                  {getPostQuery.data.post.user.type!.charAt(0).toUpperCase() +
+                    getPostQuery.data.post.user.type!.slice(1)}
                 </TooltipContent>
               </Tooltip>
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge>
                     {searchParams.get("tab") === "college"
-                      ? getPostQuery.data.post.user.program.college.slug.toUpperCase()
-                      : getPostQuery.data.post.user.program.college.campus.slug.toUpperCase()}
+                      ? getPostQuery.data.post.user.program!.college.slug.toUpperCase()
+                      : getPostQuery.data.post.user.program!.college.campus.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
                   {searchParams.get("tab") === "college"
-                    ? getPostQuery.data.post.user.program.college.name
-                    : getPostQuery.data.post.user.program.college.campus.name}
+                    ? getPostQuery.data.post.user.program!.college.name
+                    : getPostQuery.data.post.user.program!.college.campus.name}
                 </TooltipContent>
               </Tooltip>
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge variant="outline">
-                    {getPostQuery.data.post.user.program.slug.toUpperCase()}
+                    {getPostQuery.data.post.user.program!.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
-                  {getPostQuery.data.post.user.program.name}
+                  {getPostQuery.data.post.user.program!.name}
                 </TooltipContent>
               </Tooltip>
             </div>

@@ -84,29 +84,17 @@ export default function Search() {
                     onClick={() => setOpen(false)}
                   >
                     <div className="min-w-max">
-                      {user.imageUrl ? (
-                        <Image
-                          src={user.imageUrl}
-                          alt=""
-                          width={40}
-                          height={40}
-                          className="aspect-square rounded-full object-cover"
-                        />
-                      ) : (
-                        <Image
-                          src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.username}`}
-                          alt=""
-                          width={40}
-                          height={40}
-                          className="aspect-square rounded-full object-cover"
-                        />
-                      )}
+                      <Image
+                        src={user.imageUrl ?? "/default-avatar.jpg"}
+                        alt=""
+                        width={40}
+                        height={40}
+                        className="aspect-square rounded-full object-cover"
+                      />
                     </div>
                     <div>
                       <div className="flex items-center gap-x-1">
-                        <p className="line-clamp-1 flex-1">
-                          {user.firstName} {user.lastName}{" "}
-                        </p>
+                        <p className="line-clamp-1 flex-1">{user.name} </p>
                         {user.isVerified && <VerifiedBadge size="sm" />}
                       </div>
                       <p className="line-clamp-1 text-sm text-muted-foreground">

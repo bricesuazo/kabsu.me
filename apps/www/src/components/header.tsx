@@ -171,7 +171,7 @@ export default function Header() {
                         className="w-full"
                       >
                         <AtSign className="mr-2" size="1rem" />
-                        {sessionQuery.data.user.username.length
+                        {sessionQuery.data.user.username?.length
                           ? `${sessionQuery.data.user.username}`
                           : "My Profile"}
                       </Link>
