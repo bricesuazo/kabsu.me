@@ -171,7 +171,7 @@ export default function Header() {
                         : "My Profile"}
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem asChild disabled>
                     <Link href="/account">
                       <UserCog className="mr-2" size="1rem" />
                       Account Settings
