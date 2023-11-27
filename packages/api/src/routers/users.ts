@@ -28,6 +28,8 @@ export const usersRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      console.log("🚀 ~ file: users.ts:52 ~ .mutation ~ ctx:", ctx);
+
       await ctx.db.transaction(async (trx) => {
         await trx
           .update(users)
