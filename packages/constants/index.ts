@@ -633,7 +633,7 @@ export const DEVS_INFO = [
     desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:kevinroi.nuesca@cvsu.edu.ph" },
-      { icon: Instagram, url: "https://www.instagram.com/lxbnvj/" },
+      { icon: Instagram, url: "https://www.instagram.com/tfudoinkebs/" },
     ],
   },
 ];
