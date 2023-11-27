@@ -97,7 +97,8 @@ export const {
           if (
             !isUserExists.image ||
             (typeof isUserExists.image === "string" &&
-              isUserExists.image.length === 0)
+              isUserExists.image.length === 0) ||
+            isUserExists.image !== profile.picture
           )
             await db
               .update(users)
