@@ -37,10 +37,20 @@ export default function DonatePage() {
           <p className="text-center text-white">
             If you are interested, donate on the GCash Account below:
           </p>
-          <div className="text-center text-5xl font-bold">
-            <p>+639 905 255 8421</p>
-            <p>BR*** SU***</p>
+          <div className="mx-auto max-w-xs">
+            <Image
+              src="/donate_qr.jpg"
+              alt=""
+              width="1000"
+              height="1000"
+              className="pointer-events-none aspect-square w-full select-none object-contain"
+            />
           </div>
+          <div className="text-center text-2xl font-bold md:text-3xl">
+            <p>BR●●● BR●●● S.</p>
+            <p>090● ●●●●421</p>
+          </div>
+          <div className="h-64" />
         </div>
       </div>
     </main>
