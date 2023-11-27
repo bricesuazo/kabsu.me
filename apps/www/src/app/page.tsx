@@ -95,8 +95,8 @@ export default async function Home({
               Kabsu.me
             </h1>
             <h4 className="text-center text-xl [text-wrap:balance]">
-              A social media platform that&apos;s only exclusive for Cavite
-              State University students, faculty, and alumni.
+              An unofficial social media platform that&apos;s only exclusive for
+              Cavite State University students, faculty, and alumni.
             </h4>
             <div>
               <p className="text-center font-bold italic text-primary">
