@@ -1,6 +1,4 @@
 import { cookies, headers } from "next/headers";
-import { getUserAuth } from "@/lib/auth/utils";
-import { clerkClient } from "@clerk/nextjs/server";
 import { loggerLink } from "@trpc/client";
 import { experimental_nextCacheLink as nextCacheLink } from "@trpc/next/app-dir/links/nextCache";
 import { experimental_createTRPCNextAppDirServer as createTRPCNextAppDirServer } from "@trpc/next/app-dir/server";
@@ -11,6 +9,7 @@ import { appRouter } from "@cvsu.me/api/root";
 import { db } from "@cvsu.me/db";
 
 import { endingLink } from "./utils";
+import { auth } from "@cvsu.me/auth";
 
 /**
  * This client invokes procedures directly on the server without fetching over HTTP.
@@ -30,11 +29,9 @@ export const api = createTRPCNextAppDirServer<typeof appRouter>({
           revalidate: false,
           router: appRouter,
           async createContext() {
-            const { session } = await getUserAuth();
             return {
-              session,
+              session: await auth(),
               db,
-              clerk: clerkClient,
               headers: {
                 cookie: cookies().toString(),
                 "x-trpc-source": "rsc-invoke",

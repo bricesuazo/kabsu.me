@@ -135,7 +135,7 @@ export default function Campus({
                       <FormControl>
                         <Input
                           placeholder="Main Campus"
-                          disabled={editCampusMutation.isLoading}
+                          disabled={editCampusMutation.isPending}
                           {...field}
                         />
                       </FormControl>
@@ -152,7 +152,7 @@ export default function Campus({
                       <FormControl>
                         <Input
                           placeholder="MAIN"
-                          disabled={editCampusMutation.isLoading}
+                          disabled={editCampusMutation.isPending}
                           {...field}
                         />
                       </FormControl>
@@ -164,10 +164,10 @@ export default function Campus({
                 <Button
                   type="submit"
                   disabled={
-                    editCampusMutation.isLoading || !form.formState.isDirty
+                    editCampusMutation.isPending || !form.formState.isDirty
                   }
                 >
-                  {editCampusMutation.isLoading && (
+                  {editCampusMutation.isPending && (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                   )}
                   Update
@@ -203,12 +203,12 @@ export default function Campus({
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <Button
                 variant="destructive"
-                disabled={deleteCampusMutation.isLoading}
+                disabled={deleteCampusMutation.isPending}
                 onClick={() =>
                   deleteCampusMutation.mutate({ campus_id: campus.id })
                 }
               >
-                {deleteCampusMutation.isLoading && (
+                {deleteCampusMutation.isPending && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 Delete

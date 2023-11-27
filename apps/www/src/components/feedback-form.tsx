@@ -112,8 +112,8 @@ export default function FeedbackForm({
                           : "What do you want to see?"
                       }
                       disabled={
-                        reportAProblemMutation.isLoading ||
-                        suggestAFeatureMutation.isLoading
+                        reportAProblemMutation.isPending ||
+                        suggestAFeatureMutation.isPending
                       }
                       {...field}
                     />
@@ -130,12 +130,12 @@ export default function FeedbackForm({
               <Button
                 type="submit"
                 disabled={
-                  reportAProblemMutation.isLoading ||
-                  suggestAFeatureMutation.isLoading
+                  reportAProblemMutation.isPending ||
+                  suggestAFeatureMutation.isPending
                 }
               >
-                {(reportAProblemMutation.isLoading ||
-                  suggestAFeatureMutation.isLoading) && (
+                {(reportAProblemMutation.isPending ||
+                  suggestAFeatureMutation.isPending) && (
                   <Icons.spinner className="mr-2 animate-spin" />
                 )}
                 Submit

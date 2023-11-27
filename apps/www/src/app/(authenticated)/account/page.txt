@@ -18,7 +18,6 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/trpc/client";
-import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -37,17 +36,16 @@ const formSchema = z.object({
 });
 
 export default function AccountPage() {
-  const { user, isLoaded } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [loadingImage, setLoadingImage] = useState(false);
   const context = api.useContext();
 
   const updateAccountSettingsMutation =
     api.users.updateAccountSettings.useMutation({
-      onSuccess: async (values) => {
-        setIsEditing(false);
-        await user?.update(values);
-      },
+      // onSuccess: async (values) => {
+      //   setIsEditing(false);
+      //   await user?.update(values);
+      // },
     });
   const updateProfilePictureMutation =
     api.users.updateProfilePicture.useMutation();
@@ -148,7 +146,7 @@ export default function AccountPage() {
                               image: base64String,
                             });
                             await user?.setProfileImage({ file });
-                            await context.auth.getCurrentUser.invalidate();
+                            await context.auth.getCurrentSession.invalidate();
                             setLoadingImage(false);
                           };
                         }}
@@ -208,7 +206,7 @@ export default function AccountPage() {
                                             user?.firstName ?? "First name"
                                           }
                                           disabled={
-                                            updateAccountSettingsMutation.isLoading
+                                            updateAccountSettingsMutation.isPending
                                           }
                                           {...field}
                                         />
@@ -229,7 +227,7 @@ export default function AccountPage() {
                                             user?.lastName ?? "Last name"
                                           }
                                           disabled={
-                                            updateAccountSettingsMutation.isLoading
+                                            updateAccountSettingsMutation.isPending
                                           }
                                           {...field}
                                         />
@@ -251,7 +249,7 @@ export default function AccountPage() {
                                           user?.username ?? "Username"
                                         }
                                         disabled={
-                                          updateAccountSettingsMutation.isLoading
+                                          updateAccountSettingsMutation.isPending
                                         }
                                         {...field}
                                       />
@@ -279,10 +277,10 @@ export default function AccountPage() {
                                   disabled={
                                     !form.formState.isValid ||
                                     !form.formState.isDirty ||
-                                    updateAccountSettingsMutation.isLoading
+                                    updateAccountSettingsMutation.isPending
                                   }
                                 >
-                                  {updateAccountSettingsMutation.isLoading && (
+                                  {updateAccountSettingsMutation.isPending && (
                                     <Icons.spinner className="mr-1 h-3 w-3 animate-spin" />
                                   )}
                                   Update
@@ -291,7 +289,7 @@ export default function AccountPage() {
                                   size="sm"
                                   variant="ghost"
                                   disabled={
-                                    updateAccountSettingsMutation.isLoading
+                                    updateAccountSettingsMutation.isPending
                                   }
                                   onClick={() => setIsEditing(false)}
                                 >

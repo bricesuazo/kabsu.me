@@ -1,13 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    unoptimized: true,
-    dangerouslyAllowSVG: true,
-    domains: ["img.clerk.com", "api.dicebear.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+    ],
   },
-  transpilePackages: ["@eboto-mo/db", "@eboto-mo/api"],
+  transpilePackages: ["@eboto-mo/db", "@eboto-mo/api", "@eboto-mo/auth"],
   experimental: {
-    serverActions: true,
     swcPlugins: [["next-superjson-plugin", {}]],
   },
 };

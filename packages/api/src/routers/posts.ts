@@ -3,20 +3,13 @@ import { and, eq, or } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 
+import type { Post, User } from "@cvsu.me/db/schema";
 import {
-  Campus,
-  College,
-  Comment,
-  Follower,
-  Like,
   likes,
   notifications,
-  Post,
   POST_TYPE,
   posts,
-  Program,
   reported_posts,
-  User,
 } from "@cvsu.me/db/schema";
 
 import { protectedProcedure, router } from "../trpc";
@@ -121,13 +114,13 @@ export const postsRouter = router({
                     ? eq(post.type, "program")
                     : undefined,
 
-                  currentUserFromDB.program.college_id ===
-                    userOfPost.program.college_id
+                  currentUserFromDB.program?.college_id ===
+                    userOfPost.program?.college_id
                     ? eq(post.type, "college")
                     : undefined,
 
-                  currentUserFromDB.program.college.campus_id ===
-                    userOfPost.program.college.campus_id
+                  currentUserFromDB.program?.college.campus_id ===
+                    userOfPost.program?.college.campus_id
                     ? eq(post.type, "campus")
                     : undefined,
 
@@ -232,7 +225,7 @@ export const postsRouter = router({
 
         const colleges = await ctx.db.query.colleges.findMany({
           where: (college, { eq }) =>
-            eq(college.campus_id, user.program.college.campus_id),
+            eq(college.campus_id, user.program!.college.campus_id),
         });
 
         const programs = await ctx.db.query.programs.findMany({
@@ -309,18 +302,19 @@ export const postsRouter = router({
           throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         const usersInPrograms: User[] = await ctx.db.query.users.findMany({
-          where: (userInDB, { eq }) => eq(userInDB.program_id, user.program_id),
+          where: (userInDB, { eq }) =>
+            eq(userInDB.program_id, user.program_id!),
         });
 
         const colleges = await ctx.db.query.programs.findMany({
           where: (program, { eq }) =>
-            eq(program.college_id, user.program.college_id),
+            eq(program.college_id, user.program!.college_id),
         });
 
         const usersInColleges: User[] =
           colleges.length > 0
             ? await ctx.db.query.users.findMany({
-                where: (userInDB, { and, inArray }) =>
+                where: (userInDB, { inArray }) =>
                   inArray(
                     userInDB.program_id,
                     colleges.map((c) => c.id),
@@ -379,7 +373,8 @@ export const postsRouter = router({
           throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         const usersInPrograms: User[] = await ctx.db.query.users.findMany({
-          where: (userInDB, { eq }) => eq(userInDB.program_id, user.program_id),
+          where: (userInDB, { eq }) =>
+            eq(userInDB.program_id, user.program_id!),
         });
 
         posts = await ctx.db.query.posts.findMany({
@@ -447,10 +442,12 @@ export const postsRouter = router({
 
         const users = await ctx.db.query.users.findMany({
           where: (userInDB, { inArray }) =>
-            inArray(
-              userInDB.id,
-              following.map((f) => f.followee_id),
-            ),
+            following.length
+              ? inArray(
+                  userInDB.id,
+                  following.map((f) => f.followee_id),
+                )
+              : undefined,
           with: {
             program: {
               with: {
@@ -463,7 +460,6 @@ export const postsRouter = router({
             },
           },
         });
-        console.log("🚀 ~ file: posts.ts:447 ~ .query ~ following:", following);
 
         posts = await ctx.db.query.posts.findMany({
           where: (post, { or, and, eq, isNull, inArray }) =>
@@ -495,14 +491,15 @@ export const postsRouter = router({
                 ),
                 and(
                   users.filter(
-                    (u) => u.program.college_id === user.program.college_id,
+                    (u) => u.program?.college_id === user.program?.college_id,
                   ).length > 0
                     ? inArray(
                         post.user_id,
                         users
                           .filter(
                             (u) =>
-                              u.program.college_id === user.program.college_id,
+                              u.program?.college_id ===
+                              user.program?.college_id,
                           )
                           .map((f) => f.id),
                       )
@@ -512,16 +509,16 @@ export const postsRouter = router({
                 and(
                   users.filter(
                     (u) =>
-                      u.program.college.campus_id ===
-                      user.program.college.campus_id,
+                      u.program?.college.campus_id ===
+                      user.program?.college.campus_id,
                   ).length > 0
                     ? inArray(
                         post.user_id,
                         users
                           .filter(
                             (u) =>
-                              u.program.college.campus_id ===
-                              user.program.college.campus_id,
+                              u.program?.college.campus_id ===
+                              user.program?.college.campus_id,
                           )
                           .map((f) => f.id),
                       )

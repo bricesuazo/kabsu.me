@@ -38,7 +38,6 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import VerifiedBadge from "@/components/verified-badge";
 import { api } from "@/lib/trpc/client";
-import { getOrdinal } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Album, Briefcase, Flag, GraduationCap } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -99,37 +98,30 @@ export default function UserPageWrapper({
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge>
-                    {profileQuery.data.user.program.college.campus.slug.toUpperCase()}
+                    {profileQuery.data.user.program!.college.campus.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-60">
-                  {profileQuery.data.user.program.college.campus.name}
+                  {profileQuery.data.user.program!.college.campus.name}
                 </TooltipContent>
               </Tooltip>
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger className="">
                   <Badge variant="outline">
-                    {profileQuery.data.user.program.slug.toUpperCase()}
+                    {profileQuery.data.user.program!.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-60">
-                  {profileQuery.data.user.program.name}
+                  {profileQuery.data.user.program!.name}
                 </TooltipContent>
               </Tooltip>
-
-              <div>
-                <Badge variant="outline">
-                  {getOrdinal(profileQuery.data.user.user_number + 1)} user
-                </Badge>
-              </div>
             </div>
 
             <div className="flex flex-col">
               <div className="flex items-center gap-x-2">
                 <h2 className="truncate text-2xl font-semibold xs:text-4xl">
-                  {profileQuery.data.user.first_name}{" "}
-                  {profileQuery.data.user.last_name}
+                  {profileQuery.data.user.name}
                 </h2>
 
                 {profileQuery.data.user.verified_at && (
@@ -204,18 +196,22 @@ export default function UserPageWrapper({
                   </Tooltip>
                 </div>
 
-                {profileQuery.data.user.profile_picture_url ? (
+                {profileQuery.data.user.image ? (
                   <Image
-                    src={profileQuery.data.user.profile_picture_url}
-                    alt={`${profileQuery.data.user.first_name} ${profileQuery.data.user.last_name} profile picture`}
+                    src={
+                      typeof profileQuery.data.user.image === "string"
+                        ? profileQuery.data.user.image
+                        : profileQuery.data.user.image.url
+                    }
+                    alt={`${profileQuery.data.user.name} profile picture`}
                     fill
                     sizes="100%"
                     className="-z-10 object-cover"
                   />
                 ) : (
                   <Image
-                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${profileQuery.data.user.username}`}
-                    alt="Logo"
+                    src="/default-avatar.jpg"
+                    alt={`${profileQuery.data.user.name} profile picture`}
                     fill
                     sizes="100%"
                     className="-z-10 object-cover"
@@ -226,18 +222,21 @@ export default function UserPageWrapper({
 
             <DialogContent className="border-transparent bg-transparent">
               <div className="p-4">
-                {profileQuery.data.user.profile_picture_url ? (
+                {profileQuery.data.user.image ? (
                   <Image
-                    src={profileQuery.data.user.profile_picture_url}
-                    alt={`${profileQuery.data.user.first_name} ${profileQuery.data.user.last_name} profile picture`}
-                    width={500}
+                    src={
+                      typeof profileQuery.data.user.image === "string"
+                        ? profileQuery.data.user.image
+                        : profileQuery.data.user.image.url
+                    }
+                    alt={`${profileQuery.data.user.name} profile picture`}
                     height={500}
                     sizes="100%"
                   />
                 ) : (
                   <Image
-                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${profileQuery.data.user.username}`}
-                    alt="Logo"
+                    src="/default-avatar.jpg"
+                    alt={`${profileQuery.data.user.name} profile picture`}
                     width={500}
                     height={500}
                     sizes="100%"
@@ -305,7 +304,7 @@ export default function UserPageWrapper({
 
                         <AlertDialogFooter>
                           <AlertDialogCancel
-                            disabled={reportUserMutation.isLoading}
+                            disabled={reportUserMutation.isPending}
                           >
                             Cancel
                           </AlertDialogCancel>
@@ -313,9 +312,9 @@ export default function UserPageWrapper({
                           <Button
                             variant="destructive"
                             type="submit"
-                            disabled={reportUserMutation.isLoading}
+                            disabled={reportUserMutation.isPending}
                           >
-                            {reportUserMutation.isLoading && (
+                            {reportUserMutation.isPending && (
                               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                             )}
                             Report

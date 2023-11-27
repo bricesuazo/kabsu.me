@@ -2,15 +2,18 @@ import "@cvsu.me/tailwind-config/globals.css";
 
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import { headers } from "next/headers";
 import FooterMenu from "@/components/footer-menu";
 import QueryProvider from "@/components/query-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import TrpcProvider from "@/lib/trpc/Provider";
+import TRPCProvider from "@/lib/trpc/Provider";
 import { cn } from "@/lib/utils";
-import { auth, ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/react";
+import { SessionProvider } from "next-auth/react";
+
+import { auth } from "@cvsu.me/auth";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -33,20 +36,23 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://cvsu.me/"),
 };
 
-export default function RootLayout({ children }: React.PropsWithChildren) {
-  const { userId } = auth();
+export default async function RootLayout({
+  children,
+}: React.PropsWithChildren) {
+  const session = await auth();
+  console.log("🚀 ~ file: layout.tsx:42 ~ session:", session);
   return (
-    <ClerkProvider>
+    <SessionProvider>
       <html lang="en" suppressHydrationWarning>
         <body className={cn(font.className)}>
           <QueryProvider>
             <ThemeProvider attribute="class" defaultTheme="light">
               <TooltipProvider>
-                <TrpcProvider>
+                <TRPCProvider headers={headers()}>
                   {children}
                   <Analytics />
-                  {userId && <FooterMenu />}
-                </TrpcProvider>
+                  {session && <FooterMenu />}
+                </TRPCProvider>
               </TooltipProvider>
 
               <Toaster />
@@ -54,6 +60,6 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
           </QueryProvider>
         </body>
       </html>
-    </ClerkProvider>
+    </SessionProvider>
   );
 }

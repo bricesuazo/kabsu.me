@@ -37,9 +37,9 @@ export default function PostsWrapper({ user }: { user: User }) {
             <PostSkeletonNoRandom key={i} />
           ))}
         </div>
-      ) : postsQuery.isError ? (
+      ) : !postsQuery.data || postsQuery.isError ? (
         <p className="text-center text-sm text-muted-foreground">
-          {postsQuery.error.message}
+          {postsQuery.error?.message ?? "An error occurred."}
         </p>
       ) : postsQuery.data.pages.flatMap((page) => page.posts).length === 0 ? (
         <div className="text-center">

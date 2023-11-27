@@ -98,7 +98,7 @@ export default function CampusPageWrapper({
                     <FormControl>
                       <Input
                         placeholder="Main Campus"
-                        disabled={addCampusMutation.isLoading}
+                        disabled={addCampusMutation.isPending}
                         {...field}
                       />
                     </FormControl>
@@ -115,7 +115,7 @@ export default function CampusPageWrapper({
                     <FormControl>
                       <Input
                         placeholder="MAIN"
-                        disabled={addCampusMutation.isLoading}
+                        disabled={addCampusMutation.isPending}
                         {...field}
                       />
                     </FormControl>
@@ -126,7 +126,7 @@ export default function CampusPageWrapper({
 
               <DialogFooter>
                 <Button type="submit">
-                  {addCampusMutation.isLoading && (
+                  {addCampusMutation.isPending && (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                   )}
                   Confirm

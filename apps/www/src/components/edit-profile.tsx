@@ -48,15 +48,10 @@ export default function EditProfile({ user }: { user: User }) {
       .string()
       .max(128, "Bio must be at most 128 characters long.")
       .optional(),
-    firstName: z
+    name: z
       .string()
       // .nonempty({ message: "First name is required." })
-      .max(64, { message: "First name must be at most 64 characters long." })
-      .optional(),
-    lastName: z
-      .string()
-      // .nonempty({ message: "First name is required." })
-      .max(64, { message: "Last name must be at most 64 characters long." })
+      .max(64, { message: "Name must be at most 64 characters long." })
       .optional(),
     username: z
       .string()
@@ -78,8 +73,7 @@ export default function EditProfile({ user }: { user: User }) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       bio: user.bio ?? "",
-      firstName: user.first_name ?? "",
-      lastName: user.last_name ?? "",
+      name: user.name ?? "",
       username: user.username ?? "",
       link: user.link?.split("https://")[1] ?? "",
     },
@@ -153,31 +147,15 @@ export default function EditProfile({ user }: { user: User }) {
             <div className="flex gap-x-2">
               <FormField
                 control={form.control}
-                name="firstName"
+                name="name"
                 disabled
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormLabel>
-                      First Name<span className="text-red-500"> *</span>
+                      Name<span className="text-red-500"> *</span>
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="Brice" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lastName"
-                disabled
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>
-                      Last Name<span className="text-red-500"> *</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input placeholder="Suazo" {...field} />
+                      <Input placeholder="Brice Suazo" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -41,9 +41,9 @@ export default function Posts({
         <div className="grid h-full w-full place-items-center p-40">
           <Icons.spinner className="animate-spin" />
         </div>
-      ) : !posts.data && posts.isError ? (
+      ) : !posts.data || posts.isError ? (
         <p className="text-center text-sm text-muted-foreground">
-          {posts.error.message}
+          {posts.error?.message ?? "An error occurred."}
         </p>
       ) : posts.data.pages.flatMap((page) => page.posts).length === 0 ? (
         <div className="flex justify-center p-8">

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { momentTwitter } from "@/lib/moment-twitter";
 import { api } from "@/lib/trpc/client";
 import { cn, formatText } from "@/lib/utils";
 // import UpdatePost from "./update-post";
@@ -15,7 +16,6 @@ import {
   MessageCircle,
 } from "lucide-react";
 import moment from "moment";
-import momentTwitter from "moment-twitter";
 import { nanoid } from "nanoid";
 
 import type { Like, Post } from "@cvsu.me/db/schema";
@@ -103,23 +103,19 @@ export default function Post({ post }: { post: Post }) {
           className="flex gap-x-2"
         >
           <div className="w-max">
-            {getPostQuery.data.post.user.profile_picture_url ? (
-              <Image
-                src={getPostQuery.data.post.user.profile_picture_url}
-                alt="Image"
-                width={40}
-                height={40}
-                className="aspect-square rounded-full object-cover"
-              />
-            ) : (
-              <Image
-                src={`https://api.dicebear.com/7.x/initials/svg?seed=${getPostQuery.data.post.user.username}`}
-                alt="Image"
-                width={40}
-                height={40}
-                className="aspect-square rounded-full object-cover"
-              />
-            )}
+            <Image
+              src={
+                getPostQuery.data.post.user.image
+                  ? typeof getPostQuery.data.post.user.image === "string"
+                    ? getPostQuery.data.post.user.image
+                    : getPostQuery.data.post.user.image.url
+                  : "/default-avatar.jpg"
+              }
+              alt={`${getPostQuery.data.post.user.name} profile picture`}
+              width={40}
+              height={40}
+              className="aspect-square rounded-full object-cover"
+            />
           </div>
           <div className="flex flex-1 flex-col gap-y-1">
             <div className="group flex items-center gap-x-2">
@@ -141,16 +137,10 @@ export default function Post({ post }: { post: Post }) {
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                    {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                      momentTwitter(post.created_at).twitterLong()
-                    }
+                    {momentTwitter(post.created_at)}
                   </p>
                   <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                    {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                      momentTwitter(post.created_at).twitterShort()
-                    }
+                    {momentTwitter(post.created_at)}
                   </p>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -176,33 +166,33 @@ export default function Post({ post }: { post: Post }) {
                   })()}
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
-                  {getPostQuery.data.post.user.type.charAt(0).toUpperCase() +
-                    getPostQuery.data.post.user.type.slice(1)}
+                  {getPostQuery.data.post.user.type!.charAt(0).toUpperCase() +
+                    getPostQuery.data.post.user.type!.slice(1)}
                 </TooltipContent>
               </Tooltip>
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge>
                     {searchParams.get("tab") === "college"
-                      ? getPostQuery.data.post.user.program.college.slug.toUpperCase()
-                      : getPostQuery.data.post.user.program.college.campus.slug.toUpperCase()}
+                      ? getPostQuery.data.post.user.program!.college.slug.toUpperCase()
+                      : getPostQuery.data.post.user.program!.college.campus.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
                   {searchParams.get("tab") === "college"
-                    ? getPostQuery.data.post.user.program.college.name
-                    : getPostQuery.data.post.user.program.college.campus.name}
+                    ? getPostQuery.data.post.user.program!.college.name
+                    : getPostQuery.data.post.user.program!.college.campus.name}
                 </TooltipContent>
               </Tooltip>
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge variant="outline">
-                    {getPostQuery.data.post.user.program.slug.toUpperCase()}
+                    {getPostQuery.data.post.user.program!.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
-                  {getPostQuery.data.post.user.program.name}
+                  {getPostQuery.data.post.user.program!.name}
                 </TooltipContent>
               </Tooltip>
             </div>

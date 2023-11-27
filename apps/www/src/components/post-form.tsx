@@ -13,7 +13,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { api } from "@/lib/trpc/client";
-import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -47,6 +46,7 @@ const Schema = z.object({
 });
 export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
   const context = api.useContext();
+  const getCurrentSessionQuery = api.auth.getCurrentSession.useQuery();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -80,7 +80,6 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
     },
   });
 
-  const { user } = useUser();
   const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
@@ -116,18 +115,18 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
       // className="xs:flex hidden gap-x-4"
       className="flex gap-x-2 border-b px-4 py-8"
     >
-      {!user?.imageUrl ? (
+      {!getCurrentSessionQuery.data || getCurrentSessionQuery.isLoading ? (
         <Skeleton className="h-10 w-10 rounded-full" />
       ) : (
         <Link
-          href={`/${user.username}`}
+          href={`/${getCurrentSessionQuery.data.user.username}`}
           className="relative aspect-square h-8 w-8 min-w-max xs:h-10 xs:w-10"
         >
           <Image
             src={
-              user?.hasImage
-                ? user.imageUrl
-                : `https://api.dicebear.com/7.x/initials/svg?seed=${user.username}`
+              getCurrentSessionQuery.data.user.image?.length
+                ? getCurrentSessionQuery.data.user.image
+                : "/default-avatar.jpg"
             }
             alt="Profile picture"
             fill

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { auth } from "@clerk/nextjs";
 
+import { auth } from "@cvsu.me/auth";
 import { db } from "@cvsu.me/db";
 
 import PostPageComponent from "./post-page";
@@ -11,12 +11,12 @@ export async function generateMetadata({
 }: {
   params: { username: string; post_id: string };
 }): Promise<Metadata> {
-  const { userId } = auth();
+  const session = await auth();
 
-  if (!userId) notFound();
+  if (!session) notFound();
 
   const currentUserInDB = await db.query.users.findFirst({
-    where: (user, { eq }) => eq(user.id, userId),
+    where: (user, { eq }) => eq(user.id, session.user.id),
     with: {
       program: {
         with: {
@@ -55,7 +55,7 @@ export async function generateMetadata({
   const isFollower = await db.query.followers.findFirst({
     where: (follower, { and, eq }) =>
       and(
-        eq(follower.follower_id, userId),
+        eq(follower.follower_id, session.user.id),
         eq(follower.followee_id, userOfPost.id),
       ),
   });
@@ -73,13 +73,13 @@ export async function generateMetadata({
                 ? eq(post.type, "program")
                 : undefined,
 
-              currentUserInDB.program.college_id ===
-                userOfPost.program.college_id
+              currentUserInDB.program!.college_id ===
+                userOfPost.program!.college_id
                 ? eq(post.type, "college")
                 : undefined,
 
-              currentUserInDB.program.college.campus_id ===
-                userOfPost.program.college.campus_id
+              currentUserInDB.program!.college.campus_id ===
+                userOfPost.program!.college.campus_id
                 ? eq(post.type, "campus")
                 : undefined,
 

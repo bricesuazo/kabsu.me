@@ -14,11 +14,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import VerifiedBadge from "@/components/verified-badge";
+import { momentTwitter } from "@/lib/moment-twitter";
 import { api } from "@/lib/trpc/client";
 import { formatText } from "@/lib/utils";
 import { Album, Briefcase, GraduationCap } from "lucide-react";
 import moment from "moment";
-import momentTwitter from "moment-twitter";
 
 import type { Comment } from "@cvsu.me/db/schema";
 
@@ -87,9 +87,9 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
             <Skeleton className="h-10 w-24" />
           </div>
         </div>
-      ) : !postQuery.data && postQuery.isError ? (
+      ) : !postQuery.data || postQuery.isError ? (
         <p className="text-center text-sm text-muted-foreground">
-          {postQuery.error.message}
+          {postQuery.error?.message ?? "Something went wrong."}
         </p>
       ) : (
         <div className="min-h-screen space-y-2">
@@ -100,18 +100,22 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                 className="flex gap-x-2"
               >
                 <div className="w-max">
-                  {postQuery.data.post.user.profile_picture_url ? (
+                  {postQuery.data.post.user.image ? (
                     <Image
-                      src={postQuery.data.post.user.profile_picture_url}
-                      alt="Image"
+                      src={
+                        typeof postQuery.data.post.user.image === "string"
+                          ? postQuery.data.post.user.image
+                          : postQuery.data.post.user.image.url
+                      }
+                      alt={`${postQuery.data.post.user.name} profile picture`}
                       width={64}
                       height={64}
                       className="aspect-square rounded-full object-cover"
                     />
                   ) : (
                     <Image
-                      src={`https://api.dicebear.com/7.x/initials/svg?seed=${postQuery.data.post.user.username}`}
-                      alt="Logo"
+                      src="/default-avatar.jpg"
+                      alt={`${postQuery.data.post.user.name} profile picture`}
                       width={64}
                       height={64}
                       className="aspect-square rounded-full object-cover"
@@ -134,8 +138,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                         }
                       })()}
                       <p className="line-clamp-1 font-semibold hover:underline">
-                        {postQuery.data.post.user.first_name}{" "}
-                        {postQuery.data.post.user.last_name}{" "}
+                        {postQuery.data.post.user.name}
                       </p>
                     </div>
 
@@ -145,20 +148,11 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                     <Tooltip delayDuration={250}>
                       <TooltipTrigger>
                         <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                          {
-                            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                            momentTwitter(
-                              postQuery.data.post.created_at,
-                            ).twitterLong()
-                          }
+                          {momentTwitter(postQuery.data.post.created_at)}
                         </p>
                         <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                          {
-                            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                            momentTwitter(
-                              postQuery.data.post.created_at,
-                            ).twitterShort()
-                          }
+                          {}
+                          {momentTwitter(postQuery.data.post.created_at)}
                         </p>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -176,22 +170,25 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                       <Tooltip delayDuration={250}>
                         <TooltipTrigger>
                           <Badge>
-                            {postQuery.data.post.user.program.college.campus.slug.toUpperCase()}
+                            {postQuery.data.post.user.program!.college.campus.slug.toUpperCase()}
                           </Badge>
                         </TooltipTrigger>
                         <TooltipContent className="max-w-[12rem]">
-                          {postQuery.data.post.user.program.college.campus.name}
+                          {
+                            postQuery.data.post.user.program!.college.campus
+                              .name
+                          }
                         </TooltipContent>
                       </Tooltip>
 
                       <Tooltip delayDuration={250}>
                         <TooltipTrigger>
                           <Badge variant="outline">
-                            {postQuery.data.post.user.program.slug.toUpperCase()}
+                            {postQuery.data.post.user.program!.slug.toUpperCase()}
                           </Badge>
                         </TooltipTrigger>
                         <TooltipContent className="max-w-[12rem]">
-                          {postQuery.data.post.user.program.name}
+                          {postQuery.data.post.user.program!.name}
                         </TooltipContent>
                       </Tooltip>
                     </div>
@@ -262,18 +259,22 @@ function CommentComponent({ comment }: { comment: Comment }) {
         <div className="flex gap-x-2">
           <div className="min-w-max">
             <Link href={`/${fullCommentQuery.data.comment.user.username}`}>
-              {fullCommentQuery.data.comment.user.profile_picture_url ? (
+              {fullCommentQuery.data.comment.user.image ? (
                 <Image
-                  src={fullCommentQuery.data.comment.user.profile_picture_url}
-                  alt=""
+                  src={
+                    typeof fullCommentQuery.data.comment.user.image === "string"
+                      ? fullCommentQuery.data.comment.user.image
+                      : fullCommentQuery.data.comment.user.image.url
+                  }
+                  alt={`${fullCommentQuery.data.comment.user.name} profile picture`}
                   width={40}
                   height={40}
                   className="aspect-square rounded-full object-cover object-center"
                 />
               ) : (
                 <Image
-                  src={`https://api.dicebear.com/7.x/initials/svg?seed=${fullCommentQuery.data.comment.user.username}`}
-                  alt=""
+                  src="/default-avatar.jpg"
+                  alt={`${fullCommentQuery.data.comment.user.name} profile picture`}
                   width={40}
                   height={40}
                   className="aspect-square rounded-full"
@@ -288,8 +289,7 @@ function CommentComponent({ comment }: { comment: Comment }) {
                 className="flex items-center gap-x-1"
               >
                 <p className="line-clamp-1 font-bold group-hover:underline">
-                  {fullCommentQuery.data.comment.user.first_name}{" "}
-                  {fullCommentQuery.data.comment.user.last_name}{" "}
+                  {fullCommentQuery.data.comment.user.name}
                 </p>
                 {fullCommentQuery.data.comment.user.verified_at && (
                   <VerifiedBadge size="sm" />
@@ -300,20 +300,12 @@ function CommentComponent({ comment }: { comment: Comment }) {
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                    {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                      momentTwitter(
-                        fullCommentQuery.data.comment.created_at,
-                      ).twitterLong()
-                    }
+                    {}
+                    {momentTwitter(fullCommentQuery.data.comment.created_at)}
                   </p>
                   <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                    {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                      momentTwitter(
-                        fullCommentQuery.data.comment.created_at,
-                      ).twitterShort()
-                    }
+                    {}
+                    {momentTwitter(fullCommentQuery.data.comment.created_at)}
                   </p>
                 </TooltipTrigger>
                 <TooltipContent>

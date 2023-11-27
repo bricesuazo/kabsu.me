@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
+// import { update } from "@cvsu.me/auth";
 import { BLOCKED_USERNAMES } from "@cvsu.me/constants";
 import {
   ACCOUNT_TYPE,
@@ -17,32 +18,37 @@ import {
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const usersRouter = router({
-  signUp: publicProcedure
+  signUp: protectedProcedure
     .input(
       z.object({
-        userId: z.string(),
         program_id: z.string(),
         type: z.enum(ACCOUNT_TYPE),
-        first_name: z.string().nonempty(),
-        last_name: z.string().nonempty(),
+        name: z.string().nonempty(),
         username: z.string().nonempty(),
-        email: z.string().email(),
-        profile_picture_url: z.string().nullable(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const usersFromDB = await ctx.db.query.users.findMany();
-      await ctx.db.insert(users).values({
-        id: input.userId,
-        program_id: input.program_id,
-        type: input.type,
-        user_number: usersFromDB.length,
-        email: input.email,
-        first_name: input.first_name,
-        last_name: input.last_name,
-        username: input.username,
-        profile_picture_url: input.profile_picture_url,
+      await ctx.db.transaction(async (trx) => {
+        await trx
+          .update(users)
+          .set({
+            program_id: input.program_id,
+            type: input.type,
+            name: input.name,
+            username: input.username,
+          })
+          .where(eq(users.id, ctx.session.user.id));
+
+        // await update({
+        //   user: {
+        //     program_id: input.program_id,
+        //     type: input.type,
+        //     name: input.name,
+        //     username: input.username,
+        //   },
+        // });
       });
+      return { isSuccess: true, ...input } || { isSuccess: false };
     }),
 
   updateProfile: protectedProcedure
@@ -247,16 +253,17 @@ export const usersRouter = router({
       return users
         .filter(
           (user) =>
-            user.username.toLowerCase().includes(input.query.toLowerCase()) ||
-            user.first_name.toLowerCase().includes(input.query.toLowerCase()) ||
-            user.last_name.toLowerCase().includes(input.query.toLowerCase()),
+            user.name.toLowerCase().includes(input.query.toLowerCase()) ||
+            user.username?.toLowerCase().includes(input.query.toLowerCase()),
         )
         .map((user) => ({
           id: user.id,
           username: user.username,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          imageUrl: user.profile_picture_url,
+          name: user.name,
+          imageUrl:
+            typeof user.image === "string"
+              ? user.image
+              : user.image?.url ?? null,
           isVerified: !!user.verified_at,
         }))
         .slice(0, 10);
@@ -291,16 +298,13 @@ export const usersRouter = router({
   updateAccountSettings: protectedProcedure
     .input(
       z.object({
-        firstName: z.string().nonempty(),
-        lastName: z.string().nonempty(),
+        name: z.string().nonempty(),
         username: z.string().nonempty(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.transaction(async (trx) => {
-        const currentUser = await ctx.clerk.users.getUser(ctx.session.user.id);
-
-        if (currentUser.username !== input.username) {
+        if (ctx.session.user.username !== input.username) {
           if (BLOCKED_USERNAMES.has(input.username))
             throw new TRPCError({
               code: "BAD_REQUEST",
@@ -321,56 +325,48 @@ export const usersRouter = router({
         await trx
           .update(users)
           .set({
-            first_name: input.firstName,
-            last_name: input.lastName,
+            name: input.name,
             username: input.username,
           })
           .where(eq(users.id, ctx.session.user.id));
-        await ctx.clerk.users.updateUser(ctx.session.user.id, {
-          firstName: input.firstName,
-          lastName: input.lastName,
-          username: input.username,
-        });
       });
 
       return input;
     }),
   updateProfilePicture: protectedProcedure
     .input(z.object({ image: z.string() }))
-    .mutation(async ({ ctx, input }) => {
+    .mutation(({ input }) => {
       const base64 = input.image;
-      await ctx.db.transaction(async (trx) => {
-        const byteCharsArray = Array.from(
-          atob(base64.substr(base64.indexOf(",") + 1)),
+      // await ctx.db.transaction(async (trx) => {
+      const byteCharsArray = Array.from(
+        atob(base64.substr(base64.indexOf(",") + 1)),
+      );
+      const chunksIterator = new Array(Math.ceil(byteCharsArray.length / 512));
+      const bytesArrays = [];
+
+      for (let c = 0; c < chunksIterator.length; c++) {
+        bytesArrays.push(
+          new Uint8Array(
+            byteCharsArray
+              .slice(c * 512, 512 * (c + 1))
+              .map((s) => s.charCodeAt(0)),
+          ),
         );
-        const chunksIterator = new Array(
-          Math.ceil(byteCharsArray.length / 512),
-        );
-        const bytesArrays = [];
+      }
 
-        for (let c = 0; c < chunksIterator.length; c++) {
-          bytesArrays.push(
-            new Uint8Array(
-              byteCharsArray
-                .slice(c * 512, 512 * (c + 1))
-                .map((s) => s.charCodeAt(0)),
-            ),
-          );
-        }
+      // const file = new Blob(bytesArrays, { type: "image/png" });
 
-        const file = new Blob(bytesArrays, { type: "image/png" });
+      // const user = await ctx.clerk.users.updateUserProfileImage(
+      //   ctx.session.user.id,
+      //   {
+      //     file,
+      //   },
+      // );
 
-        const user = await ctx.clerk.users.updateUserProfileImage(
-          ctx.session.user.id,
-          {
-            file,
-          },
-        );
-
-        await trx
-          .update(users)
-          .set({ profile_picture_url: user.imageUrl })
-          .where(eq(users.id, ctx.session.user.id));
-      });
+      //   await trx
+      //     .update(users)
+      //     .set({ profile_picture_url: user.imageUrl })
+      //     .where(eq(users.id, ctx.session.user.id));
+      // });
     }),
 });

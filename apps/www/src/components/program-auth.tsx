@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { api } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
-import { useSignUp } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Album,
@@ -12,6 +12,7 @@ import {
   ChevronsUpDown,
   GraduationCap,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -41,15 +42,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
 
 export default function ProgramAuth({
-  form1,
+  form,
   data,
   page,
   setPage,
 }: {
-  form1: {
+  form: {
     username: string;
-    first_name: string;
-    last_name: string;
+    name: string;
   };
   data: {
     campuses: Campus[];
@@ -59,8 +59,23 @@ export default function ProgramAuth({
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
 }) {
-  const signUpMutation = api.users.signUp.useMutation();
-  const { isLoaded, signUp, setActive } = useSignUp();
+  const router = useRouter();
+  const { update } = useSession();
+  const signUpMutation = api.users.signUp.useMutation({
+    onSuccess: async (data) => {
+      if (data.isSuccess) {
+        await update({
+          user: {
+            program_id: data.program_id,
+            type: data.type,
+            name: data.name,
+            username: data.username,
+          },
+        });
+        router.refresh();
+      }
+    },
+  });
   const [opens, setOpens] = useState<{
     campuses: boolean;
     colleges: boolean;
@@ -108,29 +123,11 @@ export default function ProgramAuth({
       <Form {...form2}>
         <form
           onSubmit={form2.handleSubmit(async (values) => {
-            if (!isLoaded) return;
-
-            const new_user = await signUp.update({
-              username: form1.username,
-              firstName: form1.first_name,
-              lastName: form1.last_name,
-              redirectUrl: "/",
-              actionCompleteRedirectUrl: "/",
-            });
-
             await signUpMutation.mutateAsync({
-              userId: new_user.createdUserId ?? "",
               program_id: values.program_id,
-              type: values.type ?? "",
-              email: new_user.emailAddress ?? "",
-              first_name: new_user.firstName ?? "",
-              last_name: new_user.lastName ?? "",
-              username: new_user.username ?? "",
-              profile_picture_url: null,
-            });
-
-            await setActive({
-              session: signUp.createdSessionId ?? "",
+              type: values.type,
+              name: form.name,
+              username: form.username,
             });
           })}
           className="space-y-8"

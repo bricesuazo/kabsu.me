@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
 import Header from "@/components/header";
-import { env } from "@/lib/env.mjs";
-import { auth } from "@clerk/nextjs";
 
-export default function AuthenticatedLayout({
+import { auth } from "@cvsu.me/auth";
+
+export default async function AuthenticatedLayout({
   children,
 }: React.PropsWithChildren) {
-  const { userId } = auth();
+  const session = await auth();
 
-  if (!userId) redirect(env.NEXT_PUBLIC_CLERK_SIGN_IN_URL ?? "/");
+  if (!session) redirect("/");
   return (
     <>
       <main className="container min-h-screen border-x p-0">

@@ -136,7 +136,7 @@ export default function Program({
                       <FormControl>
                         <Input
                           placeholder="Main Campus"
-                          disabled={editProgramMutation.isLoading}
+                          disabled={editProgramMutation.isPending}
                           {...field}
                         />
                       </FormControl>
@@ -153,7 +153,7 @@ export default function Program({
                       <FormControl>
                         <Input
                           placeholder="MAIN"
-                          disabled={editProgramMutation.isLoading}
+                          disabled={editProgramMutation.isPending}
                           {...field}
                         />
                       </FormControl>
@@ -165,10 +165,10 @@ export default function Program({
                 <Button
                   type="submit"
                   disabled={
-                    editProgramMutation.isLoading || !form.formState.isDirty
+                    editProgramMutation.isPending || !form.formState.isDirty
                   }
                 >
-                  {editProgramMutation.isLoading && (
+                  {editProgramMutation.isPending && (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                   )}
                   Update
@@ -204,12 +204,12 @@ export default function Program({
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <Button
                 variant="destructive"
-                disabled={deleteProgramMutation.isLoading}
+                disabled={deleteProgramMutation.isPending}
                 onClick={() =>
                   deleteProgramMutation.mutate({ program_id: program.id })
                 }
               >
-                {deleteProgramMutation.isLoading && (
+                {deleteProgramMutation.isPending && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 Delete
