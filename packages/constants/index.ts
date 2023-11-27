@@ -6,6 +6,7 @@ import {
   Github,
   Globe,
   Globe2,
+  HeartHandshake,
   HelpCircle,
   Home,
   Instagram,
@@ -425,6 +426,11 @@ export const NAVBAR_LINKS = [
     icon: Home,
     name: "Home",
     url: "/",
+  },
+  {
+    icon: HeartHandshake,
+    name: "Donate",
+    url: "/donate",
   },
   {
     icon: HelpCircle,
