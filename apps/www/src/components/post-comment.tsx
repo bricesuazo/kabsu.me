@@ -243,7 +243,7 @@ export default function PostComment({
                           <div className="flex gap-x-1">
                             <p className="line-clamp-1">{like.user.name}</p>
 
-                            {like.user.emailVerified && (
+                            {like.user.verified_at && (
                               <VerifiedBadge size="md" />
                             )}
 

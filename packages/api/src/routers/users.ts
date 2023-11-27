@@ -263,7 +263,7 @@ export const usersRouter = router({
             typeof user.image === "string"
               ? user.image
               : user.image?.url ?? null,
-          isVerified: !!user.emailVerified,
+          isVerified: !!user.verified_at,
         }))
         .slice(0, 10);
     }),

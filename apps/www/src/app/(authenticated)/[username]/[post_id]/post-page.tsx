@@ -142,9 +142,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                       </p>
                     </div>
 
-                    {postQuery.data.post.user.emailVerified && (
-                      <VerifiedBadge />
-                    )}
+                    {postQuery.data.post.user.verified_at && <VerifiedBadge />}
 
                     <p className="pointer-events-none select-none">·</p>
                     <Tooltip delayDuration={250}>
@@ -293,7 +291,7 @@ function CommentComponent({ comment }: { comment: Comment }) {
                 <p className="line-clamp-1 font-bold group-hover:underline">
                   {fullCommentQuery.data.comment.user.name}
                 </p>
-                {fullCommentQuery.data.comment.user.emailVerified && (
+                {fullCommentQuery.data.comment.user.verified_at && (
                   <VerifiedBadge size="sm" />
                 )}
               </Link>

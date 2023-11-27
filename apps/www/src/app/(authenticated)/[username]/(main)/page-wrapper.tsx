@@ -124,7 +124,7 @@ export default function UserPageWrapper({
                   {profileQuery.data.user.name}
                 </h2>
 
-                {profileQuery.data.user.emailVerified && (
+                {profileQuery.data.user.verified_at && (
                   <VerifiedBadge size="lg" />
                 )}
               </div>

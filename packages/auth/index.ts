@@ -2,8 +2,6 @@ import NextAuth from "next-auth";
 import type { DefaultSession } from "next-auth";
 import Google from "next-auth/providers/google";
 
-import { db } from "@cvsu.me/db";
-import { users } from "@cvsu.me/db/schema";
 import type { ACCOUNT_TYPE } from "@cvsu.me/db/schema";
 
 declare module "next-auth" {
@@ -44,73 +42,28 @@ export const {
     strategy: "jwt",
   },
   callbacks: {
-    signIn: async ({ profile, user }) => {
+    signIn: (props) => {
+      console.log("🚀 ~ file: index.ts:49 ~ signIn props:", props);
       if (
-        profile?.email === "cvsudotme@gmail.com" ||
-        profile?.email?.endsWith("@cvsu.edu.ph")
+        props.profile?.email === "cvsudotme@gmail.com" ||
+        props.profile?.email?.endsWith("@cvsu.edu.ph")
       ) {
-        const isUserExist = await db.query.users.findFirst({
-          where: (users, { eq }) => eq(users.email, profile?.email ?? ""),
-        });
-
-        if (!isUserExist) {
-          await db.insert(users).values({
-            email: profile?.email,
-            name: profile?.name ?? "",
-            image: (profile?.picture as string | null) ?? null,
-          });
-        } else {
-          user.username = isUserExist.username;
-          user.id = isUserExist.id;
-          user.image =
-            typeof isUserExist.image === "string"
-              ? isUserExist.image
-              : isUserExist.image
-                ? isUserExist.image.url
-                : null;
-          user.program_id = isUserExist.program_id;
-          user.type = isUserExist.type;
-          user.name = isUserExist.name;
-        }
-
         return true;
       }
+
+      props.user.email = "asdasd";
       return false;
     },
-    jwt: ({ token, user, trigger, session }) => {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.username = user.username;
-        token.program_id = user.program_id;
-        token.type = user.type;
-        token.name = user.name;
-        token.image = user.image;
-      }
+    jwt: (props) => {
+      console.log("jwt🚀 ~ file: index.ts:58 ~ jwt props:", props);
 
-      if (trigger === "update" && session) {
-        console.log("🚀 ~ file: auth.ts:80 ~ session:", session);
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-        return { ...token, ...session.user };
-      }
-
-      return token;
+      return props.token;
     },
-    session: ({ session, token }) => {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: token.id,
-          username: token.username,
-          program_id: token.program_id,
-          image: token.image as string | null,
-          type: token.type,
-          name: token.name,
-          email: token.email,
-        },
-      };
+
+    session: (props) => {
+      console.log("🚀 ~ file: index.ts:59 ~ session props:", props);
+
+      return props.session;
     },
   },
   pages: {
