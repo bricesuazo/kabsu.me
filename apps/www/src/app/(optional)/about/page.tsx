@@ -1,9 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-
+import { redirect } from "next/navigation";
+import { auth } from "@kabsu.me/auth";
 import { DEVS_INFO } from "@kabsu.me/constants";
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const session = await auth();
+
+  if (!session) redirect("/");
   return (
     <div className="space-y-8">
       <div>

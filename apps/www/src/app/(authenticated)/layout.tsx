@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import Header from "@/components/header";
-
 import { auth } from "@kabsu.me/auth";
 
 export default async function AuthenticatedLayout({
