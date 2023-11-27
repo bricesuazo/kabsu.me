@@ -27,34 +27,24 @@ export default async function AboutPage() {
           University - Main Campus.
         </p>
       </div>
-      <div className="mx-auto grid grid-cols-1 gap-x-4 gap-y-4 self-center pt-4 sm:grid-cols-2 ">
+      <div className="mx-auto mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {DEVS_INFO.map((dev) => {
           return (
             <div
               key={dev.index}
-              className="flex flex-row items-center gap-x-4 rounded-lg bg-secondary p-4 "
+              className="flex flex-col items-center gap-y-4 rounded-lg border-2 p-3 "
             >
               <Image
                 src={dev.image}
                 alt={dev.name}
-                className=" rounded-full saturate-0"
-                width="120"
-                height="120"
+                className="rounded-full saturate-0"
+                width="80"
+                height="80"
               />
-
-              <div className="flex  flex-col items-start gap-y-1 text-left">
-                <p className="font-semibold text-primary ">{dev.name}</p>
-                <Link
-                  href={dev.link}
-                  target="_blank"
-                  className="hover:text-primary"
-                >
-                  <p className="text-[12px] font-medium ">{dev.username}</p>
-                </Link>
-                <p className="text-[12px] ">{dev.role}</p>
-
-                {/* <p className="text-[10px] text-foreground/70">{dev.desc}</p> */}
-                <div className="flex items-center gap-x-4 rounded-full pt-1 ">
+              <div className="flex flex-col items-center text-center">
+                <p className="font-semibold">{dev.name}</p>
+                <p className="text-sm">{dev.role}</p>
+                <div className="flex gap-x-1 pt-2">
                   {dev.links.map((link, i) => {
                     return (
                       <Link
@@ -63,7 +53,7 @@ export default async function AboutPage() {
                         target="_blank"
                         className="hover:text-primary"
                       >
-                        <div className="grid place-items-center fill-white">
+                        <div className="grid place-items-center p-1">
                           <link.icon size="1rem" />
                         </div>
                       </Link>

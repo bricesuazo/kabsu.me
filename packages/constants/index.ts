@@ -523,7 +523,6 @@ export const DEVS_INFO = [
     image: "/dev-pics/brice.png",
     username: "@bricesuazo",
     link: "https://kabsu.me/bricesuazo",
-    desc: "Saluysoy calculator developer, saluysoy predictor, and saluysoy predictor API developer.",
     links: [
       { icon: Mail, url: "mailto:bricebrine.suazo@cvsu.edu.ph" },
       { icon: Globe, url: "https://bricesuazo.com/" },
@@ -539,7 +538,6 @@ export const DEVS_INFO = [
     image: "/dev-pics/aryas.jpg",
     username: "@aryasss",
     link: "https://kabsu.me/aryasss",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:aries.delapena@cvsu.edu.ph" },
       { icon: Instagram, url: "https://www.instagram.com/25aryasss52/" },
@@ -552,7 +550,6 @@ export const DEVS_INFO = [
     image: "/dev-pics/gab.png",
     username: "@gabriel",
     link: "https://kabsu.me/gabriel",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:gabrielluis.astilla@cvsu.edu.ph" },
       { icon: Globe, url: "https://gabrielastilla.me/" },
@@ -567,7 +564,6 @@ export const DEVS_INFO = [
     image: "/dev-pics/aki.jpg",
     username: "@alexisken_alvarez",
     link: "https://kabsu.me/alexisken_alvarez",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:alexisken.alvarez@cvsu.edu.ph" },
       { icon: Globe, url: "https://www.akialvarez.com/" },
@@ -582,7 +578,6 @@ export const DEVS_INFO = [
     image: "/dev-pics/aj.jpg",
     username: "@eyrooonnn",
     link: "https://kabsu.me/eyrooonnn",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:aaronjoshua.espinosa@cvsu.edu.ph" },
       { icon: Globe, url: "https://ajespinosa.vercel.app/" },
@@ -596,7 +591,6 @@ export const DEVS_INFO = [
     image: "/dev-pics/bernard.jpg",
     username: "@iamnards",
     link: "https://kabsu.me/iamnards",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:johnbernard.sarroca@cvsu.edu.ph" },
       { icon: Github, url: "https://github.com/iamnards" },
@@ -610,7 +604,6 @@ export const DEVS_INFO = [
     image: "/dev-pics/rod.jpeg",
     username: "@rodcotines",
     link: "https://kabsu.me/rodcotines",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:rodclarence.cotines@cvsu.edu.ph" },
       { icon: Globe, url: "https://rodcotines.vercel.app/" },
@@ -625,7 +618,6 @@ export const DEVS_INFO = [
     image: "/dev-pics/lex.jpg",
     username: "@lxbnvj",
     link: "https://kabsu.me/lxbnvj",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:alexkal-el.buenviaje@cvsu.edu.ph" },
       { icon: Instagram, url: "https://www.instagram.com/lxbnvj/" },
@@ -638,10 +630,10 @@ export const DEVS_INFO = [
     image: "/dev-pics/kevin.png",
     username: "@tfudoinkebs",
     link: "https://kabsu.me/tfudoinkebs",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:kevinroi.nuesca@cvsu.edu.ph" },
       { icon: Instagram, url: "https://www.instagram.com/tfudoinkebs/" },
+      { icon: Github, url: "https://github.com/tfudoinkebs" },
     ],
   },
 ];
