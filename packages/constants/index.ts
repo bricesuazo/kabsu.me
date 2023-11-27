@@ -505,6 +505,7 @@ export const BLOCKED_USERNAMES = new Set([
   "sysadmin",
   "sys",
   "system",
+  "donate",
 ]);
 
 export const DEVS_INFO = [
