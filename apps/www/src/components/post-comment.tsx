@@ -12,6 +12,7 @@ import {
 import { api } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { Comment, Like, Post } from "@kabsu.me/db/schema";
 import {
   Album,
   Briefcase,
@@ -22,8 +23,6 @@ import {
 import { nanoid } from "nanoid";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-import type { Comment, Like, Post } from "@kabsu.me/db/schema";
 
 import { Icons } from "./icons";
 import { Badge } from "./ui/badge";
@@ -50,7 +49,7 @@ export default function PostComment({
   userId: string;
   post: Post & { likes: Like[]; comments: Comment[] };
 }) {
-  const context = api.useContext();
+  const context = api.useUtils();
   const getCurrentSessionQuery = api.auth.getCurrentSession.useQuery();
   const [open, setOpen] = useState(false);
   const likePostMutation = api.posts.like.useMutation({

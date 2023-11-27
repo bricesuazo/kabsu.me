@@ -33,11 +33,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { RouterOutput } from "@kabsu.me/api/root";
 import { AlertCircle, Pencil, Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-import type { RouterOutput } from "@kabsu.me/api/root";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -55,7 +54,7 @@ export default function College({
 }) {
   const [openDelete, setopenDelete] = useState(false);
   const [openEdit, setopenEdit] = useState(false);
-  const context = api.useContext();
+  const context = api.useUtils();
   const editCollegeMutation = api.admin.editCollege.useMutation({
     onSuccess: async () => {
       await context.admin.getAllColleges.invalidate();

@@ -153,7 +153,10 @@ export default function Header() {
                     />
                   </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent onInteractOutside={() => setOpen(!open)}>
+                <DropdownMenuContent
+                  onInteractOutside={() => setOpen(!open)}
+                  className="w-52"
+                >
                   <DropdownMenuItem
                     asChild
                     className="line-clamp-1 w-full cursor-pointer truncate"

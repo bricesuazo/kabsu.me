@@ -14,13 +14,12 @@ import {
 } from "@/components/ui/form";
 import { api } from "@/lib/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { POST_TYPE_TABS } from "@kabsu.me/constants";
+import { POST_TYPE } from "@kabsu.me/db/schema";
 import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
-
-import { POST_TYPE_TABS } from "@kabsu.me/constants";
-import { POST_TYPE } from "@kabsu.me/db/schema";
 
 import { Icons } from "./icons";
 import {
@@ -45,7 +44,7 @@ const Schema = z.object({
   type: z.enum(POST_TYPE).default(POST_TYPE[0]),
 });
 export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
-  const context = api.useContext();
+  const context = api.useUtils();
   const getCurrentSessionQuery = api.auth.getCurrentSession.useQuery();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -221,8 +220,8 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                   {form.watch("type") === "following"
                     ? "your followers"
                     : form.watch("type") === "all"
-                    ? "all campuses"
-                    : "your " + form.watch("type")}
+                      ? "all campuses"
+                      : "your " + form.watch("type")}
                 </p>
               </div>
 

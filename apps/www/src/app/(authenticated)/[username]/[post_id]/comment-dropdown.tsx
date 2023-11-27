@@ -30,11 +30,10 @@ import {
 } from "@/components/ui/select";
 import { api } from "@/lib/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { REPORT_POST_REASONS } from "@kabsu.me/constants";
 import { MoreVertical } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-import { REPORT_POST_REASONS } from "@kabsu.me/constants";
 
 import { Icons } from "../../../../components/icons";
 import {
@@ -56,7 +55,7 @@ export default function CommentDropdown({
   isMyComment: boolean;
 }) {
   const params = useParams();
-  const context = api.useContext();
+  const context = api.useUtils();
   const deleteCommentMutation = api.comments.delete.useMutation();
   const [openDelete, setOpenDelete] = useState(false);
   const [openReport, setOpenReport] = useState(false);

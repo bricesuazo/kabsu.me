@@ -4,11 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { REPORT_POST_REASONS } from "@kabsu.me/constants";
 import { MoreHorizontal } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-import { REPORT_POST_REASONS } from "@kabsu.me/constants";
 
 import { Icons } from "./icons";
 import {
@@ -57,7 +56,7 @@ export default function PostDropdown({
   successUrl?: string;
   isMyPost: boolean;
 }) {
-  const context = api.useContext();
+  const context = api.useUtils();
   const searchParams = useSearchParams();
   const router = useRouter();
   const deletePostMutation = api.posts.delete.useMutation({

@@ -25,7 +25,7 @@ export default function FollowButton({
   user_id: string;
 }) {
   const params = useParams();
-  const context = api.useContext();
+  const context = api.useUtils();
   const isFollowerQuery = api.users.isFollower.useQuery(
     { user_id },
     { initialData: isFollower },

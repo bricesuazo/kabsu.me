@@ -5,11 +5,10 @@ import Link from "next/link";
 import { api } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { User } from "@kabsu.me/db/schema";
 import { PenSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-import type { User } from "@kabsu.me/db/schema";
 
 import { Icons } from "./icons";
 import { AlertDialogHeader } from "./ui/alert-dialog";
@@ -35,7 +34,7 @@ import { Textarea } from "./ui/textarea";
 import { toast } from "./ui/use-toast";
 
 export default function EditProfile({ user }: { user: User }) {
-  const context = api.useContext();
+  const context = api.useUtils();
   const updateProfileMutation = api.users.updateProfile.useMutation({
     onSuccess: async () => {
       await context.users.getUserProfile.invalidate({

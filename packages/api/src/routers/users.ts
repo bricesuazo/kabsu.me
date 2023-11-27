@@ -1,7 +1,3 @@
-import { TRPCError } from "@trpc/server";
-import { and, eq } from "drizzle-orm";
-import { z } from "zod";
-
 // import { update } from "@kabsu.me/auth";
 import { BLOCKED_USERNAMES } from "@kabsu.me/constants";
 import {
@@ -14,6 +10,9 @@ import {
   suggested_features,
   users,
 } from "@kabsu.me/db/schema";
+import { TRPCError } from "@trpc/server";
+import { and, eq } from "drizzle-orm";
+import { z } from "zod";
 
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
@@ -248,7 +247,9 @@ export const usersRouter = router({
     .input(z.object({ query: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // TODO: optimize this
-      const users = await ctx.db.query.users.findMany();
+      const users = await ctx.db.query.users.findMany({
+        where: (user, { isNotNull }) => isNotNull(user.username),
+      });
 
       return users
         .filter(
