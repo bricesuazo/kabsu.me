@@ -4,7 +4,7 @@ import type { OAuthProviders } from "@cvsu.me/auth";
 import {
   signIn as signInAuth,
   signOut as signOutAuth,
-  // update as updateAuth,
+  update as updateAuth,
 } from "@cvsu.me/auth";
 
 export async function signIn(
@@ -28,6 +28,6 @@ export async function signOut(
   return await signOutAuth(options);
 }
 
-// export async function update(data) {
-//   return await updateAuth(data);
-// }
+export async function update(data: unknown) {
+  return await updateAuth(data as Record<string, unknown>);
+}

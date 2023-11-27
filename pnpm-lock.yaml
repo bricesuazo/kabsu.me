@@ -442,6 +442,9 @@ importers:
       next:
         specifier: 14.0.3
         version: registry.npmjs.org/next@14.0.3(react-dom@18.2.0)(react@18.2.0)
+      next-auth:
+        specifier: 5.0.0-beta.3
+        version: 5.0.0-beta.3(next@14.0.3)(react@18.2.0)
       next-superjson-plugin:
         specifier: ^0.5.10
         version: registry.npmjs.org/next-superjson-plugin@0.5.10(next@14.0.3)(superjson@2.2.1)
@@ -2375,6 +2378,21 @@ packages:
     resolution: {integrity: sha512-I7X2b22cxA4LIHXPSqbBCEQSL+1wv8TuoefejsX4HFWyC6jc5JG7CEaxOltiKjc1M+YCS2YkrZZcj4+dytw9GA==, tarball: https://registry.npmjs.org/nanoid/-/nanoid-5.0.3.tgz}
     engines: {node: ^18 || >=20}
     hasBin: true
+    dev: false
+
+  /next-auth@5.0.0-beta.3(next@14.0.3)(react@18.2.0):
+    resolution: {integrity: sha512-WOKhATBFGeONV+29HzFmspNmL7NXxrsCWLfaDKmAd/4DD1nqXE0BzNFH8t3SJBx7PUDMnB6F7xB76LM/AaV1MQ==, tarball: https://registry.npmjs.org/next-auth/-/next-auth-5.0.0-beta.3.tgz}
+    peerDependencies:
+      next: ^14
+      nodemailer: ^6.6.5
+      react: ^18.2.0
+    peerDependenciesMeta:
+      nodemailer:
+        optional: true
+    dependencies:
+      '@auth/core': 0.0.0-manual.e9863699
+      next: registry.npmjs.org/next@14.0.3(react-dom@18.2.0)(react@18.2.0)
+      react: registry.npmjs.org/react@18.2.0
     dev: false
 
   /next-tick@1.1.0:

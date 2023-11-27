@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { api } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,6 +12,7 @@ import {
   ChevronsUpDown,
   GraduationCap,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -57,7 +59,23 @@ export default function ProgramAuth({
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
 }) {
-  const signUpMutation = api.users.signUp.useMutation();
+  const router = useRouter();
+  const { update } = useSession();
+  const signUpMutation = api.users.signUp.useMutation({
+    onSuccess: async (data) => {
+      if (data.isSuccess) {
+        await update({
+          user: {
+            program_id: data.program_id,
+            type: data.type,
+            name: data.name,
+            username: data.username,
+          },
+        });
+        router.refresh();
+      }
+    },
+  });
   const [opens, setOpens] = useState<{
     campuses: boolean;
     colleges: boolean;

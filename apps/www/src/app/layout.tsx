@@ -11,6 +11,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import TRPCProvider from "@/lib/trpc/Provider";
 import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/react";
+import { SessionProvider } from "next-auth/react";
 
 import { auth } from "@cvsu.me/auth";
 
@@ -41,22 +42,24 @@ export default async function RootLayout({
   const session = await auth();
   console.log("🚀 ~ file: layout.tsx:42 ~ session:", session);
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={cn(font.className)}>
-        <QueryProvider>
-          <ThemeProvider attribute="class" defaultTheme="light">
-            <TooltipProvider>
-              <TRPCProvider headers={headers()}>
-                {children}
-                <Analytics />
-                {session && <FooterMenu />}
-              </TRPCProvider>
-            </TooltipProvider>
+    <SessionProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body className={cn(font.className)}>
+          <QueryProvider>
+            <ThemeProvider attribute="class" defaultTheme="light">
+              <TooltipProvider>
+                <TRPCProvider headers={headers()}>
+                  {children}
+                  <Analytics />
+                  {session && <FooterMenu />}
+                </TRPCProvider>
+              </TooltipProvider>
 
-            <Toaster />
-          </ThemeProvider>
-        </QueryProvider>
-      </body>
-    </html>
+              <Toaster />
+            </ThemeProvider>
+          </QueryProvider>
+        </body>
+      </html>
+    </SessionProvider>
   );
 }

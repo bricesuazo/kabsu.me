@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { update } from "@cvsu.me/auth";
+// import { update } from "@cvsu.me/auth";
 import { BLOCKED_USERNAMES } from "@cvsu.me/constants";
 import {
   ACCOUNT_TYPE,
@@ -28,8 +28,6 @@ export const usersRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      console.log("🚀 ~ file: users.ts:52 ~ .mutation ~ ctx:", ctx);
-
       await ctx.db.transaction(async (trx) => {
         await trx
           .update(users)
@@ -41,15 +39,16 @@ export const usersRouter = router({
           })
           .where(eq(users.id, ctx.session.user.id));
 
-        await update({
-          user: {
-            program_id: input.program_id,
-            type: input.type,
-            name: input.name,
-            username: input.username,
-          },
-        });
+        // await update({
+        //   user: {
+        //     program_id: input.program_id,
+        //     type: input.type,
+        //     name: input.name,
+        //     username: input.username,
+        //   },
+        // });
       });
+      return { isSuccess: true, ...input } || { isSuccess: false };
     }),
 
   updateProfile: protectedProcedure
