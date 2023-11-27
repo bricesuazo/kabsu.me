@@ -46,7 +46,7 @@ export const {
   },
   callbacks: {
     signIn: (props) => {
-      console.log("🚀 ~ file: index.ts:49 ~ signIn props:", props);
+      // console.log("🚀 ~ file: index.ts:49 ~ signIn props:", props);
       if (
         props.profile?.email === "cvsudotme@gmail.com" ||
         props.profile?.email?.endsWith("@cvsu.edu.ph")
@@ -57,7 +57,7 @@ export const {
       return false;
     },
     jwt: async ({ profile, token, trigger, session }) => {
-      console.log("jwt🚀 ~ file: index.ts:58 ~ jwt profile:", profile);
+      // console.log("jwt🚀 ~ file: index.ts:58 ~ jwt profile:", profile);
 
       if (trigger === "update" && session) {
         console.log("🚀 ~ file: auth.ts:80 ~ session:", session);
@@ -77,7 +77,7 @@ export const {
             id,
             name: profile.name ?? "",
             email: profile.email ?? "",
-            image: profile.profile ?? "",
+            image: (profile.picture as string | null) ?? "",
             username: null,
             program_id: null,
             type: null,
@@ -88,7 +88,7 @@ export const {
             id,
             name: profile.name,
             email: profile.name,
-            picture: profile.name,
+            image: profile.picture,
             username: null,
             program_id: null,
             type: null,
@@ -111,7 +111,7 @@ export const {
     },
 
     session: (props) => {
-      console.log("🚀 ~ file: index.ts:59 ~ session profile:", props);
+      // console.log("🚀 ~ file: index.ts:59 ~ session profile:", props);
 
       return {
         ...props.session,
