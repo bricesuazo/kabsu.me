@@ -511,7 +511,7 @@ export const DEVS_INFO = [
   {
     index: 0,
     name: "Brice Suazo",
-    role: "Full Stack Developer",
+    role: "Full-stack Developer",
     image: "/dev-pics/brice.png",
     username: "@bricesuazo",
     link: "https://kabsu.me/bricesuazo",
@@ -547,7 +547,7 @@ export const DEVS_INFO = [
     desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     links: [
       { icon: Mail, url: "mailto:gabrielluis.astilla@cvsu.edu.ph" },
-      { icon: Globe, url: "https://gabastilla.rf.gd/" },
+      { icon: Globe, url: "https://gabrielastilla.me/" },
       { icon: Github, url: "https://github.com/GabrielAstilla" },
       { icon: Instagram, url: "https://www.instagram.com/gabrieeelluis/" },
     ],
@@ -555,7 +555,7 @@ export const DEVS_INFO = [
   {
     index: 3,
     name: "Alexis Ken Alvarez",
-    role: "Backend Developer",
+    role: "Full-stack Developer",
     image: "/dev-pics/aki.jpg",
     username: "@alexisken_alvarez",
     link: "https://kabsu.me/alexisken_alvarez",
@@ -569,7 +569,7 @@ export const DEVS_INFO = [
   },
   {
     index: 4,
-    name: "Aaron Joshua Espinosa",
+    name: "AJ Espinosa",
     role: "Frontend Developer",
     image: "/dev-pics/aj.jpg",
     username: "@eyrooonnn",
@@ -583,7 +583,7 @@ export const DEVS_INFO = [
   },
   {
     index: 5,
-    name: "John Bernard Sarroca",
+    name: "Bernard Sarroca",
     role: "Backend Developer",
     image: "/dev-pics/bernard.jpg",
     username: "@iamnards",
@@ -597,7 +597,7 @@ export const DEVS_INFO = [
   },
   {
     index: 6,
-    name: "Rod Clarence Cotines",
+    name: "Rod Cotines",
     role: "Frontend Developer",
     image: "/dev-pics/rod.jpeg",
     username: "@rodcotines",
@@ -612,8 +612,8 @@ export const DEVS_INFO = [
   },
   {
     index: 7,
-    name: "Alex Kal-El Buenviaje",
-    role: "Quality Assurance Tester",
+    name: "Alex Buenviaje",
+    role: "Project Manager",
     image: "/dev-pics/lex.jpg",
     username: "@lxbnvj",
     link: "https://kabsu.me/lxbnvj",
@@ -621,6 +621,19 @@ export const DEVS_INFO = [
     links: [
       { icon: Mail, url: "mailto:alexkal-el.buenviaje@cvsu.edu.ph" },
       { icon: Instagram, url: "https://www.instagram.com/lxbnvj/" },
+    ],
+  },
+  {
+    index: 7,
+    name: "Kevin Roi Nuesca",
+    role: "Frontend Developer",
+    image: "/dev-pics/kevin.png",
+    username: "@tfudoinkebs",
+    link: "https://kabsu.me/tfudoinkebs",
+    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    links: [
+      { icon: Mail, url: "mailto:kevinroi.nuesca@cvsu.edu.ph" },
+      { icon: Instagram, url: "https://www.instagram.com/tfudoinkebs/" },
     ],
   },
 ];
