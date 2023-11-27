@@ -1,8 +1,3 @@
-import { TRPCError } from "@trpc/server";
-import { and, eq, or } from "drizzle-orm";
-import { nanoid } from "nanoid";
-import { z } from "zod";
-
 import type { Post, User } from "@kabsu.me/db/schema";
 import {
   likes,
@@ -11,6 +6,10 @@ import {
   posts,
   reported_posts,
 } from "@kabsu.me/db/schema";
+import { TRPCError } from "@trpc/server";
+import { and, eq, or } from "drizzle-orm";
+import { nanoid } from "nanoid";
+import { z } from "zod";
 
 import { protectedProcedure, router } from "../trpc";
 
@@ -440,26 +439,26 @@ export const postsRouter = router({
             eq(follower.follower_id, ctx.session.user.id),
         });
 
-        const users = await ctx.db.query.users.findMany({
-          where: (userInDB, { inArray }) =>
-            following.length
-              ? inArray(
+        const users = following.length
+          ? await ctx.db.query.users.findMany({
+              where: (userInDB, { inArray }) =>
+                inArray(
                   userInDB.id,
                   following.map((f) => f.followee_id),
-                )
-              : undefined,
-          with: {
-            program: {
+                ),
               with: {
-                college: {
+                program: {
                   with: {
-                    campus: true,
+                    college: {
+                      with: {
+                        campus: true,
+                      },
+                    },
                   },
                 },
               },
-            },
-          },
-        });
+            })
+          : [];
 
         posts = await ctx.db.query.posts.findMany({
           where: (post, { or, and, eq, isNull, inArray }) =>
