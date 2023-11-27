@@ -6,7 +6,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { api } from "@/lib/trpc/client";
+import { NAVBAR_LINKS } from "@kabsu.me/constants";
 import {
   AlertTriangle,
   AtSign,
@@ -20,24 +32,10 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
-import { NAVBAR_LINKS } from "@kabsu.me/constants";
-
 import FeedbackForm from "./feedback-form";
 import { Icons } from "./icons";
 import Notifications from "./notifications";
 import Search from "./search";
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarShortcut,
-  MenubarSub,
-  MenubarSubContent,
-  MenubarSubTrigger,
-  MenubarTrigger,
-} from "./ui/menubar";
 import { Separator } from "./ui/separator";
 import {
   Sheet,
@@ -54,7 +52,7 @@ export default function Header() {
   const pathname = usePathname();
   const { setTheme } = useTheme();
   const [loadingSignout, setLoadingSignout] = useState(false);
-  const [open, setOpen] = useState("");
+  const [open, setOpen] = useState(false);
   const [type, setType] = useState<"bug" | "feature">("bug");
   const sessionQuery = api.auth.getCurrentSession.useQuery();
 
@@ -136,126 +134,118 @@ export default function Header() {
             <Skeleton className="m-1 h-8 w-8 rounded-full" />
           ) : (
             sessionQuery.data && (
-              <Menubar asChild value={open}>
-                <MenubarMenu value="open">
-                  <MenubarTrigger
-                    className="cursor-pointer rounded-full p-1"
-                    onClick={() => setOpen("open")}
+              <DropdownMenu open={open}>
+                <DropdownMenuTrigger
+                  className="cursor-pointer rounded-full p-1"
+                  onClick={() => setOpen(!open)}
+                >
+                  <div className="relative h-8 w-8">
+                    <Image
+                      src={
+                        sessionQuery.data.user.image
+                          ? sessionQuery.data.user.image
+                          : "/default-avatar.jpg"
+                      }
+                      alt="Image"
+                      fill
+                      sizes="100%"
+                      className="rounded-full object-cover"
+                    />
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent onInteractOutside={() => setOpen(!open)}>
+                  <DropdownMenuItem
+                    asChild
+                    className="line-clamp-1 w-full cursor-pointer truncate"
                   >
-                    <div className="relative h-8 w-8">
-                      <Image
-                        src={
-                          sessionQuery.data.user.image
-                            ? sessionQuery.data.user.image
-                            : "/default-avatar.jpg"
-                        }
-                        alt="Image"
-                        fill
-                        sizes="100%"
-                        className="rounded-full object-cover"
-                      />
-                    </div>
-                  </MenubarTrigger>
-                  <MenubarContent
-                    align="end"
-                    onInteractOutside={() => setOpen("")}
-                    className="max-w-[2rem]"
+                    <Link
+                      href={`/${sessionQuery.data.user.username}`}
+                      className="w-full"
+                    >
+                      <AtSign className="mr-2" size="1rem" />
+                      {sessionQuery.data.user.username?.length
+                        ? `${sessionQuery.data.user.username}`
+                        : "My Profile"}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/account">
+                      <UserCog className="mr-2" size="1rem" />
+                      Account Settings
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <div className="flex flex-1 items-center justify-between">
+                        <Sun className="mr-2 block dark:hidden" size="1rem" />
+                        <Moon className="mr-2 hidden dark:block" size="1rem" />
+                        Theme <DropdownMenuShortcut>⌘ T</DropdownMenuShortcut>
+                      </div>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => setTheme("light")}>
+                        <Check size="1rem" className="mr-2 dark:opacity-0" />
+                        Light Mode
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setTheme("dark")}>
+                        <Check
+                          size="1rem"
+                          className="mr-2 opacity-0 dark:opacity-100"
+                        />
+                        Dark Mode
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setType("bug");
+                      setOpenFeedbackForm(true);
+                      setOpen(false);
+                    }}
                   >
-                    <MenubarItem
-                      asChild
-                      className="line-clamp-1 w-full cursor-pointer truncate"
-                      onClick={() => setOpen("")}
-                    >
-                      <Link
-                        href={`/${sessionQuery.data.user.username}`}
-                        className="w-full"
-                      >
-                        <AtSign className="mr-2" size="1rem" />
-                        {sessionQuery.data.user.username?.length
-                          ? `${sessionQuery.data.user.username}`
-                          : "My Profile"}
-                      </Link>
-                    </MenubarItem>
-                    <MenubarItem asChild onClick={() => setOpen("")}>
-                      <Link href="/account">
-                        <UserCog className="mr-2" size="1rem" />
-                        Account Settings
-                      </Link>
-                    </MenubarItem>
+                    <AlertTriangle className="mr-2" size="1rem" />
+                    Report a problem
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setType("feature");
+                      setOpenFeedbackForm(true);
+                      setOpen(false);
+                    }}
+                  >
+                    <MousePointerSquare className="mr-2" size="1rem" />
+                    Suggest a feature
+                  </DropdownMenuItem>
 
-                    <MenubarSeparator />
+                  <DropdownMenuSeparator />
 
-                    <MenubarSub>
-                      <MenubarSubTrigger>
-                        <div className="flex flex-1 items-center justify-between">
-                          <Sun className="mr-2 block dark:hidden" size="1rem" />
-                          <Moon
-                            className="mr-2 hidden dark:block"
-                            size="1rem"
-                          />
-                          Theme <MenubarShortcut>⌘ T</MenubarShortcut>
-                        </div>
-                      </MenubarSubTrigger>
-                      <MenubarSubContent>
-                        <MenubarItem onClick={() => setTheme("light")}>
-                          <Check size="1rem" className="mr-2 dark:opacity-0" />
-                          Light Mode
-                        </MenubarItem>
-                        <MenubarItem onClick={() => setTheme("dark")}>
-                          <Check
-                            size="1rem"
-                            className="mr-2 opacity-0 dark:opacity-100"
-                          />
-                          Dark Mode
-                        </MenubarItem>
-                      </MenubarSubContent>
-                    </MenubarSub>
-
-                    <MenubarSeparator />
-
-                    <MenubarItem
-                      onClick={() => {
-                        setType("bug");
-                        setOpenFeedbackForm(true);
-                      }}
-                    >
-                      <AlertTriangle className="mr-2" size="1rem" />
-                      Report a problem
-                    </MenubarItem>
-                    <MenubarItem
-                      onClick={() => {
-                        setType("feature");
-                        setOpenFeedbackForm(true);
-                      }}
-                    >
-                      <MousePointerSquare className="mr-2" size="1rem" />
-                      Suggest a feature
-                    </MenubarItem>
-
-                    <MenubarSeparator />
-
-                    <form
-                      action={async () => {
-                        setLoadingSignout(true);
-                        await signOut();
-                        setLoadingSignout(false);
-                        setOpen("");
-                      }}
-                    >
-                      <MenubarItem disabled={loadingSignout} asChild>
-                        <button className="mr-2">
-                          {loadingSignout ? (
-                            <Icons.spinner className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <LogOut size="1rem" />
-                          )}
-                        </button>
+                  <form
+                    action={async () => {
+                      setLoadingSignout(true);
+                      await signOut();
+                      setOpen(false);
+                      setLoadingSignout(false);
+                    }}
+                  >
+                    <DropdownMenuItem asChild>
+                      <button className="mr-2 flex w-full gap-x-2">
+                        {loadingSignout ? (
+                          <Icons.spinner className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <LogOut size="1rem" />
+                        )}
                         Sign out
-                      </MenubarItem>
-                    </form>
-                  </MenubarContent>
-                </MenubarMenu>
-              </Menubar>
+                      </button>
+                    </DropdownMenuItem>
+                  </form>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )
           )}
         </div>
