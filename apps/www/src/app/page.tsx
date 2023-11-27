@@ -79,7 +79,7 @@ export default async function Home({
           </div>
         </div>
       ) : (
-        <div className="space-y-10 pt-20">
+        <div className="space-y-10 px-8 pt-20">
           <div className="space-y-4">
             <Image
               src="/logo.svg"

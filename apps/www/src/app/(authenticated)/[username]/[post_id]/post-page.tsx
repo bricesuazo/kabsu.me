@@ -151,7 +151,6 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                           {momentTwitter(postQuery.data.post.created_at)}
                         </p>
                         <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                          {}
                           {momentTwitter(postQuery.data.post.created_at)}
                         </p>
                       </TooltipTrigger>

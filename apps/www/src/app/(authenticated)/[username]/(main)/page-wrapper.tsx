@@ -195,54 +195,37 @@ export default function UserPageWrapper({
                     })()}
                   </Tooltip>
                 </div>
-
-                {profileQuery.data.user.image ? (
-                  <Image
-                    src={
-                      typeof profileQuery.data.user.image === "string"
+                <Image
+                  src={
+                    profileQuery.data.user.image
+                      ? typeof profileQuery.data.user.image === "string"
                         ? profileQuery.data.user.image
                         : profileQuery.data.user.image.url
-                    }
-                    alt={`${profileQuery.data.user.name} profile picture`}
-                    fill
-                    sizes="100%"
-                    className="-z-10 object-cover"
-                  />
-                ) : (
-                  <Image
-                    src="/default-avatar.jpg"
-                    alt={`${profileQuery.data.user.name} profile picture`}
-                    fill
-                    sizes="100%"
-                    className="-z-10 object-cover"
-                  />
-                )}
+                      : "/default-avatar.jpg"
+                  }
+                  alt={`${profileQuery.data.user.name} profile picture`}
+                  fill
+                  sizes="100%"
+                  className="-z-10 object-cover"
+                />
               </div>
             </DialogTrigger>
 
             <DialogContent className="border-transparent bg-transparent">
-              <div className="p-4">
-                {profileQuery.data.user.image ? (
-                  <Image
-                    src={
-                      typeof profileQuery.data.user.image === "string"
+              <div className="inherit aspect-square">
+                <Image
+                  src={
+                    profileQuery.data.user.image
+                      ? typeof profileQuery.data.user.image === "string"
                         ? profileQuery.data.user.image
                         : profileQuery.data.user.image.url
-                    }
-                    alt={`${profileQuery.data.user.name} profile picture`}
-                    height={500}
-                    sizes="100%"
-                  />
-                ) : (
-                  <Image
-                    src="/default-avatar.jpg"
-                    alt={`${profileQuery.data.user.name} profile picture`}
-                    width={500}
-                    height={500}
-                    sizes="100%"
-                    className="-z-10 object-cover"
-                  />
-                )}
+                      : "/default-avatar.jpg"
+                  }
+                  alt={`${profileQuery.data.user.name} profile picture`}
+                  fill
+                  sizes="100%"
+                  className="rounded-full object-cover object-center p-8"
+                />
               </div>
             </DialogContent>
           </Dialog>
