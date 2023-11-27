@@ -91,7 +91,7 @@ export default async function Home({
             />
 
             <h1 className="text-center text-6xl font-bold text-primary">
-              CvSU.me
+              Kabsu.me
             </h1>
             <h4 className="text-center text-xl [text-wrap:balance]">
               A social media platform that&apos;s only exclusive for Cavite
@@ -107,7 +107,7 @@ export default async function Home({
               </p>
             </div>
           </div>
-          <div>
+          {/* <div>
             <h2 className="text-center text-xl font-semibold text-primary">
               CvSU.me will shut down for now. :(
             </h2>
@@ -122,7 +122,7 @@ export default async function Home({
               </Link>
               .
             </p>
-          </div>
+          </div> */}
           <div className="flex flex-col items-center justify-center gap-y-4 ">
             <div className="flex justify-center">
               <Link
