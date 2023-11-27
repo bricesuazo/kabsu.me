@@ -15,10 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/trpc/server";
-import { Github } from "lucide-react";
-
 import { auth, signIn } from "@kabsu.me/auth";
 import { DEVS_INFO } from "@kabsu.me/constants";
+import { Github } from "lucide-react";
 
 export async function generateMetadata(): Promise<Metadata> {
   const session = await auth();
@@ -107,7 +106,7 @@ export default async function Home({
               </p>
             </div>
           </div>
-          
+
           <div className="flex flex-col items-center justify-center gap-y-4 ">
             <div className="flex justify-center">
               <Link
@@ -166,12 +165,12 @@ export default async function Home({
               State University - Main Campus.
             </p>
 
-            <div className="mx-auto mt-4 grid w-fit grid-cols-1 gap-x-20 self-center sm:grid-cols-2">
+            <div className="mx-auto mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
               {DEVS_INFO.map((dev) => {
                 return (
                   <div
                     key={dev.index}
-                    className="flex flex-row items-center gap-x-4 rounded-lg p-4"
+                    className="flex flex-col items-center gap-y-4 rounded-lg border-2 p-3 "
                   >
                     <Image
                       src={dev.image}
@@ -180,7 +179,7 @@ export default async function Home({
                       width="80"
                       height="80"
                     />
-                    <div className="flex flex-col items-start text-left">
+                    <div className="flex flex-col items-center text-center">
                       <p className="font-semibold">{dev.name}</p>
                       <p className="text-sm">{dev.role}</p>
                       <div className="flex gap-x-1 pt-2">
