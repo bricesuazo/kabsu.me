@@ -39,11 +39,10 @@ import { toast } from "@/components/ui/use-toast";
 import VerifiedBadge from "@/components/verified-badge";
 import { api } from "@/lib/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { RouterOutput } from "@kabsu.me/api/root";
 import { Album, Briefcase, Flag, GraduationCap } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-import type { RouterOutput } from "@kabsu.me/api/root";
 
 import PostsWrapper from "./posts-wrapper";
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { api } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -161,14 +160,14 @@ export default function EditProfile({ user }: { user: User }) {
                 )}
               />
             </div>
-            <p className="text-sm">
+            {/* <p className="text-sm">
               To update your username, first name, and last name, please visit
               the{" "}
               <Link href="/account" className="text-primary hover:underline">
                 Account Page
               </Link>
               .
-            </p>
+            </p> */}
 
             <FormField
               control={form.control}
