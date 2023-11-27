@@ -442,10 +442,12 @@ export const postsRouter = router({
 
         const users = await ctx.db.query.users.findMany({
           where: (userInDB, { inArray }) =>
-            inArray(
-              userInDB.id,
-              following.map((f) => f.followee_id),
-            ),
+            following.length
+              ? inArray(
+                  userInDB.id,
+                  following.map((f) => f.followee_id),
+                )
+              : undefined,
           with: {
             program: {
               with: {
@@ -458,7 +460,6 @@ export const postsRouter = router({
             },
           },
         });
-        console.log("🚀 ~ file: posts.ts:447 ~ .query ~ following:", following);
 
         posts = await ctx.db.query.posts.findMany({
           where: (post, { or, and, eq, isNull, inArray }) =>

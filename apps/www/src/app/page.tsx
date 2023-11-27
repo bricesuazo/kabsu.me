@@ -49,7 +49,7 @@ export default async function Home({
   };
 
   return (
-    <main className="container px-4">
+    <main className="container px-0">
       {session &&
       (!session.user.username ||
         !session.user.type ||

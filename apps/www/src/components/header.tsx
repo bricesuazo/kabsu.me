@@ -57,10 +57,6 @@ export default function Header() {
   const [open, setOpen] = useState("");
   const [type, setType] = useState<"bug" | "feature">("bug");
   const sessionQuery = api.auth.getCurrentSession.useQuery();
-  console.log(
-    "🚀 ~ file: header.tsx:60 ~ Header ~ sessionQuery:",
-    sessionQuery,
-  );
 
   const [openFeedbackForm, setOpenFeedbackForm] = useState(false);
 
