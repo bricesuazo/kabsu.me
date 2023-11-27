@@ -10,10 +10,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import TRPCProvider from "@/lib/trpc/Provider";
 import { cn } from "@/lib/utils";
+import { auth } from "@kabsu.me/auth";
 import { Analytics } from "@vercel/analytics/react";
 import { SessionProvider } from "next-auth/react";
-
-import { auth } from "@kabsu.me/auth";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -40,7 +39,6 @@ export default async function RootLayout({
   children,
 }: React.PropsWithChildren) {
   const session = await auth();
-  console.log("🚀 ~ file: layout.tsx:42 ~ session:", session);
   return (
     <SessionProvider>
       <html lang="en" suppressHydrationWarning>

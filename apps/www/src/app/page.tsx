@@ -10,6 +10,7 @@ import PostForm from "@/components/post-form";
 import PostTypeTab from "@/components/post-type-tab";
 import Posts from "@/components/posts";
 import { ToggleTheme } from "@/components/toggle-theme";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -17,7 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/trpc/server";
 import { auth, signIn } from "@kabsu.me/auth";
 import { DEVS_INFO } from "@kabsu.me/constants";
-import { Github } from "lucide-react";
+import { AlertCircle, Github } from "lucide-react";
 
 export async function generateMetadata(): Promise<Metadata> {
   const session = await auth();
@@ -30,11 +31,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home({
-  searchParams: { tab },
+  searchParams: { tab, error },
 }: {
   searchParams: {
     tab?: "all" | "campus" | "program" | "college";
     callback_url?: string;
+    error?: string;
     [key: string]: string | string[] | undefined;
   };
 }) {
@@ -133,19 +135,19 @@ export default async function Home({
               </Button>
             </form>
 
-            {/* {searchParams.error ||
-              (searchParams.error_description && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>
-                    {searchParams.get("error") ?? "Error"}
-                  </AlertTitle>
-                  <AlertDescription>
-                    {searchParams.get("error_description") ??
-                      "Something went wrong."}
-                  </AlertDescription>
-                </Alert>
-              ))} */}
+            {error && (
+              <Alert variant="destructive" className="mx-auto max-w-xs">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>
+                  {error === "AccessDenied" ? "Access Denied" : "Error"}
+                </AlertTitle>
+                <AlertDescription>
+                  {error === "AccessDenied"
+                    ? "Please use your CvSU email address. You must be a CvSU student, faculty, or alumni to access this site."
+                    : "An error occured."}
+                </AlertDescription>
+              </Alert>
+            )}
 
             <ToggleTheme />
 
