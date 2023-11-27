@@ -1,11 +1,11 @@
+import { db } from "@kabsu.me/db";
+import { users } from "@kabsu.me/db/schema";
+import type { ACCOUNT_TYPE } from "@kabsu.me/db/schema";
+import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import NextAuth from "next-auth";
 import type { DefaultSession } from "next-auth";
 import Google from "next-auth/providers/google";
-
-import { db } from "@kabsu.me/db";
-import { users } from "@kabsu.me/db/schema";
-import type { ACCOUNT_TYPE } from "@kabsu.me/db/schema";
 
 declare module "next-auth" {
   interface Session {
@@ -94,12 +94,24 @@ export const {
             type: null,
           };
         } else {
+          if (
+            !isUserExists.image ||
+            (typeof isUserExists.image === "string" &&
+              isUserExists.image.length === 0)
+          )
+            await db
+              .update(users)
+              .set({
+                image: (profile.picture as string | null) ?? null,
+              })
+              .where(eq(users.id, isUserExists.id));
+
           token = {
             ...token,
             id: isUserExists.id,
             name: isUserExists.name,
             email: isUserExists.email,
-            image: isUserExists.image,
+            image: isUserExists.image ?? profile.picture,
             username: isUserExists.username,
             program_id: isUserExists.program_id,
             type: isUserExists.type,
