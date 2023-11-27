@@ -25,8 +25,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: session
-      ? "Home - CvSU.me"
-      : "Welcome! - CvSU.me | Social Media for Cavite State University",
+      ? "Home - Kabsu.me"
+      : "Welcome! - Kabsu.me | Social Media for Cavite State University",
   };
 }
 
@@ -91,7 +91,7 @@ export default async function Home({
             />
 
             <h1 className="text-center text-6xl font-bold text-primary">
-              CvSU.me
+              Kabsu.me
             </h1>
             <h4 className="text-center text-xl [text-wrap:balance]">
               A social media platform that&apos;s only exclusive for Cavite
@@ -107,26 +107,11 @@ export default async function Home({
               </p>
             </div>
           </div>
-          <div>
-            <h2 className="text-center text-xl font-semibold text-primary">
-              CvSU.me will shut down for now. :(
-            </h2>
-            <p className="text-center">
-              For more information, please read{" "}
-              <Link
-                href="https://www.facebook.com/BriceSuazo/posts/pfbid033xuUAobX7btj6uwnt7zxLZx9UWynwdearWVFQTRFs6jqJhMozSoUmuWWqGVhmxp9l"
-                className="text-primary underline"
-                target="_blank"
-              >
-                this post
-              </Link>
-              .
-            </p>
-          </div>
+          
           <div className="flex flex-col items-center justify-center gap-y-4 ">
             <div className="flex justify-center">
               <Link
-                href="https://github.com/bricesuazo/cvsu.me"
+                href="https://github.com/bricesuazo/kabsu.me"
                 target="_blank"
               >
                 <Badge variant="outline" className="h-8 text-sm">

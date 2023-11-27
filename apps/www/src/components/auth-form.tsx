@@ -68,7 +68,7 @@ export default function AuthForm({ session }: { session: Session }) {
           <ToggleTheme />
         </div>
         <h1 className="text-center text-4xl font-bold">
-          Welcome to <span className="text-primary">CvSU.me</span>
+          Welcome to <span className="text-primary">Kabsu.me</span>
         </h1>
         <h4 className="text-center text-muted-foreground">
           Fill out the form below to continue.

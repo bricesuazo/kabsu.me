@@ -77,7 +77,7 @@ export default function Header() {
             </SheetTrigger>
             <SheetContent side="left">
               <SheetHeader className="mb-4">
-                <SheetTitle>CvSU.me</SheetTitle>
+                <SheetTitle>Kabsu.me</SheetTitle>
                 <SheetDescription>Navigate to different pages</SheetDescription>
               </SheetHeader>
 

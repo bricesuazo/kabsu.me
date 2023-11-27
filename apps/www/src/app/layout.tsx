@@ -25,8 +25,8 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: {
-    default: "CvSU.me - Social Media for Cavite State University",
-    template: "%s - CvSU.me",
+    default: "Kabsu.me - Social Media for Cavite State University",
+    template: "%s - Kabsu.me",
   },
   description: "Social Media for Cavite State University",
   authors: {

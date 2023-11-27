@@ -1,4 +1,4 @@
-# Welcome to [CvSU.me](https://cvsu.me)!
+# Welcome to [Kabsu.me](https://kabsu.me)!
 
 A social media platform exclusive only for Cavite State University students, faculty, and alumni.
 
@@ -34,7 +34,7 @@ A social media platform exclusive only for Cavite State University students, fac
 1. Clone the repository
 
 ```bash
-git clone https://github.com/bricesuazo/cvsu.me.git
+git clone https://github.com/bricesuazo/kabsu.me.git
 ```
 
 2. Install dependencies

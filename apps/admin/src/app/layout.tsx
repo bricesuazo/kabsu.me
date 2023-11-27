@@ -24,8 +24,8 @@ const font = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Admin - CvSU.me",
-  description: "Admin dashboard of CvSU.me",
+  title: "Admin - Kabsy.me",
+  description: "Admin dashboard of Kabsu.me",
 };
 
 export default function RootLayout({
@@ -43,7 +43,7 @@ export default function RootLayout({
               <div className="flex h-full">
                 <nav className="h-full w-60 space-y-8 bg-accent p-4">
                   <Button variant="link" className="h-auto p-0">
-                    {/* <span className="hidden xs:contents">CvSU.me Admin</span> */}
+                    {/* <span className="hidden xs:contents">Kabsu.me Admin</span> */}
                     Dashboard
                   </Button>
                   <div className="">

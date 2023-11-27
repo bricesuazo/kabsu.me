@@ -29,7 +29,7 @@ export default function VerifiedBadge({
         /> */}
         {/* <Image src="/logo.png" alt="Logo" width={32} height={32} /> */}
       </TooltipTrigger>
-      <TooltipContent>CvSU.me Verified</TooltipContent>
+      <TooltipContent>Kabsu.me Verified</TooltipContent>
     </Tooltip>
   );
 }
