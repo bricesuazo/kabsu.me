@@ -5,9 +5,9 @@ import { experimental_createTRPCNextAppDirServer as createTRPCNextAppDirServer }
 // import { experimental_nextHttpLink as nextHttpLink } from "@trpc/next/app-dir/links/nextHttp";
 import superjson from "superjson";
 
-import { appRouter } from "@cvsu.me/api/root";
-import { auth } from "@cvsu.me/auth";
-import { db } from "@cvsu.me/db";
+import { appRouter } from "@kabsu.me/api/root";
+import { auth } from "@kabsu.me/auth";
+import { db } from "@kabsu.me/db";
 
 import { endingLink } from "./utils";
 

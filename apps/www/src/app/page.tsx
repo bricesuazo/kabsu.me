@@ -17,8 +17,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/trpc/server";
 import { Github } from "lucide-react";
 
-import { auth, signIn } from "@cvsu.me/auth";
-import { DEVS_INFO } from "@cvsu.me/constants";
+import { auth, signIn } from "@kabsu.me/auth";
+import { DEVS_INFO } from "@kabsu.me/constants";
 
 export async function generateMetadata(): Promise<Metadata> {
   const session = await auth();

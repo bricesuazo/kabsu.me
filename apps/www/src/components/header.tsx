@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
-import { NAVBAR_LINKS } from "@cvsu.me/constants";
+import { NAVBAR_LINKS } from "@kabsu.me/constants";
 
 import FeedbackForm from "./feedback-form";
 import { Icons } from "./icons";

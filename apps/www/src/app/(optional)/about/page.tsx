@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { DEVS_INFO } from "@cvsu.me/constants";
+import { DEVS_INFO } from "@kabsu.me/constants";
 
 export default function AboutPage() {
   return (

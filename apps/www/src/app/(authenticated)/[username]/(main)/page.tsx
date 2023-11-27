@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { api } from "@/lib/trpc/server";
 
-import { db } from "@cvsu.me/db";
+import { db } from "@kabsu.me/db";
 
 import PageWrapper from "./page-wrapper";
 

@@ -1,4 +1,4 @@
-import { SEED_DATA } from "@cvsu.me/constants";
+import { SEED_DATA } from "@kabsu.me/constants";
 
 import { db } from ".";
 import { campuses, colleges, programs } from "./schema";

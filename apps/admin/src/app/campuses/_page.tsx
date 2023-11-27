@@ -25,7 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { RouterOutput } from "@cvsu.me/api/root";
+import type { RouterOutput } from "@kabsu.me/api/root";
 
 import Campus from "./campus";
 

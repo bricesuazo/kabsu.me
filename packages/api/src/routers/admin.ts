@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { campuses, colleges, programs } from "@cvsu.me/db/schema";
+import { campuses, colleges, programs } from "@kabsu.me/db/schema";
 
 import { protectedProcedure, router } from "../trpc";
 

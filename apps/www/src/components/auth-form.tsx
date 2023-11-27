@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { Session } from "@cvsu.me/auth";
+import type { Session } from "@kabsu.me/auth";
 
 import { Icons } from "./icons";
 import ProgramAuth from "./program-auth";

@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { auth } from "@cvsu.me/auth";
-import type { User } from "@cvsu.me/db/schema";
+import { auth } from "@kabsu.me/auth";
+import type { User } from "@kabsu.me/db/schema";
 
 import FollowButton from "./follow-button";
 

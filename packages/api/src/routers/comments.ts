@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { comments, notifications, reported_comments } from "@cvsu.me/db/schema";
+import { comments, notifications, reported_comments } from "@kabsu.me/db/schema";
 
 import { protectedProcedure, router } from "../trpc";
 

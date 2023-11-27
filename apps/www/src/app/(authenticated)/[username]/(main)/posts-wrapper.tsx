@@ -7,7 +7,7 @@ import { PostSkeletonNoRandom } from "@/components/post-skeleton";
 import { api } from "@/lib/trpc/client";
 import { useInView } from "react-intersection-observer";
 
-import type { User } from "@cvsu.me/db/schema";
+import type { User } from "@kabsu.me/db/schema";
 
 export default function PostsWrapper({ user }: { user: User }) {
   const { ref, inView } = useInView();

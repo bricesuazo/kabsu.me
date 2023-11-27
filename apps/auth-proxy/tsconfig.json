@@ -1,5 +1,5 @@
 {
-  "extends": "@cvsu.me/tsconfig/base.json",
+  "extends": "@kabsu.me/tsconfig/base.json",
   "include": ["."],
   "exclude": ["dist", "build", "node_modules"]
 }

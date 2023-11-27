@@ -1,4 +1,4 @@
-import "@cvsu.me/tailwind-config/globals.css";
+import "@kabsu.me/tailwind-config/globals.css";
 
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/react";
 import { SessionProvider } from "next-auth/react";
 
-import { auth } from "@cvsu.me/auth";
+import { auth } from "@kabsu.me/auth";
 
 const font = Poppins({
   subsets: ["latin"],

@@ -19,8 +19,8 @@ import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
 
-import { POST_TYPE_TABS } from "@cvsu.me/constants";
-import { POST_TYPE } from "@cvsu.me/db/schema";
+import { POST_TYPE_TABS } from "@kabsu.me/constants";
+import { POST_TYPE } from "@kabsu.me/db/schema";
 
 import { Icons } from "./icons";
 import {

@@ -43,7 +43,7 @@ import { Album, Briefcase, Flag, GraduationCap } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { RouterOutput } from "@cvsu.me/api/root";
+import type { RouterOutput } from "@kabsu.me/api/root";
 
 import PostsWrapper from "./posts-wrapper";
 

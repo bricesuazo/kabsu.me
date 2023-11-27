@@ -1,5 +1,5 @@
 {
-  "extends": "@cvsu.me/tsconfig/base.json",
+  "extends": "@kabsu.me/tsconfig/base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
@@ -10,7 +10,7 @@
         "name": "next"
       }
     ],
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "*.ts", "*.mjs", "src"],
   "exclude": ["node_modules"]

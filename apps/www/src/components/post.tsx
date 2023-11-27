@@ -18,7 +18,7 @@ import {
 import moment from "moment";
 import { nanoid } from "nanoid";
 
-import type { Like, Post } from "@cvsu.me/db/schema";
+import type { Like, Post } from "@kabsu.me/db/schema";
 
 import PostDropdown from "./post-dropdown";
 import { PostSkeletonNoRandom } from "./post-skeleton";

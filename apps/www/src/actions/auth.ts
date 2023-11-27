@@ -1,11 +1,11 @@
 "use server";
 
-import type { OAuthProviders } from "@cvsu.me/auth";
+import type { OAuthProviders } from "@kabsu.me/auth";
 import {
   signIn as signInAuth,
   signOut as signOutAuth,
   update as updateAuth,
-} from "@cvsu.me/auth";
+} from "@kabsu.me/auth";
 
 export async function signIn(
   provider?: OAuthProviders,

@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { notifications } from "@cvsu.me/db/schema";
+import { notifications } from "@kabsu.me/db/schema";
 
 import { protectedProcedure, router } from "../trpc";
 

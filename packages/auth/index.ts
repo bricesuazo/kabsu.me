@@ -3,9 +3,9 @@ import NextAuth from "next-auth";
 import type { DefaultSession } from "next-auth";
 import Google from "next-auth/providers/google";
 
-import { db } from "@cvsu.me/db";
-import { users } from "@cvsu.me/db/schema";
-import type { ACCOUNT_TYPE } from "@cvsu.me/db/schema";
+import { db } from "@kabsu.me/db";
+import { users } from "@kabsu.me/db/schema";
+import type { ACCOUNT_TYPE } from "@kabsu.me/db/schema";
 
 declare module "next-auth" {
   interface Session {

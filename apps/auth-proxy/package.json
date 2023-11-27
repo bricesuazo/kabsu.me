@@ -1,5 +1,5 @@
 {
-  "name": "@cvsu.me/auth-proxy",
+  "name": "@kabsu.me/auth-proxy",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,10 +15,10 @@
     "h3": "^1.9.0"
   },
   "devDependencies": {
-    "@cvsu.me/eslint-config": "workspace:*",
-    "@cvsu.me/prettier-config": "workspace:*",
-    "@cvsu.me/tailwind-config": "workspace:*",
-    "@cvsu.me/tsconfig": "workspace:*",
+    "@kabsu.me/eslint-config": "workspace:*",
+    "@kabsu.me/prettier-config": "workspace:*",
+    "@kabsu.me/tailwind-config": "workspace:*",
+    "@kabsu.me/tsconfig": "workspace:*",
     "@types/node": "20.10.0",
     "eslint": "^8.54.0",
     "nitropack": "^2.7.2",
@@ -28,8 +28,8 @@
   "eslintConfig": {
     "root": true,
     "extends": [
-      "@cvsu.me/eslint-config/base"
+      "@kabsu.me/eslint-config/base"
     ]
   },
-  "prettier": "@cvsu.me/prettier-config"
+  "prettier": "@kabsu.me/prettier-config"
 }

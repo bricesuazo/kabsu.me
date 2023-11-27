@@ -9,10 +9,10 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@cvsu.me/api": "workspace:*",
-    "@cvsu.me/auth": "workspace:*",
-    "@cvsu.me/constants": "workspace:*",
-    "@cvsu.me/db": "workspace:*",
+    "@kabsu.me/api": "workspace:*",
+    "@kabsu.me/auth": "workspace:*",
+    "@kabsu.me/constants": "workspace:*",
+    "@kabsu.me/db": "workspace:*",
     "@hookform/resolvers": "^3.3.2",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
@@ -86,10 +86,10 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@cvsu.me/eslint-config": "workspace:*",
-    "@cvsu.me/prettier-config": "workspace:*",
-    "@cvsu.me/tailwind-config": "workspace:*",
-    "@cvsu.me/tsconfig": "workspace:*",
+    "@kabsu.me/eslint-config": "workspace:*",
+    "@kabsu.me/prettier-config": "workspace:*",
+    "@kabsu.me/tailwind-config": "workspace:*",
+    "@kabsu.me/tsconfig": "workspace:*",
     "@types/node": "20.10.0",
     "@types/react": "18.2.38",
     "@types/react-dom": "18.2.17",
@@ -101,8 +101,8 @@
   "eslintConfig": {
     "root": true,
     "extends": [
-      "@cvsu.me/eslint-config/base"
+      "@kabsu.me/eslint-config/base"
     ]
   },
-  "prettier": "@cvsu.me/prettier-config"
+  "prettier": "@kabsu.me/prettier-config"
 }

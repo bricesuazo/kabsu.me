@@ -3,14 +3,14 @@ import { and, eq, or } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 
-import type { Post, User } from "@cvsu.me/db/schema";
+import type { Post, User } from "@kabsu.me/db/schema";
 import {
   likes,
   notifications,
   POST_TYPE,
   posts,
   reported_posts,
-} from "@cvsu.me/db/schema";
+} from "@kabsu.me/db/schema";
 
 import { protectedProcedure, router } from "../trpc";
 

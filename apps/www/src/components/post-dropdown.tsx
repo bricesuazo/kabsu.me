@@ -8,7 +8,7 @@ import { MoreHorizontal } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { REPORT_POST_REASONS } from "@cvsu.me/constants";
+import { REPORT_POST_REASONS } from "@kabsu.me/constants";
 
 import { Icons } from "./icons";
 import {

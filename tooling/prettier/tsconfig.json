@@ -1,8 +1,5 @@
 {
-  "extends": "@cvsu.me/tsconfig/base.json",
-  "compilerOptions": {
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
-  },
+  "extends": "@kabsu.me/tsconfig/base.json",
   "include": ["."],
-  "exclude": ["node_modules"]
+  "exclude": ["dist", "build", "node_modules"]
 }

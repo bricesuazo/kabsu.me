@@ -2,9 +2,9 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import type { Session } from "@cvsu.me/auth";
-import { auth } from "@cvsu.me/auth";
-import { db } from "@cvsu.me/db";
+import type { Session } from "@kabsu.me/auth";
+import { auth } from "@kabsu.me/auth";
+import { db } from "@kabsu.me/db";
 
 interface CreateContextOptions {
   session: Session | null;

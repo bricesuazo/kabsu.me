@@ -1,4 +1,4 @@
-import "@cvsu.me/tailwind-config/globals.css";
+import "@kabsu.me/tailwind-config/globals.css";
 
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";

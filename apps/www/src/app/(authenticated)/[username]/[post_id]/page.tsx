@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { auth } from "@cvsu.me/auth";
-import { db } from "@cvsu.me/db";
+import { auth } from "@kabsu.me/auth";
+import { db } from "@kabsu.me/db";
 
 import PostPageComponent from "./post-page";
 

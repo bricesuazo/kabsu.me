@@ -20,7 +20,7 @@ import { formatText } from "@/lib/utils";
 import { Album, Briefcase, GraduationCap } from "lucide-react";
 import moment from "moment";
 
-import type { Comment } from "@cvsu.me/db/schema";
+import type { Comment } from "@kabsu.me/db/schema";
 
 export default function PostPageComponent({ post_id }: { post_id: string }) {
   const postQuery = api.posts.getPost.useQuery({ post_id }, { retry: 1 });

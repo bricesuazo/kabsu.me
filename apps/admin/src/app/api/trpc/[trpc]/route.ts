@@ -1,8 +1,8 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
-import { appRouter } from "@cvsu.me/api/root";
-import { createTRPCContext } from "@cvsu.me/api/trpc";
-import { auth } from "@cvsu.me/auth";
+import { appRouter } from "@kabsu.me/api/root";
+import { createTRPCContext } from "@kabsu.me/api/trpc";
+import { auth } from "@kabsu.me/auth";
 
 // export const runtime = "edge";
 

@@ -1,5 +1,5 @@
 {
-  "name": "@cvsu.me/eslint-config",
+  "name": "@kabsu.me/eslint-config",
   "license": "MIT",
   "files": [
     "./base.js",
@@ -25,8 +25,8 @@
     "eslint-plugin-react-hooks": "^4.6.0"
   },
   "devDependencies": {
-    "@cvsu.me/prettier-config": "workspace:*",
-    "@cvsu.me/tsconfig": "workspace:*",
+    "@kabsu.me/prettier-config": "workspace:*",
+    "@kabsu.me/tsconfig": "workspace:*",
     "eslint": "^8.54.0",
     "typescript": "^5.3.2"
   },
@@ -36,5 +36,5 @@
       "./base.js"
     ]
   },
-  "prettier": "@cvsu.me/prettier-config"
+  "prettier": "@kabsu.me/prettier-config"
 }

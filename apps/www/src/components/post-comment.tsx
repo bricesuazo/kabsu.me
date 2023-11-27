@@ -23,7 +23,7 @@ import { nanoid } from "nanoid";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { Comment, Like, Post } from "@cvsu.me/db/schema";
+import type { Comment, Like, Post } from "@kabsu.me/db/schema";
 
 import { Icons } from "./icons";
 import { Badge } from "./ui/badge";

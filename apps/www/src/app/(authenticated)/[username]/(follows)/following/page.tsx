@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import UserFollows from "@/components/user-follows";
 
-import { auth } from "@cvsu.me/auth";
-import { db } from "@cvsu.me/db";
+import { auth } from "@kabsu.me/auth";
+import { db } from "@kabsu.me/db";
 
 export function generateMetadata({
   params: { username },

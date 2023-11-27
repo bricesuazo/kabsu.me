@@ -2,8 +2,8 @@ import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
-// import { update } from "@cvsu.me/auth";
-import { BLOCKED_USERNAMES } from "@cvsu.me/constants";
+// import { update } from "@kabsu.me/auth";
+import { BLOCKED_USERNAMES } from "@kabsu.me/constants";
 import {
   ACCOUNT_TYPE,
   followees,
@@ -13,7 +13,7 @@ import {
   reported_users,
   suggested_features,
   users,
-} from "@cvsu.me/db/schema";
+} from "@kabsu.me/db/schema";
 
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 

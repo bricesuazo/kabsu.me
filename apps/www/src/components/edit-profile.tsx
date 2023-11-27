@@ -9,7 +9,7 @@ import { PenSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { User } from "@cvsu.me/db/schema";
+import type { User } from "@kabsu.me/db/schema";
 
 import { Icons } from "./icons";
 import { AlertDialogHeader } from "./ui/alert-dialog";

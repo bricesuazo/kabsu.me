@@ -16,8 +16,8 @@ import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { ACCOUNT_TYPE } from "@cvsu.me/db/schema";
-import type { Campus, College, Program } from "@cvsu.me/db/schema";
+import { ACCOUNT_TYPE } from "@kabsu.me/db/schema";
+import type { Campus, College, Program } from "@kabsu.me/db/schema";
 
 import { Icons } from "./icons";
 import { Button } from "./ui/button";

@@ -2,7 +2,7 @@ import { env } from "@/lib/env.mjs";
 import type { HTTPBatchLinkOptions, HTTPHeaders, TRPCLink } from "@trpc/client";
 import { httpBatchLink } from "@trpc/client";
 
-import type { AppRouter } from "@cvsu.me/api/root";
+import type { AppRouter } from "@kabsu.me/api/root";
 
 function getBaseUrl() {
   if (typeof window !== "undefined") return "";

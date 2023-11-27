@@ -1,5 +1,5 @@
 {
-  "name": "@cvsu.me/prettier-config",
+  "name": "@kabsu.me/prettier-config",
   "main": "index.mjs",
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
@@ -12,8 +12,8 @@
     "prettier-plugin-tailwindcss": "^0.5.7"
   },
   "devDependencies": {
-    "@cvsu.me/tsconfig": "workspace:*",
+    "@kabsu.me/tsconfig": "workspace:*",
     "typescript": "^5.3.2"
   },
-  "prettier": "@cvsu.me/prettier-config"
+  "prettier": "@kabsu.me/prettier-config"
 }

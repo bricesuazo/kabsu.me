@@ -1,5 +1,5 @@
 {
-  "name": "@cvsu.me/db",
+  "name": "@kabsu.me/db",
   "main": "./index.ts",
   "types": "./index.ts",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@auth/core": "^0.18.3",
-    "@cvsu.me/constants": "workspace:*",
+    "@kabsu.me/constants": "workspace:*",
     "@planetscale/database": "^1.11.0",
     "dotenv": "^16.3.1",
     "drizzle-orm": "0.29.0",
@@ -21,8 +21,8 @@
     "tsx": "^4.5.0"
   },
   "devDependencies": {
-    "@cvsu.me/prettier-config": "workspace:*",
-    "@cvsu.me/tsconfig": "workspace:*",
+    "@kabsu.me/prettier-config": "workspace:*",
+    "@kabsu.me/tsconfig": "workspace:*",
     "@types/node": "^20.10.0",
     "dotenv-cli": "^7.3.0",
     "drizzle-kit": "0.20.6",
@@ -31,8 +31,8 @@
   "eslintConfig": {
     "root": true,
     "extends": [
-      "@cvsu.me/eslint-config/base"
+      "@kabsu.me/eslint-config/base"
     ]
   },
-  "prettier": "@cvsu.me/prettier-config"
+  "prettier": "@kabsu.me/prettier-config"
 }

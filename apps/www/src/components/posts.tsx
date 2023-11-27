@@ -4,7 +4,7 @@ import { Fragment, useEffect } from "react";
 import { api } from "@/lib/trpc/client";
 import { useInView } from "react-intersection-observer";
 
-import type { POST_TYPE_TABS } from "@cvsu.me/constants";
+import type { POST_TYPE_TABS } from "@kabsu.me/constants";
 
 import { Icons } from "./icons";
 import Post from "./post";

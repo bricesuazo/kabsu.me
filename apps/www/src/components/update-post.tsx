@@ -22,7 +22,7 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Textarea } from "./ui/textarea";
-import type { Post } from "@cvsu.me/db/schema";
+import type { Post } from "@kabsu.me/db/schema";
 import { useEffect } from "react";
 import { z } from "zod";
 import { api } from "@/lib/trpc/client";
