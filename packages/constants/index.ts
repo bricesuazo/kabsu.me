@@ -636,6 +636,7 @@ export const DEVS_INFO = [
     links: [
       { icon: Mail, url: "mailto:kevinroi.nuesca@cvsu.edu.ph" },
       { icon: Instagram, url: "https://www.instagram.com/tfudoinkebs/" },
+      { icon: Github, url: "https://github.com/tfudoinkebs" },
     ],
   },
 ];
