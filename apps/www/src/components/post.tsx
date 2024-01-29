@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { momentTwitter } from "@/lib/moment-twitter";
 import { api } from "@/lib/trpc/client";
 import { cn, formatText } from "@/lib/utils";
+import type { Like, Post } from "@kabsu.me/db/schema";
 // import UpdatePost from "./update-post";
 import {
   Album,
@@ -17,8 +17,6 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import { nanoid } from "nanoid";
-
-import type { Like, Post } from "@kabsu.me/db/schema";
 
 import PostDropdown from "./post-dropdown";
 import { PostSkeletonNoRandom } from "./post-skeleton";
@@ -137,10 +135,10 @@ export default function Post({ post }: { post: Post }) {
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                    {momentTwitter(post.created_at)}
+                    {moment(post.created_at).fromNow()}
                   </p>
                   <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                    {momentTwitter(post.created_at)}
+                    {moment(post.created_at).fromNow()}
                   </p>
                 </TooltipTrigger>
                 <TooltipContent>

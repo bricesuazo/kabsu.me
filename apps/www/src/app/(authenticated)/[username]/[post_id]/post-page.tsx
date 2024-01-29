@@ -14,13 +14,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import VerifiedBadge from "@/components/verified-badge";
-import { momentTwitter } from "@/lib/moment-twitter";
 import { api } from "@/lib/trpc/client";
 import { formatText } from "@/lib/utils";
+import type { Comment } from "@kabsu.me/db/schema";
 import { Album, Briefcase, GraduationCap } from "lucide-react";
 import moment from "moment";
-
-import type { Comment } from "@kabsu.me/db/schema";
 
 export default function PostPageComponent({ post_id }: { post_id: string }) {
   const postQuery = api.posts.getPost.useQuery({ post_id }, { retry: 1 });
@@ -148,10 +146,10 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                     <Tooltip delayDuration={250}>
                       <TooltipTrigger>
                         <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                          {momentTwitter(postQuery.data.post.created_at)}
+                          {moment(postQuery.data.post.created_at).fromNow()}
                         </p>
                         <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                          {momentTwitter(postQuery.data.post.created_at)}
+                          {moment(postQuery.data.post.created_at).fromNow()}
                         </p>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -299,12 +297,10 @@ function CommentComponent({ comment }: { comment: Comment }) {
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                    {}
-                    {momentTwitter(fullCommentQuery.data.comment.created_at)}
+                    {moment(fullCommentQuery.data.comment.created_at).fromNow()}
                   </p>
                   <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                    {}
-                    {momentTwitter(fullCommentQuery.data.comment.created_at)}
+                    {moment(fullCommentQuery.data.comment.created_at).fromNow()}
                   </p>
                 </TooltipTrigger>
                 <TooltipContent>
