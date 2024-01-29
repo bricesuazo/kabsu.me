@@ -624,7 +624,7 @@ export const DEVS_INFO = [
     ],
   },
   {
-    index: 7,
+    index: 8,
     name: "Kevin Roi Nuesca",
     role: "Frontend Developer",
     image: "/dev-pics/kevin.png",
