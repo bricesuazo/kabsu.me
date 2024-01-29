@@ -163,7 +163,7 @@ export default function Header() {
                   >
                     <Link
                       href={`/${sessionQuery.data.user.username}`}
-                      className="w-full"
+                      className="flex w-full items-center"
                     >
                       <AtSign className="mr-2" size="1rem" />
                       {sessionQuery.data.user.username?.length
