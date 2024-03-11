@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+// import { Suspense } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,9 +13,10 @@ import { ToggleTheme } from "@/components/toggle-theme";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/lib/trpc/server";
+// import { Skeleton } from "@/components/ui/skeleton";
+// import { api } from "@/lib/trpc/server";
 import { auth, signIn } from "@kabsu.me/auth";
 import { DEVS_INFO } from "@kabsu.me/constants";
 import { AlertCircle, Github } from "lucide-react";
@@ -129,7 +130,7 @@ export default async function Home({
               }}
             >
               {/* <Icons.spinner className="mr-2 h-4 w-4 animate-spin" /> */}
-              <Button>
+              <Button disabled>
                 <Icons.google className="mr-2 h-4 w-4" />
                 Sign in with CvSU Account
               </Button>
@@ -149,14 +150,47 @@ export default async function Home({
               </Alert>
             )}
 
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-center">Under maintenance</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col justify-center">
+                <p className="text-balance text-center">
+                  Kabsu.me will shut down for now.
+                </p>
+                <div className="mx-auto">
+                  <Button asChild variant="link">
+                    <Link
+                      href="https://www.facebook.com/bricesuazo/posts/pfbid0zDT9dsbGjub5b9WqKBNTDhMj3jUyCLGGXN6PuVvHWMntRRqgq3MztVWvMyjKBt8il"
+                      target="_blank"
+                    >
+                      Read more
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
             <ToggleTheme />
 
-            <Suspense
+            {/* <Suspense
               fallback={<Skeleton className="my-1 h-3 w-36 rounded-full" />}
             >
               <UsersLength />
-            </Suspense>
+            </Suspense> */}
+            <p className="text-center text-sm text-muted-foreground">
+              2,640 Kabsuhenyos registered
+            </p>
           </div>
+
+          <iframe
+            src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fbricesuazo%2Fposts%2Fpfbid0brFggarFZmEkXR57W7xZAGGk6JWJQv5kt5LxJUK2omdEqouYfiYz25tZGiDVY1fXl&show_text=true"
+            className="aspect-square w-full overflow-hidden border-0 border-none"
+            scrolling="no"
+            frameBorder={0}
+            allowFullScreen
+            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+          ></iframe>
           {/* ABOUT DEV COMPONENT */}
           <div>
             <h2 className="py-4 text-center text-4xl font-bold text-primary">
@@ -242,11 +276,11 @@ export default async function Home({
   );
 }
 
-async function UsersLength() {
-  const getTotalUsersQuery = await api.users.getTotalUsers.query();
-  return (
-    <p className="text-center text-sm text-muted-foreground">
-      {getTotalUsersQuery} users registered
-    </p>
-  );
-}
+// async function UsersLength() {
+//   const getTotalUsersQuery = await api.users.getTotalUsers.query();
+//   return (
+//     <p className="text-center text-sm text-muted-foreground">
+//       {getTotalUsersQuery} users registered
+//     </p>
+//   );
+// }
