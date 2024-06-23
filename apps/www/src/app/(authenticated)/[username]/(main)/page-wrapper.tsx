@@ -227,10 +227,10 @@ export default function UserPageWrapper({
 
         <div className="flex flex-col items-start gap-x-4 gap-y-2 border-b px-4 pb-4 sm:flex-row sm:items-center">
           <div className="flex items-center gap-x-2">
-            {profileQuery.data.isFollower ? (
+            {profileQuery.data.user.id !== profileQuery.data.user_id ? (
               <div className="flex items-center gap-x-2">
                 <FollowButton
-                  isFollower={profileQuery.data.isFollower}
+                  isFollower={profileQuery.data.is_follower}
                   user_id={profileQuery.data.user.id}
                 />
                 <AlertDialog open={openReport} onOpenChange={setOpenReport}>
@@ -337,7 +337,9 @@ export default function UserPageWrapper({
               </TabsTrigger>
             </TabsList>
           </Tabs> */}
-        {profileQuery.data.user.id === profileQuery.data.userId && <PostForm />}
+        {profileQuery.data.user.id === profileQuery.data.user_id && (
+          <PostForm />
+        )}
       </div>
 
       <PostsWrapper user={profileQuery.data.user} data-superjson />

@@ -1,7 +1,16 @@
+"use client";
+
+import { Fragment, useEffect } from "react";
+import { useInView } from "react-intersection-observer";
+
+import type { POST_TYPE_TABS } from "@kabsu.me/constants";
+
+import { api } from "~/lib/trpc/client";
 import Header from "./header";
+import { Icons } from "./icons";
+import Post from "./post";
 import PostForm from "./post-form";
 import PostTypeTab from "./post-type-tab";
-import Posts from "./posts";
 
 export default function HomeProtected({
   tab,
@@ -35,8 +44,69 @@ export default function HomeProtected({
       <div className="min-h-screen">
         <PostForm hasRedirect />
 
-        <Posts tab={!tab ? "following" : tab} />
+        <Posts tab={tab ? tab : "following"} />
       </div>
+    </div>
+  );
+}
+
+function Posts({ tab }: { tab: (typeof POST_TYPE_TABS)[number]["id"] }) {
+  const posts = api.posts.getPosts.useInfiniteQuery(
+    { type: tab },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      initialCursor: 1, // <-- optional you can pass an initialCursor
+      // refetchOnMount: false,
+      // refetchOnWindowFocus: false,
+      // refetchOnReconnect: false,
+    },
+  );
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    void (async () => {
+      if (inView) {
+        await posts.fetchNextPage();
+      }
+    })();
+  }, [inView, posts]);
+
+  return (
+    <div className="">
+      {posts.isLoading ? (
+        <div className="grid h-full w-full place-items-center p-40">
+          <Icons.spinner className="animate-spin" />
+        </div>
+      ) : !posts.data || posts.isError ? (
+        <p className="text-center text-sm text-muted-foreground">
+          {posts.error?.message ?? "An error occurred."}
+        </p>
+      ) : posts.data.pages.flatMap((page) => page.posts).length === 0 ? (
+        <div className="flex justify-center p-8">
+          There are no posts to show.
+        </div>
+      ) : (
+        <>
+          {posts.data.pages.map((page, i) => (
+            <Fragment key={i}>
+              {page.posts.map((post) => (
+                <Post key={post.id} post={post} />
+              ))}
+            </Fragment>
+          ))}
+          <span
+            ref={ref}
+            className="flex justify-center border-b p-8 text-center text-sm text-muted-foreground"
+          >
+            {posts.isFetchingNextPage && posts.hasNextPage ? (
+              <Icons.spinner className="animate-spin" />
+            ) : (
+              "You've reached the end of the page."
+            )}
+          </span>
+        </>
+      )}
     </div>
   );
 }

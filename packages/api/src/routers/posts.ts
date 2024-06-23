@@ -166,50 +166,18 @@ export const postsRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      // const test = await ctx.db.query.posts.findMany({
-      //   where: (post, { isNull, and, eq }) =>
-      //     and(isNull(post.deleted_at), eq(post.type, input.type)),
-      // });
       const limit = 10;
       let posts: Database["public"]["Tables"]["posts"]["Row"][] = [];
 
       if (input.type === "all") {
-        // posts = await ctx.db.query.posts.findMany({
-        //   where: (post, { isNull, and, eq }) =>
-        //     and(isNull(post.deleted_at), eq(post.type, "all")),
-        //   orderBy: (post, { desc }) => desc(post.created_at),
-        //   limit,
-        //   offset: (input.cursor - 1) * limit,
-
-        //   // with: {
-        //   //   comments: {
-        //   //     where: (comment, { isNull }) => isNull(comment.deleted_at),
-        //   //   },
-        //   //   likes: true,
-        //   //   user: {
-        //   //     with: {
-        //   //       program: {
-        //   //         with: {
-        //   //           college: {
-        //   //             with: {
-        //   //               campus: true,
-        //   //             },
-        //   //           },
-        //   //         },
-        //   //       },
-        //   //     },
-        //   //   },
-        //   // },
-        // });
-
         await ctx.supabase
           .from("posts")
           .select()
           .eq("type", "all")
           .is("deleted_at", null)
           .order("created_at", { ascending: false })
-          .limit(10)
-          .range((input.cursor - 1) * 10, input.cursor * 10)
+          .limit(limit)
+          .range((input.cursor - 1) * limit, input.cursor * limit)
           .then((res) => {
             if (res.error)
               throw new TRPCError({
@@ -222,217 +190,25 @@ export const postsRouter = router({
       } else if (input.type === "campus") {
         const { data: user } = await ctx.supabase
           .from("users")
-          .select("*, programs(*, colleges(*, campuses(*)))")
+          .select("*, programs(*, colleges(campus_id))")
           .eq("id", ctx.auth.session.user.id)
           .single();
 
         if (!user)
           throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
-        const { data: colleges } = await ctx.supabase
-          .from("colleges")
-          .select()
-          .eq("campus_id", user.programs?.colleges?.campus_id ?? "");
-
-        const { data: programs } = colleges?.length
-          ? await ctx.supabase
-              .from("programs")
-              .select()
-              .in(
-                "college_id",
-                colleges.map((c) => c.id),
-              )
-          : { data: [] };
-
-        const { data: users_in_campuses } = programs?.length
-          ? await ctx.supabase
-              .from("users")
-              .select("*, programs(*, colleges(*, campuses(*)))")
-              .in(
-                "program_id",
-                programs.map((c) => c.id),
-              )
-          : { data: [] };
-
-        // posts = await ctx.db.query.posts.findMany({
-        //   where: (post, { or, and, eq, isNull, inArray }) =>
-        //     and(
-        //       or(
-        //         users_in_campuses.length > 0
-        //           ? inArray(
-        //               post.user_id,
-        //               usersInCampuses.map((f) => f.id),
-        //             )
-        //           : undefined,
-        //         eq(post.user_id, ctx.auth.session.user.id),
-        //       ),
-        //       isNull(post.deleted_at),
-        //       eq(post.type, "campus"),
-        //     ),
-
-        //   limit,
-        //   offset: (input.cursor - 1) * limit,
-        //   orderBy: (post, { desc }) => desc(post.created_at),
-        //   // with: {
-        //   //   comments: {
-        //   //     where: (comment, { isNull }) => isNull(comment.deleted_at),
-        //   //   },
-        //   //   likes: true,
-        //   //   user: {
-        //   //     with: {
-        //   //       program: {
-        //   //         with: {
-        //   //           college: {
-        //   //             with: {
-        //   //               campus: true,
-        //   //             },
-        //   //           },
-        //   //         },
-        //   //       },
-        //   //     },
-        //   //   },
-        //   // },
-        // });
-
-        posts = users_in_campuses?.length
-          ? await ctx.supabase
-              .from("posts")
-              .select()
-              .in(
-                "user_id",
-                users_in_campuses.map((u) => u.id),
-              )
-              .eq("type", "campus")
-              .is("deleted_at", null)
-              .order("created_at", { ascending: false })
-              .limit(10)
-              .range((input.cursor - 1) * 10, input.cursor * 10)
-              .then((res) => {
-                if (res.error)
-                  throw new TRPCError({
-                    code: "BAD_REQUEST",
-                    message: res.error.message,
-                  });
-
-                return res.data;
-              })
-          : [];
-      } else if (input.type === "college") {
-        const { data: user } = await ctx.supabase
-          .from("users")
-          .select("*, programs(*, colleges(*, campuses(*)))")
-          .eq("id", ctx.auth.session.user.id)
-          .single();
-
-        if (!user)
-          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
-
-        // const { data: users_in_programs } = await ctx.supabase
-        //   .from("users")
-        //   .select("*, programs(*, colleges(*, campuses(*)))")
-        //   .eq("program_id", user.program_id ?? "");
-
-        const { data: colleges } = await ctx.supabase
-          .from("colleges")
-          .select()
-          .eq("id", user.programs?.college_id ?? "");
-
-        const users_in_colleges = colleges?.length
-          ? await ctx.supabase
-              .from("users")
-              .select("*, programs(*, colleges(*, campuses(*)))")
-              .in(
-                "program_id",
-                colleges.map((c) => c.id),
-              )
-              .then((res) => {
-                if (res.error)
-                  throw new TRPCError({
-                    code: "BAD_REQUEST",
-                    message: res.error.message,
-                  });
-
-                return res.data;
-              })
-          : [];
-
-        // posts = await ctx.db.query.posts.findMany({
-        //   where: (post, { or, and, eq, isNull, inArray }) =>
-        //     and(
-        //       isNull(post.deleted_at),
-        //       or(
-        //         users_in_programs.length > 0
-        //           ? inArray(
-        //               post.user_id,
-        //               users_in_colleges.map((f) => f.id),
-        //             )
-        //           : undefined,
-        //         eq(post.user_id, ctx.auth.session.user.id),
-        //       ),
-        //       eq(post.type, "college"),
-        //     ),
-        //   limit,
-        //   offset: (input.cursor - 1) * limit,
-        //   orderBy: (post, { desc }) => desc(post.created_at),
-        //   // with: {
-        //   //   comments: {
-        //   //     where: (comment, { isNull }) => isNull(comment.deleted_at),
-        //   //   },
-        //   //   likes: true,
-        //   //   user: {
-        //   //     with: {
-        //   //       program: {
-        //   //         with: {
-        //   //           college: {
-        //   //             with: {
-        //   //               campus: true,
-        //   //             },
-        //   //           },
-        //   //         },
-        //   //       },
-        //   //     },
-        //   //   },
-        //   // },
-        // });
-
-        posts = users_in_colleges.length
-          ? await ctx.supabase
-              .from("posts")
-              .select()
-              .in(
-                "user_id",
-                users_in_colleges.map((u) => u.id),
-              )
-              .eq("type", "college")
-              .is("deleted_at", null)
-              .order("created_at", { ascending: false })
-              .limit(10)
-              .range((input.cursor - 1) * 10, input.cursor * 10)
-              .then((res) => {
-                if (res.error)
-                  throw new TRPCError({
-                    code: "BAD_REQUEST",
-                    message: res.error.message,
-                  });
-
-                return res.data;
-              })
-          : [];
-      } else if (input.type === "program") {
-        const { data: user } = await ctx.supabase
-          .from("users")
-          .select("*, programs(*)")
-          .eq("id", ctx.auth.session.user.id)
+        posts = await ctx.supabase
+          .from("posts")
+          .select("*, users!inner(programs!inner(colleges(campus_id)))")
+          .eq("type", "campus")
+          .eq(
+            "users.programs.colleges.campus_id",
+            user.programs?.colleges?.campus_id ?? "",
+          )
+          .is("deleted_at", null)
           .order("created_at", { ascending: false })
-          .single();
-
-        if (!user)
-          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
-
-        const users_in_programs = await ctx.supabase
-          .from("users")
-          .select("*, programs(*)")
-          .eq("program_id", user.program_id)
+          .limit(limit)
+          .range((input.cursor - 1) * limit, input.cursor * limit)
           .then((res) => {
             if (res.error)
               throw new TRPCError({
@@ -442,74 +218,67 @@ export const postsRouter = router({
 
             return res.data;
           });
+      } else if (input.type === "college") {
+        const { data: user } = await ctx.supabase
+          .from("users")
+          .select("programs(college_id)")
+          .eq("id", ctx.auth.session.user.id)
+          .single();
 
-        // posts = await ctx.db.query.posts.findMany({
-        //   where: (post, { or, and, eq, isNull, inArray }) =>
-        //     and(
-        //       or(
-        //         users_in_programs.length > 0
-        //           ? inArray(
-        //               post.user_id,
-        //               users_in_programs.map((f) => f.id),
-        //             )
-        //           : undefined,
-        //         eq(post.user_id, ctx.auth.session.user.id),
-        //       ),
-        //       eq(post.type, "program"),
-        //       isNull(post.deleted_at),
-        //     ),
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
-        //   orderBy: (post, { desc }) => desc(post.created_at),
-        //   limit,
-        //   offset: (input.cursor - 1) * limit,
-        //   // with: {
-        //   //   comments: {
-        //   //     where: (comment, { isNull }) => isNull(comment.deleted_at),
-        //   //   },
-        //   //   likes: true,
-        //   //   user: {
-        //   //     with: {
-        //   //       program: {
-        //   //         with: {
-        //   //           college: {
-        //   //             with: {
-        //   //               campus: true,
-        //   //             },
-        //   //           },
-        //   //         },
-        //   //       },
-        //   //     },
-        //   //   },
-        //   // },
-        // });
+        posts = await ctx.supabase
+          .from("posts")
+          .select("*, users!inner(programs(college_id))")
+          .eq("type", "college")
+          .eq("users.programs.college_id", user.programs?.college_id ?? "")
+          .is("deleted_at", null)
+          .order("created_at", { ascending: false })
+          .limit(limit)
+          .range((input.cursor - 1) * 10, input.cursor * limit)
+          .then((res) => {
+            if (res.error)
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: res.error.message,
+              });
 
-        posts = users_in_programs.length
-          ? await ctx.supabase
-              .from("posts")
-              .select()
-              .in(
-                "user_id",
-                users_in_programs.map((u) => u.id),
-              )
-              .eq("type", "program")
-              .is("deleted_at", null)
-              .order("created_at", { ascending: false })
-              .limit(10)
-              .range((input.cursor - 1) * 10, input.cursor * 10)
-              .then((res) => {
-                if (res.error)
-                  throw new TRPCError({
-                    code: "BAD_REQUEST",
-                    message: res.error.message,
-                  });
+            return res.data;
+          });
+      } else if (input.type === "program") {
+        const { data: user } = await ctx.supabase
+          .from("users")
+          .select("program_id")
+          .eq("id", ctx.auth.session.user.id)
+          .order("created_at", { ascending: false })
+          .single();
 
-                return res.data;
-              })
-          : [];
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        posts = await ctx.supabase
+          .from("posts")
+          .select("*, users!inner(program_id)")
+          .eq("type", "program")
+          .eq("users.program_id", user.program_id)
+          .is("deleted_at", null)
+          .order("created_at", { ascending: false })
+          .limit(limit)
+          .range((input.cursor - 1) * limit, input.cursor * limit)
+          .then((res) => {
+            if (res.error)
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: res.error.message,
+              });
+
+            return res.data;
+          });
       } else {
         const { data: user } = await ctx.supabase
           .from("users")
-          .select("*, programs(*, colleges(*, campuses(*)))")
+          .select("*, programs(*, colleges(*))")
           .eq("id", ctx.auth.session.user.id)
           .single();
 
@@ -519,131 +288,28 @@ export const postsRouter = router({
         const { data: following } = await ctx.supabase
           .from("followers")
           .select()
-          .eq("follower_id", ctx.auth.session.user.id);
+          .eq("follower_id", user.id);
 
-        const users = following?.length
-          ? await ctx.supabase
-              .from("users")
-              .select("*, programs(*, colleges(*, campuses(*)))")
-              .in(
-                "id",
-                following.map((f) => f.followee_id),
-              )
-              .then((res) => {
-                if (res.error)
-                  throw new TRPCError({
-                    code: "BAD_REQUEST",
-                    message: res.error.message,
-                  });
-
-                return res.data;
-              })
-          : [];
-
-        // posts = await ctx.db.query.posts.findMany({
-        //   where: (post, { or, and, eq, isNull, inArray }) =>
-        //     and(
-        //       isNull(post.deleted_at),
-        //       or(
-        //         eq(post.user_id, ctx.auth.session.user.id),
-        //         and(
-        //           following.length > 0
-        //             ? inArray(
-        //                 post.user_id,
-        //                 following.map((f) => f.followee_id),
-        //               )
-        //             : undefined,
-
-        //           or(eq(post.type, "following"), eq(post.type, "all")),
-        //         ),
-        //         and(
-        //           users.filter((u) => u.program_id === user.program_id).length >
-        //             0
-        //             ? inArray(
-        //                 post.user_id,
-        //                 users
-        //                   .filter((u) => u.program_id === user.program_id)
-        //                   .map((f) => f.id),
-        //               )
-        //             : undefined,
-        //           eq(post.type, "program"),
-        //         ),
-        //         and(
-        //           users.filter(
-        //             (u) => u.program?.college_id === user.program?.college_id,
-        //           ).length > 0
-        //             ? inArray(
-        //                 post.user_id,
-        //                 users
-        //                   .filter(
-        //                     (u) =>
-        //                       u.program?.college_id ===
-        //                       user.program?.college_id,
-        //                   )
-        //                   .map((f) => f.id),
-        //               )
-        //             : undefined,
-        //           eq(post.type, "college"),
-        //         ),
-        //         and(
-        //           users.filter(
-        //             (u) =>
-        //               u.program?.college.campus_id ===
-        //               user.program?.college.campus_id,
-        //           ).length > 0
-        //             ? inArray(
-        //                 post.user_id,
-        //                 users
-        //                   .filter(
-        //                     (u) =>
-        //                       u.program?.college.campus_id ===
-        //                       user.program?.college.campus_id,
-        //                   )
-        //                   .map((f) => f.id),
-        //               )
-        //             : undefined,
-        //           eq(post.type, "campus"),
-        //         ),
-        //       ),
-        //     ),
-
-        //   limit,
-        //   offset: (input.cursor - 1) * limit,
-        //   orderBy: (post, { desc }) => desc(post.created_at),
-        //   // with: {
-        //   //   comments: {
-        //   //     where: (comment, { isNull }) => isNull(comment.deleted_at),
-        //   //   },
-        //   //   likes: true,
-        //   //   user: {
-        //   //     with: {
-        //   //       program: {
-        //   //         with: {
-        //   //           college: {
-        //   //             with: {
-        //   //               campus: true,
-        //   //             },
-        //   //           },
-        //   //         },
-        //   //       },
-        //   //     },
-        //   //   },
-        //   // },
-        // });
-
-        posts = users.length
+        posts = following?.length
           ? await ctx.supabase
               .from("posts")
-              .select()
+              .select(
+                "*, users!inner(program_id, programs(*, colleges(campus_id)))",
+              )
               .in(
                 "user_id",
-                users.map((u) => u.id),
+                following.map((u) => u.followee_id),
               )
-              .in("type", ["following", "all"])
+              // .eq(
+              //   "users.programs.colleges.campus_id",
+              //   user.programs?.colleges?.campus_id ?? "",
+              // )
+              // .eq("users.programs.college_id", user.programs?.college_id ?? "")
+              // .eq("users.program_id", user.program_id)
               .is("deleted_at", null)
               .order("created_at", { ascending: false })
-              .limit(10)
-              .range((input.cursor - 1) * 10, input.cursor * 10)
+              .limit(limit)
+              .range((input.cursor - 1) * limit, input.cursor * limit)
               .then((res) => {
                 if (res.error)
                   throw new TRPCError({

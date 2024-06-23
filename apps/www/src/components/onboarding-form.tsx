@@ -428,7 +428,13 @@ function Page1({
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-[236px] p-0" side="bottom">
-                        <Command>
+                        <Command
+                          filter={(value, search) =>
+                            value.toLowerCase().includes(search.toLowerCase())
+                              ? 1
+                              : 0
+                          }
+                        >
                           <CommandInput placeholder="Search campus..." />
                           <CommandList>
                             <CommandEmpty>No campus.</CommandEmpty>
@@ -508,7 +514,13 @@ function Page1({
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-[236px] p-0" side="bottom">
-                        <Command>
+                        <Command
+                          filter={(value, search) =>
+                            value.toLowerCase().includes(search.toLowerCase())
+                              ? 1
+                              : 0
+                          }
+                        >
                           <CommandInput placeholder="Search college..." />
                           <CommandList>
                             <CommandEmpty>No college.</CommandEmpty>
@@ -595,7 +607,13 @@ function Page1({
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-[236px] p-0" side="bottom">
-                        <Command>
+                        <Command
+                          filter={(value, search) =>
+                            value.toLowerCase().includes(search.toLowerCase())
+                              ? 1
+                              : 0
+                          }
+                        >
                           <CommandInput placeholder="Search program..." />
                           <CommandList>
                             <CommandEmpty>No program.</CommandEmpty>

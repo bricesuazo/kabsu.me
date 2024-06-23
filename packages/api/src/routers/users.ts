@@ -74,7 +74,8 @@ export const usersRouter = router({
         .from("followers")
         .select("*")
         .eq("follower_id", ctx.auth.session.user.id)
-        .eq("followee_id", input.user_id);
+        .eq("followee_id", input.user_id)
+        .single();
 
       if (is_already_following)
         throw new TRPCError({
@@ -83,13 +84,13 @@ export const usersRouter = router({
         });
 
       await ctx.supabase.from("followers").insert({
-        follower_id: input.user_id,
-        followee_id: ctx.auth.session.user.id,
+        follower_id: ctx.auth.session.user.id,
+        followee_id: input.user_id,
       });
 
       await ctx.supabase.from("followees").insert({
-        follower_id: ctx.auth.session.user.id,
-        followee_id: input.user_id,
+        follower_id: input.user_id,
+        followee_id: ctx.auth.session.user.id,
       });
 
       if (ctx.auth.session.user.id !== input.user_id) {
@@ -176,7 +177,9 @@ export const usersRouter = router({
     .query(async ({ ctx, input }) => {
       const { data: user_from_db } = await ctx.supabase
         .from("users")
-        .select("*, programs(name, slug, colleges(*, campuses(*)))")
+        .select(
+          "*, programs(name, slug, colleges(name, slug, campuses(name, slug)))",
+        )
         .eq("username", input.username)
         .single();
 
@@ -205,6 +208,7 @@ export const usersRouter = router({
       return {
         followersLength: followers?.length ?? 0,
         followeesLength: followees?.length ?? 0,
+        user_id: ctx.auth.session.user.id,
         user:
           user_from_db.image_path && image_url
             ? {
@@ -215,12 +219,9 @@ export const usersRouter = router({
                 ...user_from_db,
                 image_path: null,
               },
-        userId: ctx.auth.session.user.id,
-        isFollower:
-          user_from_db.id !== ctx.auth.session.user.id &&
-          !!followers?.find(
-            (follower) => follower.follower_id === ctx.auth.session.user.id,
-          ),
+        is_follower: !!followers?.some(
+          (follower) => follower.follower_id === ctx.auth.session.user.id,
+        ),
       };
     }),
   report: protectedProcedure
@@ -253,6 +254,7 @@ export const usersRouter = router({
       const { data: users } = await ctx.supabase
         .from("users")
         .select("*, programs(colleges(campuses(*)))")
+        .not("id", "eq", ctx.auth.session.user.id)
         .ilike("username", `%${input.query}%`);
 
       if (users === null) return [];
