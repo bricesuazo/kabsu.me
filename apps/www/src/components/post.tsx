@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { format, formatDistanceToNow } from "date-fns";
 // import UpdatePost from "./update-post";
 import {
   Album,
@@ -12,7 +13,6 @@ import {
   Heart,
   MessageCircle,
 } from "lucide-react";
-import moment from "moment";
 import { v4 as uuid } from "uuid";
 
 import type { Database } from "../../../../supabase/types";
@@ -135,64 +135,72 @@ export default function Post({
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
-                  <p className="xs:block hidden text-xs text-muted-foreground hover:underline">
-                    {moment(post.created_at).fromNow()}
+                  <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
+                    {formatDistanceToNow(post.created_at, {
+                      includeSeconds: true,
+                      addSuffix: true,
+                    })}
                   </p>
-                  <p className="xs:hidden text-xs text-muted-foreground hover:underline">
-                    {moment(post.created_at).fromNow()}
+                  <p className="text-xs text-muted-foreground hover:underline xs:hidden">
+                    {formatDistanceToNow(post.created_at, {
+                      includeSeconds: true,
+                      addSuffix: true,
+                    })}
                   </p>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {moment(post.created_at).format("MMMM Do YYYY, h:mm:ss A")}
+                  {format(post.created_at, "PPpp")}
                 </TooltipContent>
               </Tooltip>
             </div>
 
             <div className="flex items-center gap-x-1">
-              <Tooltip delayDuration={250}>
-                <TooltipTrigger>
-                  {(() => {
-                    switch (getPostQuery.data.post.user.type) {
-                      case "student":
-                        return <Album />;
-                      case "alumni":
-                        return <GraduationCap />;
-                      case "faculty":
-                        return <Briefcase />;
-                      default:
-                        return null;
-                    }
-                  })()}
-                </TooltipTrigger>
-                <TooltipContent className="max-w-[12rem]">
-                  {getPostQuery.data.post.user.type?.charAt(0).toUpperCase() +
-                    getPostQuery.data.post.user.type?.slice(1)}
-                </TooltipContent>
-              </Tooltip>
+              {getPostQuery.data.post.user.type && (
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger>
+                    {(() => {
+                      switch (getPostQuery.data.post.user.type) {
+                        case "student":
+                          return <Album />;
+                        case "alumni":
+                          return <GraduationCap />;
+                        case "faculty":
+                          return <Briefcase />;
+                        default:
+                          return null;
+                      }
+                    })()}
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[12rem]">
+                    {getPostQuery.data.post.user.type.charAt(0).toUpperCase() +
+                      getPostQuery.data.post.user.type.slice(1)}
+                  </TooltipContent>
+                </Tooltip>
+              )}
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge>
                     {searchParams.get("tab") === "college"
-                      ? getPostQuery.data.post.user.programs?.[0]?.colleges?.slug.toUpperCase()
-                      : getPostQuery.data.post.user.programs?.[0]?.colleges?.campuses?.slug.toUpperCase()}
+                      ? getPostQuery.data.post.user.programs?.colleges?.slug.toUpperCase()
+                      : getPostQuery.data.post.user.programs?.colleges?.campuses?.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
                   {searchParams.get("tab") === "college"
-                    ? getPostQuery.data.post.user.programs?.[0]?.colleges?.name
-                    : getPostQuery.data.post.user.programs?.[0]?.colleges
-                        ?.campuses?.name}
+                    ? getPostQuery.data.post.user.programs?.colleges?.name
+                    : getPostQuery.data.post.user.programs?.colleges?.campuses
+                        ?.name}
                 </TooltipContent>
               </Tooltip>
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge variant="outline">
-                    {getPostQuery.data.post.user.programs?.[0]?.slug.toUpperCase()}
+                    {getPostQuery.data.post.user.programs?.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
-                  {getPostQuery.data.post.user.programs?.[0]?.name}
+                  {getPostQuery.data.post.user.programs?.name}
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -273,7 +281,7 @@ export default function Post({
             } comment${getPostQuery.data.post.comments.length > 1 ? "s" : ""}`}
           </p>
           <Badge variant="outline" className="flex items-center gap-x-1">
-            <p className="xs:block hidden">Privacy:</p>
+            <p className="hidden xs:block">Privacy:</p>
             {post.type === "following"
               ? "Follower"
               : post.type.charAt(0).toUpperCase() + post.type.slice(1)}

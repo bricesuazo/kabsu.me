@@ -176,7 +176,7 @@ export const usersRouter = router({
     .query(async ({ ctx, input }) => {
       const { data: user_from_db } = await ctx.supabase
         .from("users")
-        .select("*, programs(name, slug, colleges(campuses(*)))")
+        .select("*, programs(name, slug, colleges(*, campuses(*)))")
         .eq("username", input.username)
         .single();
 

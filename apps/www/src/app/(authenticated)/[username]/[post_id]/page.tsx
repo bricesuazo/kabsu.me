@@ -19,64 +19,64 @@ export async function generateMetadata({
 
   const supabaseAdmin = createClientAdmin();
 
-  const { data: current_user_in_db } = await supabaseAdmin
-    .from("users")
-    .select("*, program:programs(*, college:colleges(*, campus:campuses(*)))")
-    .eq("id", session.user.id)
-    .single();
-
-  if (!current_user_in_db) notFound();
-
   const { data: post } = await supabaseAdmin
     .from("posts")
-    .select("user_id")
+    .select("content, type, user_id")
     .eq("id", params.post_id)
     .is("deleted_at", null)
     .single();
 
   if (!post) notFound();
 
+  if ((post.user_id !== session.user.id && post.type) === "following") {
+    const { data: is_follower } = await supabaseAdmin
+      .from("followers")
+      .select()
+      .eq("follower_id", session.user.id)
+      .eq("followee_id", post.user_id)
+      .single();
+
+    if (!is_follower) notFound();
+  }
+
+  const { data: current_user_in_db } = await supabaseAdmin
+    .from("users")
+    .select("*, programs(*, colleges(*))")
+    .eq("id", session.user.id)
+    .single();
+
+  if (!current_user_in_db) notFound();
+
   const { data: user_of_post } = await supabaseAdmin
     .from("users")
-    .select(`*, program:programs(*, college:colleges(*, campus:campuses(*)))`)
+    .select(`*, programs(*, colleges(*))`)
     .eq("id", post.user_id)
     .single();
 
   if (!user_of_post) notFound();
 
-  const { data: is_follower } = await supabaseAdmin
-    .from("followers")
-    .select()
-    .eq("follower_id", session.user.id)
-    .eq("followee_id", user_of_post.id)
-    .single();
+  if (
+    post.type === "program" &&
+    current_user_in_db.program_id !== user_of_post.program_id
+  )
+    notFound();
 
-  const default_query = supabaseAdmin
-    .from("posts")
-    .select()
-    .eq("id", params.post_id)
-    .is("deleted_at", null);
+  if (
+    post.type === "college" &&
+    current_user_in_db.programs?.college_id !==
+      user_of_post.programs?.college_id
+  )
+    notFound();
 
-  const { data: post_from_db } = await (
-    current_user_in_db.id !== user_of_post.id
-      ? default_query.eq("type", "all")
-      : current_user_in_db.program_id === user_of_post.program_id
-        ? default_query.eq("type", "program")
-        : current_user_in_db.program[0]?.college_id ===
-            user_of_post.program[0]?.college_id
-          ? default_query.eq("type", "college")
-          : current_user_in_db.program[0]?.college?.campus_id ===
-              user_of_post.program[0]?.college?.campus_id
-            ? default_query.eq("type", "campus")
-            : is_follower
-              ? default_query.eq("type", "following")
-              : default_query
-  ).single();
-
-  if (!post_from_db) notFound();
+  if (
+    post.type === "campus" &&
+    current_user_in_db.programs?.colleges?.campus_id !==
+      user_of_post.programs?.colleges?.campus_id
+  )
+    notFound();
 
   return {
-    title: `${post_from_db.content} - @${params.username}`,
+    title: `${post.content} - @${params.username}`,
   };
 }
 

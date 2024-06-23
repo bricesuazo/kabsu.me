@@ -9,7 +9,9 @@ export const notificationsRouter = router({
     .query(async ({ ctx, input }) => {
       const { data: notifications } = await ctx.supabase
         .from("notifications")
-        .select("*, from:users(*), to:users(*)")
+        .select(
+          "*, from:users!public_notifications_from_id_fkey(*), to:users!public_notifications_to_id_fkey(*)",
+        )
         .eq("to_id", ctx.auth.session.user.id)
         .eq("trash", false)
         .order("created_at", { ascending: false })

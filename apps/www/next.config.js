@@ -15,9 +15,6 @@ const config = {
     ],
   },
   transpilePackages: ["@kabsu.me/api"],
-
-  eslint: { ignoreDuringBuilds: true },
-  typescript: { ignoreBuildErrors: true },
 };
 
 export default config;

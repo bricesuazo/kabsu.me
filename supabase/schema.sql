@@ -218,8 +218,8 @@ CREATE TABLE IF NOT EXISTS "public"."users" (
     "image_path" "text",
     "deactivated_at" timestamp with time zone,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "type" "public"."user_type",
-    "program_id" "text",
+    "type" "public"."user_type" NOT NULL,
+    "program_id" "uuid" NOT NULL,
     "verified_at" timestamp with time zone
 );
 
@@ -390,6 +390,9 @@ ALTER TABLE ONLY "public"."suggested_features"
 
 ALTER TABLE ONLY "public"."users"
     ADD CONSTRAINT "public_users_id_fkey" FOREIGN KEY ("id") REFERENCES "auth"."users"("id");
+
+ALTER TABLE ONLY "public"."users"
+    ADD CONSTRAINT "public_users_program_id_fkey" FOREIGN KEY ("program_id") REFERENCES "public"."programs"("id");
 
 ALTER TABLE "public"."campuses" ENABLE ROW LEVEL SECURITY;
 

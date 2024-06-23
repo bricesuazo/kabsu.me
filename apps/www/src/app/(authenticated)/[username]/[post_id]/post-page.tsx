@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { format, formatDistanceToNow } from "date-fns";
 import { Album, Briefcase, GraduationCap } from "lucide-react";
-import moment from "moment";
 
 import type { Database } from "../../../../../../../supabase/types";
 import PostComment from "~/components/post-comment";
@@ -139,17 +139,21 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                     <p className="pointer-events-none select-none">·</p>
                     <Tooltip delayDuration={250}>
                       <TooltipTrigger>
-                        <p className="xs:block hidden text-xs text-muted-foreground hover:underline">
-                          {moment(postQuery.data.post.created_at).fromNow()}
+                        <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
+                          {formatDistanceToNow(postQuery.data.post.created_at, {
+                            includeSeconds: true,
+                            addSuffix: true,
+                          })}
                         </p>
-                        <p className="xs:hidden text-xs text-muted-foreground hover:underline">
-                          {moment(postQuery.data.post.created_at).fromNow()}
+                        <p className="text-xs text-muted-foreground hover:underline xs:hidden">
+                          {formatDistanceToNow(postQuery.data.post.created_at, {
+                            includeSeconds: true,
+                            addSuffix: true,
+                          })}
                         </p>
                       </TooltipTrigger>
                       <TooltipContent>
-                        {moment(postQuery.data.post.created_at).format(
-                          "MMMM Do YYYY, h:mm:ss A",
-                        )}
+                        {format(postQuery.data.post.created_at, "PPpp")}
                       </TooltipContent>
                     </Tooltip>
                   </div>
@@ -161,12 +165,12 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                       <Tooltip delayDuration={250}>
                         <TooltipTrigger>
                           <Badge>
-                            {postQuery.data.post.user.programs?.[0]?.colleges?.campuses?.slug.toUpperCase()}
+                            {postQuery.data.post.user.programs?.colleges?.campuses?.slug.toUpperCase()}
                           </Badge>
                         </TooltipTrigger>
                         <TooltipContent className="max-w-[12rem]">
                           {
-                            postQuery.data.post.user.programs?.[0]?.colleges
+                            postQuery.data.post.user.programs?.colleges
                               ?.campuses?.name
                           }
                         </TooltipContent>
@@ -175,11 +179,11 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                       <Tooltip delayDuration={250}>
                         <TooltipTrigger>
                           <Badge variant="outline">
-                            {postQuery.data.post.user.programs?.[0]?.slug.toUpperCase()}
+                            {postQuery.data.post.user.programs?.slug.toUpperCase()}
                           </Badge>
                         </TooltipTrigger>
                         <TooltipContent className="max-w-[12rem]">
-                          {postQuery.data.post.user.programs?.[0]?.name}
+                          {postQuery.data.post.user.programs?.name}
                         </TooltipContent>
                       </Tooltip>
                     </div>
@@ -290,17 +294,27 @@ function CommentComponent({
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
-                  <p className="xs:block hidden text-xs text-muted-foreground hover:underline">
-                    {moment(fullCommentQuery.data.comment.created_at).fromNow()}
+                  <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
+                    {formatDistanceToNow(
+                      fullCommentQuery.data.comment.created_at,
+                      {
+                        includeSeconds: true,
+                        addSuffix: true,
+                      },
+                    )}
                   </p>
-                  <p className="xs:hidden text-xs text-muted-foreground hover:underline">
-                    {moment(fullCommentQuery.data.comment.created_at).fromNow()}
+                  <p className="text-xs text-muted-foreground hover:underline xs:hidden">
+                    {formatDistanceToNow(
+                      fullCommentQuery.data.comment.created_at,
+                      {
+                        includeSeconds: true,
+                        addSuffix: true,
+                      },
+                    )}
                   </p>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {moment(fullCommentQuery.data.comment.created_at).format(
-                    "MMMM Do YYYY, h:mm:ss A",
-                  )}
+                  {format(fullCommentQuery.data.comment.created_at, "PPpp")}
                 </TooltipContent>
               </Tooltip>
             </div>

@@ -17,7 +17,10 @@ export const postsRouter = router({
         .eq("id", input.post_id)
         .is("deleted_at", null)
         .is("comments.deleted_at", null)
-        .order("comments.created_at", { ascending: false })
+        .order("created_at", {
+          ascending: false,
+          referencedTable: "comments",
+        })
         .single();
 
       if (!post)
@@ -229,7 +232,7 @@ export const postsRouter = router({
         const { data: colleges } = await ctx.supabase
           .from("colleges")
           .select()
-          .eq("campus_id", user.programs[0]?.colleges?.campus_id ?? "");
+          .eq("campus_id", user.programs?.colleges?.campus_id ?? "");
 
         const { data: programs } = colleges?.length
           ? await ctx.supabase
@@ -332,7 +335,7 @@ export const postsRouter = router({
         const { data: colleges } = await ctx.supabase
           .from("colleges")
           .select()
-          .eq("id", user.programs[0]?.college_id ?? "");
+          .eq("id", user.programs?.college_id ?? "");
 
         const users_in_colleges = colleges?.length
           ? await ctx.supabase
@@ -429,7 +432,7 @@ export const postsRouter = router({
         const users_in_programs = await ctx.supabase
           .from("users")
           .select("*, programs(*)")
-          .eq("program_id", user.program_id ?? "")
+          .eq("program_id", user.program_id)
           .then((res) => {
             if (res.error)
               throw new TRPCError({

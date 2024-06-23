@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
 import { Bell, BookOpenCheckIcon } from "lucide-react";
-import moment from "moment";
 
 import { api } from "~/lib/trpc/client";
 import { Icons } from "./icons";
@@ -156,7 +156,10 @@ export default function Notifications() {
                         })()}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {moment(notification.created_at).fromNow()}
+                        {formatDistanceToNow(notification.created_at, {
+                          includeSeconds: true,
+                          addSuffix: true,
+                        })}
                       </p>
                     </div>
                   </div>

@@ -5,12 +5,16 @@ import type { UseFormReturn } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Album, Briefcase, Check, ChevronsUpDown, GraduationCap } from "lucide-react";
+import {
+  Album,
+  Briefcase,
+  Check,
+  ChevronsUpDown,
+  GraduationCap,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-
-
 
 import type { Database } from "../../../../supabase/types";
 import { Button } from "~/components/ui/button";
@@ -20,13 +24,27 @@ import { createClient } from "~/supabase/client";
 import { Icons } from "./icons";
 import { ToggleTheme } from "./toggle-theme";
 import { Card, CardFooter, CardHeader } from "./ui/card";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./ui/command";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "./ui/command";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
-
 
 const formSchema = z.object({
   page: z.number(),
@@ -474,10 +492,7 @@ function Page1({
                         <Button
                           variant="outline"
                           role="combobox"
-                          className={cn(
-                            "flex-1 justify-between",
-                            !field.value && "text-muted-foreground",
-                          )}
+                          className="justify-between"
                           disabled={
                             form.formState.isSubmitting ||
                             form.getValues("campus_id") === undefined ||

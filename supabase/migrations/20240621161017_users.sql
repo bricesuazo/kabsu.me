@@ -10,10 +10,11 @@ create table "public"."users" (
     "image_path" text,
     "deactivated_at" timestamp with time zone,
     "created_at" timestamp with time zone not null default now(),
-    "type" user_type,
-    "program_id" text,
+    "type" user_type not null,
+    "program_id" uuid not null,
     "verified_at" timestamp with time zone
 );
+
 
 
 alter table "public"."users" enable row level security;

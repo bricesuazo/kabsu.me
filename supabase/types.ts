@@ -546,8 +546,8 @@ export type Database = {
           image_path: string | null;
           link: string | null;
           name: string;
-          program_id: string | null;
-          type: Database["public"]["Enums"]["user_type"] | null;
+          program_id: string;
+          type: Database["public"]["Enums"]["user_type"];
           username: string;
           verified_at: string | null;
         };
@@ -560,8 +560,8 @@ export type Database = {
           image_path?: string | null;
           link?: string | null;
           name: string;
-          program_id?: string | null;
-          type?: Database["public"]["Enums"]["user_type"] | null;
+          program_id: string;
+          type: Database["public"]["Enums"]["user_type"];
           username: string;
           verified_at?: string | null;
         };
@@ -574,8 +574,8 @@ export type Database = {
           image_path?: string | null;
           link?: string | null;
           name?: string;
-          program_id?: string | null;
-          type?: Database["public"]["Enums"]["user_type"] | null;
+          program_id?: string;
+          type?: Database["public"]["Enums"]["user_type"];
           username?: string;
           verified_at?: string | null;
         };
@@ -585,6 +585,13 @@ export type Database = {
             columns: ["id"];
             isOneToOne: true;
             referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "public_users_program_id_fkey";
+            columns: ["program_id"];
+            isOneToOne: false;
+            referencedRelation: "programs";
             referencedColumns: ["id"];
           },
         ];

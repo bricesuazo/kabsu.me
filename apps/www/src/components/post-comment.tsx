@@ -294,23 +294,20 @@ export default function PostComment({
                             <Tooltip delayDuration={250}>
                               <TooltipTrigger>
                                 <Badge>
-                                  {like.user.programs?.[0]?.colleges?.campuses?.slug.toUpperCase()}
+                                  {like.user.programs?.colleges?.campuses?.slug.toUpperCase()}
                                 </Badge>
                                 <TooltipContent className="max-w-[12rem]">
-                                  {
-                                    like.user.programs?.[0]?.colleges?.campuses
-                                      ?.name
-                                  }
+                                  {like.user.programs?.colleges?.campuses?.name}
                                 </TooltipContent>
                               </TooltipTrigger>
                             </Tooltip>
                             <Tooltip delayDuration={250}>
                               <TooltipTrigger>
                                 <Badge variant="outline">
-                                  {like.user.programs?.[0]?.slug.toUpperCase()}
+                                  {like.user.programs?.slug.toUpperCase()}
                                 </Badge>
                                 <TooltipContent className="max-w-[12rem]">
-                                  {like.user.programs?.[0]?.name}
+                                  {like.user.programs?.name}
                                 </TooltipContent>
                               </TooltipTrigger>
                             </Tooltip>
@@ -323,24 +320,21 @@ export default function PostComment({
                           <div className="ml-2 flex gap-x-2 group-hover:underline md:hidden">
                             <Tooltip delayDuration={250}>
                               <TooltipTrigger>
-                                <Badge className="xs:block hidden">
-                                  {like.user.programs?.[0]?.colleges?.campuses?.slug.toUpperCase()}
+                                <Badge className="hidden xs:block">
+                                  {like.user.programs?.colleges?.campuses?.slug.toUpperCase()}
                                 </Badge>
                                 <TooltipContent className="max-w-[12rem]">
-                                  {
-                                    like.user.programs?.[0]?.colleges?.campuses
-                                      ?.name
-                                  }
+                                  {like.user.programs?.colleges?.campuses?.name}
                                 </TooltipContent>
                               </TooltipTrigger>
                             </Tooltip>
                             <Tooltip delayDuration={250}>
                               <TooltipTrigger>
                                 <Badge variant="outline">
-                                  {like.user.programs?.[0]?.slug.toUpperCase()}
+                                  {like.user.programs?.slug.toUpperCase()}
                                 </Badge>
                                 <TooltipContent className="max-w-[12rem]">
-                                  {like.user.programs?.[0]?.name}
+                                  {like.user.programs?.name}
                                 </TooltipContent>
                               </TooltipTrigger>
                             </Tooltip>
@@ -363,7 +357,7 @@ export default function PostComment({
             }`}
           </p>
           <Badge variant="outline" className="flex items-center gap-x-1">
-            <p className="xs:block hidden">Privacy:</p>
+            <p className="hidden xs:block">Privacy:</p>
             {post.type === "following"
               ? "Follower"
               : post.type.charAt(0).toUpperCase() + post.type.slice(1)}

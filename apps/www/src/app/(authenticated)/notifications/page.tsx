@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
 import { Bell, BookOpenCheckIcon } from "lucide-react";
-import moment from "moment";
 
 import { Icons } from "~/components/icons";
 import { Button } from "~/components/ui/button";
@@ -90,7 +90,7 @@ export default function NotificationPage() {
                   if (notification.type === "follow") {
                     return `/${notification.from.username}`;
                   } else {
-                    return `/${notification.from.username}/${notification.content.id}`;
+                    return `/${notification.from.username}/${notification.id}`;
                   }
                 })()}
                 onClick={() =>
@@ -137,7 +137,10 @@ export default function NotificationPage() {
                       })()}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {moment(notification.created_at).fromNow()}
+                      {formatDistanceToNow(notification.created_at, {
+                        includeSeconds: true,
+                        addSuffix: true,
+                      })}
                     </p>
                   </div>
                 </div>
