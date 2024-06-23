@@ -3,7 +3,7 @@
 import { Fragment, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   AlertTriangle,
   AtSign,
@@ -58,6 +58,7 @@ export default function Header() {
   const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
 
   const [openFeedbackForm, setOpenFeedbackForm] = useState(false);
+  const router = useRouter();
 
   return (
     <>
@@ -229,24 +230,22 @@ export default function Header() {
 
                   <DropdownMenuSeparator />
 
-                  <DropdownMenuItem asChild>
-                    <button
-                      className="mr-2 flex w-full gap-x-2"
-                      onClick={async () => {
-                        setLoadingSignout(true);
-                        const supabase = createClient();
-                        await supabase.auth.signOut();
-                        setOpen(false);
-                        setLoadingSignout(false);
-                      }}
-                    >
-                      {loadingSignout ? (
-                        <Icons.spinner className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <LogOut size="1rem" />
-                      )}
-                      Sign out
-                    </button>
+                  <DropdownMenuItem
+                    className="mr-2 flex w-full gap-x-2"
+                    disabled={loadingSignout}
+                    onClick={async () => {
+                      setLoadingSignout(true);
+                      const supabase = createClient();
+                      await supabase.auth.signOut();
+                      router.refresh();
+                    }}
+                  >
+                    {loadingSignout ? (
+                      <Icons.spinner className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <LogOut size="1rem" />
+                    )}
+                    Sign out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

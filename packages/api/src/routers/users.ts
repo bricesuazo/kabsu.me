@@ -17,26 +17,34 @@ export const usersRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // TODO: add transaction
-      await ctx.supabase
+      const { data: user } = await ctx.supabase
         .from("users")
-        .update({
+        .select()
+        .eq("id", ctx.auth.session.user.id)
+        .single();
+
+      if (user) {
+        await ctx.supabase
+          .from("users")
+          .update({
+            program_id: input.program_id,
+            type: input.type,
+            name: input.name,
+            username: input.username,
+          })
+          .eq("id", user.id);
+      } else {
+        await ctx.supabase.from("users").insert({
+          id: ctx.auth.session.user.id,
+          email: ctx.auth.session.user.email ?? "",
           program_id: input.program_id,
           type: input.type,
           name: input.name,
           username: input.username,
-        })
-        .eq("id", ctx.auth.session.user.id);
+        });
+      }
 
-      // await update({
-      //   user: {
-      //     program_id: input.program_id,
-      //     type: input.type,
-      //     name: input.name,
-      //     username: input.username,
-      //   },
-      // });
-      return { isSuccess: true, ...input };
+      return { success: true, ...input };
     }),
 
   updateProfile: protectedProcedure
@@ -294,11 +302,11 @@ export const usersRouter = router({
         .slice(0, 10);
     }),
   getTotalUsers: publicProcedure.query(async ({ ctx }) => {
-    const { data: users } = await ctx.supabase
+    const { count } = await ctx.supabase
       .from("users")
       .select("*", { count: "exact", head: true });
 
-    return users?.length ?? 0;
+    return count ?? 0;
   }),
   reportAProblem: protectedProcedure
     .input(

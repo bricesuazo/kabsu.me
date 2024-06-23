@@ -7,7 +7,7 @@ import { Analytics } from "@vercel/analytics/react";
 
 import QueryProvider from "~/components/query-provider";
 import { ThemeProvider } from "~/components/theme-provider";
-import { Toaster } from "~/components/ui/toaster";
+import { Toaster } from "~/components/ui/sonner";
 import { TooltipProvider } from "~/components/ui/tooltip";
 import TRPCProvider from "~/lib/trpc/Provider";
 import { cn } from "~/lib/utils";
@@ -42,6 +42,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
             <TooltipProvider>
               <TRPCProvider headers={headers()}>
                 {children}
+
                 <Analytics />
                 {/* TODO: */}
                 {/* {session && <FooterMenu />} */}
