@@ -18,6 +18,7 @@ import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 
+import type { Database } from "../../../../supabase/types";
 import {
   Tooltip,
   TooltipContent,
@@ -25,7 +26,6 @@ import {
 } from "~/components/ui/tooltip";
 import { api } from "~/lib/trpc/client";
 import { cn } from "~/lib/utils";
-import type { Database } from "../../../../supabase/types";
 import { Icons } from "./icons";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -290,7 +290,7 @@ export default function PostComment({
                               })()}
                             </Tooltip>
                           </div>
-                          <div className="ml-2 hidden gap-x-2 group-hover:underline md:flex ">
+                          <div className="ml-2 hidden gap-x-2 group-hover:underline md:flex">
                             <Tooltip delayDuration={250}>
                               <TooltipTrigger>
                                 <Badge>
@@ -317,13 +317,13 @@ export default function PostComment({
                           </div>
                         </div>
                         <div className="flex items-center">
-                          <p className="line-clamp-1  break-all text-sm">
+                          <p className="line-clamp-1 break-all text-sm">
                             @{like.user.username}
                           </p>
                           <div className="ml-2 flex gap-x-2 group-hover:underline md:hidden">
                             <Tooltip delayDuration={250}>
                               <TooltipTrigger>
-                                <Badge className="hidden xs:block">
+                                <Badge className="xs:block hidden">
                                   {like.user.programs?.[0]?.colleges?.campuses?.slug.toUpperCase()}
                                 </Badge>
                                 <TooltipContent className="max-w-[12rem]">
@@ -363,7 +363,7 @@ export default function PostComment({
             }`}
           </p>
           <Badge variant="outline" className="flex items-center gap-x-1">
-            <p className="hidden xs:block">Privacy:</p>
+            <p className="xs:block hidden">Privacy:</p>
             {post.type === "following"
               ? "Follower"
               : post.type.charAt(0).toUpperCase() + post.type.slice(1)}
@@ -384,7 +384,7 @@ export default function PostComment({
 
                 form.reset();
                 setIsFocused(false);
-                searchParams.has("comment") &&
+                if (searchParams.has("comment"))
                   router.push(
                     `/${params.username as string}/${params.post_id as string}`,
                   );

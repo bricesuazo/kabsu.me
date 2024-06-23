@@ -28,7 +28,7 @@ export const postsRouter = router({
         const { data } = await ctx.supabase.storage
           .from("users")
           .createSignedUrl(
-            post.user?.id + "/" + post.user?.image_path,
+            post.user.id + "/" + post.user.image_path,
             60 * 60 * 24,
           );
         if (data) {
@@ -392,7 +392,7 @@ export const postsRouter = router({
         //   // },
         // });
 
-        posts = users_in_colleges?.length
+        posts = users_in_colleges.length
           ? await ctx.supabase
               .from("posts")
               .select()
@@ -480,7 +480,7 @@ export const postsRouter = router({
         //   // },
         // });
 
-        posts = users_in_programs?.length
+        posts = users_in_programs.length
           ? await ctx.supabase
               .from("posts")
               .select()
@@ -503,7 +503,7 @@ export const postsRouter = router({
                 return res.data;
               })
           : [];
-      } else if (input.type === "following") {
+      } else {
         const { data: user } = await ctx.supabase
           .from("users")
           .select("*, programs(*, colleges(*, campuses(*)))")
@@ -628,7 +628,7 @@ export const postsRouter = router({
         //   // },
         // });
 
-        posts = users?.length
+        posts = users.length
           ? await ctx.supabase
               .from("posts")
               .select()

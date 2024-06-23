@@ -89,7 +89,7 @@ export default function CommentDropdown({
 
   useEffect(() => {
     if (openReport) reportForm.reset();
-  }, [openReport]);
+  }, [openReport, reportForm]);
 
   return (
     <>

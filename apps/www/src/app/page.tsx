@@ -1,5 +1,6 @@
 // import { Suspense } from "react";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AlertCircle, Github } from "lucide-react";
@@ -19,8 +20,8 @@ import { ToggleTheme } from "~/components/toggle-theme";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
+import { Skeleton } from "~/components/ui/skeleton";
 import { api } from "~/lib/trpc/server";
 import { createClient } from "~/supabase/server";
 
@@ -102,22 +103,21 @@ export default async function Home({
             <h1 className="text-center text-6xl font-bold text-primary">
               Kabsu.me
             </h1>
-            <h4 className="text-center text-xl [text-wrap:balance]">
-              An unofficial social media platform that&apos;s only exclusive for
-              Cavite State University students, faculty, and alumni.
+            <h4 className="text-balance text-center text-xl">
+              A social media platform that&apos;s only exclusive for Cavite
+              State University students, faculty, and alumni.
             </h4>
             <div>
               <p className="text-center font-bold italic text-primary">
                 DISCLAIMER:
               </p>
-              <p className="mx-auto max-w-xs text-center italic [text-wrap:balance] ">
-                This website is unofficial and not affiliated with Cavite State
-                University.
+              <p className="mx-auto max-w-xs text-balance text-center italic">
+                This website is not affiliated with Cavite State University.
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-center gap-y-4 ">
+          <div className="flex flex-col items-center justify-center gap-y-4">
             <div className="flex justify-center">
               <Link
                 href="https://github.com/bricesuazo/kabsu.me"
@@ -139,9 +139,15 @@ export default async function Home({
                 });
               }}
             >
-              {/* <Icons.spinner className="mr-2 h-4 w-4 animate-spin" /> */}
-              <Button disabled>
-                <Icons.google className="mr-2 h-4 w-4" />
+              <Button>
+                {
+                  // eslint-disable-next-line no-constant-condition, @typescript-eslint/no-unnecessary-condition
+                  false ? (
+                    <Icons.google className="mr-2 h-4 w-4" />
+                  ) : (
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  )
+                }
                 Sign in with CvSU Account
               </Button>
             </form>
@@ -160,7 +166,7 @@ export default async function Home({
               </Alert>
             )}
 
-            <Card>
+            {/* <Card>
               <CardHeader className="p-4">
                 <CardTitle className="text-center">Under maintenance</CardTitle>
               </CardHeader>
@@ -179,18 +185,15 @@ export default async function Home({
                   </Button>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
 
             <ToggleTheme />
 
-            {/* <Suspense
+            <Suspense
               fallback={<Skeleton className="my-1 h-3 w-36 rounded-full" />}
             >
               <UsersLength />
-            </Suspense> */}
-            <p className="text-center text-sm text-muted-foreground">
-              2,640 Kabsuhenyos registered
-            </p>
+            </Suspense>
           </div>
 
           <iframe
@@ -216,7 +219,7 @@ export default async function Home({
                 return (
                   <div
                     key={dev.index}
-                    className="flex flex-col items-center gap-y-4 rounded-lg border-2 p-3 "
+                    className="flex flex-col items-center gap-y-4 rounded-lg border-2 p-3"
                   >
                     <Image
                       src={dev.image}
@@ -268,7 +271,7 @@ export default async function Home({
                   className="pointer-events-none select-none object-contain dark:hidden"
                 />
               </div>
-              <p className="text-center [text-wrap:balance]">
+              <p className="text-balance text-center">
                 Adventura is a Visual Novel game that allows the users to
                 navigate inside the actual place of Cavite State University
                 Indang Campus.
@@ -286,11 +289,11 @@ export default async function Home({
   );
 }
 
-// async function UsersLength() {
-//   const getTotalUsersQuery = await api.users.getTotalUsers.query();
-//   return (
-//     <p className="text-center text-sm text-muted-foreground">
-//       {getTotalUsersQuery} users registered
-//     </p>
-//   );
-// }
+async function UsersLength() {
+  const getTotalUsersQuery = await api.users.getTotalUsers.query();
+  return (
+    <p className="text-center text-sm text-muted-foreground">
+      {getTotalUsersQuery} Kabsuhenyos registered
+    </p>
+  );
+}

@@ -29,6 +29,7 @@ export default function Search() {
     } else {
       searchMutation.reset();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   useEffect(() => {
@@ -36,6 +37,7 @@ export default function Search() {
       setValue("");
       searchMutation.reset();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   return (

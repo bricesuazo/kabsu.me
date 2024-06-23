@@ -100,7 +100,7 @@ export default function PostDropdown({
 
   useEffect(() => {
     if (openReport) reportForm.reset();
-  }, [openReport]);
+  }, [openReport, reportForm]);
 
   return (
     <div onClick={(e) => e.stopPropagation()}>

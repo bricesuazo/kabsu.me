@@ -52,7 +52,7 @@ export default function AuthForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: user?.email?.split("@")[0]?.replace(".", "-") ?? "",
+      username: user?.email.split("@")[0]?.replace(".", "-") ?? "",
       name: user?.name ?? "",
     },
   });
@@ -60,10 +60,10 @@ export default function AuthForm({
   useEffect(() => {
     form.setValue(
       "username",
-      user?.email?.split("@")[0]?.replace(".", "-") ?? "",
+      user?.email.split("@")[0]?.replace(".", "-") ?? "",
     );
-    // form.setValue("name", session.user.name ?? "");
-  }, [form]);
+    form.setValue("name", user?.name ?? "");
+  }, [form, user?.email, user?.name]);
 
   return (
     <div className="space-y-8 py-20">

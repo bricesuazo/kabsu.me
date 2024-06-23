@@ -74,18 +74,17 @@ export const adminRouter = router({
     if (!campuses || !colleges || !programs)
       throw new TRPCError({ code: "NOT_FOUND", message: "Programs not found" });
 
-    if (!campuses || !colleges || !programs)
-      return campuses.map((campus) => ({
-        ...campus,
-        colleges: colleges
-          .filter((college) => college.campus_id === campus.id)
-          .map((college) => ({
-            ...college,
-            programs: programs.filter(
-              (program) => program.college_id === college.id,
-            ),
-          })),
-      }));
+    return campuses.map((campus) => ({
+      ...campus,
+      colleges: colleges
+        .filter((college) => college.campus_id === campus.id)
+        .map((college) => ({
+          ...college,
+          programs: programs.filter(
+            (program) => program.college_id === college.id,
+          ),
+        })),
+    }));
   }),
   addCampus: protectedProcedure
     .input(
@@ -119,7 +118,7 @@ export const adminRouter = router({
       if (error)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: error.message ?? "Failed to add campus",
+          message: error.message,
         });
     }),
   addCollege: protectedProcedure
@@ -157,7 +156,7 @@ export const adminRouter = router({
       if (error)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: error.message ?? "Failed to add college",
+          message: error.message,
         });
     }),
   addProgram: protectedProcedure
@@ -195,7 +194,7 @@ export const adminRouter = router({
       if (error)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: error.message ?? "Failed to add program",
+          message: error.message,
         });
     }),
   deleteCampus: protectedProcedure
@@ -227,7 +226,7 @@ export const adminRouter = router({
       if (error)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: error.message ?? "Failed to delete campus",
+          message: error.message,
         });
     }),
   deleteCollege: protectedProcedure
@@ -253,7 +252,7 @@ export const adminRouter = router({
       if (error)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: error.message ?? "Failed to delete college",
+          message: error.message,
         });
     }),
   deleteProgram: protectedProcedure
@@ -315,7 +314,7 @@ export const adminRouter = router({
       if (error)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: error.message ?? "Failed to edit campus",
+          message: error.message,
         });
     }),
   editCollege: protectedProcedure
@@ -370,7 +369,7 @@ export const adminRouter = router({
       if (error)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: error.message ?? "Failed to edit college",
+          message: error.message,
         });
     }),
   editProgram: protectedProcedure
@@ -426,7 +425,7 @@ export const adminRouter = router({
       if (error)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: error.message ?? "Failed to edit program",
+          message: error.message,
         });
     }),
 });

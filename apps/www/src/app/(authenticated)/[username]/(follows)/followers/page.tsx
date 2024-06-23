@@ -47,7 +47,6 @@ export default async function FollowersPage({
     .from("followees")
     .select("follower_id")
     .eq("followee_id", session.user.id);
-  3;
 
   if (!followers || !my_followees) notFound();
 
@@ -119,11 +118,9 @@ export default async function FollowersPage({
               <UserFollows
                 key={followerUser.id}
                 user={followerUser}
-                isFollower={
-                  my_followees.some(
-                    (followee) => followee.follower_id === followerUser.id,
-                  ) ?? false
-                }
+                isFollower={my_followees.some(
+                  (followee) => followee.follower_id === followerUser.id,
+                )}
               />
             );
           })

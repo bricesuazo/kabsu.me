@@ -24,7 +24,7 @@ export default function SearchPage() {
     } else {
       searchMutation.reset();
     }
-  }, [value]);
+  }, [searchMutation, value]);
   return (
     <div className="p-4">
       <div className="space-y-4">

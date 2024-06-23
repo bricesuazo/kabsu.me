@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { createClient } from "~/supabase/server";
 import type { Database } from "../../../../supabase/types";
+import { createClient } from "~/supabase/server";
 import FollowButton from "./follow-button";
 
 export default async function UserFollows({

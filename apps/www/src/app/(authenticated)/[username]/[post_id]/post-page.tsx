@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { Album, Briefcase, GraduationCap } from "lucide-react";
 import moment from "moment";
 
+import type { Database } from "../../../../../../../supabase/types";
 import PostComment from "~/components/post-comment";
 import PostDropdown from "~/components/post-dropdown";
 import { Badge } from "~/components/ui/badge";
@@ -18,16 +19,12 @@ import {
 import VerifiedBadge from "~/components/verified-badge";
 import { api } from "~/lib/trpc/client";
 import { formatText } from "~/lib/utils";
-import type { Database } from "../../../../../../../supabase/types";
 import CommentDropdown from "./comment-dropdown";
 
 export default function PostPageComponent({ post_id }: { post_id: string }) {
   const postQuery = api.posts.getPost.useQuery({ post_id }, { retry: 1 });
 
-  if (
-    (postQuery.isSuccess && !postQuery.data) ||
-    postQuery.error?.data?.code === "NOT_FOUND"
-  ) {
+  if (postQuery.error?.data?.code === "NOT_FOUND") {
     notFound();
   }
 
@@ -142,10 +139,10 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                     <p className="pointer-events-none select-none">·</p>
                     <Tooltip delayDuration={250}>
                       <TooltipTrigger>
-                        <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
+                        <p className="xs:block hidden text-xs text-muted-foreground hover:underline">
                           {moment(postQuery.data.post.created_at).fromNow()}
                         </p>
-                        <p className="text-xs text-muted-foreground hover:underline xs:hidden">
+                        <p className="xs:hidden text-xs text-muted-foreground hover:underline">
                           {moment(postQuery.data.post.created_at).fromNow()}
                         </p>
                       </TooltipTrigger>
@@ -228,7 +225,7 @@ function CommentComponent({
     comment_id: comment.id,
   });
 
-  if (!fullCommentQuery.data || fullCommentQuery.isLoading)
+  if (!fullCommentQuery.data)
     return (
       <div className="space-y-2 border p-4">
         <div className="flex justify-between">
@@ -257,7 +254,7 @@ function CommentComponent({
         <div className="flex gap-x-2">
           <div className="min-w-max">
             <Link href={`/${fullCommentQuery.data.comment.users.username}`}>
-              {fullCommentQuery.data.comment.users?.image_path ? (
+              {fullCommentQuery.data.comment.users.image_path ? (
                 <Image
                   src={fullCommentQuery.data.comment.users.image_url}
                   alt={`${fullCommentQuery.data.comment.users.name} profile picture`}
@@ -293,10 +290,10 @@ function CommentComponent({
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
-                  <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
+                  <p className="xs:block hidden text-xs text-muted-foreground hover:underline">
                     {moment(fullCommentQuery.data.comment.created_at).fromNow()}
                   </p>
-                  <p className="text-xs text-muted-foreground hover:underline xs:hidden">
+                  <p className="xs:hidden text-xs text-muted-foreground hover:underline">
                     {moment(fullCommentQuery.data.comment.created_at).fromNow()}
                   </p>
                 </TooltipTrigger>

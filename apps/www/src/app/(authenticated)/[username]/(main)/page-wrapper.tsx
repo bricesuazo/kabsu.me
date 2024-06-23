@@ -87,43 +87,40 @@ export default function UserPageWrapper({
 
   useEffect(() => {
     if (openReport) reportForm.reset();
-  }, [openReport]);
+  }, [openReport, reportForm]);
 
   return (
     <div className="relative min-h-screen space-y-4 border-b">
       <div>
-        <div className="flex w-full flex-row-reverse gap-x-2 gap-y-4 p-4 xs:flex-row">
+        <div className="xs:flex-row flex w-full flex-row-reverse gap-x-2 gap-y-4 p-4">
           <div className="w-px flex-1 space-y-2">
             <div className="flex flex-wrap gap-2">
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge>
-                    {profileQuery.data.user.programs?.[0]?.colleges?.campuses?.slug.toUpperCase()}
+                    {profileQuery.data.user.programs[0]?.colleges?.campuses?.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-60">
-                  {
-                    profileQuery.data.user.programs?.[0]?.colleges?.campuses
-                      ?.name
-                  }
+                  {profileQuery.data.user.programs[0]?.colleges?.campuses?.name}
                 </TooltipContent>
               </Tooltip>
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger className="">
                   <Badge variant="outline">
-                    {profileQuery.data.user.programs?.[0]?.slug?.toUpperCase()}
+                    {profileQuery.data.user.programs[0]?.slug?.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-60">
-                  {profileQuery.data.user.programs?.[0]?.name}
+                  {profileQuery.data.user.programs[0]?.name}
                 </TooltipContent>
               </Tooltip>
             </div>
 
             <div className="flex flex-col">
               <div className="flex items-center gap-x-2">
-                <h2 className="truncate text-2xl font-semibold xs:text-4xl">
+                <h2 className="xs:text-4xl truncate text-2xl font-semibold">
                   {profileQuery.data.user.name}
                 </h2>
 
@@ -132,9 +129,7 @@ export default function UserPageWrapper({
                 )}
               </div>
 
-              <p className="line-clamp-1  ">
-                @{profileQuery.data.user.username}
-              </p>
+              <p className="line-clamp-1">@{profileQuery.data.user.username}</p>
 
               <p className="break-words text-muted-foreground">
                 {profileQuery.data.user.bio ??
@@ -157,7 +152,7 @@ export default function UserPageWrapper({
 
           <Dialog>
             <DialogTrigger asChild className="hover:cursor-pointer">
-              <div className="relative aspect-square h-20 min-w-max overflow-clip rounded-full xs:h-32">
+              <div className="xs:h-32 relative aspect-square h-20 min-w-max overflow-clip rounded-full">
                 <div className="absolute bottom-0 flex w-full justify-center bg-gradient-to-t from-black to-transparent p-2">
                   <Tooltip delayDuration={250}>
                     {(() => {
@@ -165,7 +160,7 @@ export default function UserPageWrapper({
                         return (
                           <>
                             <TooltipTrigger>
-                              <Album className="h-5 w-5 text-white xs:h-8 xs:w-8" />
+                              <Album className="xs:h-8 xs:w-8 h-5 w-5 text-white" />
                             </TooltipTrigger>
                             <TooltipContent className="z-50">
                               Student
@@ -176,7 +171,7 @@ export default function UserPageWrapper({
                         return (
                           <>
                             <TooltipTrigger>
-                              <GraduationCap className="h-5 w-5 text-white xs:h-8 xs:w-8" />
+                              <GraduationCap className="xs:h-8 xs:w-8 h-5 w-5 text-white" />
                             </TooltipTrigger>
                             <TooltipContent className="z-50">
                               Alumni
@@ -187,7 +182,7 @@ export default function UserPageWrapper({
                         return (
                           <>
                             <TooltipTrigger>
-                              <Briefcase className="h-5 w-5 text-white xs:h-8 xs:w-8" />
+                              <Briefcase className="xs:h-8 xs:w-8 h-5 w-5 text-white" />
                             </TooltipTrigger>
                             <TooltipContent className="z-50">
                               Faculty
@@ -232,7 +227,7 @@ export default function UserPageWrapper({
 
         <div className="flex flex-col items-start gap-x-4 gap-y-2 border-b px-4 pb-4 sm:flex-row sm:items-center">
           <div className="flex items-center gap-x-2">
-            {profileQuery.data.isFollower !== undefined ? (
+            {profileQuery.data.isFollower ? (
               <div className="flex items-center gap-x-2">
                 <FollowButton
                   isFollower={profileQuery.data.isFollower}

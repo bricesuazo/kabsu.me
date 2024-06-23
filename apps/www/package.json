@@ -1,10 +1,11 @@
 {
   "name": "www",
+  "type": "module",
   "scripts": {
-    "dev": "pnpm with-env next dev",
+    "dev": "pnpm with-env next dev --turbo",
     "build": "pnpm with-env next build",
     "start": "pnpm with-env next start",
-    "lint": "next lint",
+    "lint": "eslint",
     "clean": "git clean -xdf .next .turbo node_modules",
     "with-env": "dotenv -e ../../.env --"
   },
@@ -23,7 +24,7 @@
     "@radix-ui/react-dropdown-menu": "^2.1.1",
     "@radix-ui/react-hover-card": "^1.1.1",
     "@radix-ui/react-label": "^2.1.0",
-    "@radix-ui/react-menubar": "^1.1.0",
+    "@radix-ui/react-menubar": "^1.1.1",
     "@radix-ui/react-navigation-menu": "^1.2.0",
     "@radix-ui/react-popover": "^1.1.1",
     "@radix-ui/react-progress": "^1.1.0",
@@ -60,6 +61,7 @@
     "encoding": "^0.1.13",
     "eslint": "^9.5.0",
     "eslint-config-next": "14.2.4",
+    "input-otp": "^1.2.4",
     "lucide-react": "^0.396.0",
     "moment": "^2.30.1",
     "next": "14.2.4",
@@ -93,15 +95,10 @@
     "@types/react-dom": "18.3.0",
     "@types/uuid": "^10.0.0",
     "dotenv-cli": "^7.4.2",
+    "jiti": "^1.21.6",
     "prettier": "^3.3.2",
     "tsx": "^4.15.7",
     "typescript": "^5.5.2"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@kabsu.me/eslint-config/base"
-    ]
   },
   "prettier": "@kabsu.me/prettier-config"
 }

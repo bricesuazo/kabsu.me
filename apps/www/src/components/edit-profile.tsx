@@ -6,9 +6,9 @@ import { PenSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import type { Database } from "../../../../supabase/types";
 import { api } from "~/lib/trpc/client";
 import { cn } from "~/lib/utils";
-import type { Database } from "../../../../supabase/types";
 import { Icons } from "./icons";
 import { AlertDialogHeader } from "./ui/alert-dialog";
 import { Button } from "./ui/button";
@@ -41,7 +41,7 @@ export default function EditProfile({
   const updateProfileMutation = api.users.updateProfile.useMutation({
     onSuccess: async () => {
       await context.users.getUserProfile.invalidate({
-        username: user.username ?? "",
+        username: user.username,
       });
     },
   });
@@ -66,7 +66,7 @@ export default function EditProfile({
       .max(64, { message: "Link must be less than 64 characters" })
       .transform((value) => {
         if (value === "") return undefined;
-        return value.match("http") ? value : `https://${value}`;
+        return /http/.exec(value) ? value : `https://${value}`;
       })
       .optional(),
   });
@@ -75,8 +75,8 @@ export default function EditProfile({
     resolver: zodResolver(formSchema),
     defaultValues: {
       bio: user.bio ?? "",
-      name: user.name ?? "",
-      username: user.username ?? "",
+      name: user.name,
+      username: user.username,
       link: user.link?.split("https://")[1] ?? "",
     },
   });

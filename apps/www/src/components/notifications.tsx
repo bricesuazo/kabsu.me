@@ -40,15 +40,16 @@ export default function Notifications() {
         >
           <Bell size="1.25rem" className="" />
 
-          {getAllNotificationsQuery &&
-          getAllNotificationsQuery?.data &&
-          getAllNotificationsQuery?.data.filter(
+          {getAllNotificationsQuery.data &&
+          getAllNotificationsQuery.data.filter(
             (notification) => !notification.read,
           ).length > 0 ? (
             <p className="absolute right-0 top-0 flex aspect-square h-4 w-4 items-center justify-center rounded-full bg-primary text-[0.5rem] text-white">
-              {getAllNotificationsQuery.data?.filter(
-                (notification) => !notification.read,
-              ).length ?? 0}
+              {
+                getAllNotificationsQuery.data.filter(
+                  (notification) => !notification.read,
+                ).length
+              }
             </p>
           ) : null}
         </Button>
@@ -104,7 +105,6 @@ export default function Notifications() {
             </div>
           ) : (
             getAllNotificationsQuery.data.map((notification) => {
-              if (!notification.from) return null;
               return (
                 <Link
                   key={notification.id}
@@ -112,7 +112,7 @@ export default function Notifications() {
                     if (notification.type === "follow") {
                       return `/${notification.from.username}`;
                     } else {
-                      return `/${notification.from.username}/${notification.content.id}`;
+                      return `/${notification.from.username}/${notification.content?.id}`;
                     }
                   })()}
                   onClick={(e) => {

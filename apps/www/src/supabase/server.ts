@@ -1,9 +1,9 @@
-import { cookies } from "next/headers";
 import type { CookieOptions } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
-import { env } from "~/env";
 import type { Database } from "../../../../supabase/types";
+import { env } from "~/env";
 
 export const createClient = () => {
   const cookieStore = cookies();
@@ -21,6 +21,7 @@ export const createClient = () => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             cookieStore.set({ name, value, ...options });
           } catch (error) {
+            console.log(error);
             // The `set` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
             // user sessions.
@@ -31,7 +32,7 @@ export const createClient = () => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             cookieStore.set({ name, value: "", ...options });
           } catch (error) {
-            // The `delete` method was called from a Server Component.
+            console.log(error); // The `delete` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
             // user sessions.
           }

@@ -12,6 +12,7 @@ import { z } from "zod";
 
 import { POST_TYPE_TABS } from "@kabsu.me/constants";
 
+import type { Database } from "../../../../supabase/types";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -21,7 +22,6 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { api } from "~/lib/trpc/client";
-import type { Database } from "../../../../supabase/types";
 import { Icons } from "./icons";
 import {
   Select,
@@ -93,6 +93,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
     } else {
       form.setValue("type", "following");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   useEffect(() => {
@@ -117,12 +118,12 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
       // className="xs:flex hidden gap-x-4"
       className="flex gap-x-2 border-b px-4 py-8"
     >
-      {!getCurrentUserQuery.data || getCurrentUserQuery.isLoading ? (
+      {!getCurrentUserQuery.data ? (
         <Skeleton className="h-10 w-10 rounded-full" />
       ) : (
         <Link
           href={`/${getCurrentUserQuery.data.username}`}
-          className="relative aspect-square h-8 w-8 min-w-max xs:h-10 xs:w-10"
+          className="xs:h-10 xs:w-10 relative aspect-square h-8 w-8 min-w-max"
         >
           <Image
             src={
@@ -218,7 +219,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                     </FormItem>
                   )}
                 />
-                <p className="flex-1 text-xs text-muted-foreground xs:text-sm">
+                <p className="xs:text-sm flex-1 text-xs text-muted-foreground">
                   This post will be visible to{" "}
                   {form.watch("type") === "following"
                     ? "your followers"

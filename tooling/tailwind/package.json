@@ -1,19 +1,17 @@
 {
   "name": "@kabsu.me/tailwind-config",
-  "main": "index.ts",
-  "license": "MIT",
-  "files": [
-    "index.ts",
-    "postcss.js"
-  ],
+  "type": "module",
+  "exports": {
+    "./native": "./native.ts",
+    "./web": "./web.ts"
+  },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
-    "lint": "eslint .",
-    "format": "prettier --check \"**/*.{js,ts,json}\"",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.4",
     "tailwindcss-animate": "^1.0.7"
@@ -22,17 +20,9 @@
     "@kabsu.me/eslint-config": "workspace:*",
     "@kabsu.me/prettier-config": "workspace:*",
     "@kabsu.me/tsconfig": "workspace:*",
-    "@types/node": "^20.14.8",
     "eslint": "^9.5.0",
     "prettier": "^3.3.2",
-    "prettier-plugin-tailwindcss": "^0.6.5",
     "typescript": "^5.5.2"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@kabsu.me/eslint-config/base"
-    ]
   },
   "prettier": "@kabsu.me/prettier-config"
 }

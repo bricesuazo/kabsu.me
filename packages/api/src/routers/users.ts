@@ -36,7 +36,7 @@ export const usersRouter = router({
       //     username: input.username,
       //   },
       // });
-      return { isSuccess: true, ...input } || { isSuccess: false };
+      return { isSuccess: true, ...input };
     }),
 
   updateProfile: protectedProcedure
@@ -268,7 +268,7 @@ export const usersRouter = router({
         .filter(
           (user) =>
             user.name.toLowerCase().includes(input.query.toLowerCase()) ||
-            user.username?.toLowerCase().includes(input.query.toLowerCase()),
+            user.username.toLowerCase().includes(input.query.toLowerCase()),
         )
         .map((user) => {
           const base = {

@@ -15,9 +15,9 @@ import {
 import moment from "moment";
 import { v4 as uuid } from "uuid";
 
+import type { Database } from "../../../../supabase/types";
 import { api } from "~/lib/trpc/client";
 import { cn, formatText } from "~/lib/utils";
-import type { Database } from "../../../../supabase/types";
 import PostDropdown from "./post-dropdown";
 import { PostSkeletonNoRandom } from "./post-skeleton";
 import { Badge } from "./ui/badge";
@@ -85,14 +85,13 @@ export default function Post({
     }
   }, [getPostQuery.data]);
 
-  if (!getPostQuery.data || getPostQuery.isLoading)
-    return <PostSkeletonNoRandom />;
+  if (!getPostQuery.data) return <PostSkeletonNoRandom />;
 
   return (
     <div
       onClick={(e) => {
         e.stopPropagation();
-        router.push(`/${getPostQuery.data.post.user?.username}/${post.id}`, {
+        router.push(`/${getPostQuery.data.post.user.username}/${post.id}`, {
           scroll: true,
         });
       }}
@@ -100,7 +99,7 @@ export default function Post({
     >
       <div className="flex justify-between">
         <Link
-          href={`/${getPostQuery.data.post.user?.username}`}
+          href={`/${getPostQuery.data.post.user.username}`}
           onClick={(e) => e.stopPropagation()}
           className="flex gap-x-2"
         >
@@ -136,10 +135,10 @@ export default function Post({
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
-                  <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
+                  <p className="xs:block hidden text-xs text-muted-foreground hover:underline">
                     {moment(post.created_at).fromNow()}
                   </p>
-                  <p className="text-xs text-muted-foreground hover:underline xs:hidden">
+                  <p className="xs:hidden text-xs text-muted-foreground hover:underline">
                     {moment(post.created_at).fromNow()}
                   </p>
                 </TooltipTrigger>
@@ -149,7 +148,7 @@ export default function Post({
               </Tooltip>
             </div>
 
-            <div className="flex items-center gap-x-1 ">
+            <div className="flex items-center gap-x-1">
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   {(() => {
@@ -166,8 +165,8 @@ export default function Post({
                   })()}
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
-                  {getPostQuery.data.post.user.type!.charAt(0).toUpperCase() +
-                    getPostQuery.data.post.user.type!.slice(1)}
+                  {getPostQuery.data.post.user.type?.charAt(0).toUpperCase() +
+                    getPostQuery.data.post.user.type?.slice(1)}
                 </TooltipContent>
               </Tooltip>
               <Tooltip delayDuration={250}>
@@ -274,7 +273,7 @@ export default function Post({
             } comment${getPostQuery.data.post.comments.length > 1 ? "s" : ""}`}
           </p>
           <Badge variant="outline" className="flex items-center gap-x-1">
-            <p className="hidden xs:block">Privacy:</p>
+            <p className="xs:block hidden">Privacy:</p>
             {post.type === "following"
               ? "Follower"
               : post.type.charAt(0).toUpperCase() + post.type.slice(1)}

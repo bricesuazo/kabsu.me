@@ -1,11 +1,11 @@
-import { createClient } from "@supabase/supabase-js";
 import type { Session } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { env } from "./../../../apps/www/src/env";
 import type { Database } from "./../../../supabase/types";
+import { env } from "./../../../apps/www/src/env";
 
 interface CreateContextOptions {
   auth: {
@@ -32,7 +32,7 @@ export const createTRPCContext = (opts: {
   const auth = opts.auth;
   const source = opts.req?.headers.get("x-trpc-source") ?? "unknown";
 
-  console.log(">>> tRPC Request from", source, "by", auth?.session?.user);
+  console.log(">>> tRPC Request from", source, "by", auth?.session.user);
 
   return createInnerTRPCContext({
     auth,

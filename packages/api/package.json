@@ -1,11 +1,11 @@
 {
   "name": "@kabsu.me/api",
   "main": "./index.ts",
+  "type": "module",
   "types": "./index.ts",
-  "license": "MIT",
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
-    "lint": "SKIP_ENV_VALIDATION=1  eslint .",
+    "lint": "eslint",
     "lint:fix": "pnpm lint --fix",
     "type-check": "tsc --noEmit"
   },
@@ -13,13 +13,6 @@
     ".": "./src/index.ts",
     "./root": "./src/root.ts",
     "./trpc": "./src/trpc.ts"
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "src/*"
-      ]
-    }
   },
   "dependencies": {
     "@kabsu.me/constants": "workspace:*",

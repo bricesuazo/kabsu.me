@@ -13,9 +13,9 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import type { Database } from "../../../../supabase/types";
 import { api } from "~/lib/trpc/client";
 import { cn } from "~/lib/utils";
-import type { Database } from "../../../../supabase/types";
 import { Icons } from "./icons";
 import { Button } from "./ui/button";
 import { Card, CardFooter, CardHeader } from "./ui/card";
@@ -110,8 +110,6 @@ export default function ProgramAuth({
       program_id: "",
     },
   });
-
-  if (!data) return null;
 
   return (
     <>

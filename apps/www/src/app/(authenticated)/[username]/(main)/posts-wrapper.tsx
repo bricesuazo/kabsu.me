@@ -3,11 +3,11 @@
 import { Fragment, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
+import type { Database } from "../../../../../../../supabase/types";
 import { Icons } from "~/components/icons";
 import Post from "~/components/post";
 import { PostSkeletonNoRandom } from "~/components/post-skeleton";
 import { api } from "~/lib/trpc/client";
-import type { Database } from "../../../../../../../supabase/types";
 
 export default function PostsWrapper({
   user,
@@ -31,6 +31,7 @@ export default function PostsWrapper({
         await postsQuery.fetchNextPage();
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inView]);
 
   return (

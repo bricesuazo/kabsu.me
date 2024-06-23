@@ -20,17 +20,12 @@
     "email:dev": {}
   },
   "globalEnv": [
-    "DATABASE_URL",
-    "QSTASH_CURRENT_SIGNING_KEY",
-    "QSTASH_NEXT_SIGNING_KEY",
-    "PUSHER_APP_ID",
-    "PUSHER_KEY",
-    "PUSHER_SECRET",
-    "PUSHER_CLUSTER",
-    "AUTH_SECRET",
-    "AUTH_GOOGLE_ID",
-    "AUTH_GOOGLE_SECRET",
-    "AUTH_URL",
-    "AUTH_REDIRECT_PROXY_URL"
+    "VERCEL_URL",
+    "NODE_ENV",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "CI",
+    "SKIP_ENV_VALIDATION",
+    "npm_lifecycle_event"
   ]
 }

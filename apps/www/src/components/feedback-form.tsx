@@ -69,10 +69,8 @@ export default function FeedbackForm({
   });
 
   useEffect(() => {
-    if (open) {
-      form.reset();
-    }
-  }, [open]);
+    if (open) form.reset();
+  }, [form, open]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

@@ -167,7 +167,7 @@ export default function Header() {
                       className="flex w-full items-center"
                     >
                       <AtSign className="mr-2" size="1rem" />
-                      {getCurrentUserQuery.data.username?.length
+                      {getCurrentUserQuery.data.username.length
                         ? `${getCurrentUserQuery.data.username}`
                         : "My Profile"}
                     </Link>

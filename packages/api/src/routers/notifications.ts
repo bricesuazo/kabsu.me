@@ -23,7 +23,7 @@ export const notificationsRouter = router({
 
       const posts_to_fetch = notifications
         .filter((notification) => notification.type !== "follow")
-        .map((notification) => notification.content_id!);
+        .map((notification) => notification.content_id);
 
       const { data: posts } = await ctx.supabase
         .from("posts")
@@ -46,7 +46,7 @@ export const notificationsRouter = router({
         .createSignedUrls(
           notifications
             .filter((notif) => notif.from !== null)
-            .map((notif) => notif.from!.id + "/" + notif.from!.image_path),
+            .map((notif) => notif.from?.id + "/" + notif.from?.image_path),
           60 * 60 * 24,
         );
       if (data) {
@@ -61,7 +61,7 @@ export const notificationsRouter = router({
         );
         return {
           ...notification,
-          content: posts.find((post) => post.id === notification.content_id)!,
+          content: posts.find((post) => post.id === notification.content_id),
           from:
             notification.from?.image_path && signed_url
               ? { ...notification.from, image_url: signed_url.signedUrl }

@@ -33,6 +33,7 @@ export default function Posts({
         await posts.fetchNextPage();
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inView]);
 
   return (
