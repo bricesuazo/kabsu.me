@@ -1,31 +1,33 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { auth } from "@kabsu.me/auth";
-import type { User } from "@kabsu.me/db/schema";
-
+import { createClient } from "~/supabase/server";
+import type { Database } from "../../../../supabase/types";
 import FollowButton from "./follow-button";
 
 export default async function UserFollows({
   user,
   isFollower,
 }: {
-  user: User;
+  user:
+    | (Database["public"]["Tables"]["users"]["Row"] & {
+        image_path: string;
+        image_url: string;
+      })
+    | (Database["public"]["Tables"]["users"]["Row"] & { image_path: null });
   isFollower: boolean;
 }) {
-  const session = await auth();
+  const supabase = createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   return (
     <div className="flex gap-x-2 rounded border border-transparent p-2 hover:border-inherit">
       <Link href={`/${user.username}`}>
         <div className="min-w-max">
           <Image
-            src={
-              user.image
-                ? typeof user.image === "string"
-                  ? user.image
-                  : user.image.url
-                : "/default-avatar.jpg"
-            }
+            src={user.image_path ? user.image_url : "/default-avatar.jpg"}
             alt={`${user.name} profile picture`}
             width={40}
             height={40}

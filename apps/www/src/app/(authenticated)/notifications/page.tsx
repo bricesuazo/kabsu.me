@@ -2,17 +2,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Icons } from "@/components/icons";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Bell, BookOpenCheckIcon } from "lucide-react";
+import moment from "moment";
+
+import { Icons } from "~/components/icons";
+import { Button } from "~/components/ui/button";
+import { Skeleton } from "~/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { api } from "@/lib/trpc/client";
-import { Bell, BookOpenCheckIcon } from "lucide-react";
-import moment from "moment";
+} from "~/components/ui/tooltip";
+import { api } from "~/lib/trpc/client";
 
 export default function NotificationPage() {
   const getAllNotificationsQuery = api.notifications.getAll.useQuery({
@@ -100,13 +101,9 @@ export default function NotificationPage() {
                 <div className="flex gap-x-2">
                   {/* <Link href={`/${notification.from.username}`}> */}
                   <div className="relative h-10 w-10">
-                    {notification.from.image ? (
+                    {notification.from.image_path ? (
                       <Image
-                        src={
-                          typeof notification.from.image === "string"
-                            ? notification.from.image
-                            : notification.from.image.url
-                        }
+                        src={notification.from.image_url}
                         alt={`${notification.from.name} profile picture`}
                         fill
                         sizes="100%"

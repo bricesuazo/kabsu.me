@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { api } from "@/lib/trpc/client";
 import { Search as SearchIcon } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
 
+import { api } from "~/lib/trpc/client";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -85,7 +85,11 @@ export default function Search() {
                   >
                     <div className="min-w-max">
                       <Image
-                        src={user.imageUrl ?? "/default-avatar.jpg"}
+                        src={
+                          user.image_path
+                            ? user.image_url
+                            : "/default-avatar.jpg"
+                        }
                         alt=""
                         width={40}
                         height={40}
@@ -95,7 +99,7 @@ export default function Search() {
                     <div>
                       <div className="flex items-center gap-x-1">
                         <p className="line-clamp-1 flex-1">{user.name} </p>
-                        {user.isVerified && <VerifiedBadge size="sm" />}
+                        {user.is_verified && <VerifiedBadge size="sm" />}
                       </div>
                       <p className="line-clamp-1 text-sm text-muted-foreground">
                         @{user.username}

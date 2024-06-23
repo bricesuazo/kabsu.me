@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { auth } from "@kabsu.me/auth";
-import { db } from "@kabsu.me/db";
-
+import { createClient as createClientAdmin } from "~/supabase/admin";
+import { createClient as createClientServer } from "~/supabase/server";
 import PostPageComponent from "./post-page";
 
 export async function generateMetadata({
@@ -11,88 +10,73 @@ export async function generateMetadata({
 }: {
   params: { username: string; post_id: string };
 }): Promise<Metadata> {
-  const session = await auth();
+  const supabaseServer = createClientServer();
+  const {
+    data: { session },
+  } = await supabaseServer.auth.getSession();
 
   if (!session) notFound();
 
-  const currentUserInDB = await db.query.users.findFirst({
-    where: (user, { eq }) => eq(user.id, session.user.id),
-    with: {
-      program: {
-        with: {
-          college: {
-            with: { campus: true },
-          },
-        },
-      },
-    },
-  });
+  const supabaseAdmin = createClientAdmin();
 
-  if (!currentUserInDB) notFound();
+  const { data: current_user_in_db } = await supabaseAdmin
+    .from("users")
+    .select("*, program:programs(*, college:colleges(*, campus:campuses(*)))")
+    .eq("id", session.user.id)
+    .single();
 
-  const post1 = await db.query.posts.findFirst({
-    where: (post, { eq, isNull, and }) =>
-      and(eq(post.id, params.post_id), isNull(post.deleted_at)),
-  });
+  if (!current_user_in_db) notFound();
 
-  if (!post1) notFound();
+  const { data: post } = await supabaseAdmin
+    .from("posts")
+    .select("user_id")
+    .eq("id", params.post_id)
+    .is("deleted_at", null)
+    .single();
 
-  const userOfPost = await db.query.users.findFirst({
-    where: (user, { eq }) => eq(user.id, post1.user_id),
-    with: {
-      program: {
-        with: {
-          college: {
-            with: { campus: true },
-          },
-        },
-      },
-    },
-  });
+  if (!post) notFound();
 
-  if (!userOfPost) notFound();
+  const { data: user_of_post } = await supabaseAdmin
+    .from("users")
+    .select(`*, program:programs(*, college:colleges(*, campus:campuses(*)))`)
+    .eq("id", post.user_id)
+    .single();
 
-  const isFollower = await db.query.followers.findFirst({
-    where: (follower, { and, eq }) =>
-      and(
-        eq(follower.follower_id, session.user.id),
-        eq(follower.followee_id, userOfPost.id),
-      ),
-  });
+  if (!user_of_post) notFound();
 
-  const postFromDB = await db.query.posts.findFirst({
-    where: (post, { or, eq, isNull, and }) =>
-      and(
-        eq(post.id, params.post_id),
-        isNull(post.deleted_at),
+  const { data: is_follower } = await supabaseAdmin
+    .from("followers")
+    .select()
+    .eq("follower_id", session.user.id)
+    .eq("followee_id", user_of_post.id)
+    .single();
 
-        currentUserInDB.id !== userOfPost.id
-          ? or(
-              eq(post.type, "all"),
-              currentUserInDB.program_id === userOfPost.program_id
-                ? eq(post.type, "program")
-                : undefined,
+  const default_query = supabaseAdmin
+    .from("posts")
+    .select()
+    .eq("id", params.post_id)
+    .is("deleted_at", null);
 
-              currentUserInDB.program!.college_id ===
-                userOfPost.program!.college_id
-                ? eq(post.type, "college")
-                : undefined,
+  const { data: post_from_db } = await (
+    current_user_in_db.id !== user_of_post.id
+      ? default_query.eq("type", "all")
+      : current_user_in_db.program_id === user_of_post.program_id
+        ? default_query.eq("type", "program")
+        : current_user_in_db.program[0]?.college_id ===
+            user_of_post.program[0]?.college_id
+          ? default_query.eq("type", "college")
+          : current_user_in_db.program[0]?.college?.campus_id ===
+              user_of_post.program[0]?.college?.campus_id
+            ? default_query.eq("type", "campus")
+            : is_follower
+              ? default_query.eq("type", "following")
+              : default_query
+  ).single();
 
-              currentUserInDB.program!.college.campus_id ===
-                userOfPost.program!.college.campus_id
-                ? eq(post.type, "campus")
-                : undefined,
-
-              isFollower ? eq(post.type, "following") : undefined,
-            )
-          : undefined,
-      ),
-  });
-
-  if (!postFromDB) notFound();
+  if (!post_from_db) notFound();
 
   return {
-    title: `${postFromDB.content} - @${params.username}`,
+    title: `${post_from_db.content} - @${params.username}`,
   };
 }
 

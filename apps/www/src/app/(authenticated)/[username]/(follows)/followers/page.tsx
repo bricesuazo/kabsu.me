@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import UserFollows from "@/components/user-follows";
 
-import { auth } from "@kabsu.me/auth";
-import { db } from "@kabsu.me/db";
+import UserFollows from "~/components/user-follows";
+import { createClient as createClientAdmin } from "~/supabase/admin";
+import { createClient as createClientServer } from "~/supabase/server";
 
 export function generateMetadata({
   params: { username },
@@ -20,34 +20,80 @@ export default async function FollowersPage({
 }: {
   params: { username: string };
 }) {
-  const session = await auth();
+  const supabaseServer = createClientServer();
+  const {
+    data: { session },
+  } = await supabaseServer.auth.getSession();
 
   if (!session) notFound();
 
-  const user = await db.query.users.findFirst({
-    where: (user, { eq }) => eq(user.username, username),
-  });
+  const supabaseAdmin = createClientAdmin();
+
+  const { data: user } = await supabaseAdmin
+    .from("users")
+    .select("id")
+    .eq("username", username)
+    .single();
 
   if (!user) notFound();
 
-  const followers = await db.query.followers.findMany({
-    where: (follower, { eq }) => eq(follower.followee_id, user.id),
-    orderBy: (follower, { asc }) => asc(follower.created_at),
-  });
+  const { data: followers } = await supabaseAdmin
+    .from("followers")
+    .select("follower_id, created_at")
+    .eq("followee_id", user.id)
+    .order("created_at", { ascending: true });
 
-  const myFollowees = await db.query.followees.findMany({
-    where: (followee, { eq }) => eq(followee.followee_id, session.user.id),
-  });
+  const { data: my_followees } = await supabaseAdmin
+    .from("followees")
+    .select("follower_id")
+    .eq("followee_id", session.user.id);
+  3;
+
+  if (!followers || !my_followees) notFound();
 
   const followersUsers =
     followers.length !== 0
-      ? await db.query.users.findMany({
-          where: (user, { inArray }) =>
-            inArray(
-              user.id,
-              followers.map((f) => f.follower_id),
-            ),
-        })
+      ? await supabaseAdmin
+          .from("users")
+          .select()
+          .in(
+            "id",
+            followers.map((f) => f.follower_id),
+          )
+          .then(async (res) => {
+            if (res.error) {
+              console.error(res.error);
+              return [];
+            }
+
+            const image_urls: {
+              error: string | null;
+              path: string | null;
+              signedUrl: string;
+            }[] = [];
+
+            const { data } = await supabaseAdmin.storage
+              .from("users")
+              .createSignedUrls(
+                res.data.map((user) => user.id + "/" + user.image_path),
+                60 * 60 * 24,
+              );
+            if (data) {
+              image_urls.push(...data);
+            }
+
+            return res.data.map((user) => {
+              const image_url = image_urls.find(
+                (image) => image.path === user.id + "/" + user.image_path,
+              )?.signedUrl;
+              return user.image_path && image_url
+                ? {
+                    ...user,
+                    image_url,
+                  }
+                : { ...user, image_path: null };
+            });
+          })
       : [];
 
   return (
@@ -57,7 +103,11 @@ export default async function FollowersPage({
         <p className="text-center">No followers yet.</p>
       ) : (
         followers
-          .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
+          .sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime(),
+          )
           .map((follower) => {
             const followerUser = followersUsers.find(
               (user) => user.id === follower.follower_id,
@@ -70,7 +120,7 @@ export default async function FollowersPage({
                 key={followerUser.id}
                 user={followerUser}
                 isFollower={
-                  myFollowees.some(
+                  my_followees.some(
                     (followee) => followee.follower_id === followerUser.id,
                   ) ?? false
                 }

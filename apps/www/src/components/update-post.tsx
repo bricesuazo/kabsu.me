@@ -1,7 +1,14 @@
 "use client";
 
-import { Button } from "./ui/button";
+import { useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { api } from "~/lib/trpc/client";
+import type { Database } from "../../../../supabase/types";
 import { Icons } from "./icons";
+import { Button } from "./ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,8 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
@@ -22,10 +27,6 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Textarea } from "./ui/textarea";
-import type { Post } from "@kabsu.me/db/schema";
-import { useEffect } from "react";
-import { z } from "zod";
-import { api } from "@/lib/trpc/client";
 
 const Schema = z.object({
   post_id: z.string().min(1),
@@ -38,7 +39,7 @@ export default function UpdatePost({
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
-  post: Post;
+  post: Database["public"]["Tables"]["posts"]["Row"];
 }) {
   const updatePostMutation = api.posts.update.useMutation();
 

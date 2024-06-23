@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { api } from "@/lib/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { REPORT_POST_REASONS } from "@kabsu.me/constants";
 import { MoreHorizontal } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { REPORT_POST_REASONS } from "@kabsu.me/constants";
+
+import { api } from "~/lib/trpc/client";
 import { Icons } from "./icons";
 import {
   AlertDialog,
@@ -84,7 +85,7 @@ export default function PostDropdown({
   }>({
     resolver: zodResolver(
       z.object({
-        id: z.string().nonempty("Please select a reason for your report."),
+        id: z.string().min(1, "Please select a reason for your report."),
         reason: z.string(),
       }),
     ),

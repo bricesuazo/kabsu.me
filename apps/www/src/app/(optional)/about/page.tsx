@@ -1,11 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { auth } from "@kabsu.me/auth";
+
 import { DEVS_INFO } from "@kabsu.me/constants";
 
+import { createClient } from "~/supabase/server";
+
 export default async function AboutPage() {
-  const session = await auth();
+  const supabase = createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   if (!session) redirect("/");
   return (

@@ -1,15 +1,19 @@
 "use client";
 
 import { Fragment, useEffect } from "react";
-import { Icons } from "@/components/icons";
-import Post from "@/components/post";
-import { PostSkeletonNoRandom } from "@/components/post-skeleton";
-import { api } from "@/lib/trpc/client";
 import { useInView } from "react-intersection-observer";
 
-import type { User } from "@kabsu.me/db/schema";
+import { Icons } from "~/components/icons";
+import Post from "~/components/post";
+import { PostSkeletonNoRandom } from "~/components/post-skeleton";
+import { api } from "~/lib/trpc/client";
+import type { Database } from "../../../../../../../supabase/types";
 
-export default function PostsWrapper({ user }: { user: User }) {
+export default function PostsWrapper({
+  user,
+}: {
+  user: Database["public"]["Tables"]["users"]["Row"];
+}) {
   const { ref, inView } = useInView();
   const postsQuery = api.posts.getUserPosts.useInfiniteQuery(
     {

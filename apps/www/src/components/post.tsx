@@ -4,9 +4,6 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { api } from "@/lib/trpc/client";
-import { cn, formatText } from "@/lib/utils";
-import type { Like, Post } from "@kabsu.me/db/schema";
 // import UpdatePost from "./update-post";
 import {
   Album,
@@ -16,8 +13,11 @@ import {
   MessageCircle,
 } from "lucide-react";
 import moment from "moment";
-import { nanoid } from "nanoid";
+import { v4 as uuid } from "uuid";
 
+import { api } from "~/lib/trpc/client";
+import { cn, formatText } from "~/lib/utils";
+import type { Database } from "../../../../supabase/types";
 import PostDropdown from "./post-dropdown";
 import { PostSkeletonNoRandom } from "./post-skeleton";
 import { Badge } from "./ui/badge";
@@ -25,7 +25,11 @@ import { Toggle } from "./ui/toggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import VerifiedBadge from "./verified-badge";
 
-export default function Post({ post }: { post: Post }) {
+export default function Post({
+  post,
+}: {
+  post: Database["public"]["Tables"]["posts"]["Row"];
+}) {
   const getPostQuery = api.posts.getPost.useQuery(
     { post_id: post.id },
     {
@@ -36,9 +40,9 @@ export default function Post({ post }: { post: Post }) {
   );
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [likes, setLikes] = useState<Like[]>(
-    getPostQuery.data?.post.likes ?? [],
-  );
+  const [likes, setLikes] = useState<
+    Database["public"]["Tables"]["likes"]["Row"][]
+  >(getPostQuery.data?.post.likes ?? []);
   const unlikeMutation = api.posts.unlike.useMutation({
     onMutate: ({ userId }) => {
       setLikes((prev) =>
@@ -58,10 +62,10 @@ export default function Post({ post }: { post: Post }) {
       setLikes((prev) => [
         ...prev,
         {
-          id: nanoid(),
+          id: uuid(),
           post_id,
           user_id: userId,
-          created_at: new Date(),
+          created_at: new Date().toISOString(),
         },
       ]);
     },
@@ -88,7 +92,7 @@ export default function Post({ post }: { post: Post }) {
     <div
       onClick={(e) => {
         e.stopPropagation();
-        router.push(`/${getPostQuery.data.post.user.username}/${post.id}`, {
+        router.push(`/${getPostQuery.data.post.user?.username}/${post.id}`, {
           scroll: true,
         });
       }}
@@ -96,17 +100,15 @@ export default function Post({ post }: { post: Post }) {
     >
       <div className="flex justify-between">
         <Link
-          href={`/${getPostQuery.data.post.user.username}`}
+          href={`/${getPostQuery.data.post.user?.username}`}
           onClick={(e) => e.stopPropagation()}
           className="flex gap-x-2"
         >
           <div className="w-max">
             <Image
               src={
-                getPostQuery.data.post.user.image
-                  ? typeof getPostQuery.data.post.user.image === "string"
-                    ? getPostQuery.data.post.user.image
-                    : getPostQuery.data.post.user.image.url
+                getPostQuery.data.post.user.image_path
+                  ? getPostQuery.data.post.user.image_url
                   : "/default-avatar.jpg"
               }
               alt={`${getPostQuery.data.post.user.name} profile picture`}
@@ -172,25 +174,26 @@ export default function Post({ post }: { post: Post }) {
                 <TooltipTrigger>
                   <Badge>
                     {searchParams.get("tab") === "college"
-                      ? getPostQuery.data.post.user.program!.college.slug.toUpperCase()
-                      : getPostQuery.data.post.user.program!.college.campus.slug.toUpperCase()}
+                      ? getPostQuery.data.post.user.programs?.[0]?.colleges?.slug.toUpperCase()
+                      : getPostQuery.data.post.user.programs?.[0]?.colleges?.campuses?.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
                   {searchParams.get("tab") === "college"
-                    ? getPostQuery.data.post.user.program!.college.name
-                    : getPostQuery.data.post.user.program!.college.campus.name}
+                    ? getPostQuery.data.post.user.programs?.[0]?.colleges?.name
+                    : getPostQuery.data.post.user.programs?.[0]?.colleges
+                        ?.campuses?.name}
                 </TooltipContent>
               </Tooltip>
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge variant="outline">
-                    {getPostQuery.data.post.user.program!.slug.toUpperCase()}
+                    {getPostQuery.data.post.user.programs?.[0]?.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
-                  {getPostQuery.data.post.user.program!.name}
+                  {getPostQuery.data.post.user.programs?.[0]?.name}
                 </TooltipContent>
               </Tooltip>
             </div>

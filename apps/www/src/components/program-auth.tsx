@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "@/lib/trpc/client";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Album,
@@ -12,13 +10,12 @@ import {
   ChevronsUpDown,
   GraduationCap,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { ACCOUNT_TYPE } from "@kabsu.me/db/schema";
-import type { Campus, College, Program } from "@kabsu.me/db/schema";
-
+import { api } from "~/lib/trpc/client";
+import { cn } from "~/lib/utils";
+import type { Database } from "../../../../supabase/types";
 import { Icons } from "./icons";
 import { Button } from "./ui/button";
 import { Card, CardFooter, CardHeader } from "./ui/card";
@@ -52,26 +49,26 @@ export default function ProgramAuth({
     name: string;
   };
   data: {
-    campuses: Campus[];
-    colleges: College[];
-    programs: Program[];
+    campuses: Database["public"]["Tables"]["campuses"]["Row"][];
+    colleges: Database["public"]["Tables"]["colleges"]["Row"][];
+    programs: Database["public"]["Tables"]["programs"]["Row"][];
   };
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const router = useRouter();
-  const { update } = useSession();
+  // const { update } = useSession();
   const signUpMutation = api.users.signUp.useMutation({
-    onSuccess: async (data) => {
+    onSuccess: (data) => {
       if (data.isSuccess) {
-        await update({
-          user: {
-            program_id: data.program_id,
-            type: data.type,
-            name: data.name,
-            username: data.username,
-          },
-        });
+        // await update({
+        //   user: {
+        //     program_id: data.program_id,
+        //     type: data.type,
+        //     name: data.name,
+        //     username: data.username,
+        //   },
+        // });
         router.refresh();
       }
     },
@@ -86,24 +83,22 @@ export default function ProgramAuth({
     programs: false,
   });
   const form2Schema = z.object({
-    type: z.enum(ACCOUNT_TYPE, {
-      required_error: "Role is required.",
-    }),
+    type: z.custom<Database["public"]["Enums"]["user_type"]>(),
     campus_id: z
       .string({
         required_error: "Campus is required.",
       })
-      .nonempty({
+      .min(1, {
         message: "Campus is required.",
       }),
     college_id: z
       .string({
         required_error: "College is required.",
       })
-      .nonempty({
+      .min(1, {
         message: "College is required.",
       }),
-    program_id: z.string().nonempty({
+    program_id: z.string().min(1, {
       message: "Program is required.",
     }),
   });
@@ -143,7 +138,13 @@ export default function ProgramAuth({
                 </h2>
                 <FormControl>
                   <div className="flex flex-col items-center gap-4 sm:flex-row">
-                    {ACCOUNT_TYPE.map((type) => (
+                    {(
+                      [
+                        "student",
+                        "faculty",
+                        "alumni",
+                      ] as Database["public"]["Enums"]["user_type"][]
+                    ).map((type) => (
                       <button
                         key={type}
                         onClick={async () => {

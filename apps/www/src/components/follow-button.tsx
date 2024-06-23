@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { api } from "@/lib/trpc/client";
 
+import { api } from "~/lib/trpc/client";
 import { Icons } from "./icons";
 import {
   AlertDialog,

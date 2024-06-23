@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { api } from "@/lib/trpc/client";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { User } from "@kabsu.me/db/schema";
 import { PenSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { api } from "~/lib/trpc/client";
+import { cn } from "~/lib/utils";
+import type { Database } from "../../../../supabase/types";
 import { Icons } from "./icons";
 import { AlertDialogHeader } from "./ui/alert-dialog";
 import { Button } from "./ui/button";
@@ -32,7 +32,11 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { toast } from "./ui/use-toast";
 
-export default function EditProfile({ user }: { user: User }) {
+export default function EditProfile({
+  user,
+}: {
+  user: Database["public"]["Tables"]["users"]["Row"];
+}) {
   const context = api.useUtils();
   const updateProfileMutation = api.users.updateProfile.useMutation({
     onSuccess: async () => {
@@ -48,12 +52,12 @@ export default function EditProfile({ user }: { user: User }) {
       .optional(),
     name: z
       .string()
-      // .nonempty({ message: "First name is required." })
+      // .min(1,{ message: "First name is required." })
       .max(64, { message: "Name must be at most 64 characters long." })
       .optional(),
     username: z
       .string()
-      // .nonempty({ message: "Username is required." })
+      // .min(1,{ message: "Username is required." })
       .max(64, { message: "Username must be at most 64 characters long." })
       .optional(),
     link: z

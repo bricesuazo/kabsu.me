@@ -18,7 +18,7 @@ import {
   Users2,
   UserSquare2,
 } from "lucide-react";
-import { nanoid } from "nanoid";
+import { v4 as uuid } from "uuid";
 
 const CAMPUSES = [
   {
@@ -354,7 +354,7 @@ const PROGRAMS = [
 ];
 
 export const SEED_DATA = CAMPUSES.map((campus) => {
-  const campus_id = nanoid();
+  const campus_id = uuid();
 
   return {
     id: campus_id,
@@ -362,7 +362,7 @@ export const SEED_DATA = CAMPUSES.map((campus) => {
     slug: campus.slug,
 
     colleges: COLLEGES.map((college) => {
-      const college_id = nanoid();
+      const college_id = uuid();
 
       return {
         id: college_id,
@@ -373,7 +373,7 @@ export const SEED_DATA = CAMPUSES.map((campus) => {
         programs: PROGRAMS.filter(
           (program) => program.college_id === college.id,
         ).map((program) => {
-          const program_id = nanoid();
+          const program_id = uuid();
 
           return {
             id: program_id,

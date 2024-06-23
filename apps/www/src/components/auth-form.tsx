@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { signOut } from "@/actions/auth";
-import { Button } from "@/components/ui/button";
-import { api } from "@/lib/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { Session } from "@kabsu.me/auth";
+import type { RouterOutputs } from "@kabsu.me/api";
 
+import { Button } from "~/components/ui/button";
+import { api } from "~/lib/trpc/client";
+import { createClient } from "~/supabase/client";
 import { Icons } from "./icons";
 import ProgramAuth from "./program-auth";
 import { ToggleTheme } from "./toggle-theme";
@@ -24,7 +24,11 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 
-export default function AuthForm({ session }: { session: Session }) {
+export default function AuthForm({
+  user,
+}: {
+  user: RouterOutputs["auth"]["getCurrentUserPublic"];
+}) {
   const { data } = api.users.getProgramForAuth.useQuery();
   const isUsernameExistsMutation = api.users.isUsernameExists.useMutation();
   const [page, setPage] = useState(0);
@@ -41,24 +45,24 @@ export default function AuthForm({ session }: { session: Session }) {
             "Username must only contain letters, numbers, underscores, and dashes.",
         },
       )
-      .nonempty({ message: "Username is required." }),
-    name: z.string().nonempty({ message: "Display name is required." }),
+      .min(1, { message: "Username is required." }),
+    name: z.string().min(1, { message: "Display name is required." }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: session.user.email.split("@")[0]?.replace(".", "-") ?? "",
-      name: session.user.name ?? "",
+      username: user?.email?.split("@")[0]?.replace(".", "-") ?? "",
+      name: user?.name ?? "",
     },
   });
 
   useEffect(() => {
     form.setValue(
       "username",
-      session.user.email.split("@")[0]?.replace(".", "-") ?? "",
+      user?.email?.split("@")[0]?.replace(".", "-") ?? "",
     );
-    form.setValue("name", session.user.name ?? "");
+    // form.setValue("name", session.user.name ?? "");
   }, [form]);
 
   return (
@@ -74,17 +78,21 @@ export default function AuthForm({ session }: { session: Session }) {
           Fill out the form below to continue.
         </h4>
         <p className="text-center text-sm text-muted-foreground">
-          {session.user.email}
+          {user?.email}
         </p>
 
         <div className="flex justify-center">
-          <form
-            action={async () => signOut({ redirect: true, redirectTo: "/" })}
+          <Button
+            size="sm"
+            variant="outline"
+            className="mt-4"
+            onClick={async () => {
+              const supabase = createClient();
+              await supabase.auth.signOut();
+            }}
           >
-            <Button size="sm" variant="outline" className="mt-4">
-              Sign out
-            </Button>
-          </form>
+            Sign out
+          </Button>
         </div>
       </div>
       {page === 0 ? (

@@ -3,16 +3,14 @@ import "@kabsu.me/tailwind-config/globals.css";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import { headers } from "next/headers";
-import FooterMenu from "@/components/footer-menu";
-import QueryProvider from "@/components/query-provider";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import TRPCProvider from "@/lib/trpc/Provider";
-import { cn } from "@/lib/utils";
-import { auth } from "@kabsu.me/auth";
 import { Analytics } from "@vercel/analytics/react";
-import { SessionProvider } from "next-auth/react";
+
+import QueryProvider from "~/components/query-provider";
+import { ThemeProvider } from "~/components/theme-provider";
+import { Toaster } from "~/components/ui/toaster";
+import { TooltipProvider } from "~/components/ui/tooltip";
+import TRPCProvider from "~/lib/trpc/Provider";
+import { cn } from "~/lib/utils";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -32,32 +30,28 @@ export const metadata: Metadata = {
     name: "Brice Suazo",
     url: "https://bricesuazo.com",
   },
-  metadataBase: new URL("https://cvsu.me/"),
+  metadataBase: new URL("https://kabsu.me/"),
 };
 
-export default async function RootLayout({
-  children,
-}: React.PropsWithChildren) {
-  const session = await auth();
+export default function RootLayout({ children }: React.PropsWithChildren) {
   return (
-    <SessionProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={cn(font.className)}>
-          <QueryProvider>
-            <ThemeProvider attribute="class" defaultTheme="light">
-              <TooltipProvider>
-                <TRPCProvider headers={headers()}>
-                  {children}
-                  <Analytics />
-                  {session && <FooterMenu />}
-                </TRPCProvider>
-              </TooltipProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={cn(font.className)}>
+        <QueryProvider>
+          <ThemeProvider attribute="class" defaultTheme="light">
+            <TooltipProvider>
+              <TRPCProvider headers={headers()}>
+                {children}
+                <Analytics />
+                {/* TODO: */}
+                {/* {session && <FooterMenu />} */}
+              </TRPCProvider>
+            </TooltipProvider>
 
-              <Toaster />
-            </ThemeProvider>
-          </QueryProvider>
-        </body>
-      </html>
-    </SessionProvider>
+            <Toaster />
+          </ThemeProvider>
+        </QueryProvider>
+      </body>
+    </html>
   );
 }

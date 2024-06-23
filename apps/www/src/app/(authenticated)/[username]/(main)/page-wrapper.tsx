@@ -3,10 +3,17 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import EditProfile from "@/components/edit-profile";
-import FollowButton from "@/components/follow-button";
-import { Icons } from "@/components/icons";
-import PostForm from "@/components/post-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Album, Briefcase, Flag, GraduationCap } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import type { RouterOutput } from "@kabsu.me/api/root";
+
+import EditProfile from "~/components/edit-profile";
+import FollowButton from "~/components/follow-button";
+import { Icons } from "~/components/icons";
+import PostForm from "~/components/post-form";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -16,10 +23,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+} from "~/components/ui/alert-dialog";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -28,22 +35,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
+} from "~/components/ui/form";
+import { Textarea } from "~/components/ui/textarea";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { toast } from "@/components/ui/use-toast";
-import VerifiedBadge from "@/components/verified-badge";
-import { api } from "@/lib/trpc/client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { RouterOutput } from "@kabsu.me/api/root";
-import { Album, Briefcase, Flag, GraduationCap } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
+} from "~/components/ui/tooltip";
+import { toast } from "~/components/ui/use-toast";
+import VerifiedBadge from "~/components/verified-badge";
+import { api } from "~/lib/trpc/client";
 import PostsWrapper from "./posts-wrapper";
 
 export default function UserPageWrapper({
@@ -66,7 +67,7 @@ export default function UserPageWrapper({
   }>({
     resolver: zodResolver(
       z.object({
-        reason: z.string().nonempty("Please provide a reason for your report."),
+        reason: z.string().min(1, "Please provide a reason for your report."),
       }),
     ),
     defaultValues: {
@@ -97,22 +98,25 @@ export default function UserPageWrapper({
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge>
-                    {profileQuery.data.user.program!.college.campus.slug.toUpperCase()}
+                    {profileQuery.data.user.programs?.[0]?.colleges?.campuses?.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-60">
-                  {profileQuery.data.user.program!.college.campus.name}
+                  {
+                    profileQuery.data.user.programs?.[0]?.colleges?.campuses
+                      ?.name
+                  }
                 </TooltipContent>
               </Tooltip>
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger className="">
                   <Badge variant="outline">
-                    {profileQuery.data.user.program!.slug.toUpperCase()}
+                    {profileQuery.data.user.programs?.[0]?.slug?.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-60">
-                  {profileQuery.data.user.program!.name}
+                  {profileQuery.data.user.programs?.[0]?.name}
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -196,10 +200,8 @@ export default function UserPageWrapper({
                 </div>
                 <Image
                   src={
-                    profileQuery.data.user.image
-                      ? typeof profileQuery.data.user.image === "string"
-                        ? profileQuery.data.user.image
-                        : profileQuery.data.user.image.url
+                    profileQuery.data.user.image_path
+                      ? profileQuery.data.user.image_url
                       : "/default-avatar.jpg"
                   }
                   alt={`${profileQuery.data.user.name} profile picture`}
@@ -214,10 +216,8 @@ export default function UserPageWrapper({
               <div className="inherit aspect-square">
                 <Image
                   src={
-                    profileQuery.data.user.image
-                      ? typeof profileQuery.data.user.image === "string"
-                        ? profileQuery.data.user.image
-                        : profileQuery.data.user.image.url
+                    profileQuery.data.user.image_path
+                      ? profileQuery.data.user.image_url
                       : "/default-avatar.jpg"
                   }
                   alt={`${profileQuery.data.user.name} profile picture`}

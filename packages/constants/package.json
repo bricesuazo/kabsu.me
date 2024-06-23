@@ -6,13 +6,14 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "lucide-react": "^0.316.0",
-    "nanoid": "^5.0.4"
+    "lucide-react": "^0.396.0",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@kabsu.me/eslint-config": "workspace:*",
     "@kabsu.me/prettier-config": "workspace:*",
-    "@kabsu.me/tsconfig": "workspace:*"
+    "@kabsu.me/tsconfig": "workspace:*",
+    "@types/uuid": "^10.0.0"
   },
   "eslintConfig": {
     "root": true,

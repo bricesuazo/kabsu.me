@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import UserFollows from "@/components/user-follows";
 
-import { auth } from "@kabsu.me/auth";
-import { db } from "@kabsu.me/db";
+import UserFollows from "~/components/user-follows";
+import { createClient as createClientAdmin } from "~/supabase/admin";
+import { createClient as createClientServer } from "~/supabase/server";
 
 export function generateMetadata({
   params: { username },
@@ -20,35 +20,82 @@ export default async function FollowingPage({
 }: {
   params: { username: string };
 }) {
-  const session = await auth();
+  const supabaseServer = createClientServer();
+  const {
+    data: { session },
+  } = await supabaseServer.auth.getSession();
 
   if (!session) notFound();
 
-  const user = await db.query.users.findFirst({
-    where: (user, { eq }) => eq(user.username, username),
-  });
+  const supabaseAdmin = createClientAdmin();
+
+  const { data: user } = await supabaseAdmin
+    .from("users")
+    .select("id")
+    .eq("username", username)
+    .single();
 
   if (!user) notFound();
 
-  const followees = await db.query.followees.findMany({
-    where: (followee, { eq }) => eq(followee.followee_id, user.id),
-  });
+  const { data: followees } = await supabaseAdmin
+    .from("followees")
+    .select("follower_id, created_at")
+    .eq("followee_id", user.id)
+    .order("created_at", { ascending: true });
+
+  // TODO: This is a hacky way to get the followers of the user
+  const { data: my_followers } = await supabaseAdmin
+    .from("followers")
+    .select("follower_id")
+    .eq("followee_id", session.user.id);
+  3;
+
+  if (!followees || !my_followers) notFound();
 
   const followeesUsers =
     followees.length !== 0
-      ? await db.query.users.findMany({
-          where: (user, { inArray }) =>
-            inArray(
-              user.id,
-              followees.map((f) => f.follower_id),
-            ),
-        })
-      : [];
+      ? await supabaseAdmin
+          .from("users")
+          .select()
+          .in(
+            "id",
+            followees.map((f) => f.follower_id),
+          )
+          .then(async (res) => {
+            if (res.error) {
+              console.error(res.error);
+              return [];
+            }
 
-  // TODO: This is a hacky way to get the followers of the user
-  const myFollowers = await db.query.followers.findMany({
-    where: (follower, { eq }) => eq(follower.follower_id, session.user.id),
-  });
+            const image_urls: {
+              error: string | null;
+              path: string | null;
+              signedUrl: string;
+            }[] = [];
+
+            const { data } = await supabaseAdmin.storage
+              .from("users")
+              .createSignedUrls(
+                res.data.map((user) => user.id + "/" + user.image_path),
+                60 * 60 * 24,
+              );
+            if (data) {
+              image_urls.push(...data);
+            }
+
+            return res.data.map((user) => {
+              const image_url = image_urls.find(
+                (image) => image.path === user.id + "/" + user.image_path,
+              )?.signedUrl;
+              return user.image_path && image_url
+                ? {
+                    ...user,
+                    image_url,
+                  }
+                : { ...user, image_path: null };
+            });
+          })
+      : [];
 
   return (
     <div>
@@ -58,21 +105,25 @@ export default async function FollowingPage({
           <p className="text-center">No following yet.</p>
         ) : (
           followees
-            .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
+            .sort(
+              (a, b) =>
+                new Date(b.created_at).getTime() -
+                new Date(a.created_at).getTime(),
+            )
             .map((followee) => {
-              const followeeUser = followeesUsers.find(
+              const followee_user = followeesUsers.find(
                 (user) => user.id === followee.follower_id,
               );
 
-              if (!followeeUser) return null;
+              if (!followee_user) return null;
 
               return (
                 <UserFollows
-                  key={followeeUser.id}
-                  user={followeeUser}
+                  key={followee_user.id}
+                  user={followee_user}
                   isFollower={
-                    myFollowers.some(
-                      (follower) => follower.followee_id === followeeUser.id,
+                    my_followers.some(
+                      (follower) => follower.follower_id === followee_user.id,
                     ) ?? false
                   }
                 />

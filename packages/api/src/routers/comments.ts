@@ -1,70 +1,91 @@
 import { TRPCError } from "@trpc/server";
-import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-
-import { comments, notifications, reported_comments } from "@kabsu.me/db/schema";
 
 import { protectedProcedure, router } from "../trpc";
 
 export const commentsRouter = router({
   getFullComment: protectedProcedure
-    .input(z.object({ comment_id: z.string().nonempty() }))
+    .input(z.object({ comment_id: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
-      const fullComment = await ctx.db.query.comments.findFirst({
-        where: (comment, { eq }) => eq(comment.id, input.comment_id),
-        with: {
-          user: true,
-        },
-      });
+      const { data: full_comment } = await ctx.supabase
+        .from("comments")
+        .select("*, users(*)")
+        .eq("id", input.comment_id)
+        .single();
 
-      if (!fullComment) return null;
+      if (!full_comment) return null;
+
+      let image_url: string | null = null;
+      if (full_comment.users?.image_path) {
+        const { data } = await ctx.supabase.storage
+          .from("users")
+          .createSignedUrl(
+            full_comment.users.id + "/" + full_comment.users.image_path,
+            60,
+          );
+
+        if (data) image_url = data.signedUrl;
+      }
 
       return {
-        comment: fullComment,
-        userId: ctx.session.user.id,
+        comment: {
+          ...full_comment,
+          users:
+            full_comment.users?.image_path && image_url
+              ? { ...full_comment.users, image_url }
+              : { ...full_comment.users, image_path: null },
+        },
+        userId: ctx.auth.session.user.id,
       };
     }),
 
   create: protectedProcedure
     .input(
       z.object({
-        post_id: z.string().nonempty(),
-        content: z.string().nonempty({ message: "Comment cannot be empty." }),
+        post_id: z.string().min(1),
+        content: z.string().min(1, { message: "Comment cannot be empty." }),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const post = await ctx.db.query.posts.findFirst({
-        where: (posts, { eq }) => eq(posts.id, input.post_id),
-      });
+      const { data: post } = await ctx.supabase
+        .from("posts")
+        .select("*")
+        .eq("id", input.post_id)
+        .single();
 
       if (!post)
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
 
-      await ctx.db.insert(comments).values({
-        user_id: ctx.session.user.id,
+      const { error } = await ctx.supabase.from("comments").insert({
+        user_id: ctx.auth.session.user.id,
         post_id: input.post_id,
         content: input.content,
       });
 
-      if (post.user_id !== ctx.session.user.id) {
-        await ctx.db.insert(notifications).values({
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+
+      if (post.user_id !== ctx.auth.session.user.id) {
+        await ctx.supabase.from("notifications").insert({
           to_id: post.user_id,
           type: "comment",
-          from_id: ctx.session.user.id,
+          from_id: ctx.auth.session.user.id,
           content_id: input.post_id,
         });
       }
     }),
   delete: protectedProcedure
-    .input(z.object({ comment_id: z.string().nonempty() }))
+    .input(z.object({ comment_id: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
-      const comment = await ctx.db.query.comments.findFirst({
-        where: (comments, { and, eq }) =>
-          and(
-            eq(comments.id, input.comment_id),
-            eq(comments.user_id, ctx.session.user.id),
-          ),
-      });
+      const { data: comment } = await ctx.supabase
+        .from("comments")
+        .select("*")
+        .eq("id", input.comment_id)
+        .eq("user_id", ctx.auth.session.user.id)
+        .single();
 
       if (!comment)
         throw new TRPCError({
@@ -72,25 +93,29 @@ export const commentsRouter = router({
           message: "Comment not found",
         });
 
-      if (comment.user_id !== ctx.session.user.id)
+      if (comment.user_id !== ctx.auth.session.user.id)
         throw new TRPCError({ code: "UNAUTHORIZED" });
 
-      await ctx.db
-        .update(comments)
-        .set({ deleted_at: new Date() })
-        .where(
-          and(
-            eq(comments.id, input.comment_id),
-            eq(comments.user_id, ctx.session.user.id),
-          ),
-        );
+      const { error } = await ctx.supabase
+        .from("comments")
+        .update({ deleted_at: new Date().toISOString() })
+        .eq("id", input.comment_id)
+        .eq("user_id", ctx.auth.session.user.id);
+
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
     }),
   report: protectedProcedure
     .input(z.object({ comment_id: z.string().min(1), reason: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const comment = await ctx.db.query.comments.findFirst({
-        where: (comment, { and, eq }) => and(eq(comment.id, input.comment_id)),
-      });
+      const { data: comment } = await ctx.supabase
+        .from("comments")
+        .select("*")
+        .eq("id", input.comment_id)
+        .single();
 
       if (!comment || comment.deleted_at)
         throw new TRPCError({
@@ -98,15 +123,15 @@ export const commentsRouter = router({
           message: "Comment not found",
         });
 
-      if (comment.user_id === ctx.session.user.id)
+      if (comment.user_id === ctx.auth.session.user.id)
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not authorized to report this comment",
         });
 
-      await ctx.db.insert(reported_comments).values({
+      await ctx.supabase.from("reported_comments").insert({
         reason: input.reason,
-        reported_by_id: ctx.session.user.id,
+        reported_by_id: ctx.auth.session.user.id,
         comment_id: input.comment_id,
       });
     }),

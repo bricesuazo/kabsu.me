@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { api } from "@/lib/trpc/client";
 import { Bell, BookOpenCheckIcon } from "lucide-react";
 import moment from "moment";
 
+import { api } from "~/lib/trpc/client";
 import { Icons } from "./icons";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -13,16 +13,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
-// import { pusherClient } from "@/lib/pusher";
-// import { useState } from "react";
-
 export default function Notifications() {
-  // const channel = pusherClient.subscribe("my-channel");
-  // channel.bind("my-event", (data: any) => {
-  //   alert(JSON.stringify(data));
-  // });
-
-  // const [open, setOpen] = useState(false);
   const getAllNotificationsQuery = api.notifications.getAll.useQuery({});
   const markAllNotificationAsReadMutation =
     api.notifications.markAllAsRead.useMutation({
@@ -137,10 +128,8 @@ export default function Notifications() {
                       <div className="relative h-8 w-8">
                         <Image
                           src={
-                            notification.from.image
-                              ? typeof notification.from.image === "string"
-                                ? notification.from.image
-                                : notification.from.image.url
+                            notification.from.image_path
+                              ? notification.from.image_url
                               : "/default-avatar.jpg"
                           }
                           alt={`${notification.from.name} profile picture`}

@@ -2,27 +2,33 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import AuthForm from "@/components/auth-form";
-import Footer from "@/components/footer";
-import Header from "@/components/header";
-import { Icons } from "@/components/icons";
-import PostForm from "@/components/post-form";
-import PostTypeTab from "@/components/post-type-tab";
-import Posts from "@/components/posts";
-import { ToggleTheme } from "@/components/toggle-theme";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-// import { Skeleton } from "@/components/ui/skeleton";
-// import { api } from "@/lib/trpc/server";
-import { auth, signIn } from "@kabsu.me/auth";
-import { DEVS_INFO } from "@kabsu.me/constants";
 import { AlertCircle, Github } from "lucide-react";
 
+// import { Skeleton } from "~/components/ui/skeleton";
+// import { api } from "~/lib/trpc/server";
+import { DEVS_INFO } from "@kabsu.me/constants";
+
+import AuthForm from "~/components/auth-form";
+import Footer from "~/components/footer";
+import Header from "~/components/header";
+import { Icons } from "~/components/icons";
+import PostForm from "~/components/post-form";
+import PostTypeTab from "~/components/post-type-tab";
+import Posts from "~/components/posts";
+import { ToggleTheme } from "~/components/toggle-theme";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Separator } from "~/components/ui/separator";
+import { api } from "~/lib/trpc/server";
+import { createClient } from "~/supabase/server";
+
 export async function generateMetadata(): Promise<Metadata> {
-  const session = await auth();
+  const supabase = createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   return {
     title: session
@@ -41,7 +47,8 @@ export default async function Home({
     [key: string]: string | string[] | undefined;
   };
 }) {
-  const session = await auth();
+  const supabase = createClient();
+  const getCurrentUserPublic = await api.auth.getCurrentUserPublic.query();
 
   const TABS_TITLE = {
     all: "See posts of all campuses.",
@@ -52,12 +59,12 @@ export default async function Home({
 
   return (
     <main className="container px-0">
-      {session &&
-      (!session.user.username ||
-        !session.user.type ||
-        !session.user.program_id) ? (
-        <AuthForm session={session} />
-      ) : session ? (
+      {getCurrentUserPublic &&
+      (!getCurrentUserPublic.username ||
+        !getCurrentUserPublic.type ||
+        !getCurrentUserPublic.program_id) ? (
+        <AuthForm user={getCurrentUserPublic} />
+      ) : getCurrentUserPublic ? (
         <div className="border-x">
           <div className="sticky top-0 z-50 backdrop-blur-lg">
             <Header />
@@ -126,7 +133,10 @@ export default async function Home({
             <form
               action={async () => {
                 "use server";
-                await signIn("google");
+                await supabase.auth.signInWithOAuth({
+                  provider: "google",
+                  options: { redirectTo: "/" },
+                });
               }}
             >
               {/* <Icons.spinner className="mr-2 h-4 w-4 animate-spin" /> */}

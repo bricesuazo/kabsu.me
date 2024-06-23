@@ -7,13 +7,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
-    "prettier": "^3.2.4",
-    "prettier-plugin-tailwindcss": "^0.5.11"
+    "@ianvs/prettier-plugin-sort-imports": "^4.2.1",
+    "prettier": "^3.3.2",
+    "prettier-plugin-tailwindcss": "^0.6.5"
   },
   "devDependencies": {
     "@kabsu.me/tsconfig": "workspace:*",
-    "typescript": "^5.3.3"
+    "typescript": "^5.5.2"
   },
   "prettier": "@kabsu.me/prettier-config"
 }
