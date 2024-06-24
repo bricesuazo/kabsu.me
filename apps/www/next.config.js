@@ -9,6 +9,15 @@ const config = {
   images: {
     remotePatterns: [
       {
+        protocol: "http",
+        hostname: "localhost",
+        port: "54321",
+      },
+      {
+        protocol: "https",
+        hostname: "yqzqvzfpaiptblzdkphp.supabase.co",
+      },
+      {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },

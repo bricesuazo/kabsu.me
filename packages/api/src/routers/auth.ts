@@ -18,17 +18,17 @@ export const authRouter = router({
       });
 
     let image_url: string | null = null;
-    if (user.image_path) {
+    if (user.image_name) {
       const { data } = await ctx.supabase.storage
         .from("users")
-        .createSignedUrl(user.id + "/" + user.image_path, 60 * 60 * 24);
+        .createSignedUrl(user.id + "/" + user.image_name, 60 * 60 * 24);
       if (data) {
         image_url = data.signedUrl;
       }
     }
-    return user.image_path && image_url
+    return user.image_name && image_url
       ? { ...user, image_url }
-      : { ...user, image_path: null };
+      : { ...user, image_name: null };
   }),
   getCurrentUserPublic: publicProcedure.query(async ({ ctx }) => {
     if (!ctx.auth) return null;

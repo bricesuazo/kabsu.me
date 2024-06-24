@@ -106,7 +106,7 @@ export default function Post({
           <div className="w-max">
             <Image
               src={
-                getPostQuery.data.post.user.image_path
+                getPostQuery.data.post.user.image_name
                   ? getPostQuery.data.post.user.image_url
                   : "/default-avatar.jpg"
               }

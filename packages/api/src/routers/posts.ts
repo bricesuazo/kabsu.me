@@ -27,11 +27,11 @@ export const postsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
 
       let image_url: string | null = null;
-      if (post.user?.image_path) {
+      if (post.user?.image_name) {
         const { data } = await ctx.supabase.storage
           .from("users")
           .createSignedUrl(
-            post.user.id + "/" + post.user.image_path,
+            post.user.id + "/" + post.user.image_name,
             60 * 60 * 24,
           );
         if (data) {
@@ -42,9 +42,9 @@ export const postsRouter = router({
       return {
         userId: ctx.auth.session.user.id,
         post:
-          post.user?.image_path && image_url
+          post.user?.image_name && image_url
             ? { ...post, user: { ...post.user, image_url } }
-            : { ...post, user: { ...post.user, image_path: null } },
+            : { ...post, user: { ...post.user, image_name: null } },
       };
     }),
 
@@ -94,6 +94,25 @@ export const postsRouter = router({
       let nextCursor: typeof input.cursor | undefined = undefined;
       if (posts.length > limit - 1) {
         nextCursor = input.cursor + 1;
+      }
+
+      const image_urls: {
+        error: string | null;
+        path: string | null;
+        signedUrl: string;
+      }[] = [];
+      const { data } = await ctx.supabase.storage
+        .from("users")
+        .createSignedUrls(
+          [
+            ...new Set(
+              posts.map((post) => post.user?.id + "/" + post.user?.image_name),
+            ),
+          ],
+          60 * 60 * 24,
+        );
+      if (data) {
+        image_urls.push(...data);
       }
 
       return {
@@ -246,39 +265,42 @@ export const postsRouter = router({
           .select()
           .eq("follower_id", user.id);
 
-        posts = following?.length
-          ? await ctx.supabase
-              .from("posts")
-              .select(
-                "*, users!inner(program_id, programs(*, colleges(campus_id)))",
-              )
-              .in("user_id", [...following.map((u) => u.followee_id), user.id])
-              .is("deleted_at", null)
-              .order("created_at", { ascending: false })
-              .limit(limit)
-              .range((input.cursor - 1) * limit, input.cursor * limit)
-              .then((res) => {
-                if (res.error)
-                  throw new TRPCError({
-                    code: "BAD_REQUEST",
-                    message: res.error.message,
-                  });
+        posts = await ctx.supabase
+          .from("posts")
+          .select(
+            "*, users!inner(program_id, programs(*, colleges(campus_id)))",
+          )
+          .in("user_id", [
+            ...new Set([
+              ...(following ?? []).map((u) => u.followee_id),
+              user.id,
+            ]),
+          ])
+          .is("deleted_at", null)
+          .order("created_at", { ascending: false })
+          .limit(limit)
+          .range((input.cursor - 1) * limit, input.cursor * limit)
+          .then((res) => {
+            if (res.error)
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: res.error.message,
+              });
 
-                return res.data.filter(
-                  (post) =>
-                    (post.users.program_id === user.program_id &&
-                      post.type === "program") ||
-                    (post.users.programs?.college_id ===
-                      user.programs?.college_id &&
-                      post.type === "college") ||
-                    (post.users.programs?.colleges?.campus_id ===
-                      user.programs?.colleges?.campus_id &&
-                      post.type === "campus") ||
-                    post.type === "all" ||
-                    post.type === "following",
-                );
-              })
-          : [];
+            return res.data.filter(
+              (post) =>
+                (post.users.program_id === user.program_id &&
+                  post.type === "program") ||
+                (post.users.programs?.college_id ===
+                  user.programs?.college_id &&
+                  post.type === "college") ||
+                (post.users.programs?.colleges?.campus_id ===
+                  user.programs?.colleges?.campus_id &&
+                  post.type === "campus") ||
+                post.type === "all" ||
+                post.type === "following",
+            );
+          });
       }
 
       let nextCursor: typeof input.cursor | undefined = undefined;
@@ -537,7 +559,7 @@ export const postsRouter = router({
       const { data } = await ctx.supabase.storage
         .from("users")
         .createSignedUrls(
-          likes.map((like) => like.user?.id + "/" + like.user?.image_path),
+          likes.map((like) => like.user?.id + "/" + like.user?.image_name),
           60 * 60 * 24,
         );
       if (data) {
@@ -546,20 +568,20 @@ export const postsRouter = router({
 
       return likes.map((like) => {
         const signed_url = image_urls.find(
-          (url) => url.path === like.user?.id + "/" + like.user?.image_path,
+          (url) => url.path === like.user?.id + "/" + like.user?.image_name,
         )?.signedUrl;
 
         return {
           ...like,
           user:
-            like.user?.image_path && signed_url
+            like.user?.image_name && signed_url
               ? {
                   ...like.user,
                   image_url: signed_url,
                 }
               : {
                   ...like.user,
-                  image_path: null,
+                  image_name: null,
                 },
         };
       });

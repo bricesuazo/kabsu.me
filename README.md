@@ -9,24 +9,6 @@ A social media platform exclusive only for Cavite State University students, fac
 - [Tailwind CSS](https://tailwindcss.com/) - CSS Framework
 - [Vercel](https://vercel.com/) - Hosting
 
-### Roadmap
-
-- [x] Authentication
-- [x] Profile
-- [x] Posts
-- [x] Comments
-- [x] Likes
-- [x] Follows
-- [x] Notifications
-- [x] Infinite scrolling
-- [x] Search
-- [ ] Ratelimit
-- [ ] Account settings
-- [ ] Realtime
-- [ ] Messages
-- [ ] Tasks management
-- [ ] Mobile app?
-
 ### Development
 
 1. Clone the repository

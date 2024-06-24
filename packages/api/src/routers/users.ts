@@ -58,13 +58,24 @@ export const usersRouter = router({
           .string()
           .max(64, { message: "Link must be less than 64 characters" })
           .nullable(),
+        name: z.string().max(64),
+        username: z.string().max(64),
+        image_name: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.supabase
         .from("users")
-        .update({ bio: input.bio, link: input.link })
+        .update({
+          name: input.name,
+          username: input.username,
+          bio: input.bio,
+          link: input.link,
+          image_name: input.image_name,
+        })
         .eq("id", ctx.auth.session.user.id);
+
+      return { username: input.username };
     }),
 
   follow: protectedProcedure
@@ -196,10 +207,10 @@ export const usersRouter = router({
         .eq("followee_id", user_from_db.id);
 
       let image_url: string | null = null;
-      if (user_from_db.image_path) {
+      if (user_from_db.image_name) {
         const { data } = await ctx.supabase.storage
           .from("users")
-          .createSignedUrl(user_from_db.id + "/" + user_from_db.image_path, 60);
+          .createSignedUrl(user_from_db.id + "/" + user_from_db.image_name, 60);
         if (data) {
           image_url = data.signedUrl;
         }
@@ -210,14 +221,14 @@ export const usersRouter = router({
         followeesLength: followees?.length ?? 0,
         user_id: ctx.auth.session.user.id,
         user:
-          user_from_db.image_path && image_url
+          user_from_db.image_name && image_url
             ? {
                 ...user_from_db,
                 image_url,
               }
             : {
                 ...user_from_db,
-                image_path: null,
+                image_name: null,
               },
         is_follower: !!followers?.some(
           (follower) => follower.follower_id === ctx.auth.session.user.id,
@@ -267,7 +278,7 @@ export const usersRouter = router({
       const { data } = await ctx.supabase.storage
         .from("users")
         .createSignedUrls(
-          users.map((user) => user.id + "/" + user.image_path),
+          users.map((user) => user.id + "/" + user.image_name),
           60 * 60 * 24,
         );
       if (data) {
@@ -288,17 +299,17 @@ export const usersRouter = router({
             is_verified: !!user.verified_at,
           };
           const signedUrl = image_urls.find(
-            (image) => image.path === user.id + "/" + user.image_path,
+            (image) => image.path === user.id + "/" + user.image_name,
           )?.signedUrl;
-          return user.image_path && signedUrl
+          return user.image_name && signedUrl
             ? {
                 ...base,
-                image_path: user.image_path,
+                image_name: user.image_name,
                 image_url: signedUrl,
               }
             : {
                 ...base,
-                image_path: null,
+                image_name: null,
               };
         })
         .slice(0, 10);

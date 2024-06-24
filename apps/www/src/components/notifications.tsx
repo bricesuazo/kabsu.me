@@ -130,7 +130,7 @@ export default function Notifications() {
                       <div className="relative h-8 w-8">
                         <Image
                           src={
-                            notification.from.image_path
+                            notification.from.image_name
                               ? notification.from.image_url
                               : "/default-avatar.jpg"
                           }

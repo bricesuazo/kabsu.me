@@ -152,7 +152,7 @@ export default function OnboardingForm({ session }: { session: Session }) {
             }}
           >
             {signoutLoading && (
-              <Icons.spinner className="h-4 w-4 animate-spin" />
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
             Sign out
           </Button>
@@ -312,6 +312,11 @@ function Page1({
     refetchOnWindowFocus: false,
     refetchIntervalInBackground: false,
   });
+  const [opens, setOpens] = useState({
+    campus: false,
+    college: false,
+    program: false,
+  });
 
   return (
     <>
@@ -408,7 +413,12 @@ function Page1({
                 <FormItem className="flex w-full flex-1 flex-col">
                   <FormLabel>Campus</FormLabel>
                   <FormControl>
-                    <Popover>
+                    <Popover
+                      open={opens.campus}
+                      onOpenChange={(open) =>
+                        setOpens((prev) => ({ ...prev, campus: open }))
+                      }
+                    >
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
@@ -456,6 +466,10 @@ function Page1({
                                       }
 
                                       form.setValue("campus_id", campus.id);
+                                      setOpens((prev) => ({
+                                        ...prev,
+                                        campus: false,
+                                      }));
                                     }}
                                   >
                                     <div>
@@ -493,7 +507,12 @@ function Page1({
                 <FormItem className="flex w-full flex-1 flex-col">
                   <FormLabel>College</FormLabel>
                   <FormControl>
-                    <Popover>
+                    <Popover
+                      open={opens.college}
+                      onOpenChange={(open) =>
+                        setOpens((prev) => ({ ...prev, college: open }))
+                      }
+                    >
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
@@ -547,6 +566,10 @@ function Page1({
                                         }
 
                                         form.setValue("college_id", college.id);
+                                        setOpens((prev) => ({
+                                          ...prev,
+                                          college: false,
+                                        }));
                                         await form.trigger("college_id");
                                       }}
                                     >
@@ -586,7 +609,12 @@ function Page1({
                 <FormItem className="flex w-full flex-1 flex-col">
                   <FormLabel>Program</FormLabel>
                   <FormControl>
-                    <Popover>
+                    <Popover
+                      open={opens.program}
+                      onOpenChange={(open) =>
+                        setOpens((prev) => ({ ...prev, program: open }))
+                      }
+                    >
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
@@ -633,6 +661,10 @@ function Page1({
                                       } (${program.slug.toUpperCase()})`}
                                       onSelect={async () => {
                                         form.setValue("program_id", program.id);
+                                        setOpens((prev) => ({
+                                          ...prev,
+                                          program: false,
+                                        }));
                                         await form.trigger("program_id");
                                       }}
                                     >

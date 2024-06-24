@@ -48,7 +48,7 @@ export const notificationsRouter = router({
         .createSignedUrls(
           notifications
             .filter((notif) => notif.from !== null)
-            .map((notif) => notif.from?.id + "/" + notif.from?.image_path),
+            .map((notif) => notif.from?.id + "/" + notif.from?.image_name),
           60 * 60 * 24,
         );
       if (data) {
@@ -59,17 +59,17 @@ export const notificationsRouter = router({
         const signed_url = image_urls.find(
           (url) =>
             url.path ===
-            notification.from?.id + "/" + notification.from?.image_path,
+            notification.from?.id + "/" + notification.from?.image_name,
         );
         return {
           ...notification,
           content: posts.find((post) => post.id === notification.content_id),
           from:
-            notification.from?.image_path && signed_url
+            notification.from?.image_name && signed_url
               ? { ...notification.from, image_url: signed_url.signedUrl }
               : {
                   ...notification.from,
-                  image_path: null,
+                  image_name: null,
                 },
         };
       });

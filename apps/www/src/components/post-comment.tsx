@@ -229,7 +229,7 @@ export default function PostComment({
                       <div className="min-w-max">
                         <Image
                           src={
-                            like.user.image_path
+                            like.user.image_name
                               ? like.user.image_url
                               : "/default-avatar.jpg"
                           }
@@ -389,7 +389,7 @@ export default function PostComment({
                 <div className="min-w-max">
                   {getCurrentUserQuery.data ? (
                     <>
-                      {getCurrentUserQuery.data.image_path && (
+                      {getCurrentUserQuery.data.image_name && (
                         <Image
                           src={getCurrentUserQuery.data.image_url}
                           alt="Image"
@@ -447,7 +447,7 @@ export default function PostComment({
             <div className="min-w-max">
               {getCurrentUserQuery.data ? (
                 <>
-                  {getCurrentUserQuery.data.image_path && (
+                  {getCurrentUserQuery.data.image_name && (
                     <Image
                       src={getCurrentUserQuery.data.image_url}
                       alt="Image"

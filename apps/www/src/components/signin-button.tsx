@@ -15,14 +15,16 @@ export default function SigninButton() {
       disabled={loading}
       onClick={async () => {
         setLoading(true);
-        if (env.NODE_ENV === "development") {
+        if (env.NEXT_PUBLIC_SUPABASE_URL === "http://localhost:54321") {
           await supabase.auth.signInWithOtp({
             email: "bricebrine.suazo@cvsu.edu.ph",
           });
         } else {
           await supabase.auth.signInWithOAuth({
             provider: "google",
-            options: { redirectTo: "/" },
+            options: {
+              redirectTo: `${origin}/api/auth/callback`,
+            },
           });
         }
         setLoading(false);

@@ -11,10 +11,10 @@ export default async function UserFollows({
 }: {
   user:
     | (Database["public"]["Tables"]["users"]["Row"] & {
-        image_path: string;
+        image_name: string;
         image_url: string;
       })
-    | (Database["public"]["Tables"]["users"]["Row"] & { image_path: null });
+    | (Database["public"]["Tables"]["users"]["Row"] & { image_name: null });
   isFollower: boolean;
 }) {
   const supabase = createClient();
@@ -27,7 +27,7 @@ export default async function UserFollows({
       <Link href={`/${user.username}`}>
         <div className="min-w-max">
           <Image
-            src={user.image_path ? user.image_url : "/default-avatar.jpg"}
+            src={user.image_name ? user.image_url : "/default-avatar.jpg"}
             alt={`${user.name} profile picture`}
             width={40}
             height={40}

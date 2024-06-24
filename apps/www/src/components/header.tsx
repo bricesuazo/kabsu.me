@@ -13,7 +13,6 @@ import {
   Moon,
   SquareMousePointer,
   Sun,
-  UserCog,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -144,8 +143,8 @@ export default function Header() {
                   <div className="relative h-8 w-8">
                     <Image
                       src={
-                        getCurrentUserQuery.data.image_path
-                          ? getCurrentUserQuery.data.image_path
+                        getCurrentUserQuery.data.image_name
+                          ? getCurrentUserQuery.data.image_url
                           : "/default-avatar.jpg"
                       }
                       alt="Image"
@@ -171,12 +170,6 @@ export default function Header() {
                       {getCurrentUserQuery.data.username.length
                         ? `${getCurrentUserQuery.data.username}`
                         : "My Profile"}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild disabled>
-                    <Link href="/account">
-                      <UserCog className="mr-2" size="1rem" />
-                      Account Settings
                     </Link>
                   </DropdownMenuItem>
 

@@ -63,3 +63,29 @@ INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('c2915e3a-6178
 INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('7f67c92c-a4d1-44df-b225-d929f8ab5954', 'Bachelor of Science in Veterinary Technology', 'bsvt', '57c42cdc-b69d-4454-9e06-e3f9f87b051e');
 INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('9f3fe5ef-ab2f-454a-a393-6a7ef09ef2b3', 'Bachelor of Science in  Animal Health and Management', 'bsahm', '57c42cdc-b69d-4454-9e06-e3f9f87b051e');
 INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('ed76e074-b92a-451e-8074-7b761d5d29b7', 'Bachelor of Science in Biomedical Science', 'bsbs', '57c42cdc-b69d-4454-9e06-e3f9f87b051e');
+
+INSERT INTO "storage"."buckets" (
+    "id",
+    "name",
+    "owner",
+    "created_at",
+    "updated_at",
+    "public",
+    "avif_autodetection",
+    "file_size_limit",
+    "allowed_mime_types",
+    "owner_id"
+  )
+VALUES 
+  (
+    'users',
+    'users',
+    NULL,
+    '2024-01-25 01:40:30.239876+00',
+    '2024-01-25 01:40:30.239876+00',
+    'f',
+    'f',
+    NULL,
+    NULL,
+    NULL
+  );

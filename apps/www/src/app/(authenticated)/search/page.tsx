@@ -65,7 +65,7 @@ export default function SearchPage() {
                   <div className="min-w-max">
                     <Image
                       src={
-                        user.image_path ? user.image_url : "/default-avatar.jpg"
+                        user.image_name ? user.image_url : "/default-avatar.jpg"
                       }
                       alt=""
                       width={40}

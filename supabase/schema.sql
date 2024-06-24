@@ -215,12 +215,12 @@ CREATE TABLE IF NOT EXISTS "public"."users" (
     "email" character varying NOT NULL,
     "bio" "text",
     "link" "text",
-    "image_path" "text",
     "deactivated_at" timestamp with time zone,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "type" "public"."user_type" NOT NULL,
     "program_id" "uuid" NOT NULL,
-    "verified_at" timestamp with time zone
+    "verified_at" timestamp with time zone,
+    "image_name" "text"
 );
 
 ALTER TABLE "public"."users" OWNER TO "postgres";

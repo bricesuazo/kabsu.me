@@ -195,7 +195,7 @@ export default function UserPageWrapper({
                 </div>
                 <Image
                   src={
-                    profileQuery.data.user.image_path
+                    profileQuery.data.user.image_name
                       ? profileQuery.data.user.image_url
                       : "/default-avatar.jpg"
                   }
@@ -211,7 +211,7 @@ export default function UserPageWrapper({
               <div className="inherit aspect-square">
                 <Image
                   src={
-                    profileQuery.data.user.image_path
+                    profileQuery.data.user.image_name
                       ? profileQuery.data.user.image_url
                       : "/default-avatar.jpg"
                   }

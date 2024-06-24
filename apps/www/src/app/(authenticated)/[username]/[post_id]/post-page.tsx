@@ -96,7 +96,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                 className="flex gap-x-2"
               >
                 <div className="w-max">
-                  {postQuery.data.post.user.image_path ? (
+                  {postQuery.data.post.user.image_name ? (
                     <Image
                       src={postQuery.data.post.user.image_url}
                       alt={`${postQuery.data.post.user.name} profile picture`}
@@ -258,7 +258,7 @@ function CommentComponent({
         <div className="flex gap-x-2">
           <div className="min-w-max">
             <Link href={`/${fullCommentQuery.data.comment.users.username}`}>
-              {fullCommentQuery.data.comment.users.image_path ? (
+              {fullCommentQuery.data.comment.users.image_name ? (
                 <Image
                   src={fullCommentQuery.data.comment.users.image_url}
                   alt={`${fullCommentQuery.data.comment.users.name} profile picture`}

@@ -123,11 +123,11 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
       ) : (
         <Link
           href={`/${getCurrentUserQuery.data.username}`}
-          className="xs:h-10 xs:w-10 relative aspect-square h-8 w-8 min-w-max"
+          className="relative aspect-square h-8 w-8 min-w-max xs:h-10 xs:w-10"
         >
           <Image
             src={
-              getCurrentUserQuery.data.image_path
+              getCurrentUserQuery.data.image_name
                 ? getCurrentUserQuery.data.image_url
                 : "/default-avatar.jpg"
             }
@@ -219,7 +219,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                     </FormItem>
                   )}
                 />
-                <p className="xs:text-sm flex-1 text-xs text-muted-foreground">
+                <p className="flex-1 text-xs text-muted-foreground xs:text-sm">
                   This post will be visible to{" "}
                   {form.watch("type") === "following"
                     ? "your followers"

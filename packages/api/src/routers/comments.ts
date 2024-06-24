@@ -16,11 +16,11 @@ export const commentsRouter = router({
       if (!full_comment) return null;
 
       let image_url: string | null = null;
-      if (full_comment.users?.image_path) {
+      if (full_comment.users?.image_name) {
         const { data } = await ctx.supabase.storage
           .from("users")
           .createSignedUrl(
-            full_comment.users.id + "/" + full_comment.users.image_path,
+            full_comment.users.id + "/" + full_comment.users.image_name,
             60,
           );
 
@@ -31,9 +31,9 @@ export const commentsRouter = router({
         comment: {
           ...full_comment,
           users:
-            full_comment.users?.image_path && image_url
+            full_comment.users?.image_name && image_url
               ? { ...full_comment.users, image_url }
-              : { ...full_comment.users, image_path: null },
+              : { ...full_comment.users, image_name: null },
         },
         userId: ctx.auth.session.user.id,
       };

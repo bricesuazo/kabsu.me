@@ -101,7 +101,7 @@ export default function NotificationPage() {
                 <div className="flex gap-x-2">
                   {/* <Link href={`/${notification.from.username}`}> */}
                   <div className="relative h-10 w-10">
-                    {notification.from.image_path ? (
+                    {notification.from.image_name ? (
                       <Image
                         src={notification.from.image_url}
                         alt={`${notification.from.name} profile picture`}

@@ -88,7 +88,7 @@ export default function Search() {
                     <div className="min-w-max">
                       <Image
                         src={
-                          user.image_path
+                          user.image_name
                             ? user.image_url
                             : "/default-avatar.jpg"
                         }

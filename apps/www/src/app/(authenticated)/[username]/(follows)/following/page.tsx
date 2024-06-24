@@ -75,7 +75,7 @@ export default async function FollowingPage({
             const { data } = await supabaseAdmin.storage
               .from("users")
               .createSignedUrls(
-                res.data.map((user) => user.id + "/" + user.image_path),
+                res.data.map((user) => user.id + "/" + user.image_name),
                 60 * 60 * 24,
               );
             if (data) {
@@ -84,14 +84,14 @@ export default async function FollowingPage({
 
             return res.data.map((user) => {
               const image_url = image_urls.find(
-                (image) => image.path === user.id + "/" + user.image_path,
+                (image) => image.path === user.id + "/" + user.image_name,
               )?.signedUrl;
-              return user.image_path && image_url
+              return user.image_name && image_url
                 ? {
                     ...user,
                     image_url,
                   }
-                : { ...user, image_path: null };
+                : { ...user, image_name: null };
             });
           })
       : [];
