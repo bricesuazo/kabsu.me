@@ -65,7 +65,10 @@ export default function PostDropdown({
       if (successUrl) {
         router.push(successUrl);
       } else {
-        await context.posts.getUserPosts.reset();
+        await Promise.all([
+          context.posts.getUserPosts.reset(),
+          context.posts.getPosts.reset(),
+        ]);
         // router.refresh();
       }
     },

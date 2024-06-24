@@ -20,7 +20,7 @@ export const commentsRouter = router({
         const { data } = await ctx.supabase.storage
           .from("users")
           .createSignedUrl(
-            full_comment.users.id + "/" + full_comment.users.image_name,
+            full_comment.users.id + "/avatar/" + full_comment.users.image_name,
             60,
           );
 

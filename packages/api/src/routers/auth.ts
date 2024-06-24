@@ -21,7 +21,7 @@ export const authRouter = router({
     if (user.image_name) {
       const { data } = await ctx.supabase.storage
         .from("users")
-        .createSignedUrl(user.id + "/" + user.image_name, 60 * 60 * 24);
+        .createSignedUrl(user.id + "/avatar/" + user.image_name, 60 * 60 * 24);
       if (data) {
         image_url = data.signedUrl;
       }

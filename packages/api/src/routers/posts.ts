@@ -31,7 +31,7 @@ export const postsRouter = router({
         const { data } = await ctx.supabase.storage
           .from("users")
           .createSignedUrl(
-            post.user.id + "/" + post.user.image_name,
+            post.user.id + "/avatar/" + post.user.image_name,
             60 * 60 * 24,
           );
         if (data) {

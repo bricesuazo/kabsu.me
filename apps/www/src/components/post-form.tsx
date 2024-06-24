@@ -140,9 +140,9 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
       )}
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(async (values) => {
-            await createPostMutation.mutateAsync(values);
-          })}
+          onSubmit={form.handleSubmit((values) =>
+            createPostMutation.mutateAsync(values),
+          )}
           className="flex-1 space-y-4"
         >
           <div className="flex gap-x-2">
@@ -173,6 +173,14 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                           autoFocus
                           maxLength={256}
                           maxRows={6}
+                          onKeyDown={async (e) => {
+                            if (e.key === "Enter" && e.ctrlKey) {
+                              e.preventDefault();
+                              await form.handleSubmit((values) =>
+                                createPostMutation.mutateAsync(values),
+                              )();
+                            }
+                          }}
                           {...field}
                         />
                       )}

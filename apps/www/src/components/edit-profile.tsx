@@ -155,7 +155,7 @@ export default function EditProfile({
                 const now = Date.now();
                 const uploadData = await supabase.storage
                   .from("users")
-                  .upload(user.id + "/" + now, data.images[0]);
+                  .upload(user.id + "/avatar/" + now, data.images[0]);
 
                 if (uploadData.error) {
                   toast.error("Failed to upload image", {

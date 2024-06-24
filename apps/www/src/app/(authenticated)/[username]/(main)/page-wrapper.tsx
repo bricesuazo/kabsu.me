@@ -200,9 +200,9 @@ export default function UserPageWrapper({
                       : "/default-avatar.jpg"
                   }
                   alt={`${profileQuery.data.user.name} profile picture`}
-                  fill
-                  sizes="100%"
-                  className="-z-10 object-cover"
+                  width={200}
+                  height={200}
+                  className="h-full object-cover"
                 />
               </div>
             </DialogTrigger>
@@ -216,9 +216,9 @@ export default function UserPageWrapper({
                       : "/default-avatar.jpg"
                   }
                   alt={`${profileQuery.data.user.name} profile picture`}
-                  fill
-                  sizes="100%"
-                  className="rounded-full object-cover object-center p-8"
+                  width={800}
+                  height={800}
+                  className="h-full w-full rounded-full object-cover object-center p-8"
                 />
               </div>
             </DialogContent>

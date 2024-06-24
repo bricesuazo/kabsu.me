@@ -1,13 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
 import type { Database } from "../../../../supabase/types";
-import { createClient } from "~/supabase/server";
 import FollowButton from "./follow-button";
 
-export default async function UserFollows({
+export default function UserFollows({
   user,
   isFollower,
+  user_id,
 }: {
   user:
     | (Database["public"]["Tables"]["users"]["Row"] & {
@@ -16,12 +18,8 @@ export default async function UserFollows({
       })
     | (Database["public"]["Tables"]["users"]["Row"] & { image_name: null });
   isFollower: boolean;
+  user_id: string;
 }) {
-  const supabase = createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
   return (
     <div className="flex gap-x-2 rounded border border-transparent p-2 hover:border-inherit">
       <Link href={`/${user.username}`}>
@@ -51,7 +49,7 @@ export default async function UserFollows({
           </p>
         </div>
 
-        {user.id !== session?.user.id && (
+        {user.id !== user_id && (
           <FollowButton user_id={user.id} isFollower={isFollower} />
         )}
       </div>
