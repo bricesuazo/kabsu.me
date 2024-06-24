@@ -14,7 +14,9 @@ import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export default function Notifications() {
-  const getAllNotificationsQuery = api.notifications.getAll.useQuery({});
+  const getAllNotificationsQuery = api.notifications.getAll.useQuery({
+    all: false,
+  });
   const markAllNotificationAsReadMutation =
     api.notifications.markAllAsRead.useMutation({
       onSettled: async () => {

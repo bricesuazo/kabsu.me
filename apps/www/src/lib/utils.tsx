@@ -47,6 +47,7 @@ export function formatText(text: string) {
           return (
             <>
               <Link
+                key={word}
                 onClick={(e) => e.stopPropagation()}
                 href={`/${username}`}
                 className={link_class}

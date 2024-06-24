@@ -80,8 +80,8 @@ export default function Search() {
               <div className="flex flex-col gap-y-1">
                 {searchMutation.data.map((user) => (
                   <Link
-                    href={`/${user.username}`}
                     key={user.id}
+                    href={`/${user.username}`}
                     className="flex gap-x-2 rounded p-3 hover:bg-primary-foreground"
                     onClick={() => setOpen(false)}
                   >

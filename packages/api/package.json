@@ -18,8 +18,8 @@
     "@kabsu.me/constants": "workspace:*",
     "@supabase/supabase-js": "^2.43.5",
     "@t3-oss/env-nextjs": "^0.10.1",
-    "@trpc/client": "next",
-    "@trpc/server": "next",
+    "@trpc/client": "11.0.0-next-beta.208",
+    "@trpc/server": "11.0.0-next-beta.208",
     "superjson": "^2.2.1",
     "uuid": "^10.0.0",
     "zod": "^3.23.8"

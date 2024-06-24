@@ -231,7 +231,7 @@ function CommentComponent({
 
   if (!fullCommentQuery.data)
     return (
-      <div className="space-y-2 border p-4">
+      <div className="space-y-2 border-b p-4 first:border-t">
         <div className="flex justify-between">
           <div className="flex gap-x-2">
             <div className="min-w-max">
@@ -253,7 +253,7 @@ function CommentComponent({
     );
 
   return (
-    <div className="space-y-2 border p-4">
+    <div className="space-y-2 border-b p-4 first:border-t">
       <div className="flex justify-between">
         <div className="flex gap-x-2">
           <div className="min-w-max">

@@ -12,7 +12,7 @@ export const postsRouter = router({
       const { data: post } = await ctx.supabase
         .from("posts")
         .select(
-          "*, likes(*), comments(*), user: users(*, programs(*, colleges(*, campuses(*))))",
+          "*, likes(*), comments(*), user: users(*, programs(name, slug, college_id, colleges(name, slug, campus_id, campuses(name, slug))))",
         )
         .eq("id", input.post_id)
         .is("deleted_at", null)
@@ -60,78 +60,23 @@ export const postsRouter = router({
 
       const { data: current_user_from_db } = await ctx.supabase
         .from("users")
-        .select("*, programs(*, colleges(*, campuses(*)))")
+        .select("*, programs(college_id, colleges(campus_id))")
         .eq("id", ctx.auth.session.user.id)
         .single();
 
       const { data: user_of_post } = await ctx.supabase
         .from("users")
-        .select("*, programs(*, colleges(*, campuses(*)))")
+        .select("*, programs(college_id, colleges(campus_id))")
         .eq("id", input.user_id)
         .single();
-
-      // const { data: is_follower } = await ctx.supabase
-      //   .from("followers")
-      //   .select()
-      //   .eq("follower_id", ctx.auth.session.user.id)
-      //   .eq("followee_id", input.user_id)
-      //   .single();
 
       if (!current_user_from_db || !user_of_post)
         throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
-      // const posts = await ctx.db.query.posts.findMany({
-      //   where: (post, { and, eq, isNull }) =>
-      //     and(
-      //       isNull(post.deleted_at),
-      //       eq(post.user_id, input.user_id),
-
-      //       current_user_from_db.id !== user_of_post.id
-      //         ? or(
-      //             eq(post.type, "all"),
-      //             current_user_from_db.program_id === user_of_post.program_id
-      //               ? eq(post.type, "program")
-      //               : undefined,
-
-      //             current_user_from_db.program?.college_id ===
-      //               user_of_post.program?.college_id
-      //               ? eq(post.type, "college")
-      //               : undefined,
-
-      //             current_user_from_db.program?.college.campus_id ===
-      //               user_of_post.program?.college.campus_id
-      //               ? eq(post.type, "campus")
-      //               : undefined,
-
-      //             is_follower ? eq(post.type, "following") : undefined,
-      //           )
-      //         : undefined,
-      //     ),
-
-      //   orderBy: (post, { desc }) => desc(post.created_at),
-      //   limit,
-      //   offset: (input.cursor - 1) * limit,
-      //   with: {
-      //     comments: true,
-      //     likes: true,
-      //     user: {
-      //       with: {
-      //         program: {
-      //           with: {
-      //             college: {
-      //               with: { campus: true },
-      //             },
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      // });
-
       const { data: posts } = await ctx.supabase
         .from("posts")
         .select(
-          "*, likes(*), comments(*), user: users(*, programs(*, colleges(*, campuses(*))))",
+          "*, likes(*), comments(*), user: users(*, programs(college_id, colleges(campus_id)))",
         )
         .eq("user_id", input.user_id)
         .is("deleted_at", null)
@@ -152,7 +97,18 @@ export const postsRouter = router({
       }
 
       return {
-        posts,
+        posts: posts.filter(
+          (post) =>
+            (post.user?.programs?.college_id ===
+              current_user_from_db.programs?.college_id &&
+              post.type === "college") ||
+            (post.user?.programs?.colleges?.campus_id ===
+              current_user_from_db.programs?.colleges?.campus_id &&
+              post.type === "campus") ||
+            post.type === "all" ||
+            post.type === "following" ||
+            post.user_id === ctx.auth.session.user.id,
+        ),
         userId: ctx.auth.session.user.id,
         nextCursor,
       };
@@ -278,7 +234,7 @@ export const postsRouter = router({
       } else {
         const { data: user } = await ctx.supabase
           .from("users")
-          .select("*, programs(*, colleges(*))")
+          .select("*, programs(college_id, colleges(campus_id))")
           .eq("id", ctx.auth.session.user.id)
           .single();
 
@@ -296,16 +252,7 @@ export const postsRouter = router({
               .select(
                 "*, users!inner(program_id, programs(*, colleges(campus_id)))",
               )
-              .in(
-                "user_id",
-                following.map((u) => u.followee_id),
-              )
-              // .eq(
-              //   "users.programs.colleges.campus_id",
-              //   user.programs?.colleges?.campus_id ?? "",
-              // )
-              // .eq("users.programs.college_id", user.programs?.college_id ?? "")
-              // .eq("users.program_id", user.program_id)
+              .in("user_id", [...following.map((u) => u.followee_id), user.id])
               .is("deleted_at", null)
               .order("created_at", { ascending: false })
               .limit(limit)
@@ -317,7 +264,19 @@ export const postsRouter = router({
                     message: res.error.message,
                   });
 
-                return res.data;
+                return res.data.filter(
+                  (post) =>
+                    (post.users.program_id === user.program_id &&
+                      post.type === "program") ||
+                    (post.users.programs?.college_id ===
+                      user.programs?.college_id &&
+                      post.type === "college") ||
+                    (post.users.programs?.colleges?.campus_id ===
+                      user.programs?.colleges?.campus_id &&
+                      post.type === "campus") ||
+                    post.type === "all" ||
+                    post.type === "following",
+                );
               })
           : [];
       }
@@ -438,58 +397,12 @@ export const postsRouter = router({
           message: "You are not authorized to report this post",
         });
 
-      // await ctx.db.insert(reported_posts).values({
-      //   reason: input.reason,
-      //   reported_by_id: ctx.auth.session.user.id,
-      //   post_id: input.post_id,
-      // });
-
       await ctx.supabase.from("reported_posts").insert({
         reason: input.reason,
         reported_by_id: ctx.auth.session.user.id,
         post_id: input.post_id,
       });
     }),
-
-  // getUserPosts: protectedProcedure
-  //   .input(
-  //     z.object({
-  //       user_id: z.string().min(1),
-  //       page: z.number().int().positive(),
-  //     }),
-  //   )
-  //   .query(async ({ ctx, input }) => {
-  //     const posts = await ctx.db.query.posts.findMany({
-  //       where: (post, { and, eq, isNull }) =>
-  //         and(isNull(post.deleted_at), eq(post.user_id, ctx.auth.session.user.id)),
-
-  //       limit: 10,
-  //       offset: (input.page - 1) * 10,
-  //       orderBy: (post, { desc }) => desc(post.created_at),
-  //       with: {
-  //         comments: {
-  //           where: (comment, { isNull }) => isNull(comment.deleted_at),
-  //         },
-  //         likes: true,
-  //         user: {
-  //           with: {
-  //             program: {
-  //               with: {
-  //                 college: {
-  //                   with: {
-  //                     campus: true,
-  //                   },
-  //                 },
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     });
-
-  //     return posts;
-  //   }),
-
   like: protectedProcedure
     .input(
       z.object({
@@ -601,7 +514,9 @@ export const postsRouter = router({
     .query(async ({ ctx, input }) => {
       const { data: likes } = await ctx.supabase
         .from("likes")
-        .select("*, user: users(*, programs(*, colleges(*, campuses(*))))")
+        .select(
+          "*, user: users(*, programs(name, slug, colleges(name, slug, campuses(name, slug))))",
+        )
         .eq("post_id", input.post_id)
         .order("created_at", { ascending: false })
         .then((res) => {
