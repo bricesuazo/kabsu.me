@@ -20,7 +20,7 @@ export const usersRouter = router({
       const { data: user } = await ctx.supabase
         .from("users")
         .select()
-        .eq("id", ctx.auth.session.user.id)
+        .eq("id", ctx.auth.user.id)
         .single();
 
       if (user) {
@@ -35,8 +35,8 @@ export const usersRouter = router({
           .eq("id", user.id);
       } else {
         await ctx.supabase.from("users").insert({
-          id: ctx.auth.session.user.id,
-          email: ctx.auth.session.user.email ?? "",
+          id: ctx.auth.user.id,
+          email: ctx.auth.user.email ?? "",
           program_id: input.program_id,
           type: input.type,
           name: input.name,
@@ -67,7 +67,7 @@ export const usersRouter = router({
       const { data: user } = await ctx.supabase
         .from("users")
         .select()
-        .eq("id", ctx.auth.session.user.id)
+        .eq("id", ctx.auth.user.id)
         .single();
 
       if (!user)
@@ -88,7 +88,7 @@ export const usersRouter = router({
           link: input.link,
           image_name: input.image_name,
         })
-        .eq("id", ctx.auth.session.user.id);
+        .eq("id", ctx.auth.user.id);
 
       return { username: input.username };
     }),
@@ -99,7 +99,7 @@ export const usersRouter = router({
       const { data: is_already_following } = await ctx.supabase
         .from("followers")
         .select("*")
-        .eq("follower_id", ctx.auth.session.user.id)
+        .eq("follower_id", ctx.auth.user.id)
         .eq("followee_id", input.user_id)
         .single();
 
@@ -110,18 +110,18 @@ export const usersRouter = router({
         });
 
       await ctx.supabase.from("followers").insert({
-        follower_id: ctx.auth.session.user.id,
+        follower_id: ctx.auth.user.id,
         followee_id: input.user_id,
       });
 
       await ctx.supabase.from("followees").insert({
         follower_id: input.user_id,
-        followee_id: ctx.auth.session.user.id,
+        followee_id: ctx.auth.user.id,
       });
 
-      if (ctx.auth.session.user.id !== input.user_id) {
+      if (ctx.auth.user.id !== input.user_id) {
         await ctx.supabase.from("notifications").insert({
-          from_id: ctx.auth.session.user.id,
+          from_id: ctx.auth.user.id,
           to_id: input.user_id,
           type: "follow",
         });
@@ -134,21 +134,21 @@ export const usersRouter = router({
       await ctx.supabase
         .from("followers")
         .delete()
-        .eq("follower_id", ctx.auth.session.user.id)
+        .eq("follower_id", ctx.auth.user.id)
         .eq("followee_id", input.user_id);
 
       await ctx.supabase
         .from("followees")
         .delete()
         .eq("follower_id", input.user_id)
-        .eq("followee_id", ctx.auth.session.user.id);
+        .eq("followee_id", ctx.auth.user.id);
 
-      if (ctx.auth.session.user.id !== input.user_id) {
+      if (ctx.auth.user.id !== input.user_id) {
         await ctx.supabase
           .from("notifications")
           .delete()
           .eq("to_id", input.user_id)
-          .eq("from_id", ctx.auth.session.user.id)
+          .eq("from_id", ctx.auth.user.id)
           .eq("type", "follow");
       }
     }),
@@ -191,7 +191,7 @@ export const usersRouter = router({
       const { data: is_follower } = await ctx.supabase
         .from("followers")
         .select()
-        .eq("follower_id", ctx.auth.session.user.id)
+        .eq("follower_id", ctx.auth.user.id)
         .eq("followee_id", input.user_id)
         .single();
 
@@ -237,7 +237,7 @@ export const usersRouter = router({
       return {
         followersLength: followers?.length ?? 0,
         followeesLength: followees?.length ?? 0,
-        user_id: ctx.auth.session.user.id,
+        user_id: ctx.auth.user.id,
         user:
           user_from_db.image_name && image_url
             ? {
@@ -249,7 +249,7 @@ export const usersRouter = router({
                 image_name: null,
               },
         is_follower: !!followers?.some(
-          (follower) => follower.follower_id === ctx.auth.session.user.id,
+          (follower) => follower.follower_id === ctx.auth.user.id,
         ),
       };
     }),
@@ -265,7 +265,7 @@ export const usersRouter = router({
       if (!user)
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
 
-      if (user.id === ctx.auth.session.user.id)
+      if (user.id === ctx.auth.user.id)
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not authorized to report this user",
@@ -273,7 +273,7 @@ export const usersRouter = router({
 
       await ctx.supabase.from("reported_users").insert({
         reason: input.reason,
-        reported_by_id: ctx.auth.session.user.id,
+        reported_by_id: ctx.auth.user.id,
         user_id: input.user_id,
       });
     }),
@@ -283,7 +283,7 @@ export const usersRouter = router({
       const { data: users } = await ctx.supabase
         .from("users")
         .select("*, programs(colleges(campuses(*)))")
-        .not("id", "eq", ctx.auth.session.user.id)
+        .not("id", "eq", ctx.auth.user.id)
         .ilike("username", `%${input.query}%`);
 
       if (users === null) return [];
@@ -348,7 +348,7 @@ export const usersRouter = router({
     .mutation(async ({ ctx, input }) => {
       await ctx.supabase.from("reported_problems").insert({
         problem: input.content,
-        reported_by_id: ctx.auth.session.user.id,
+        reported_by_id: ctx.auth.user.id,
       });
     }),
   suggestAFeature: protectedProcedure
@@ -360,7 +360,7 @@ export const usersRouter = router({
     .mutation(async ({ ctx, input }) => {
       await ctx.supabase.from("suggested_features").insert({
         feature: input.content,
-        suggested_by_id: ctx.auth.session.user.id,
+        suggested_by_id: ctx.auth.user.id,
       });
     }),
   updateAccountSettings: protectedProcedure
@@ -375,7 +375,7 @@ export const usersRouter = router({
       const { data: user } = await ctx.supabase
         .from("users")
         .select()
-        .eq("id", ctx.auth.session.user.id)
+        .eq("id", ctx.auth.user.id)
         .single();
 
       if (!user)
@@ -395,7 +395,7 @@ export const usersRouter = router({
           name: input.name,
           username: input.username,
         })
-        .eq("id", ctx.auth.session.user.id);
+        .eq("id", ctx.auth.user.id);
 
       return input;
     }),
@@ -423,7 +423,7 @@ export const usersRouter = router({
       // const file = new Blob(bytesArrays, { type: "image/png" });
 
       // const user = await ctx.clerk.users.updateUserProfileImage(
-      //   ctx.auth.session.user.id,
+      //   ctx.auth.user.id,
       //   {
       //     file,
       //   },
@@ -432,7 +432,7 @@ export const usersRouter = router({
       //   await trx
       //     .update(users)
       //     .set({ profile_picture_url: user.imageUrl })
-      //     .where(eq(users.id, ctx.auth.session.user.id));
+      //     .where(eq(users.id, ctx.auth.user.id));
       // });
     }),
   getAllFollowings: protectedProcedure
@@ -455,7 +455,7 @@ export const usersRouter = router({
         ctx.supabase
           .from("followers")
           .select("follower_id")
-          .eq("followee_id", ctx.auth.session.user.id),
+          .eq("followee_id", ctx.auth.user.id),
       ]);
 
       if (!followees || !my_followers)
@@ -528,7 +528,7 @@ export const usersRouter = router({
         ctx.supabase
           .from("followees")
           .select("follower_id")
-          .eq("followee_id", ctx.auth.session.user.id),
+          .eq("followee_id", ctx.auth.user.id),
       ]);
 
       if (!followers || !my_followees)

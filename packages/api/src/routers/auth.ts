@@ -8,7 +8,7 @@ export const authRouter = router({
     const { data: user } = await ctx.supabase
       .from("users")
       .select("*")
-      .eq("id", ctx.auth.session.user.id)
+      .eq("id", ctx.auth.user.id)
       .single();
 
     if (!user)
@@ -36,7 +36,7 @@ export const authRouter = router({
     const { data: user } = await ctx.supabase
       .from("users")
       .select("*")
-      .eq("id", ctx.auth.session.user.id)
+      .eq("id", ctx.auth.user.id)
       .single();
 
     return user;

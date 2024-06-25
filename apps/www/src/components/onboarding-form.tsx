@@ -1,6 +1,6 @@
 "use client";
 
-import type { Session } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
 import type { UseFormReturn } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -86,7 +86,7 @@ const formSchema = z.object({
     .optional(),
 });
 
-export default function OnboardingForm({ session }: { session: Session }) {
+export default function OnboardingForm({ user }: { user: User }) {
   const router = useRouter();
   const isUsernameExistsMutation = api.users.isUsernameExists.useMutation();
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -107,17 +107,17 @@ export default function OnboardingForm({ session }: { session: Session }) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       page: 0,
-      username: session.user.email?.split("@")[0]?.replace(".", "-") ?? "",
+      username: user.email?.split("@")[0]?.replace(".", "-") ?? "",
     },
   });
 
   useEffect(() => {
     form.setValue(
       "username",
-      session.user.email?.split("@")[0]?.replace(".", "-") ?? "",
+      user.email?.split("@")[0]?.replace(".", "-") ?? "",
     );
     form.setValue("name", "");
-  }, [form, session.user.email]);
+  }, [form, user.email]);
 
   const [signoutLoading, setSignoutLoading] = useState(false);
 
@@ -134,7 +134,7 @@ export default function OnboardingForm({ session }: { session: Session }) {
           Fill out the form below to continue.
         </h4>
         <p className="text-center text-sm text-muted-foreground">
-          {session.user.email}
+          {user.email}
         </p>
 
         <div className="flex justify-center">

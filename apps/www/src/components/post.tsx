@@ -113,7 +113,7 @@ export default function Post({
               alt={`${getPostQuery.data.post.user.name} profile picture`}
               width={40}
               height={40}
-              className="aspect-square rounded-full object-cover"
+              className="aspect-square rounded-full object-cover object-center"
             />
           </div>
           <div className="flex flex-1 flex-col gap-y-1">

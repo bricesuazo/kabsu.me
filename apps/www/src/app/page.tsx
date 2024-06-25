@@ -9,11 +9,11 @@ import { createClient } from "~/supabase/server";
 export async function generateMetadata(): Promise<Metadata> {
   const supabase = createClient();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return {
-    title: session
+    title: user
       ? "Home - Kabsu.me"
       : "Welcome! - Kabsu.me | Social Media for Cavite State University",
   };
@@ -37,7 +37,7 @@ export default async function Home({
   return (
     <main className="container px-0">
       {!getCurrentUserPublic && getCurrentSession ? (
-        <OnboardingForm session={getCurrentSession.session} />
+        <OnboardingForm user={getCurrentSession.user} />
       ) : getCurrentUserPublic ? (
         <HomeProtected tab={tab} />
       ) : (

@@ -25,8 +25,8 @@ export default function PostTypeTab() {
         defaultValue={tab}
         value={tab}
         onValueChange={(value) => {
-          setTab(value);
           router.push(value !== "following" ? `/?tab=${value}` : "/");
+          setTab(value);
         }}
       >
         <TabsList className="flex h-auto w-full justify-between rounded-none bg-transparent p-0">

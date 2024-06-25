@@ -137,7 +137,7 @@ export default function Notifications() {
                           alt={`${notification.from.name} profile picture`}
                           fill
                           sizes="100%"
-                          className="rounded-full object-cover object-center"
+                          className="aspect-square rounded-full object-cover object-center"
                         />
                       </div>
                     </Link>

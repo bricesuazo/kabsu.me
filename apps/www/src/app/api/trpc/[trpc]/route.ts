@@ -25,15 +25,15 @@ export function OPTIONS() {
 const handler = async (req: Request) => {
   const supabase = createClient();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const response = await fetchRequestHandler({
     endpoint: "/api/trpc",
     router: appRouter,
     req,
     createContext: () =>
-      createTRPCContext({ auth: session ? { session } : null, req }),
+      createTRPCContext({ auth: user ? { user } : null, req }),
     onError({ error, path }) {
       console.error(`>>> tRPC Error on '${path}'`, error);
     },

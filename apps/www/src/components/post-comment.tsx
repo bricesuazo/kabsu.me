@@ -395,7 +395,7 @@ export default function PostComment({
                           alt="Image"
                           width={40}
                           height={40}
-                          className="rounded-full object-cover object-center"
+                          className="aspect-square rounded-full object-cover object-center"
                         />
                       )}
                     </>

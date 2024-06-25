@@ -35,7 +35,7 @@ export const commentsRouter = router({
               ? { ...full_comment.users, image_url }
               : { ...full_comment.users, image_name: null },
         },
-        userId: ctx.auth.session.user.id,
+        userId: ctx.auth.user.id,
       };
     }),
 
@@ -57,7 +57,7 @@ export const commentsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
 
       const { error } = await ctx.supabase.from("comments").insert({
-        user_id: ctx.auth.session.user.id,
+        user_id: ctx.auth.user.id,
         post_id: input.post_id,
         content: input.content,
       });
@@ -68,11 +68,11 @@ export const commentsRouter = router({
           message: error.message,
         });
 
-      if (post.user_id !== ctx.auth.session.user.id) {
+      if (post.user_id !== ctx.auth.user.id) {
         await ctx.supabase.from("notifications").insert({
           to_id: post.user_id,
           type: "comment",
-          from_id: ctx.auth.session.user.id,
+          from_id: ctx.auth.user.id,
           content_id: input.post_id,
         });
       }
@@ -84,7 +84,7 @@ export const commentsRouter = router({
         .from("comments")
         .select("*")
         .eq("id", input.comment_id)
-        .eq("user_id", ctx.auth.session.user.id)
+        .eq("user_id", ctx.auth.user.id)
         .single();
 
       if (!comment)
@@ -93,14 +93,14 @@ export const commentsRouter = router({
           message: "Comment not found",
         });
 
-      if (comment.user_id !== ctx.auth.session.user.id)
+      if (comment.user_id !== ctx.auth.user.id)
         throw new TRPCError({ code: "UNAUTHORIZED" });
 
       const { error } = await ctx.supabase
         .from("comments")
         .update({ deleted_at: new Date().toISOString() })
         .eq("id", input.comment_id)
-        .eq("user_id", ctx.auth.session.user.id);
+        .eq("user_id", ctx.auth.user.id);
 
       if (error)
         throw new TRPCError({
@@ -123,7 +123,7 @@ export const commentsRouter = router({
           message: "Comment not found",
         });
 
-      if (comment.user_id === ctx.auth.session.user.id)
+      if (comment.user_id === ctx.auth.user.id)
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not authorized to report this comment",
@@ -131,7 +131,7 @@ export const commentsRouter = router({
 
       await ctx.supabase.from("reported_comments").insert({
         reason: input.reason,
-        reported_by_id: ctx.auth.session.user.id,
+        reported_by_id: ctx.auth.user.id,
         comment_id: input.comment_id,
       });
     }),

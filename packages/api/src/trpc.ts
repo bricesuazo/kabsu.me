@@ -1,4 +1,4 @@
-import type { Session } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
@@ -9,7 +9,7 @@ import { env } from "./../../../apps/www/src/env";
 
 interface CreateContextOptions {
   auth: {
-    session: Session;
+    user: User;
     // user: Database["public"]["Tables"]["users"]["Row"];
   } | null;
 }
@@ -32,7 +32,7 @@ export const createTRPCContext = (opts: {
   const auth = opts.auth;
   const source = opts.req?.headers.get("x-trpc-source") ?? "unknown";
 
-  console.log(">>> tRPC Request from", source, "by", auth?.session.user.email);
+  console.log(">>> tRPC Request from", source, "by", auth?.user.email);
 
   return createInnerTRPCContext({
     auth,

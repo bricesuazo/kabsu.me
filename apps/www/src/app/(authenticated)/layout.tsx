@@ -8,10 +8,10 @@ export default async function AuthenticatedLayout({
 }: React.PropsWithChildren) {
   const supabase = createClient();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session) redirect("/");
+  if (!user) redirect("/");
   return (
     <>
       <main className="container min-h-screen border-x p-0">

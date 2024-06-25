@@ -95,7 +95,7 @@ export default function Search() {
                         alt=""
                         width={40}
                         height={40}
-                        className="aspect-square rounded-full object-cover"
+                        className="aspect-square rounded-full object-cover object-center"
                       />
                     </div>
                     <div>

@@ -202,7 +202,7 @@ export default function UserPageWrapper({
                   alt={`${profileQuery.data.user.name} profile picture`}
                   width={200}
                   height={200}
-                  className="h-full object-cover"
+                  className="aspect-square h-full rounded-full object-cover object-center"
                 />
               </div>
             </DialogTrigger>
@@ -218,7 +218,7 @@ export default function UserPageWrapper({
                   alt={`${profileQuery.data.user.name} profile picture`}
                   width={800}
                   height={800}
-                  className="h-full w-full rounded-full object-cover object-center p-8"
+                  className="aspect-square size-full rounded-full object-cover object-center p-8"
                 />
               </div>
             </DialogContent>

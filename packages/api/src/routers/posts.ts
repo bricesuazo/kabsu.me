@@ -40,7 +40,7 @@ export const postsRouter = router({
       }
 
       return {
-        userId: ctx.auth.session.user.id,
+        userId: ctx.auth.user.id,
         post:
           post.user?.image_name && image_url
             ? { ...post, user: { ...post.user, image_url } }
@@ -61,7 +61,7 @@ export const postsRouter = router({
       const { data: current_user_from_db } = await ctx.supabase
         .from("users")
         .select("*, programs(college_id, colleges(campus_id))")
-        .eq("id", ctx.auth.session.user.id)
+        .eq("id", ctx.auth.user.id)
         .single();
 
       const { data: user_of_post } = await ctx.supabase
@@ -87,7 +87,7 @@ export const postsRouter = router({
       if (posts === null)
         return {
           posts: [],
-          userId: ctx.auth.session.user.id,
+          userId: ctx.auth.user.id,
           nextCursor: undefined,
         };
 
@@ -126,9 +126,9 @@ export const postsRouter = router({
               post.type === "campus") ||
             post.type === "all" ||
             post.type === "following" ||
-            post.user_id === ctx.auth.session.user.id,
+            post.user_id === ctx.auth.user.id,
         ),
-        userId: ctx.auth.session.user.id,
+        userId: ctx.auth.user.id,
         nextCursor,
       };
     }),
@@ -166,7 +166,7 @@ export const postsRouter = router({
         const { data: user } = await ctx.supabase
           .from("users")
           .select("*, programs(*, colleges(campus_id))")
-          .eq("id", ctx.auth.session.user.id)
+          .eq("id", ctx.auth.user.id)
           .single();
 
         if (!user)
@@ -197,7 +197,7 @@ export const postsRouter = router({
         const { data: user } = await ctx.supabase
           .from("users")
           .select("programs(college_id)")
-          .eq("id", ctx.auth.session.user.id)
+          .eq("id", ctx.auth.user.id)
           .single();
 
         if (!user)
@@ -225,7 +225,7 @@ export const postsRouter = router({
         const { data: user } = await ctx.supabase
           .from("users")
           .select("program_id")
-          .eq("id", ctx.auth.session.user.id)
+          .eq("id", ctx.auth.user.id)
           .order("created_at", { ascending: false })
           .single();
 
@@ -254,7 +254,7 @@ export const postsRouter = router({
         const { data: user } = await ctx.supabase
           .from("users")
           .select("*, programs(college_id, colleges(campus_id))")
-          .eq("id", ctx.auth.session.user.id)
+          .eq("id", ctx.auth.user.id)
           .single();
 
         if (!user)
@@ -310,7 +310,7 @@ export const postsRouter = router({
 
       return {
         posts,
-        userId: ctx.auth.session.user.id,
+        userId: ctx.auth.user.id,
         nextCursor,
       };
     }),
@@ -333,7 +333,7 @@ export const postsRouter = router({
     .mutation(async ({ ctx, input }) => {
       await ctx.supabase.from("posts").insert({
         content: input.content,
-        user_id: ctx.auth.session.user.id,
+        user_id: ctx.auth.user.id,
         type: input.type,
       });
     }),
@@ -350,13 +350,13 @@ export const postsRouter = router({
         .from("posts")
         .select()
         .eq("id", input.post_id)
-        .eq("user_id", ctx.auth.session.user.id)
+        .eq("user_id", ctx.auth.user.id)
         .single();
 
       if (!post_from_db || post_from_db.deleted_at)
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
 
-      if (post_from_db.user_id !== ctx.auth.session.user.id)
+      if (post_from_db.user_id !== ctx.auth.user.id)
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not authorized to edit this post",
@@ -366,7 +366,7 @@ export const postsRouter = router({
         .from("posts")
         .update({ content: input.content })
         .eq("id", input.post_id)
-        .eq("user_id", ctx.auth.session.user.id);
+        .eq("user_id", ctx.auth.user.id);
     }),
 
   delete: protectedProcedure
@@ -376,13 +376,13 @@ export const postsRouter = router({
         .from("posts")
         .select()
         .eq("id", input.post_id)
-        .eq("user_id", ctx.auth.session.user.id)
+        .eq("user_id", ctx.auth.user.id)
         .single();
 
       if (!post || post.deleted_at)
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
 
-      if (post.user_id !== ctx.auth.session.user.id)
+      if (post.user_id !== ctx.auth.user.id)
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not authorized to delete this post",
@@ -393,7 +393,7 @@ export const postsRouter = router({
           .from("posts")
           .update({ deleted_at: new Date().toISOString() })
           .eq("id", post.id)
-          .eq("user_id", ctx.auth.session.user.id),
+          .eq("user_id", ctx.auth.user.id),
         ctx.supabase
           .from("notifications")
           .delete()
@@ -413,7 +413,7 @@ export const postsRouter = router({
       if (!post || post.deleted_at)
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
 
-      if (post.user_id === ctx.auth.session.user.id)
+      if (post.user_id === ctx.auth.user.id)
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not authorized to report this post",
@@ -421,7 +421,7 @@ export const postsRouter = router({
 
       await ctx.supabase.from("reported_posts").insert({
         reason: input.reason,
-        reported_by_id: ctx.auth.session.user.id,
+        reported_by_id: ctx.auth.user.id,
         post_id: input.post_id,
       });
     }),
@@ -436,7 +436,7 @@ export const postsRouter = router({
       const { data: like } = await ctx.supabase
         .from("likes")
         .select()
-        .eq("user_id", ctx.auth.session.user.id)
+        .eq("user_id", ctx.auth.user.id)
         .eq("post_id", input.post_id)
         .single();
 
@@ -456,15 +456,15 @@ export const postsRouter = router({
 
       await ctx.supabase.from("likes").insert({
         id,
-        user_id: ctx.auth.session.user.id,
+        user_id: ctx.auth.user.id,
         post_id: input.post_id,
       });
 
-      if (post.user_id !== ctx.auth.session.user.id) {
+      if (post.user_id !== ctx.auth.user.id) {
         await ctx.supabase.from("notifications").insert({
           to_id: post.user_id,
           type: "like",
-          from_id: ctx.auth.session.user.id,
+          from_id: ctx.auth.user.id,
           content_id: post.id,
         });
       }
@@ -473,7 +473,7 @@ export const postsRouter = router({
         .from("likes")
         .select()
         .eq("id", id)
-        .eq("user_id", ctx.auth.session.user.id)
+        .eq("user_id", ctx.auth.user.id)
         .single();
 
       if (!return_like)
@@ -482,7 +482,7 @@ export const postsRouter = router({
           message: "Something went wrong.",
         });
 
-      return { like: return_like, userId: ctx.auth.session.user.id };
+      return { like: return_like, userId: ctx.auth.user.id };
     }),
 
   unlike: protectedProcedure
@@ -496,7 +496,7 @@ export const postsRouter = router({
       const { data: unlike } = await ctx.supabase
         .from("likes")
         .select()
-        .eq("user_id", ctx.auth.session.user.id)
+        .eq("user_id", ctx.auth.user.id)
         .eq("post_id", input.post_id)
         .single();
 
@@ -515,20 +515,20 @@ export const postsRouter = router({
       await ctx.supabase
         .from("likes")
         .delete()
-        .eq("user_id", ctx.auth.session.user.id)
+        .eq("user_id", ctx.auth.user.id)
         .eq("post_id", input.post_id);
 
-      if (post.user_id !== ctx.auth.session.user.id) {
+      if (post.user_id !== ctx.auth.user.id) {
         await ctx.supabase
           .from("notifications")
           .delete()
           .eq("to_id", post.user_id)
-          .eq("from_id", ctx.auth.session.user.id)
+          .eq("from_id", ctx.auth.user.id)
           .eq("type", "like")
           .eq("content_id", input.post_id);
       }
 
-      return { like: unlike, userId: ctx.auth.session.user.id };
+      return { like: unlike, userId: ctx.auth.user.id };
     }),
 
   getLikesInPost: protectedProcedure

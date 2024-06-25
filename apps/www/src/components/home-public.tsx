@@ -127,7 +127,7 @@ export default function HomePublic({ error }: { error?: string }) {
                 <Image
                   src={dev.image}
                   alt={dev.name}
-                  className="rounded-full saturate-0"
+                  className="aspect-square rounded-full object-cover object-center saturate-0"
                   width="80"
                   height="80"
                 />

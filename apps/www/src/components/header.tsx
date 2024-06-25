@@ -148,9 +148,9 @@ export default function Header() {
                           : "/default-avatar.jpg"
                       }
                       alt="Image"
-                      fill
-                      sizes="100%"
-                      className="rounded-full object-cover"
+                      width={40}
+                      height={40}
+                      className="aspect-square rounded-full object-cover object-center"
                     />
                   </div>
                 </DropdownMenuTrigger>

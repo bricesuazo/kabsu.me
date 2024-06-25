@@ -31,10 +31,10 @@ export const api = createTRPCNextAppDirServer<typeof appRouter>({
           async createContext() {
             const supabase = createClientServer();
             const {
-              data: { session },
-            } = await supabase.auth.getSession();
+              data: { user },
+            } = await supabase.auth.getUser();
             return {
-              auth: session ? { session } : null,
+              auth: user ? { user } : null,
               supabase: createClientAdmin(),
               headers: {
                 cookie: cookies().toString(),

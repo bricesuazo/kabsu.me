@@ -75,7 +75,7 @@ function Posts({ tab }: { tab: (typeof POST_TYPE_TABS)[number]["id"] }) {
   return (
     <div className="">
       {posts.isLoading ? (
-        <div className="grid h-full w-full place-items-center p-40">
+        <div className="grid size-full place-items-center p-40">
           <Icons.spinner className="animate-spin" />
         </div>
       ) : !posts.data || posts.isError ? (

@@ -100,16 +100,16 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                     <Image
                       src={postQuery.data.post.user.image_url}
                       alt={`${postQuery.data.post.user.name} profile picture`}
-                      width={64}
-                      height={64}
+                      width={56}
+                      height={56}
                       className="aspect-square rounded-full object-cover"
                     />
                   ) : (
                     <Image
                       src="/default-avatar.jpg"
                       alt={`${postQuery.data.post.user.name} profile picture`}
-                      width={64}
-                      height={64}
+                      width={56}
+                      height={56}
                       className="aspect-square rounded-full object-cover"
                     />
                   )}

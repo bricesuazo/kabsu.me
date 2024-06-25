@@ -12,7 +12,7 @@ export const notificationsRouter = router({
         .select(
           "*, from:users!public_notifications_from_id_fkey(*), to:users!public_notifications_to_id_fkey(*)",
         )
-        .eq("to_id", ctx.auth.session.user.id)
+        .eq("to_id", ctx.auth.user.id)
         .eq("trash", false)
         .order("created_at", { ascending: false })
         .limit(input.all ? Infinity : 8);
@@ -78,7 +78,7 @@ export const notificationsRouter = router({
     await ctx.supabase
       .from("notifications")
       .update({ read: true })
-      .eq("to_id", ctx.auth.session.user.id);
+      .eq("to_id", ctx.auth.user.id);
   }),
   markAsRead: protectedProcedure
     .input(z.object({ id: z.string() }))
@@ -87,6 +87,6 @@ export const notificationsRouter = router({
         .from("notifications")
         .update({ read: true })
         .eq("id", input.id)
-        .eq("to_id", ctx.auth.session.user.id);
+        .eq("to_id", ctx.auth.user.id);
     }),
 });

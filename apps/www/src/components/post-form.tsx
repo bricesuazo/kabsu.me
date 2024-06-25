@@ -70,14 +70,15 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
             ? "/"
             : `/?tab=${form.getValues("type")}`,
         );
-        // router.refresh();
-        await context.posts.getPosts.invalidate({
-          type: form.getValues("type"),
-        });
       } else {
-        await context.users.getUserProfile.invalidate();
-        await context.posts.getUserPosts.reset();
+        await Promise.all([
+          context.users.getUserProfile.reset(),
+          context.posts.getUserPosts.reset(),
+        ]);
       }
+      await context.posts.getPosts.invalidate({
+        type: form.getValues("type"),
+      });
       form.reset();
     },
   });
@@ -132,9 +133,9 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                 : "/default-avatar.jpg"
             }
             alt="Profile picture"
-            fill
-            sizes="100%"
-            className="aspect-square rounded-full object-cover"
+            width={40}
+            height={40}
+            className="aspect-square rounded-full object-cover object-center"
           />
         </Link>
       )}

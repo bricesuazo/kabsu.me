@@ -198,7 +198,7 @@ export default function EditProfile({
                           width={100}
                           height={100}
                           alt="Profile"
-                          className="h-16 w-16 rounded-full"
+                          className="aspect-square rounded-full object-cover object-center"
                         />
                         <Button
                           size="sm"

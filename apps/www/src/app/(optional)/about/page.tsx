@@ -9,10 +9,10 @@ import { createClient } from "~/supabase/server";
 export default async function AboutPage() {
   const supabase = createClient();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session) redirect("/");
+  if (!user) redirect("/");
   return (
     <div className="space-y-8">
       <div>
@@ -42,7 +42,7 @@ export default async function AboutPage() {
               <Image
                 src={dev.image}
                 alt={dev.name}
-                className="rounded-full saturate-0"
+                className="aspect-square rounded-full object-cover object-center saturate-0"
                 width="80"
                 height="80"
               />

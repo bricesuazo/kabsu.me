@@ -28,7 +28,7 @@ export default function AdventuraPage() {
         <iframe
           src="https://itch.io/embed-upload/7325386?color=4ad946"
           allowFullScreen
-          className="aspect-video h-full w-full"
+          className="aspect-video size-full"
         >
           {/* <a href="https://placide.itch.io/adventura">
           Play Adventura: An Online Interactive Campus Tour on itch.io
