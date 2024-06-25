@@ -9,7 +9,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import type { Database } from "../../../../supabase/types";
+import type { RouterOutputs } from "@kabsu.me/api";
+
 import { api } from "~/lib/trpc/client";
 import { cn } from "~/lib/utils";
 import { createClient } from "~/supabase/client";
@@ -61,13 +62,13 @@ const formSchema = z.object({
       if (value.length) return value.includes(".");
     }, "Invalid URL")
     .optional(),
-  images: z.instanceof(File).array().optional(),
+  images: z.instanceof(File).array().or(z.string()).nullish(),
 });
 
 export default function EditProfile({
   user,
 }: {
-  user: Database["public"]["Tables"]["users"]["Row"];
+  user: RouterOutputs["users"]["getUserProfile"]["user"];
 }) {
   const router = useRouter();
   const context = api.useUtils();
@@ -78,7 +79,7 @@ export default function EditProfile({
       name: user.name,
       username: user.username,
       link: user.link?.split("https://")[1] ?? "",
-      images: undefined,
+      images: user.image_name ? user.image_url : undefined,
     },
   });
 
@@ -107,7 +108,7 @@ export default function EditProfile({
         name: user.name,
         username: user.username,
         link: user.link?.split("https://")[1] ?? "",
-        images: undefined,
+        images: user.image_name ? user.image_url : undefined,
       });
   }, [open, form, user]);
 
@@ -150,8 +151,8 @@ export default function EditProfile({
                 }
               }
 
-              let image_name: string | undefined;
-              if (data.images?.[0]) {
+              let image_name: string | undefined | null;
+              if (Array.isArray(data.images) && data.images[0]) {
                 const now = Date.now();
                 const uploadData = await supabase.storage
                   .from("users")
@@ -165,6 +166,8 @@ export default function EditProfile({
                 }
 
                 image_name = now.toString();
+              } else if (data.images === null) {
+                image_name = null;
               }
 
               await updateProfileMutation.mutateAsync({
@@ -183,31 +186,52 @@ export default function EditProfile({
                 <FormItem className="w-full">
                   <FormLabel>Image</FormLabel>
                   <FormControl>
-                    {!field.value?.[0] ? (
-                      <FileUploader
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        maxFiles={1}
-                        maxSize={4 * 1024 * 1024}
-                        disabled={form.formState.isSubmitting}
-                      />
+                    {typeof field.value !== "string" ? (
+                      !field.value?.[0] ? (
+                        <FileUploader
+                          value={field.value ?? undefined}
+                          onValueChange={field.onChange}
+                          maxFiles={1}
+                          maxSize={4 * 1024 * 1024}
+                          disabled={form.formState.isSubmitting}
+                        />
+                      ) : (
+                        <div className="flex h-52 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/25">
+                          <Image
+                            src={URL.createObjectURL(field.value[0])}
+                            width={100}
+                            height={100}
+                            alt="Profile"
+                            className="aspect-square rounded-full object-cover object-center"
+                          />
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2 !text-destructive"
+                            type="button"
+                            onClick={async () => {
+                              field.onChange(undefined);
+                              await form.trigger("images");
+                            }}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      )
                     ) : (
-                      <div className="flex h-52 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/25">
+                      <div className="flex h-52 flex-col items-center justify-center gap-2">
                         <Image
-                          src={URL.createObjectURL(field.value[0])}
+                          src={field.value}
+                          alt=""
                           width={100}
                           height={100}
-                          alt="Profile"
                           className="aspect-square rounded-full object-cover object-center"
                         />
                         <Button
+                          variant="destructive"
                           size="sm"
-                          variant="ghost"
-                          className="h-7 px-2 !text-destructive"
-                          onClick={async () => {
-                            field.onChange(undefined);
-                            await form.trigger("images");
-                          }}
+                          type="button"
+                          onClick={() => field.onChange(null)}
                         >
                           Remove
                         </Button>

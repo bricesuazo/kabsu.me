@@ -40,7 +40,7 @@ INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('85e4f7ca-e2dd
 INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('8454dffc-127b-481f-bf73-c76d939114aa', 'Bachelor of Science in Business Management', 'bsbm', '3ebb11d4-6082-4aad-8996-013ba11d4931');
 INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('5afffa7f-24b8-4ed2-8c48-953cded3e333', 'Bachelor of Science in Economics', 'bs-econ', '3ebb11d4-6082-4aad-8996-013ba11d4931');
 INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('e2c5f7b7-18bb-458d-8eac-ce0d398e60a4', 'Bachelor of Science in Development  Management', 'bsdm', '3ebb11d4-6082-4aad-8996-013ba11d4931');
-INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('e3b2a04e-417a-4459-bfeb-7664daa11869', 'Bachelor of Science in international Studies', 'bsis', '3ebb11d4-6082-4aad-8996-013ba11d4931');
+INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('e3b2a04e-417a-4459-bfeb-7664daa11869', 'Bachelor of Science in International Studies', 'bsis', '3ebb11d4-6082-4aad-8996-013ba11d4931');
 INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('1b6c646a-f696-4c7b-bb88-7a4460671c1a', 'Bachelor of Science in Agricultural and Biosystems Engineering', 'bsabe', '7f51bc8a-0ca1-42a4-ba68-d334316b3b63');
 INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('90179665-6128-4f43-8f2b-1a9dfc1b2e2f', 'Bachelor of Science in Architecture', 'bsarch', '7f51bc8a-0ca1-42a4-ba68-d334316b3b63');
 INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('8d55d3f0-eb83-416a-b709-0b65f95ba80e', 'Bachelor of Science in Civil Engineering', 'bsce', '7f51bc8a-0ca1-42a4-ba68-d334316b3b63');
@@ -53,7 +53,7 @@ INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('48b15039-139b
 INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('521f9712-918f-4ef0-9fa1-63172e22b35c', 'Bachelor of Science in Industrial Technology Major in Electrical Technology', 'bsit-et', '7f51bc8a-0ca1-42a4-ba68-d334316b3b63');
 INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('43369632-525e-4e6c-8857-92cabbb688b8', 'Bachelor of Science in Industrial Technology Major in Electronics Technology', 'bsit-elex', '7f51bc8a-0ca1-42a4-ba68-d334316b3b63');
 INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('f4364e1c-3f4a-4f6b-9cb3-d96cf3acd5df', 'Bachelor of Science in Information Technology', 'bsit', '7f51bc8a-0ca1-42a4-ba68-d334316b3b63');
-INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('3b96d88e-66e4-4d39-b5c4-b994adcedec7', 'Bachelor of Science in Office Administration', 'bsoa', '7f51bc8a-0ca1-42a4-ba68-d334316b3b63');
+INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('3b96d88e-66e4-4d39-b5c4-b994adcedec7', 'Bachelor of Science in Office Administration', 'bsoa', '3ebb11d4-6082-4aad-8996-013ba11d4931');
 INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('418523c7-109e-4292-8010-83872c5b1ec1', 'Bachelor of Science in Nursing', 'bsn', '38238ea2-7a42-4164-8cfb-f9b50d075649');
 INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('966f6f6f-4225-4b96-ac7b-14bd752d1345', 'Bachelor of Science in Medical Technology', 'bsmt', '38238ea2-7a42-4164-8cfb-f9b50d075649');
 INSERT INTO programs ("id", "name", "slug", "college_id") VALUES ('5ec9df83-8731-49cb-b517-beb0e96cdc10', 'Bachelor of Science in Midwifery', 'bsm', '38238ea2-7a42-4164-8cfb-f9b50d075649');

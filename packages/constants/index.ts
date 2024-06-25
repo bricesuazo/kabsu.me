@@ -237,8 +237,13 @@ const PROGRAMS = [
     college_id: 4,
   },
   {
-    name: "Bachelor of Science in international Studies",
+    name: "Bachelor of Science in International Studies",
     slug: "bsis",
+    college_id: 4,
+  },
+  {
+    name: "Bachelor of Science in Office Administration",
+    slug: "bsoa",
     college_id: 4,
   },
   {
@@ -299,11 +304,6 @@ const PROGRAMS = [
   {
     name: "Bachelor of Science in Information Technology",
     slug: "bsit",
-    college_id: 5,
-  },
-  {
-    name: "Bachelor of Science in Office Administration",
-    slug: "bsoa",
     college_id: 5,
   },
   {

@@ -60,7 +60,7 @@ export const usersRouter = router({
           .nullable(),
         name: z.string().max(64),
         username: z.string().max(64),
-        image_name: z.string().optional(),
+        image_name: z.string().nullish(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -73,7 +73,12 @@ export const usersRouter = router({
       if (!user)
         throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
-      if (user.image_name !== input.image_name) {
+      if (
+        (user.image_name && input.image_name === null) ||
+        (input.image_name &&
+          user.image_name &&
+          input.image_name !== user.image_name)
+      ) {
         await ctx.supabase.storage
           .from("users")
           .remove([user.id + "/avatar/" + user.image_name]);
