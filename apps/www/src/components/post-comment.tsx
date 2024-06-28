@@ -13,12 +13,10 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { v4 as uuid } from "uuid";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 
-import type { Database } from "../../../../supabase/types";
 import {
   Tooltip,
   TooltipContent,
@@ -75,7 +73,7 @@ export default function PostComment({
   const searchParams = useSearchParams();
   const router = useRouter();
   const [likes, setLikes] = useState<
-    Database["public"]["Tables"]["likes"]["Row"][]
+    RouterOutputs["posts"]["getPost"]["post"]["likes"]
   >(post.likes);
   // TODO: Fix optimistic updates
   // const [optimisticLike, setOptimisticLike] = useOptimistic<Like[]>(post.likes);
@@ -130,10 +128,8 @@ export default function PostComment({
                 setLikes([
                   ...likes,
                   {
-                    id: uuid(),
                     post_id: post.id,
                     user_id: userId,
-                    created_at: new Date().toISOString(),
                   },
                 ]);
 

@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 import { v4 as uuid } from "uuid";
 
-import type { Database } from "../../../../supabase/types";
+import type { RouterOutputs } from "@kabsu.me/api";
+
 import { api } from "~/lib/trpc/client";
 import { cn, formatText } from "~/lib/utils";
 import PostDropdown from "./post-dropdown";
@@ -28,7 +29,7 @@ import VerifiedBadge from "./verified-badge";
 export default function Post({
   post,
 }: {
-  post: Database["public"]["Tables"]["posts"]["Row"];
+  post: RouterOutputs["posts"]["getPosts"]["posts"][number];
 }) {
   const getPostQuery = api.posts.getPost.useQuery(
     { post_id: post.id },
@@ -41,7 +42,7 @@ export default function Post({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [likes, setLikes] = useState<
-    Database["public"]["Tables"]["likes"]["Row"][]
+    RouterOutputs["posts"]["getPost"]["post"]["likes"]
   >(getPostQuery.data?.post.likes ?? []);
   const unlikeMutation = api.posts.unlike.useMutation({
     onMutate: ({ userId }) => {
@@ -136,20 +137,20 @@ export default function Post({
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                    {formatDistanceToNow(post.created_at, {
+                    {formatDistanceToNow(getPostQuery.data.post.created_at, {
                       includeSeconds: true,
                       addSuffix: true,
                     })}
                   </p>
                   <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                    {formatDistanceToNow(post.created_at, {
+                    {formatDistanceToNow(getPostQuery.data.post.created_at, {
                       includeSeconds: true,
                       addSuffix: true,
                     })}
                   </p>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {format(post.created_at, "PPpp")}
+                  {format(getPostQuery.data.post.created_at, "PPpp")}
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -212,15 +213,15 @@ export default function Post({
 
         <PostDropdown
           post_id={post.id}
-          isMyPost={getPostQuery.data.post.user.id === getPostQuery.data.userId}
+          isMyPost={getPostQuery.data.post.user_id === getPostQuery.data.userId}
         />
       </div>
 
       <div className="whitespace-pre-wrap break-words">
         {formatText(
-          post.content.length > 512
-            ? post.content.slice(0, 512) + "..."
-            : post.content,
+          getPostQuery.data.post.content.length > 512
+            ? getPostQuery.data.post.content.slice(0, 512) + "..."
+            : getPostQuery.data.post.content,
         )}
       </div>
 
@@ -282,9 +283,10 @@ export default function Post({
           </p>
           <Badge variant="outline" className="flex items-center gap-x-1">
             <p className="hidden xs:block">Privacy:</p>
-            {post.type === "following"
+            {getPostQuery.data.post.type === "following"
               ? "Follower"
-              : post.type.charAt(0).toUpperCase() + post.type.slice(1)}
+              : getPostQuery.data.post.type.charAt(0).toUpperCase() +
+                getPostQuery.data.post.type.slice(1)}
           </Badge>
         </div>
       </div>

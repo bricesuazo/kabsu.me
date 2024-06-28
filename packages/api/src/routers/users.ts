@@ -74,10 +74,11 @@ export const usersRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
       if (
-        (user.image_name && input.image_name === null) ||
-        (input.image_name &&
-          user.image_name &&
-          input.image_name !== user.image_name)
+        ((user.image_name && input.image_name === null) ||
+          (input.image_name &&
+            user.image_name &&
+            input.image_name !== user.image_name)) &&
+        !user.image_name.startsWith("https")
       ) {
         await ctx.supabase.storage
           .from("users")
@@ -159,11 +160,11 @@ export const usersRouter = router({
     }),
 
   getProgramForAuth: publicProcedure.query(async ({ ctx }) => {
-    const [{ data: programs }, { data: colleges }, { data: campuses }] =
+    const [{ data: campuses }, { data: colleges }, { data: programs }] =
       await Promise.all([
-        ctx.supabase.from("programs").select(),
-        ctx.supabase.from("colleges").select(),
-        ctx.supabase.from("campuses").select(),
+        ctx.supabase.from("campuses").select("id, name, slug"),
+        ctx.supabase.from("colleges").select("id, name, slug, campus_id"),
+        ctx.supabase.from("programs").select("id, name, slug, college_id"),
       ]);
 
     if (programs === null || colleges === null || campuses === null)
@@ -209,7 +210,7 @@ export const usersRouter = router({
       const { data: user_from_db } = await ctx.supabase
         .from("users")
         .select(
-          "*, programs(name, slug, colleges(name, slug, campuses(name, slug)))",
+          "id, name, username, image_name, type, bio, link, verified_at, programs(name, slug, colleges(name, slug, campuses(name, slug)))",
         )
         .eq("username", input.username)
         .single();
@@ -227,7 +228,10 @@ export const usersRouter = router({
         .eq("followee_id", user_from_db.id);
 
       let image_url: string | null = null;
-      if (user_from_db.image_name) {
+      if (
+        user_from_db.image_name &&
+        !user_from_db.image_name.startsWith("https")
+      ) {
         const { data } = await ctx.supabase.storage
           .from("users")
           .createSignedUrl(
@@ -243,8 +247,12 @@ export const usersRouter = router({
         followersLength: followers?.length ?? 0,
         followeesLength: followees?.length ?? 0,
         user_id: ctx.auth.user.id,
-        user:
-          user_from_db.image_name && image_url
+        user: user_from_db.image_name?.startsWith("https://")
+          ? {
+              ...user_from_db,
+              image_url: user_from_db.image_name,
+            }
+          : user_from_db.image_name && image_url
             ? {
                 ...user_from_db,
                 image_url,
@@ -301,7 +309,9 @@ export const usersRouter = router({
       const { data } = await ctx.supabase.storage
         .from("users")
         .createSignedUrls(
-          users.map((user) => user.id + "/" + user.image_name),
+          users
+            .filter((user) => !user.image_name?.startsWith("https"))
+            .map((user) => user.id + "/" + user.image_name),
           60 * 60 * 24,
         );
       if (data) {
@@ -324,16 +334,22 @@ export const usersRouter = router({
           const signedUrl = image_urls.find(
             (image) => image.path === user.id + "/" + user.image_name,
           )?.signedUrl;
-          return user.image_name && signedUrl
+          return user.image_name?.startsWith("https://")
             ? {
                 ...base,
                 image_name: user.image_name,
-                image_url: signedUrl,
+                image_url: user.image_name,
               }
-            : {
-                ...base,
-                image_name: null,
-              };
+            : user.image_name && signedUrl
+              ? {
+                  ...base,
+                  image_name: user.image_name,
+                  image_url: signedUrl,
+                }
+              : {
+                  ...base,
+                  image_name: null,
+                };
         })
         .slice(0, 10);
     }),
@@ -424,21 +440,6 @@ export const usersRouter = router({
           ),
         );
       }
-
-      // const file = new Blob(bytesArrays, { type: "image/png" });
-
-      // const user = await ctx.clerk.users.updateUserProfileImage(
-      //   ctx.auth.user.id,
-      //   {
-      //     file,
-      //   },
-      // );
-
-      //   await trx
-      //     .update(users)
-      //     .set({ profile_picture_url: user.imageUrl })
-      //     .where(eq(users.id, ctx.auth.user.id));
-      // });
     }),
   getAllFollowings: protectedProcedure
     .input(z.object({ username: z.string() }))
@@ -470,7 +471,7 @@ export const usersRouter = router({
         followees.length !== 0
           ? await ctx.supabase
               .from("users")
-              .select()
+              .select("id, username, name, bio, image_name")
               .in(
                 "id",
                 followees.map((f) => f.follower_id),
@@ -490,7 +491,9 @@ export const usersRouter = router({
                 const { data } = await ctx.supabase.storage
                   .from("users")
                   .createSignedUrls(
-                    res.data.map((user) => user.id + "/" + user.image_name),
+                    res.data
+                      .filter((user) => !user.image_name?.startsWith("https"))
+                      .map((user) => user.id + "/" + user.image_name),
                     60 * 60 * 24,
                   );
                 if (data) {
@@ -501,12 +504,17 @@ export const usersRouter = router({
                   const image_url = image_urls.find(
                     (image) => image.path === user.id + "/" + user.image_name,
                   )?.signedUrl;
-                  return user.image_name && image_url
+                  return user.image_name?.startsWith("https://")
                     ? {
                         ...user,
-                        image_url,
+                        image_url: user.image_name,
                       }
-                    : { ...user, image_name: null };
+                    : user.image_name && image_url
+                      ? {
+                          ...user,
+                          image_url,
+                        }
+                      : { ...user, image_name: null };
                 });
               })
           : [];
@@ -543,7 +551,7 @@ export const usersRouter = router({
         followers.length !== 0
           ? await ctx.supabase
               .from("users")
-              .select()
+              .select("id, username, name, bio, image_name")
               .in(
                 "id",
                 followers.map((f) => f.follower_id),
@@ -563,7 +571,11 @@ export const usersRouter = router({
                 const { data } = await ctx.supabase.storage
                   .from("users")
                   .createSignedUrls(
-                    res.data.map((user) => user.id + "/" + user.image_name),
+                    res.data
+                      .filter(
+                        (user) => !user.image_name?.startsWith("https://"),
+                      )
+                      .map((user) => user.id + "/" + user.image_name),
                     60 * 60 * 24,
                   );
                 if (data) {
@@ -574,12 +586,17 @@ export const usersRouter = router({
                   const image_url = image_urls.find(
                     (image) => image.path === user.id + "/" + user.image_name,
                   )?.signedUrl;
-                  return user.image_name && image_url
+                  return user.image_name?.startsWith("https://")
                     ? {
                         ...user,
-                        image_url,
+                        image_url: user.image_name,
                       }
-                    : { ...user, image_name: null };
+                    : user.image_name && image_url
+                      ? {
+                          ...user,
+                          image_url,
+                        }
+                      : { ...user, image_name: null };
                 });
               })
           : [];

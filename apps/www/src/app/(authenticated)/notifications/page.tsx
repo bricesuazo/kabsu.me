@@ -104,7 +104,7 @@ export default function NotificationPage() {
                     {notification.from.image_name ? (
                       <Image
                         src={notification.from.image_url}
-                        alt={`${notification.from.name} profile picture`}
+                        alt={`${notification.from.username} profile picture`}
                         fill
                         sizes="100%"
                         className="aspect-square rounded-full object-cover object-center"
@@ -112,7 +112,7 @@ export default function NotificationPage() {
                     ) : (
                       <Image
                         src="/default-avatar.jpg"
-                        alt={`${notification.from.name} profile picture`}
+                        alt={`${notification.from.username} profile picture`}
                         fill
                         sizes="100%"
                         className="rounded-full"

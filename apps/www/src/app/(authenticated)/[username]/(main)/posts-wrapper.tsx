@@ -3,7 +3,8 @@
 import { Fragment, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
-import type { Database } from "../../../../../../../supabase/types";
+import type { RouterOutputs } from "@kabsu.me/api";
+
 import { Icons } from "~/components/icons";
 import Post from "~/components/post";
 import { PostSkeletonNoRandom } from "~/components/post-skeleton";
@@ -12,13 +13,11 @@ import { api } from "~/lib/trpc/client";
 export default function PostsWrapper({
   user,
 }: {
-  user: Database["public"]["Tables"]["users"]["Row"];
+  user: RouterOutputs["users"]["getUserProfile"]["user"];
 }) {
   const { ref, inView } = useInView();
   const postsQuery = api.posts.getUserPosts.useInfiniteQuery(
-    {
-      user_id: user.id,
-    },
+    { user_id: user.id },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 1, // <-- optional you can pass an initialCursor

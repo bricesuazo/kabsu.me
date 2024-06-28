@@ -134,7 +134,7 @@ export default function Notifications() {
                               ? notification.from.image_url
                               : "/default-avatar.jpg"
                           }
-                          alt={`${notification.from.name} profile picture`}
+                          alt={`${notification.from.username} profile picture`}
                           fill
                           sizes="100%"
                           className="aspect-square rounded-full object-cover object-center"

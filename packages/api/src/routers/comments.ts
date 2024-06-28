@@ -9,18 +9,23 @@ export const commentsRouter = router({
     .query(async ({ ctx, input }) => {
       const { data: full_comment } = await ctx.supabase
         .from("comments")
-        .select("*, users(*)")
+        .select(
+          "id, content, user_id, created_at, users(name, username, image_name, verified_at)",
+        )
         .eq("id", input.comment_id)
         .single();
 
       if (!full_comment) return null;
 
       let image_url: string | null = null;
-      if (full_comment.users?.image_name) {
+      if (
+        full_comment.users?.image_name &&
+        !full_comment.users.image_name.startsWith("https://")
+      ) {
         const { data } = await ctx.supabase.storage
           .from("users")
           .createSignedUrl(
-            full_comment.users.id + "/avatar/" + full_comment.users.image_name,
+            full_comment.user_id + "/avatar/" + full_comment.users.image_name,
             60,
           );
 
@@ -30,8 +35,12 @@ export const commentsRouter = router({
       return {
         comment: {
           ...full_comment,
-          users:
-            full_comment.users?.image_name && image_url
+          users: full_comment.users?.image_name?.startsWith("https://")
+            ? {
+                ...full_comment.users,
+                image_url: full_comment.users.image_name,
+              }
+            : full_comment.users?.image_name && image_url
               ? { ...full_comment.users, image_url }
               : { ...full_comment.users, image_name: null },
         },

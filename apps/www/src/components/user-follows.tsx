@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import type { Database } from "../../../../supabase/types";
+import type { RouterOutputs } from "@kabsu.me/api";
+
 import FollowButton from "./follow-button";
 
 export default function UserFollows({
@@ -12,11 +13,8 @@ export default function UserFollows({
   user_id,
 }: {
   user:
-    | (Database["public"]["Tables"]["users"]["Row"] & {
-        image_name: string;
-        image_url: string;
-      })
-    | (Database["public"]["Tables"]["users"]["Row"] & { image_name: null });
+    | RouterOutputs["users"]["getAllFollowers"]["followersUsers"][number]
+    | RouterOutputs["users"]["getAllFollowings"]["followeesUsers"][number];
   isFollower: boolean;
   user_id: string;
 }) {

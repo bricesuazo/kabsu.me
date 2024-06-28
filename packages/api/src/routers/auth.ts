@@ -18,7 +18,7 @@ export const authRouter = router({
       });
 
     let image_url: string | null = null;
-    if (user.image_name) {
+    if (user.image_name && !user.image_name.startsWith("https://")) {
       const { data } = await ctx.supabase.storage
         .from("users")
         .createSignedUrl(user.id + "/avatar/" + user.image_name, 60 * 60 * 24);
@@ -26,9 +26,14 @@ export const authRouter = router({
         image_url = data.signedUrl;
       }
     }
-    return user.image_name && image_url
-      ? { ...user, image_url }
-      : { ...user, image_name: null };
+    return user.image_name?.startsWith("https://")
+      ? {
+          ...user,
+          image_url: user.image_name,
+        }
+      : user.image_name && image_url
+        ? { ...user, image_url }
+        : { ...user, image_name: null };
   }),
   getCurrentUserPublic: publicProcedure.query(async ({ ctx }) => {
     if (!ctx.auth) return null;

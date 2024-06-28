@@ -88,6 +88,12 @@ export default function EditProfile({
     onSuccess: async ({ username }) => {
       if (user.username !== username) {
         router.push(`/${username}`);
+      } else if (form.getFieldState("images").isDirty) {
+        await Promise.all([
+          context.users.getUserProfile.invalidate({ username }),
+          context.posts.getUserPosts.reset(),
+          context.auth.getCurrentUser.refetch(),
+        ]);
       } else {
         await context.users.getUserProfile.invalidate({ username });
       }

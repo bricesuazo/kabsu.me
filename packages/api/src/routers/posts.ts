@@ -12,7 +12,7 @@ export const postsRouter = router({
       const { data: post } = await ctx.supabase
         .from("posts")
         .select(
-          "*, likes(*), comments(*), user: users(*, programs(name, slug, college_id, colleges(name, slug, campus_id, campuses(name, slug))))",
+          "id, content, type, user_id, created_at, likes(post_id, user_id), comments(id), user: users(name, username, image_name, type, verified_at, programs(name, slug, college_id, colleges(name, slug, campus_id, campuses(name, slug))))",
         )
         .eq("id", input.post_id)
         .is("deleted_at", null)
@@ -27,11 +27,14 @@ export const postsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
 
       let image_url: string | null = null;
-      if (post.user?.image_name) {
+      if (
+        post.user?.image_name &&
+        !post.user.image_name.startsWith("https://")
+      ) {
         const { data } = await ctx.supabase.storage
           .from("users")
           .createSignedUrl(
-            post.user.id + "/avatar/" + post.user.image_name,
+            post.user_id + "/avatar/" + post.user.image_name,
             60 * 60 * 24,
           );
         if (data) {
@@ -41,10 +44,14 @@ export const postsRouter = router({
 
       return {
         userId: ctx.auth.user.id,
-        post:
-          post.user?.image_name && image_url
-            ? { ...post, user: { ...post.user, image_url } }
-            : { ...post, user: { ...post.user, image_name: null } },
+        post: {
+          ...post,
+          user: post.user?.image_name?.startsWith("https://")
+            ? { ...post.user, image_url: post.user.image_name }
+            : post.user?.image_name && image_url
+              ? { ...post.user, image_url }
+              : { ...post.user, image_name: null },
+        },
       };
     }),
 
@@ -142,12 +149,12 @@ export const postsRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const limit = 10;
-      let posts: Database["public"]["Tables"]["posts"]["Row"][] = [];
+      let posts: { id: string }[] = [];
 
       if (input.type === "all") {
         await ctx.supabase
           .from("posts")
-          .select()
+          .select("id")
           .eq("type", "all")
           .is("deleted_at", null)
           .order("created_at", { ascending: false })
@@ -174,7 +181,7 @@ export const postsRouter = router({
 
         posts = await ctx.supabase
           .from("posts")
-          .select("*, users!inner(programs!inner(colleges(campus_id)))")
+          .select("id, users!inner(programs!inner(colleges(campus_id)))")
           .eq("type", "campus")
           .eq(
             "users.programs.colleges.campus_id",
@@ -191,7 +198,11 @@ export const postsRouter = router({
                 message: res.error.message,
               });
 
-            return res.data;
+            return res.data.filter(
+              (post) =>
+                post.users.programs.colleges?.campus_id ===
+                user.programs?.colleges?.campus_id,
+            );
           });
       } else if (input.type === "college") {
         const { data: user } = await ctx.supabase
@@ -205,7 +216,7 @@ export const postsRouter = router({
 
         posts = await ctx.supabase
           .from("posts")
-          .select("*, users!inner(programs(college_id))")
+          .select("id, users!inner(programs(college_id))")
           .eq("type", "college")
           .eq("users.programs.college_id", user.programs?.college_id ?? "")
           .is("deleted_at", null)
@@ -219,7 +230,10 @@ export const postsRouter = router({
                 message: res.error.message,
               });
 
-            return res.data;
+            return res.data.filter(
+              (post) =>
+                post.users.programs?.college_id === user.programs?.college_id,
+            );
           });
       } else if (input.type === "program") {
         const { data: user } = await ctx.supabase
@@ -234,7 +248,7 @@ export const postsRouter = router({
 
         posts = await ctx.supabase
           .from("posts")
-          .select("*, users!inner(program_id)")
+          .select("id, users!inner(program_id)")
           .eq("type", "program")
           .eq("users.program_id", user.program_id)
           .is("deleted_at", null)
@@ -248,7 +262,9 @@ export const postsRouter = router({
                 message: res.error.message,
               });
 
-            return res.data;
+            return res.data.filter(
+              (post) => post.users.program_id === user.program_id,
+            );
           });
       } else {
         const { data: user } = await ctx.supabase
@@ -268,7 +284,7 @@ export const postsRouter = router({
         posts = await ctx.supabase
           .from("posts")
           .select(
-            "*, users!inner(program_id, programs(*, colleges(campus_id)))",
+            "id, type, users!inner(program_id, programs(*, colleges(campus_id)))",
           )
           .in("user_id", [
             ...new Set([
@@ -559,7 +575,9 @@ export const postsRouter = router({
       const { data } = await ctx.supabase.storage
         .from("users")
         .createSignedUrls(
-          likes.map((like) => like.user?.id + "/" + like.user?.image_name),
+          likes
+            .filter((like) => !like.user?.image_name?.startsWith("https://"))
+            .map((like) => like.user?.id + "/" + like.user?.image_name),
           60 * 60 * 24,
         );
       if (data) {
@@ -573,8 +591,12 @@ export const postsRouter = router({
 
         return {
           ...like,
-          user:
-            like.user?.image_name && signed_url
+          user: like.user?.image_name?.startsWith("https://")
+            ? {
+                ...like.user,
+                image_url: like.user.image_name,
+              }
+            : like.user?.image_name && signed_url
               ? {
                   ...like.user,
                   image_url: signed_url,

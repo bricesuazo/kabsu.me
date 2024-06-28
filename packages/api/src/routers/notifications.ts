@@ -10,7 +10,7 @@ export const notificationsRouter = router({
       const { data: notifications } = await ctx.supabase
         .from("notifications")
         .select(
-          "*, from:users!public_notifications_from_id_fkey(*), to:users!public_notifications_to_id_fkey(*)",
+          "id, read, type, content_id, created_at, from_id, from:users!public_notifications_from_id_fkey(username, image_name)",
         )
         .eq("to_id", ctx.auth.user.id)
         .eq("trash", false)
@@ -47,8 +47,12 @@ export const notificationsRouter = router({
         .from("users")
         .createSignedUrls(
           notifications
-            .filter((notif) => notif.from !== null)
-            .map((notif) => notif.from?.id + "/" + notif.from?.image_name),
+            .filter(
+              (notif) =>
+                notif.from !== null &&
+                !notif.from.image_name?.startsWith("https://"),
+            )
+            .map((notif) => notif.from_id + "/" + notif.from?.image_name),
           60 * 60 * 24,
         );
       if (data) {
@@ -59,13 +63,14 @@ export const notificationsRouter = router({
         const signed_url = image_urls.find(
           (url) =>
             url.path ===
-            notification.from?.id + "/" + notification.from?.image_name,
+            notification.from_id + "/" + notification.from?.image_name,
         );
         return {
           ...notification,
           content: posts.find((post) => post.id === notification.content_id),
-          from:
-            notification.from?.image_name && signed_url
+          from: notification.from?.image_name?.startsWith("https://")
+            ? { ...notification.from, image_url: notification.from.image_name }
+            : notification.from?.image_name && signed_url
               ? { ...notification.from, image_url: signed_url.signedUrl }
               : {
                   ...notification.from,

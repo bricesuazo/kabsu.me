@@ -6,7 +6,8 @@ import { notFound } from "next/navigation";
 import { format, formatDistanceToNow } from "date-fns";
 import { Album, Briefcase, GraduationCap } from "lucide-react";
 
-import type { Database } from "../../../../../../../supabase/types";
+import type { RouterOutputs } from "@kabsu.me/api";
+
 import PostComment from "~/components/post-comment";
 import PostDropdown from "~/components/post-dropdown";
 import { Badge } from "~/components/ui/badge";
@@ -223,7 +224,7 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
 function CommentComponent({
   comment,
 }: {
-  comment: Database["public"]["Tables"]["comments"]["Row"];
+  comment: RouterOutputs["posts"]["getPost"]["post"]["comments"][number];
 }) {
   const fullCommentQuery = api.comments.getFullComment.useQuery({
     comment_id: comment.id,
