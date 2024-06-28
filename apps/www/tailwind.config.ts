@@ -1,5 +1,6 @@
-import baseConfig from "@kabsu.me/tailwind-config";
 import type { Config } from "tailwindcss";
+
+import baseConfig from "@kabsu.me/tailwind-config/web";
 
 export default {
   content: [...baseConfig.content, "../../packages/ui/src/**/*.{ts,tsx}"],

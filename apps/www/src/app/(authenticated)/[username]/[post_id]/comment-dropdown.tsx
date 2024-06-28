@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { MoreVertical } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { REPORT_POST_REASONS } from "@kabsu.me/constants";
+
+import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +17,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "~/components/ui/dropdown-menu";
 import {
   Form,
   FormControl,
@@ -19,22 +26,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { api } from "@/lib/trpc/client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { REPORT_POST_REASONS } from "@kabsu.me/constants";
-import { MoreVertical } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
+} from "~/components/ui/select";
+import { api } from "~/lib/trpc/client";
 import { Icons } from "../../../../components/icons";
 import {
   AlertDialog,
@@ -77,7 +78,7 @@ export default function CommentDropdown({
   }>({
     resolver: zodResolver(
       z.object({
-        id: z.string().nonempty("Please select a reason for your report."),
+        id: z.string().min(1, "Please select a reason for your report."),
         reason: z.string(),
       }),
     ),
@@ -88,7 +89,7 @@ export default function CommentDropdown({
 
   useEffect(() => {
     if (openReport) reportForm.reset();
-  }, [openReport]);
+  }, [openReport, reportForm]);
 
   return (
     <>

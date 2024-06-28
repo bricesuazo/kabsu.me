@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { api } from "@/lib/trpc/client";
-import { cn, formatText } from "@/lib/utils";
-import type { Like, Post } from "@kabsu.me/db/schema";
+import { format, formatDistanceToNow } from "date-fns";
 // import UpdatePost from "./update-post";
 import {
   Album,
@@ -15,9 +13,12 @@ import {
   Heart,
   MessageCircle,
 } from "lucide-react";
-import moment from "moment";
-import { nanoid } from "nanoid";
+import { v4 as uuid } from "uuid";
 
+import type { RouterOutputs } from "@kabsu.me/api";
+
+import { api } from "~/lib/trpc/client";
+import { cn, formatText } from "~/lib/utils";
 import PostDropdown from "./post-dropdown";
 import { PostSkeletonNoRandom } from "./post-skeleton";
 import { Badge } from "./ui/badge";
@@ -25,7 +26,11 @@ import { Toggle } from "./ui/toggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import VerifiedBadge from "./verified-badge";
 
-export default function Post({ post }: { post: Post }) {
+export default function Post({
+  post,
+}: {
+  post: RouterOutputs["posts"]["getPosts"]["posts"][number];
+}) {
   const getPostQuery = api.posts.getPost.useQuery(
     { post_id: post.id },
     {
@@ -36,9 +41,9 @@ export default function Post({ post }: { post: Post }) {
   );
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [likes, setLikes] = useState<Like[]>(
-    getPostQuery.data?.post.likes ?? [],
-  );
+  const [likes, setLikes] = useState<
+    RouterOutputs["posts"]["getPost"]["post"]["likes"]
+  >(getPostQuery.data?.post.likes ?? []);
   const unlikeMutation = api.posts.unlike.useMutation({
     onMutate: ({ userId }) => {
       setLikes((prev) =>
@@ -58,10 +63,10 @@ export default function Post({ post }: { post: Post }) {
       setLikes((prev) => [
         ...prev,
         {
-          id: nanoid(),
+          id: uuid(),
           post_id,
           user_id: userId,
-          created_at: new Date(),
+          created_at: new Date().toISOString(),
         },
       ]);
     },
@@ -81,8 +86,7 @@ export default function Post({ post }: { post: Post }) {
     }
   }, [getPostQuery.data]);
 
-  if (!getPostQuery.data || getPostQuery.isLoading)
-    return <PostSkeletonNoRandom />;
+  if (!getPostQuery.data) return <PostSkeletonNoRandom />;
 
   return (
     <div
@@ -103,16 +107,14 @@ export default function Post({ post }: { post: Post }) {
           <div className="w-max">
             <Image
               src={
-                getPostQuery.data.post.user.image
-                  ? typeof getPostQuery.data.post.user.image === "string"
-                    ? getPostQuery.data.post.user.image
-                    : getPostQuery.data.post.user.image.url
+                getPostQuery.data.post.user.image_name
+                  ? getPostQuery.data.post.user.image_url
                   : "/default-avatar.jpg"
               }
               alt={`${getPostQuery.data.post.user.name} profile picture`}
               width={40}
               height={40}
-              className="aspect-square rounded-full object-cover"
+              className="aspect-square rounded-full object-cover object-center"
             />
           </div>
           <div className="flex flex-1 flex-col gap-y-1">
@@ -135,62 +137,71 @@ export default function Post({ post }: { post: Post }) {
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                    {moment(post.created_at).fromNow()}
+                    {formatDistanceToNow(getPostQuery.data.post.created_at, {
+                      includeSeconds: true,
+                      addSuffix: true,
+                    })}
                   </p>
                   <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                    {moment(post.created_at).fromNow()}
+                    {formatDistanceToNow(getPostQuery.data.post.created_at, {
+                      includeSeconds: true,
+                      addSuffix: true,
+                    })}
                   </p>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {moment(post.created_at).format("MMMM Do YYYY, h:mm:ss A")}
+                  {format(getPostQuery.data.post.created_at, "PPpp")}
                 </TooltipContent>
               </Tooltip>
             </div>
 
-            <div className="flex items-center gap-x-1 ">
-              <Tooltip delayDuration={250}>
-                <TooltipTrigger>
-                  {(() => {
-                    switch (getPostQuery.data.post.user.type) {
-                      case "student":
-                        return <Album />;
-                      case "alumni":
-                        return <GraduationCap />;
-                      case "faculty":
-                        return <Briefcase />;
-                      default:
-                        return null;
-                    }
-                  })()}
-                </TooltipTrigger>
-                <TooltipContent className="max-w-[12rem]">
-                  {getPostQuery.data.post.user.type!.charAt(0).toUpperCase() +
-                    getPostQuery.data.post.user.type!.slice(1)}
-                </TooltipContent>
-              </Tooltip>
+            <div className="flex items-center gap-x-1">
+              {getPostQuery.data.post.user.type && (
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger>
+                    {(() => {
+                      switch (getPostQuery.data.post.user.type) {
+                        case "student":
+                          return <Album />;
+                        case "alumni":
+                          return <GraduationCap />;
+                        case "faculty":
+                          return <Briefcase />;
+                        default:
+                          return null;
+                      }
+                    })()}
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[12rem]">
+                    {getPostQuery.data.post.user.type.charAt(0).toUpperCase() +
+                      getPostQuery.data.post.user.type.slice(1)}
+                  </TooltipContent>
+                </Tooltip>
+              )}
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge>
                     {searchParams.get("tab") === "college"
-                      ? getPostQuery.data.post.user.program!.college.slug.toUpperCase()
-                      : getPostQuery.data.post.user.program!.college.campus.slug.toUpperCase()}
+                      ? getPostQuery.data.post.user.programs?.colleges?.slug.toUpperCase()
+                      : getPostQuery.data.post.user.programs?.colleges?.campuses?.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
                   {searchParams.get("tab") === "college"
-                    ? getPostQuery.data.post.user.program!.college.name
-                    : getPostQuery.data.post.user.program!.college.campus.name}
+                    ? getPostQuery.data.post.user.programs?.colleges?.name
+                    : getPostQuery.data.post.user.programs?.colleges?.campuses
+                        ?.name}
                 </TooltipContent>
               </Tooltip>
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge variant="outline">
-                    {getPostQuery.data.post.user.program!.slug.toUpperCase()}
+                    {getPostQuery.data.post.user.programs?.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[12rem]">
-                  {getPostQuery.data.post.user.program!.name}
+                  {getPostQuery.data.post.user.programs?.name}
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -202,15 +213,15 @@ export default function Post({ post }: { post: Post }) {
 
         <PostDropdown
           post_id={post.id}
-          isMyPost={getPostQuery.data.post.user.id === getPostQuery.data.userId}
+          isMyPost={getPostQuery.data.post.user_id === getPostQuery.data.userId}
         />
       </div>
 
       <div className="whitespace-pre-wrap break-words">
         {formatText(
-          post.content.length > 512
-            ? post.content.slice(0, 512) + "..."
-            : post.content,
+          getPostQuery.data.post.content.length > 512
+            ? getPostQuery.data.post.content.slice(0, 512) + "..."
+            : getPostQuery.data.post.content,
         )}
       </div>
 
@@ -272,9 +283,10 @@ export default function Post({ post }: { post: Post }) {
           </p>
           <Badge variant="outline" className="flex items-center gap-x-1">
             <p className="hidden xs:block">Privacy:</p>
-            {post.type === "following"
+            {getPostQuery.data.post.type === "following"
               ? "Follower"
-              : post.type.charAt(0).toUpperCase() + post.type.slice(1)}
+              : getPostQuery.data.post.type.charAt(0).toUpperCase() +
+                getPostQuery.data.post.type.slice(1)}
           </Badge>
         </div>
       </div>

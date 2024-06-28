@@ -1,35 +1,33 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
-import { auth } from "@kabsu.me/auth";
-import type { User } from "@kabsu.me/db/schema";
+import type { RouterOutputs } from "@kabsu.me/api";
 
 import FollowButton from "./follow-button";
 
-export default async function UserFollows({
+export default function UserFollows({
   user,
   isFollower,
+  user_id,
 }: {
-  user: User;
+  user:
+    | RouterOutputs["users"]["getAllFollowers"]["followersUsers"][number]
+    | RouterOutputs["users"]["getAllFollowings"]["followeesUsers"][number];
   isFollower: boolean;
+  user_id: string;
 }) {
-  const session = await auth();
   return (
     <div className="flex gap-x-2 rounded border border-transparent p-2 hover:border-inherit">
       <Link href={`/${user.username}`}>
         <div className="min-w-max">
           <Image
-            src={
-              user.image
-                ? typeof user.image === "string"
-                  ? user.image
-                  : user.image.url
-                : "/default-avatar.jpg"
-            }
+            src={user.image_name ? user.image_url : "/default-avatar.jpg"}
             alt={`${user.name} profile picture`}
             width={40}
             height={40}
-            className="aspect-square rounded-full object-cover"
+            className="aspect-square rounded-full object-cover object-center"
           />
         </div>
       </Link>
@@ -49,7 +47,7 @@ export default async function UserFollows({
           </p>
         </div>
 
-        {user.id !== session?.user.id && (
+        {user.id !== user_id && (
           <FollowButton user_id={user.id} isFollower={isFollower} />
         )}
       </div>

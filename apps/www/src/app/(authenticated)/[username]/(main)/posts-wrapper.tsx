@@ -1,20 +1,23 @@
 "use client";
 
 import { Fragment, useEffect } from "react";
-import { Icons } from "@/components/icons";
-import Post from "@/components/post";
-import { PostSkeletonNoRandom } from "@/components/post-skeleton";
-import { api } from "@/lib/trpc/client";
 import { useInView } from "react-intersection-observer";
 
-import type { User } from "@kabsu.me/db/schema";
+import type { RouterOutputs } from "@kabsu.me/api";
 
-export default function PostsWrapper({ user }: { user: User }) {
+import { Icons } from "~/components/icons";
+import Post from "~/components/post";
+import { PostSkeletonNoRandom } from "~/components/post-skeleton";
+import { api } from "~/lib/trpc/client";
+
+export default function PostsWrapper({
+  user,
+}: {
+  user: RouterOutputs["users"]["getUserProfile"]["user"];
+}) {
   const { ref, inView } = useInView();
   const postsQuery = api.posts.getUserPosts.useInfiniteQuery(
-    {
-      user_id: user.id,
-    },
+    { user_id: user.id },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 1, // <-- optional you can pass an initialCursor
@@ -27,6 +30,7 @@ export default function PostsWrapper({ user }: { user: User }) {
         await postsQuery.fetchNextPage();
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inView]);
 
   return (

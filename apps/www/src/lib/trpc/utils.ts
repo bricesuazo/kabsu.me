@@ -1,8 +1,9 @@
-import { env } from "@/lib/env.mjs";
 import type { HTTPBatchLinkOptions, HTTPHeaders, TRPCLink } from "@trpc/client";
 import { httpBatchLink } from "@trpc/client";
 
 import type { AppRouter } from "@kabsu.me/api/root";
+
+import { env } from "~/env";
 
 function getBaseUrl() {
   if (typeof window !== "undefined") return "";

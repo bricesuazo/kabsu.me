@@ -1,13 +1,17 @@
 import { redirect } from "next/navigation";
-import Header from "@/components/header";
-import { auth } from "@kabsu.me/auth";
+
+import Header from "~/components/header";
+import { createClient } from "~/supabase/server";
 
 export default async function AuthenticatedLayout({
   children,
 }: React.PropsWithChildren) {
-  const session = await auth();
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session) redirect("/");
+  if (!user) redirect("/");
   return (
     <>
       <main className="container min-h-screen border-x p-0">

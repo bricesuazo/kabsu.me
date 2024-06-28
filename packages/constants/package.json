@@ -1,24 +1,20 @@
 {
   "name": "@kabsu.me/constants",
   "main": "index.ts",
+  "type": "module",
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
-    "lint": "eslint ."
+    "lint": "eslint"
   },
   "dependencies": {
-    "lucide-react": "^0.316.0",
-    "nanoid": "^5.0.4"
+    "lucide-react": "^0.396.0",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@kabsu.me/eslint-config": "workspace:*",
     "@kabsu.me/prettier-config": "workspace:*",
-    "@kabsu.me/tsconfig": "workspace:*"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@kabsu.me/eslint-config/base"
-    ]
+    "@kabsu.me/tsconfig": "workspace:*",
+    "@types/uuid": "^10.0.0"
   },
   "prettier": "@kabsu.me/prettier-config"
 }

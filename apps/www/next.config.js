@@ -1,17 +1,29 @@
+import { fileURLToPath } from "url";
+import createJiti from "jiti";
+
+// Import env files to validate at build time. Use jiti so we can load .ts files in here.
+createJiti(fileURLToPath(import.meta.url))("./src/env");
+
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const config = {
   images: {
     remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "54321",
+      },
+      {
+        protocol: "https",
+        hostname: "yqzqvzfpaiptblzdkphp.supabase.co",
+      },
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },
     ],
   },
-  transpilePackages: ["@eboto-mo/db", "@eboto-mo/api", "@eboto-mo/auth"],
-  experimental: {
-    swcPlugins: [["next-superjson-plugin", {}]],
-  },
+  transpilePackages: ["@kabsu.me/api"],
 };
 
-module.exports = nextConfig;
+export default config;

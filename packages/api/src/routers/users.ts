@@ -1,19 +1,9 @@
-// import { update } from "@kabsu.me/auth";
-import { BLOCKED_USERNAMES } from "@kabsu.me/constants";
-import {
-  ACCOUNT_TYPE,
-  followees,
-  followers,
-  notifications,
-  reported_problems,
-  reported_users,
-  suggested_features,
-  users,
-} from "@kabsu.me/db/schema";
 import { TRPCError } from "@trpc/server";
-import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
+import { BLOCKED_USERNAMES } from "@kabsu.me/constants";
+
+import type { Database } from "../../../../supabase/types";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const usersRouter = router({
@@ -21,33 +11,40 @@ export const usersRouter = router({
     .input(
       z.object({
         program_id: z.string(),
-        type: z.enum(ACCOUNT_TYPE),
-        name: z.string().nonempty(),
-        username: z.string().nonempty(),
+        type: z.custom<Database["public"]["Enums"]["user_type"]>(),
+        name: z.string().min(1),
+        username: z.string().min(1),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.transaction(async (trx) => {
-        await trx
-          .update(users)
-          .set({
+      const { data: user } = await ctx.supabase
+        .from("users")
+        .select()
+        .eq("id", ctx.auth.user.id)
+        .single();
+
+      if (user) {
+        await ctx.supabase
+          .from("users")
+          .update({
             program_id: input.program_id,
             type: input.type,
             name: input.name,
             username: input.username,
           })
-          .where(eq(users.id, ctx.session.user.id));
+          .eq("id", user.id);
+      } else {
+        await ctx.supabase.from("users").insert({
+          id: ctx.auth.user.id,
+          email: ctx.auth.user.email ?? "",
+          program_id: input.program_id,
+          type: input.type,
+          name: input.name,
+          username: input.username,
+        });
+      }
 
-        // await update({
-        //   user: {
-        //     program_id: input.program_id,
-        //     type: input.type,
-        //     name: input.name,
-        //     username: input.username,
-        //   },
-        // });
-      });
-      return { isSuccess: true, ...input } || { isSuccess: false };
+      return { success: true, ...input };
     }),
 
   updateProfile: protectedProcedure
@@ -61,45 +58,76 @@ export const usersRouter = router({
           .string()
           .max(64, { message: "Link must be less than 64 characters" })
           .nullable(),
+        name: z.string().max(64),
+        username: z.string().max(64),
+        image_name: z.string().nullish(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .update(users)
-        .set({ bio: input.bio, link: input.link })
-        .where(eq(users.id, ctx.session.user.id));
+      const { data: user } = await ctx.supabase
+        .from("users")
+        .select()
+        .eq("id", ctx.auth.user.id)
+        .single();
+
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+      if (
+        ((user.image_name && input.image_name === null) ||
+          (input.image_name &&
+            user.image_name &&
+            input.image_name !== user.image_name)) &&
+        !user.image_name.startsWith("https")
+      ) {
+        await ctx.supabase.storage
+          .from("users")
+          .remove([user.id + "/avatar/" + user.image_name]);
+      }
+
+      await ctx.supabase
+        .from("users")
+        .update({
+          name: input.name,
+          username: input.username,
+          bio: input.bio,
+          link: input.link,
+          image_name: input.image_name,
+        })
+        .eq("id", ctx.auth.user.id);
+
+      return { username: input.username };
     }),
 
   follow: protectedProcedure
     .input(z.object({ user_id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const isAlreadyFollowing = await ctx.db.query.followers.findFirst({
-        where: (follower, { and, eq }) =>
-          and(
-            eq(follower.follower_id, ctx.session.user.id),
-            eq(follower.followee_id, input.user_id),
-          ),
-      });
+      const { data: is_already_following } = await ctx.supabase
+        .from("followers")
+        .select("*")
+        .eq("follower_id", ctx.auth.user.id)
+        .eq("followee_id", input.user_id)
+        .single();
 
-      if (isAlreadyFollowing)
+      if (is_already_following)
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Already following user",
         });
 
-      await ctx.db.insert(followers).values({
-        follower_id: ctx.session.user.id,
+      await ctx.supabase.from("followers").insert({
+        follower_id: ctx.auth.user.id,
         followee_id: input.user_id,
       });
 
-      await ctx.db.insert(followees).values({
+      await ctx.supabase.from("followees").insert({
         follower_id: input.user_id,
-        followee_id: ctx.session.user.id,
+        followee_id: ctx.auth.user.id,
       });
 
-      if (ctx.session.user.id !== input.user_id) {
-        await ctx.db.insert(notifications).values({
-          from_id: ctx.session.user.id,
+      if (ctx.auth.user.id !== input.user_id) {
+        await ctx.supabase.from("notifications").insert({
+          from_id: ctx.auth.user.id,
           to_id: input.user_id,
           type: "follow",
         });
@@ -109,41 +137,38 @@ export const usersRouter = router({
   unfollow: protectedProcedure
     .input(z.object({ user_id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .delete(followers)
-        .where(
-          and(
-            eq(followers.follower_id, ctx.session.user.id),
-            eq(followers.followee_id, input.user_id),
-          ),
-        );
+      await ctx.supabase
+        .from("followers")
+        .delete()
+        .eq("follower_id", ctx.auth.user.id)
+        .eq("followee_id", input.user_id);
 
-      await ctx.db
-        .delete(followees)
-        .where(
-          and(
-            eq(followees.follower_id, input.user_id),
-            eq(followees.followee_id, ctx.session.user.id),
-          ),
-        );
+      await ctx.supabase
+        .from("followees")
+        .delete()
+        .eq("follower_id", input.user_id)
+        .eq("followee_id", ctx.auth.user.id);
 
-      if (ctx.session.user.id !== input.user_id) {
-        await ctx.db
-          .delete(notifications)
-          .where(
-            and(
-              eq(notifications.to_id, input.user_id),
-              eq(notifications.from_id, ctx.session.user.id),
-              eq(notifications.type, "follow"),
-            ),
-          );
+      if (ctx.auth.user.id !== input.user_id) {
+        await ctx.supabase
+          .from("notifications")
+          .delete()
+          .eq("to_id", input.user_id)
+          .eq("from_id", ctx.auth.user.id)
+          .eq("type", "follow");
       }
     }),
 
   getProgramForAuth: publicProcedure.query(async ({ ctx }) => {
-    const campuses = await ctx.db.query.campuses.findMany();
-    const colleges = await ctx.db.query.colleges.findMany();
-    const programs = await ctx.db.query.programs.findMany();
+    const [{ data: campuses }, { data: colleges }, { data: programs }] =
+      await Promise.all([
+        ctx.supabase.from("campuses").select("id, name, slug"),
+        ctx.supabase.from("colleges").select("id, name, slug, campus_id"),
+        ctx.supabase.from("programs").select("id, name, slug, college_id"),
+      ]);
+
+    if (programs === null || colleges === null || campuses === null)
+      throw new TRPCError({ code: "NOT_FOUND" });
 
     return {
       campuses,
@@ -157,9 +182,11 @@ export const usersRouter = router({
     .mutation(async ({ ctx, input }) => {
       if (BLOCKED_USERNAMES.has(input.username)) return true;
 
-      const user = await ctx.db.query.users.findFirst({
-        where: (user, { eq }) => eq(user.username, input.username),
-      });
+      const { data: user } = await ctx.supabase
+        .from("users")
+        .select()
+        .eq("username", input.username)
+        .single();
 
       return !!user;
     }),
@@ -167,170 +194,229 @@ export const usersRouter = router({
   isFollower: protectedProcedure
     .input(z.object({ user_id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const isFollower = await ctx.db.query.followers.findFirst({
-        where: (follower, { and, eq }) =>
-          and(
-            eq(follower.follower_id, ctx.session.user.id),
-            eq(follower.followee_id, input.user_id),
-          ),
-      });
+      const { data: is_follower } = await ctx.supabase
+        .from("followers")
+        .select()
+        .eq("follower_id", ctx.auth.user.id)
+        .eq("followee_id", input.user_id)
+        .single();
 
-      return !!isFollower;
+      return !!is_follower;
     }),
 
   getUserProfile: protectedProcedure
-    .input(z.object({ username: z.string().nonempty() }))
+    .input(z.object({ username: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
-      const user = await ctx.db.query.users.findFirst({
-        where: (user, { eq }) => eq(user.username, input.username),
-      });
+      const { data: user_from_db } = await ctx.supabase
+        .from("users")
+        .select(
+          "id, name, username, image_name, type, bio, link, verified_at, programs(name, slug, colleges(name, slug, campuses(name, slug)))",
+        )
+        .eq("username", input.username)
+        .single();
 
-      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+      if (!user_from_db) throw new TRPCError({ code: "NOT_FOUND" });
 
-      const userFromDB = await ctx.db.query.users.findFirst({
-        where: (userDB, { eq }) => eq(userDB.id, user.id),
+      const { data: followers } = await ctx.supabase
+        .from("followers")
+        .select()
+        .eq("followee_id", user_from_db.id);
 
-        with: {
-          program: { with: { college: { with: { campus: true } } } },
-        },
-      });
+      const { data: followees } = await ctx.supabase
+        .from("followees")
+        .select()
+        .eq("followee_id", user_from_db.id);
 
-      if (!userFromDB) throw new TRPCError({ code: "NOT_FOUND" });
-
-      const followers = await ctx.db.query.followers.findMany({
-        where: (follower, { eq }) => eq(follower.followee_id, userFromDB.id),
-      });
-
-      const followees = await ctx.db.query.followees.findMany({
-        where: (followee, { eq }) => eq(followee.followee_id, userFromDB.id),
-      });
+      let image_url: string | null = null;
+      if (
+        user_from_db.image_name &&
+        !user_from_db.image_name.startsWith("https")
+      ) {
+        const { data } = await ctx.supabase.storage
+          .from("users")
+          .createSignedUrl(
+            user_from_db.id + "/avatar/" + user_from_db.image_name,
+            60,
+          );
+        if (data) {
+          image_url = data.signedUrl;
+        }
+      }
 
       return {
-        followersLength: followers.length,
-        followeesLength: followees.length,
-        user: {
-          ...user,
-          ...userFromDB,
-        },
-        userId: ctx.session.user.id,
-        isFollower:
-          user.id === ctx.session.user.id
-            ? undefined
-            : !!followers.find(
-                (follower) => follower.follower_id === ctx.session.user.id,
-              ),
+        followersLength: followers?.length ?? 0,
+        followeesLength: followees?.length ?? 0,
+        user_id: ctx.auth.user.id,
+        user: user_from_db.image_name?.startsWith("https://")
+          ? {
+              ...user_from_db,
+              image_url: user_from_db.image_name,
+            }
+          : user_from_db.image_name && image_url
+            ? {
+                ...user_from_db,
+                image_url,
+              }
+            : {
+                ...user_from_db,
+                image_name: null,
+              },
+        is_follower: !!followers?.some(
+          (follower) => follower.follower_id === ctx.auth.user.id,
+        ),
       };
     }),
   report: protectedProcedure
     .input(z.object({ user_id: z.string().min(1), reason: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.db.query.users.findFirst({
-        where: (users, { and, eq }) => and(eq(users.id, input.user_id)),
-      });
+      const { data: user } = await ctx.supabase
+        .from("users")
+        .select()
+        .eq("id", input.user_id)
+        .single();
 
       if (!user)
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
 
-      if (user.id === ctx.session.user.id)
+      if (user.id === ctx.auth.user.id)
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not authorized to report this user",
         });
 
-      await ctx.db.insert(reported_users).values({
+      await ctx.supabase.from("reported_users").insert({
         reason: input.reason,
-        reported_by_id: ctx.session.user.id,
+        reported_by_id: ctx.auth.user.id,
         user_id: input.user_id,
       });
     }),
   search: protectedProcedure
     .input(z.object({ query: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      // TODO: optimize this
-      const users = await ctx.db.query.users.findMany({
-        where: (user, { isNotNull }) => isNotNull(user.username),
-      });
+      const { data: users } = await ctx.supabase
+        .from("users")
+        .select("*, programs(colleges(campuses(*)))")
+        .not("id", "eq", ctx.auth.user.id)
+        .ilike("username", `%${input.query}%`);
+
+      if (users === null) return [];
+
+      const image_urls: {
+        error: string | null;
+        path: string | null;
+        signedUrl: string;
+      }[] = [];
+      const { data } = await ctx.supabase.storage
+        .from("users")
+        .createSignedUrls(
+          users
+            .filter((user) => !user.image_name?.startsWith("https"))
+            .map((user) => user.id + "/" + user.image_name),
+          60 * 60 * 24,
+        );
+      if (data) {
+        image_urls.push(...data);
+      }
 
       return users
         .filter(
           (user) =>
             user.name.toLowerCase().includes(input.query.toLowerCase()) ||
-            user.username?.toLowerCase().includes(input.query.toLowerCase()),
+            user.username.toLowerCase().includes(input.query.toLowerCase()),
         )
-        .map((user) => ({
-          id: user.id,
-          username: user.username,
-          name: user.name,
-          imageUrl:
-            typeof user.image === "string"
-              ? user.image
-              : user.image?.url ?? null,
-          isVerified: !!user.verified_at,
-        }))
+        .map((user) => {
+          const base = {
+            id: user.id,
+            username: user.username,
+            name: user.name,
+            is_verified: !!user.verified_at,
+          };
+          const signedUrl = image_urls.find(
+            (image) => image.path === user.id + "/" + user.image_name,
+          )?.signedUrl;
+          return user.image_name?.startsWith("https://")
+            ? {
+                ...base,
+                image_name: user.image_name,
+                image_url: user.image_name,
+              }
+            : user.image_name && signedUrl
+              ? {
+                  ...base,
+                  image_name: user.image_name,
+                  image_url: signedUrl,
+                }
+              : {
+                  ...base,
+                  image_name: null,
+                };
+        })
         .slice(0, 10);
     }),
-  getTotalUsers: publicProcedure.query(
-    async ({ ctx }) => (await ctx.db.query.users.findMany()).length,
-  ),
+  getTotalUsers: publicProcedure.query(async ({ ctx }) => {
+    const { count } = await ctx.supabase
+      .from("users")
+      .select("*", { count: "exact", head: true });
+
+    return count ?? 0;
+  }),
   reportAProblem: protectedProcedure
     .input(
       z.object({
-        content: z.string().nonempty(),
+        content: z.string().min(1),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(reported_problems).values({
+      await ctx.supabase.from("reported_problems").insert({
         problem: input.content,
-        reported_by_id: ctx.session.user.id,
+        reported_by_id: ctx.auth.user.id,
       });
     }),
   suggestAFeature: protectedProcedure
     .input(
       z.object({
-        content: z.string().nonempty(),
+        content: z.string().min(1),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(suggested_features).values({
+      await ctx.supabase.from("suggested_features").insert({
         feature: input.content,
-        suggested_by_id: ctx.session.user.id,
+        suggested_by_id: ctx.auth.user.id,
       });
     }),
   updateAccountSettings: protectedProcedure
     .input(
       z.object({
-        name: z.string().nonempty(),
-        username: z.string().nonempty(),
+        name: z.string().min(1),
+        username: z.string().min(1),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.transaction(async (trx) => {
-        if (ctx.session.user.username !== input.username) {
-          if (BLOCKED_USERNAMES.has(input.username))
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "Username is not allowed",
-            });
+      // TODO: add transaction
+      const { data: user } = await ctx.supabase
+        .from("users")
+        .select()
+        .eq("id", ctx.auth.user.id)
+        .single();
 
-          const user = await ctx.db.query.users.findFirst({
-            where: (user, { eq }) => eq(user.username, input.username),
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+      if (user.username !== input.username) {
+        if (BLOCKED_USERNAMES.has(input.username))
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Username is not allowed",
           });
+      }
 
-          if (user)
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "Username is already taken",
-            });
-        }
-
-        await trx
-          .update(users)
-          .set({
-            name: input.name,
-            username: input.username,
-          })
-          .where(eq(users.id, ctx.session.user.id));
-      });
+      await ctx.supabase
+        .from("users")
+        .update({
+          name: input.name,
+          username: input.username,
+        })
+        .eq("id", ctx.auth.user.id);
 
       return input;
     }),
@@ -354,20 +440,167 @@ export const usersRouter = router({
           ),
         );
       }
+    }),
+  getAllFollowings: protectedProcedure
+    .input(z.object({ username: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { data: user } = await ctx.supabase
+        .from("users")
+        .select("id")
+        .eq("username", input.username)
+        .single();
 
-      // const file = new Blob(bytesArrays, { type: "image/png" });
+      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
 
-      // const user = await ctx.clerk.users.updateUserProfileImage(
-      //   ctx.session.user.id,
-      //   {
-      //     file,
-      //   },
-      // );
+      const [{ data: followees }, { data: my_followers }] = await Promise.all([
+        ctx.supabase
+          .from("followees")
+          .select("follower_id, created_at")
+          .eq("followee_id", user.id)
+          .order("created_at", { ascending: true }),
+        ctx.supabase
+          .from("followers")
+          .select("follower_id")
+          .eq("followee_id", ctx.auth.user.id),
+      ]);
 
-      //   await trx
-      //     .update(users)
-      //     .set({ profile_picture_url: user.imageUrl })
-      //     .where(eq(users.id, ctx.session.user.id));
-      // });
+      if (!followees || !my_followers)
+        throw new TRPCError({ code: "NOT_FOUND" });
+
+      const followeesUsers =
+        followees.length !== 0
+          ? await ctx.supabase
+              .from("users")
+              .select("id, username, name, bio, image_name")
+              .in(
+                "id",
+                followees.map((f) => f.follower_id),
+              )
+              .then(async (res) => {
+                if (res.error) {
+                  console.error(res.error);
+                  return [];
+                }
+
+                const image_urls: {
+                  error: string | null;
+                  path: string | null;
+                  signedUrl: string;
+                }[] = [];
+
+                const { data } = await ctx.supabase.storage
+                  .from("users")
+                  .createSignedUrls(
+                    res.data
+                      .filter((user) => !user.image_name?.startsWith("https"))
+                      .map((user) => user.id + "/" + user.image_name),
+                    60 * 60 * 24,
+                  );
+                if (data) {
+                  image_urls.push(...data);
+                }
+
+                return res.data.map((user) => {
+                  const image_url = image_urls.find(
+                    (image) => image.path === user.id + "/" + user.image_name,
+                  )?.signedUrl;
+                  return user.image_name?.startsWith("https://")
+                    ? {
+                        ...user,
+                        image_url: user.image_name,
+                      }
+                    : user.image_name && image_url
+                      ? {
+                          ...user,
+                          image_url,
+                        }
+                      : { ...user, image_name: null };
+                });
+              })
+          : [];
+
+      return { followeesUsers, followees, my_followers };
+    }),
+  getAllFollowers: protectedProcedure
+    .input(z.object({ username: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { data: user } = await ctx.supabase
+        .from("users")
+        .select("id")
+        .eq("username", input.username)
+        .single();
+
+      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+
+      const [{ data: followers }, { data: my_followees }] = await Promise.all([
+        ctx.supabase
+          .from("followers")
+          .select("follower_id, created_at")
+          .eq("followee_id", user.id)
+          .order("created_at", { ascending: true }),
+        ctx.supabase
+          .from("followees")
+          .select("follower_id")
+          .eq("followee_id", ctx.auth.user.id),
+      ]);
+
+      if (!followers || !my_followees)
+        throw new TRPCError({ code: "NOT_FOUND" });
+
+      const followersUsers =
+        followers.length !== 0
+          ? await ctx.supabase
+              .from("users")
+              .select("id, username, name, bio, image_name")
+              .in(
+                "id",
+                followers.map((f) => f.follower_id),
+              )
+              .then(async (res) => {
+                if (res.error) {
+                  console.error(res.error);
+                  return [];
+                }
+
+                const image_urls: {
+                  error: string | null;
+                  path: string | null;
+                  signedUrl: string;
+                }[] = [];
+
+                const { data } = await ctx.supabase.storage
+                  .from("users")
+                  .createSignedUrls(
+                    res.data
+                      .filter(
+                        (user) => !user.image_name?.startsWith("https://"),
+                      )
+                      .map((user) => user.id + "/" + user.image_name),
+                    60 * 60 * 24,
+                  );
+                if (data) {
+                  image_urls.push(...data);
+                }
+
+                return res.data.map((user) => {
+                  const image_url = image_urls.find(
+                    (image) => image.path === user.id + "/" + user.image_name,
+                  )?.signedUrl;
+                  return user.image_name?.startsWith("https://")
+                    ? {
+                        ...user,
+                        image_url: user.image_name,
+                      }
+                    : user.image_name && image_url
+                      ? {
+                          ...user,
+                          image_url,
+                        }
+                      : { ...user, image_name: null };
+                });
+              })
+          : [];
+
+      return { followersUsers, followers, my_followees };
     }),
 });

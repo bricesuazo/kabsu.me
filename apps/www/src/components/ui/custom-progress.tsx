@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "~/lib/utils";
 
 interface pageProps {
   className?: string;
@@ -16,7 +16,7 @@ const CustomProgress = ({ className, value, hitLimit }: pageProps) => {
     >
       <div
         className={cn(
-          "h-full w-full flex-1 bg-primary transition-all",
+          "size-full flex-1 bg-primary transition-all",
           hitLimit && "bg-red-500",
         )}
         style={{ transform: `translateX(-${100 - (value ?? 0)}%)` }}

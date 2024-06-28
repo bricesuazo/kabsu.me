@@ -4,15 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { api } from "@/lib/trpc/client";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Comment, Like, Post } from "@kabsu.me/db/schema";
 import {
   Album,
   Briefcase,
@@ -20,10 +12,18 @@ import {
   Heart,
   MessageCircle,
 } from "lucide-react";
-import { nanoid } from "nanoid";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import type { RouterOutputs } from "@kabsu.me/api";
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
+import { api } from "~/lib/trpc/client";
+import { cn } from "~/lib/utils";
 import { Icons } from "./icons";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -47,10 +47,10 @@ export default function PostComment({
   post,
 }: {
   userId: string;
-  post: Post & { likes: Like[]; comments: Comment[] };
+  post: RouterOutputs["posts"]["getPost"]["post"];
 }) {
   const context = api.useUtils();
-  const getCurrentSessionQuery = api.auth.getCurrentSession.useQuery();
+  const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
   const [open, setOpen] = useState(false);
   const likePostMutation = api.posts.like.useMutation({
     onSuccess: async () =>
@@ -72,7 +72,9 @@ export default function PostComment({
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [likes, setLikes] = useState<Like[]>(post.likes);
+  const [likes, setLikes] = useState<
+    RouterOutputs["posts"]["getPost"]["post"]["likes"]
+  >(post.likes);
   // TODO: Fix optimistic updates
   // const [optimisticLike, setOptimisticLike] = useOptimistic<Like[]>(post.likes);
 
@@ -82,7 +84,7 @@ export default function PostComment({
   const form = useForm<{ comment: string }>({
     resolver: zodResolver(
       z.object({
-        comment: z.string().nonempty({
+        comment: z.string().min(1, {
           message: "Comment cannot be empty.",
         }),
       }),
@@ -126,10 +128,8 @@ export default function PostComment({
                 setLikes([
                   ...likes,
                   {
-                    id: nanoid(),
                     post_id: post.id,
                     user_id: userId,
-                    created_at: new Date(),
                   },
                 ]);
 
@@ -225,10 +225,8 @@ export default function PostComment({
                       <div className="min-w-max">
                         <Image
                           src={
-                            like.user.image
-                              ? typeof like.user.image === "string"
-                                ? like.user.image
-                                : like.user.image.url
+                            like.user.image_name
+                              ? like.user.image_url
                               : "/default-avatar.jpg"
                           }
                           alt={`${like.user.name} profile picture`}
@@ -288,51 +286,51 @@ export default function PostComment({
                               })()}
                             </Tooltip>
                           </div>
-                          <div className="ml-2 hidden gap-x-2 group-hover:underline md:flex ">
+                          <div className="ml-2 hidden gap-x-2 group-hover:underline md:flex">
                             <Tooltip delayDuration={250}>
                               <TooltipTrigger>
                                 <Badge>
-                                  {like.user.program!.college.campus.slug.toUpperCase()}
+                                  {like.user.programs?.colleges?.campuses?.slug.toUpperCase()}
                                 </Badge>
                                 <TooltipContent className="max-w-[12rem]">
-                                  {like.user.program!.college.campus.name}
+                                  {like.user.programs?.colleges?.campuses?.name}
                                 </TooltipContent>
                               </TooltipTrigger>
                             </Tooltip>
                             <Tooltip delayDuration={250}>
                               <TooltipTrigger>
                                 <Badge variant="outline">
-                                  {like.user.program!.slug.toUpperCase()}
+                                  {like.user.programs?.slug.toUpperCase()}
                                 </Badge>
                                 <TooltipContent className="max-w-[12rem]">
-                                  {like.user.program!.name}
+                                  {like.user.programs?.name}
                                 </TooltipContent>
                               </TooltipTrigger>
                             </Tooltip>
                           </div>
                         </div>
                         <div className="flex items-center">
-                          <p className="line-clamp-1  break-all text-sm">
+                          <p className="line-clamp-1 break-all text-sm">
                             @{like.user.username}
                           </p>
                           <div className="ml-2 flex gap-x-2 group-hover:underline md:hidden">
                             <Tooltip delayDuration={250}>
                               <TooltipTrigger>
                                 <Badge className="hidden xs:block">
-                                  {like.user.program!.college.campus.slug.toUpperCase()}
+                                  {like.user.programs?.colleges?.campuses?.slug.toUpperCase()}
                                 </Badge>
                                 <TooltipContent className="max-w-[12rem]">
-                                  {like.user.program!.college.campus.name}
+                                  {like.user.programs?.colleges?.campuses?.name}
                                 </TooltipContent>
                               </TooltipTrigger>
                             </Tooltip>
                             <Tooltip delayDuration={250}>
                               <TooltipTrigger>
                                 <Badge variant="outline">
-                                  {like.user.program!.slug.toUpperCase()}
+                                  {like.user.programs?.slug.toUpperCase()}
                                 </Badge>
                                 <TooltipContent className="max-w-[12rem]">
-                                  {like.user.program!.name}
+                                  {like.user.programs?.name}
                                 </TooltipContent>
                               </TooltipTrigger>
                             </Tooltip>
@@ -376,7 +374,7 @@ export default function PostComment({
 
                 form.reset();
                 setIsFocused(false);
-                searchParams.has("comment") &&
+                if (searchParams.has("comment"))
                   router.push(
                     `/${params.username as string}/${params.post_id as string}`,
                   );
@@ -385,14 +383,18 @@ export default function PostComment({
             >
               <div className="flex w-full gap-x-2">
                 <div className="min-w-max">
-                  {getCurrentSessionQuery.data?.user.image ? (
-                    <Image
-                      src={getCurrentSessionQuery.data.user.image}
-                      alt="Image"
-                      width={40}
-                      height={40}
-                      className="rounded-full object-cover object-center"
-                    />
+                  {getCurrentUserQuery.data ? (
+                    <>
+                      {getCurrentUserQuery.data.image_name && (
+                        <Image
+                          src={getCurrentUserQuery.data.image_url}
+                          alt="Image"
+                          width={40}
+                          height={40}
+                          className="aspect-square rounded-full object-cover object-center"
+                        />
+                      )}
+                    </>
                   ) : (
                     <Skeleton className="h-10 w-10 rounded-full object-cover object-center" />
                   )}
@@ -439,14 +441,18 @@ export default function PostComment({
         ) : (
           <div className="flex w-full gap-x-2">
             <div className="min-w-max">
-              {getCurrentSessionQuery.data?.user.image ? (
-                <Image
-                  src={getCurrentSessionQuery.data.user.image}
-                  alt="Image"
-                  width={40}
-                  height={40}
-                  className="aspect-square rounded-full object-cover object-center"
-                />
+              {getCurrentUserQuery.data ? (
+                <>
+                  {getCurrentUserQuery.data.image_name && (
+                    <Image
+                      src={getCurrentUserQuery.data.image_url}
+                      alt="Image"
+                      width={40}
+                      height={40}
+                      className="aspect-square rounded-full object-cover object-center"
+                    />
+                  )}
+                </>
               ) : (
                 <Skeleton className="h-10 w-10 rounded-full" />
               )}

@@ -7,8 +7,8 @@ export default function UserFollowsSkeleton() {
 
       <div className="flex flex-1 justify-between">
         <div className="my-1 flex-1 space-y-2">
-          <Skeleton className="h-4 w-1/2 xs:w-40" />
-          <Skeleton className="h-3 w-4/6 xs:w-64" />
+          <Skeleton className="xs:w-40 h-4 w-1/2" />
+          <Skeleton className="xs:w-64 h-3 w-4/6" />
         </div>
         <Skeleton className="h-8 w-24" />
       </div>

@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,12 +13,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { api } from "@/lib/trpc/client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
+} from "~/components/ui/dialog";
+import { api } from "~/lib/trpc/client";
 import { Icons } from "./icons";
 import {
   Form,
@@ -69,10 +69,8 @@ export default function FeedbackForm({
   });
 
   useEffect(() => {
-    if (open) {
-      form.reset();
-    }
-  }, [open]);
+    if (open) form.reset();
+  }, [form, open]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

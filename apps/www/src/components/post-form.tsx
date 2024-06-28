@@ -4,23 +4,24 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Trash } from "lucide-react";
+import { useForm } from "react-hook-form";
+import TextareaAutosize from "react-textarea-autosize";
+import { z } from "zod";
+
+import { POST_TYPE_TABS } from "@kabsu.me/constants";
+
+import type { Database } from "../../../../supabase/types";
+import { Button } from "~/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { api } from "@/lib/trpc/client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { POST_TYPE_TABS } from "@kabsu.me/constants";
-import { POST_TYPE } from "@kabsu.me/db/schema";
-import { Trash } from "lucide-react";
-import { useForm } from "react-hook-form";
-import TextareaAutosize from "react-textarea-autosize";
-import { z } from "zod";
-
+} from "~/components/ui/form";
+import { api } from "~/lib/trpc/client";
 import { Icons } from "./icons";
 import {
   Select,
@@ -37,15 +38,17 @@ const Schema = z.object({
   content: z
     .string()
     .trim()
-    .nonempty({ message: "Post cannot be empty." })
+    .min(1, { message: "Post cannot be empty." })
     .max(512, {
       message: "Post cannot be longer than 512 characters.",
     }),
-  type: z.enum(POST_TYPE).default(POST_TYPE[0]),
+  type: z
+    .custom<Database["public"]["Enums"]["post_type"]>()
+    .default("following"),
 });
 export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
   const context = api.useUtils();
-  const getCurrentSessionQuery = api.auth.getCurrentSession.useQuery();
+  const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -53,7 +56,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
     resolver: zodResolver(Schema),
     defaultValues: {
       type: searchParams.has("tab")
-        ? (searchParams.get("tab") as (typeof POST_TYPE)[number])
+        ? (searchParams.get("tab") as Database["public"]["Enums"]["post_type"])
         : "following",
       content: "",
     },
@@ -67,14 +70,15 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
             ? "/"
             : `/?tab=${form.getValues("type")}`,
         );
-        // router.refresh();
-        await context.posts.getPosts.invalidate({
-          type: form.getValues("type"),
-        });
       } else {
-        await context.users.getUserProfile.invalidate();
-        await context.posts.getUserPosts.reset();
+        await Promise.all([
+          context.users.getUserProfile.reset(),
+          context.posts.getUserPosts.reset(),
+        ]);
       }
+      await context.posts.getPosts.invalidate({
+        type: form.getValues("type"),
+      });
       form.reset();
     },
   });
@@ -85,11 +89,12 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
     if (searchParams.has("tab")) {
       form.setValue(
         "type",
-        searchParams.get("tab") as (typeof POST_TYPE)[number],
+        searchParams.get("tab") as Database["public"]["Enums"]["post_type"],
       );
     } else {
       form.setValue("type", "following");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   useEffect(() => {
@@ -114,31 +119,31 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
       // className="xs:flex hidden gap-x-4"
       className="flex gap-x-2 border-b px-4 py-8"
     >
-      {!getCurrentSessionQuery.data || getCurrentSessionQuery.isLoading ? (
+      {!getCurrentUserQuery.data ? (
         <Skeleton className="h-10 w-10 rounded-full" />
       ) : (
         <Link
-          href={`/${getCurrentSessionQuery.data.user.username}`}
+          href={`/${getCurrentUserQuery.data.username}`}
           className="relative aspect-square h-8 w-8 min-w-max xs:h-10 xs:w-10"
         >
           <Image
             src={
-              getCurrentSessionQuery.data.user.image?.length
-                ? getCurrentSessionQuery.data.user.image
+              getCurrentUserQuery.data.image_name
+                ? getCurrentUserQuery.data.image_url
                 : "/default-avatar.jpg"
             }
             alt="Profile picture"
-            fill
-            sizes="100%"
-            className="aspect-square rounded-full object-cover"
+            width={40}
+            height={40}
+            className="aspect-square rounded-full object-cover object-center"
           />
         </Link>
       )}
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(async (values) => {
-            await createPostMutation.mutateAsync(values);
-          })}
+          onSubmit={form.handleSubmit((values) =>
+            createPostMutation.mutateAsync(values),
+          )}
           className="flex-1 space-y-4"
         >
           <div className="flex gap-x-2">
@@ -169,6 +174,14 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                           autoFocus
                           maxLength={256}
                           maxRows={6}
+                          onKeyDown={async (e) => {
+                            if (e.key === "Enter" && e.ctrlKey) {
+                              e.preventDefault();
+                              await form.handleSubmit((values) =>
+                                createPostMutation.mutateAsync(values),
+                              )();
+                            }
+                          }}
                           {...field}
                         />
                       )}

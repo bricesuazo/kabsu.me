@@ -2,7 +2,8 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { appRouter } from "@kabsu.me/api/root";
 import { createTRPCContext } from "@kabsu.me/api/trpc";
-import { auth } from "@kabsu.me/auth";
+
+import { createClient } from "~/supabase/server";
 
 // export const runtime = "edge";
 
@@ -22,11 +23,17 @@ export function OPTIONS() {
 }
 
 const handler = async (req: Request) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const response = await fetchRequestHandler({
     endpoint: "/api/trpc",
     router: appRouter,
     req,
-    createContext: async () => createTRPCContext({ auth: await auth(), req }),
+    createContext: () =>
+      createTRPCContext({ auth: user ? { user } : null, req }),
     onError({ error, path }) {
       console.error(`>>> tRPC Error on '${path}'`, error);
     },

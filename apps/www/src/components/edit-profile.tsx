@@ -1,14 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { api } from "@/lib/trpc/client";
-import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { User } from "@kabsu.me/db/schema";
 import { PenSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
+import type { RouterOutputs } from "@kabsu.me/api";
+
+import { api } from "~/lib/trpc/client";
+import { cn } from "~/lib/utils";
+import { createClient } from "~/supabase/client";
+import { FileUploader } from "./file-uploader";
 import { Icons } from "./icons";
 import { AlertDialogHeader } from "./ui/alert-dialog";
 import { Button } from "./ui/button";
@@ -30,65 +36,87 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import { toast } from "./ui/use-toast";
 
-export default function EditProfile({ user }: { user: User }) {
+const formSchema = z.object({
+  bio: z
+    .string()
+    .max(128, "Bio must be at most 128 characters long.")
+    .optional(),
+  name: z
+    .string()
+    .min(1, { message: "First name is required." })
+    .max(64, { message: "Name must be at most 64 characters long." }),
+  username: z
+    .string()
+    .min(1, { message: "Username is required." })
+    .max(64, { message: "Username must be at most 64 characters long." }),
+  link: z
+    .string()
+    .max(64, { message: "Link must be less than 64 characters" })
+    .transform((value) => {
+      if (value === "") return undefined;
+      return /http/.exec(value) ? value : `https://${value}`;
+    })
+    .refine((value) => {
+      if (value === undefined) return true;
+      if (value.length) return value.includes(".");
+    }, "Invalid URL")
+    .optional(),
+  images: z.instanceof(File).array().or(z.string()).nullish(),
+});
+
+export default function EditProfile({
+  user,
+}: {
+  user: RouterOutputs["users"]["getUserProfile"]["user"];
+}) {
+  const router = useRouter();
   const context = api.useUtils();
-  const updateProfileMutation = api.users.updateProfile.useMutation({
-    onSuccess: async () => {
-      await context.users.getUserProfile.invalidate({
-        username: user.username ?? "",
-      });
-    },
-  });
-  const formSchema = z.object({
-    bio: z
-      .string()
-      .max(128, "Bio must be at most 128 characters long.")
-      .optional(),
-    name: z
-      .string()
-      // .nonempty({ message: "First name is required." })
-      .max(64, { message: "Name must be at most 64 characters long." })
-      .optional(),
-    username: z
-      .string()
-      // .nonempty({ message: "Username is required." })
-      .max(64, { message: "Username must be at most 64 characters long." })
-      .optional(),
-    link: z
-      .string()
-      // .url({ message: "Link must be a valid URL." })
-      .max(64, { message: "Link must be less than 64 characters" })
-      .transform((value) => {
-        if (value === "") return undefined;
-        return value.match("http") ? value : `https://${value}`;
-      })
-      .optional(),
-  });
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       bio: user.bio ?? "",
-      name: user.name ?? "",
-      username: user.username ?? "",
+      name: user.name,
+      username: user.username,
       link: user.link?.split("https://")[1] ?? "",
+      images: user.image_name ? user.image_url : undefined,
+    },
+  });
+
+  const isUsernameExistsMutation = api.users.isUsernameExists.useMutation();
+  const updateProfileMutation = api.users.updateProfile.useMutation({
+    onSuccess: async ({ username }) => {
+      if (user.username !== username) {
+        router.push(`/${username}`);
+      } else if (form.getFieldState("images").isDirty) {
+        await Promise.all([
+          context.users.getUserProfile.invalidate({ username }),
+          context.posts.getUserPosts.reset(),
+          context.auth.getCurrentUser.refetch(),
+        ]);
+      } else {
+        await context.users.getUserProfile.invalidate({ username });
+      }
+
+      toast.success("Profile updated", {
+        description: "Your profile has been updated.",
+      });
+      setOpen(false);
     },
   });
 
   const [open, setOpen] = useState(false);
 
-  // useEffect(() => {
-  //   if (open) {
-  //     form.reset();
-  //     form.setValue("bio", user.bio ?? "");
-  //     form.setValue("firstName", user.firstName ?? "");
-  //     form.setValue("lastName", user.lastName ?? "");
-  //     form.setValue("username", user.username ?? "");
-  //     form.setValue("link", user.link?.split("https://")[1] ?? "");
-  //   }
-  // }, [open, user, user, form]);
+  useEffect(() => {
+    if (open)
+      form.reset({
+        bio: user.bio ?? "",
+        name: user.name,
+        username: user.username,
+        link: user.link?.split("https://")[1] ?? "",
+        images: user.image_name ? user.image_url : undefined,
+      });
+  }, [open, form, user]);
 
   function mapToPercentage(value: number) {
     return (Math.min(128, Math.max(0, value)) / 128) * 100;
@@ -115,21 +143,114 @@ export default function EditProfile({ user }: { user: User }) {
           <form
             className="space-y-2"
             onSubmit={form.handleSubmit(async (data) => {
+              const supabase = createClient();
+              if (data.username !== user.username) {
+                const isUsernameExists =
+                  await isUsernameExistsMutation.mutateAsync({
+                    username: data.username,
+                  });
+                if (isUsernameExists) {
+                  form.setError("username", {
+                    message: "Username is already taken.",
+                  });
+                  return;
+                }
+              }
+
+              let image_name: string | undefined | null;
+              if (Array.isArray(data.images) && data.images[0]) {
+                const now = Date.now();
+                const uploadData = await supabase.storage
+                  .from("users")
+                  .upload(user.id + "/avatar/" + now, data.images[0]);
+
+                if (uploadData.error) {
+                  toast.error("Failed to upload image", {
+                    description: uploadData.error.message,
+                  });
+                  return;
+                }
+
+                image_name = now.toString();
+              } else if (data.images === null) {
+                image_name = null;
+              }
+
               await updateProfileMutation.mutateAsync({
                 bio: data.bio?.length ? data.bio : null,
                 link: data.link ?? null,
+                name: data.name,
+                username: data.username,
+                image_name,
               });
-              toast({
-                title: "Profile updated",
-                description: "Your profile has been updated.",
-              });
-              setOpen(false);
             })}
           >
             <FormField
               control={form.control}
+              name="images"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Image</FormLabel>
+                  <FormControl>
+                    {typeof field.value !== "string" ? (
+                      !field.value?.[0] ? (
+                        <FileUploader
+                          value={field.value ?? undefined}
+                          onValueChange={field.onChange}
+                          maxFiles={1}
+                          maxSize={4 * 1024 * 1024}
+                          disabled={form.formState.isSubmitting}
+                        />
+                      ) : (
+                        <div className="flex h-52 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/25">
+                          <Image
+                            src={URL.createObjectURL(field.value[0])}
+                            width={100}
+                            height={100}
+                            alt="Profile"
+                            className="aspect-square rounded-full object-cover object-center"
+                          />
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2 !text-destructive"
+                            type="button"
+                            onClick={async () => {
+                              field.onChange(undefined);
+                              await form.trigger("images");
+                            }}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      )
+                    ) : (
+                      <div className="flex h-52 flex-col items-center justify-center gap-2">
+                        <Image
+                          src={field.value}
+                          alt=""
+                          width={100}
+                          height={100}
+                          className="aspect-square rounded-full object-cover object-center"
+                        />
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          type="button"
+                          onClick={() => field.onChange(null)}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    )}
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="username"
-              disabled
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
@@ -146,7 +267,6 @@ export default function EditProfile({ user }: { user: User }) {
               <FormField
                 control={form.control}
                 name="name"
-                disabled
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormLabel>
@@ -160,14 +280,6 @@ export default function EditProfile({ user }: { user: User }) {
                 )}
               />
             </div>
-            {/* <p className="text-sm">
-              To update your username, first name, and last name, please visit
-              the{" "}
-              <Link href="/account" className="text-primary hover:underline">
-                Account Page
-              </Link>
-              .
-            </p> */}
 
             <FormField
               control={form.control}

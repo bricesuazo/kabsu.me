@@ -1,5 +1,5 @@
-import { PostSkeletonNoRandom } from "@/components/post-skeleton";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PostSkeletonNoRandom } from "~/components/post-skeleton";
+import { Skeleton } from "~/components/ui/skeleton";
 
 export default function UserLoading() {
   return (
@@ -9,7 +9,6 @@ export default function UserLoading() {
           <div className="flex-1 space-y-2 xs:w-px">
             <div className="flex items-center gap-x-2">
               <Skeleton className="h-5 w-14 rounded-full border border-transparent bg-primary" />
-              <Skeleton className="h-5 w-14 rounded-full border bg-transparent" />
               <Skeleton className="h-5 w-14 rounded-full border bg-transparent" />
             </div>
 
@@ -22,7 +21,7 @@ export default function UserLoading() {
           </div>
 
           <div className="min-w-max">
-            <Skeleton className="h-[100px] w-[100px] rounded-full" />
+            <Skeleton className="h-[128px] w-[128px] rounded-full" />
           </div>
         </div>
 

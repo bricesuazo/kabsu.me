@@ -1,5 +1,6 @@
-import { Icons } from "@/components/icons";
 import Image from "next/image";
+
+import { Icons } from "~/components/icons";
 
 export default function Loading() {
   return (

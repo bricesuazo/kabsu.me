@@ -3,9 +3,22 @@
 import { Fragment, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { signOut } from "@/actions/auth";
-import { Button } from "@/components/ui/button";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  AlertTriangle,
+  AtSign,
+  Check,
+  LogOut,
+  Menu,
+  Moon,
+  SquareMousePointer,
+  Sun,
+} from "lucide-react";
+import { useTheme } from "next-themes";
+
+import { NAVBAR_LINKS } from "@kabsu.me/constants";
+
+import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,22 +29,9 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { api } from "@/lib/trpc/client";
-import { NAVBAR_LINKS } from "@kabsu.me/constants";
-import {
-  AlertTriangle,
-  AtSign,
-  Check,
-  LogOut,
-  Menu,
-  Moon,
-  MousePointerSquare,
-  Sun,
-  UserCog,
-} from "lucide-react";
-import { useTheme } from "next-themes";
-
+} from "~/components/ui/dropdown-menu";
+import { api } from "~/lib/trpc/client";
+import { createClient } from "~/supabase/client";
 import FeedbackForm from "./feedback-form";
 import { Icons } from "./icons";
 import Notifications from "./notifications";
@@ -54,9 +54,10 @@ export default function Header() {
   const [loadingSignout, setLoadingSignout] = useState(false);
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<"bug" | "feature">("bug");
-  const sessionQuery = api.auth.getCurrentSession.useQuery();
+  const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
 
   const [openFeedbackForm, setOpenFeedbackForm] = useState(false);
+  const router = useRouter();
 
   return (
     <>
@@ -130,10 +131,10 @@ export default function Header() {
             <Notifications />
           </div>
 
-          {sessionQuery.isLoading ? (
+          {getCurrentUserQuery.isLoading ? (
             <Skeleton className="m-1 h-8 w-8 rounded-full" />
           ) : (
-            sessionQuery.data && (
+            getCurrentUserQuery.data && (
               <DropdownMenu open={open}>
                 <DropdownMenuTrigger
                   className="cursor-pointer rounded-full p-1"
@@ -142,14 +143,14 @@ export default function Header() {
                   <div className="relative h-8 w-8">
                     <Image
                       src={
-                        sessionQuery.data.user.image
-                          ? sessionQuery.data.user.image
+                        getCurrentUserQuery.data.image_name
+                          ? getCurrentUserQuery.data.image_url
                           : "/default-avatar.jpg"
                       }
                       alt="Image"
-                      fill
-                      sizes="100%"
-                      className="rounded-full object-cover"
+                      width={40}
+                      height={40}
+                      className="aspect-square rounded-full object-cover object-center"
                     />
                   </div>
                 </DropdownMenuTrigger>
@@ -162,19 +163,13 @@ export default function Header() {
                     className="line-clamp-1 w-full cursor-pointer truncate"
                   >
                     <Link
-                      href={`/${sessionQuery.data.user.username}`}
+                      href={`/${getCurrentUserQuery.data.username}`}
                       className="flex w-full items-center"
                     >
                       <AtSign className="mr-2" size="1rem" />
-                      {sessionQuery.data.user.username?.length
-                        ? `${sessionQuery.data.user.username}`
+                      {getCurrentUserQuery.data.username.length
+                        ? `${getCurrentUserQuery.data.username}`
                         : "My Profile"}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild disabled>
-                    <Link href="/account">
-                      <UserCog className="mr-2" size="1rem" />
-                      Account Settings
                     </Link>
                   </DropdownMenuItem>
 
@@ -222,31 +217,29 @@ export default function Header() {
                       setOpen(false);
                     }}
                   >
-                    <MousePointerSquare className="mr-2" size="1rem" />
+                    <SquareMousePointer className="mr-2" size="1rem" />
                     Suggest a feature
                   </DropdownMenuItem>
 
                   <DropdownMenuSeparator />
 
-                  <form
-                    action={async () => {
+                  <DropdownMenuItem
+                    className="mr-2 flex w-full gap-x-2"
+                    disabled={loadingSignout}
+                    onClick={async () => {
                       setLoadingSignout(true);
-                      await signOut();
-                      setOpen(false);
-                      setLoadingSignout(false);
+                      const supabase = createClient();
+                      await supabase.auth.signOut();
+                      router.refresh();
                     }}
                   >
-                    <DropdownMenuItem asChild>
-                      <button className="mr-2 flex w-full gap-x-2">
-                        {loadingSignout ? (
-                          <Icons.spinner className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <LogOut size="1rem" />
-                        )}
-                        Sign out
-                      </button>
-                    </DropdownMenuItem>
-                  </form>
+                    {loadingSignout ? (
+                      <Icons.spinner className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <LogOut size="1rem" />
+                    )}
+                    Sign out
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )

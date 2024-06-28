@@ -1,33 +1,41 @@
+import type { User } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import type { Session } from "@kabsu.me/auth";
-import { auth } from "@kabsu.me/auth";
-import { db } from "@kabsu.me/db";
+import type { Database } from "./../../../supabase/types";
+import { env } from "./../../../apps/www/src/env";
 
 interface CreateContextOptions {
-  session: Session | null;
+  auth: {
+    user: User;
+    // user: Database["public"]["Tables"]["users"]["Row"];
+  } | null;
 }
 
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
+  const supabase = createClient<Database>(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY,
+  );
   return {
-    session: opts.session,
-    db,
+    supabase,
+    ...opts,
   };
 };
 
-export const createTRPCContext = async (opts: {
+export const createTRPCContext = (opts: {
   req?: Request;
-  auth: Session | null;
+  auth: CreateContextOptions["auth"];
 }) => {
-  const session = opts.auth ?? (await auth());
+  const auth = opts.auth;
   const source = opts.req?.headers.get("x-trpc-source") ?? "unknown";
 
-  console.log(">>> tRPC Request from", source, "by", session?.user);
+  console.log(">>> tRPC Request from", source, "by", auth?.user.email);
 
   return createInnerTRPCContext({
-    session,
+    auth,
   });
 };
 
@@ -57,14 +65,14 @@ export const router = t.router;
 export const publicProcedure = t.procedure;
 
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session) {
+  if (!ctx.auth) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
     ctx: {
       ...ctx,
-      session: {
-        ...ctx.session,
+      auth: {
+        ...ctx.auth,
       },
     },
   });

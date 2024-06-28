@@ -1,8 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
 import { z } from "zod";
-
-import { campuses, colleges, programs } from "@kabsu.me/db/schema";
 
 import { protectedProcedure, router } from "../trpc";
 
@@ -15,38 +12,67 @@ export const adminRouter = router({
     //   await ctx.clerk.sessions.revokeSession(session.id);
     // });
   }),
-  getAllCampuses: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.campuses.findMany({
-      orderBy: (campuses, { desc }) => desc(campuses.created_at),
-    });
+  getAllCampuses: protectedProcedure.query(async ({ ctx }) => {
+    const { data: campuses } = await ctx.supabase
+      .from("campuses")
+      .select("id, name, slug, created_at")
+      .order("created_at", { ascending: false });
+
+    if (!campuses)
+      throw new TRPCError({ code: "NOT_FOUND", message: "Campuses not found" });
+
+    return campuses;
   }),
   getAllColleges: protectedProcedure.query(async ({ ctx }) => {
-    const campuses = await ctx.db.query.campuses.findMany({
-      orderBy: (campuses, { desc }) => desc(campuses.created_at),
-    });
-    const colleges = await ctx.db.query.colleges.findMany({
-      orderBy: (colleges, { desc }) => desc(colleges.created_at),
-    });
+    const [{ data: campuses }, { data: colleges }] = await Promise.all([
+      ctx.supabase
+        .from("campuses")
+        .select("id, name, slug, created_at")
+        .order("created_at", { ascending: false }),
+      ctx.supabase
+        .from("colleges")
+        .select("id, campus_id, name, slug, created_at")
+        .order("created_at", { ascending: false }),
+    ]);
+
+    if (!campuses || !colleges)
+      throw new TRPCError({ code: "NOT_FOUND", message: "Colleges not found" });
 
     return campuses
-      .sort((a, b) => a.created_at.getTime() - b.created_at.getTime())
+      .sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+      )
       .map((campus) => ({
         ...campus,
         colleges: colleges
           .filter((college) => college.campus_id === campus.id)
-          .sort((a, b) => a.created_at.getTime() - b.created_at.getTime()),
+          .sort(
+            (a, b) =>
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime(),
+          ),
       }));
   }),
   getAllPrograms: protectedProcedure.query(async ({ ctx }) => {
-    const colleges = await ctx.db.query.colleges.findMany({
-      orderBy: (colleges, { desc }) => desc(colleges.created_at),
-    });
-    const campuses = await ctx.db.query.campuses.findMany({
-      orderBy: (campuses, { desc }) => desc(campuses.created_at),
-    });
-    const programs = await ctx.db.query.programs.findMany({
-      orderBy: (programs, { desc }) => desc(programs.created_at),
-    });
+    const [{ data: campuses }, { data: colleges }, { data: programs }] =
+      await Promise.all([
+        ctx.supabase
+          .from("campuses")
+          .select("id, name, slug, created_at")
+          .order("created_at", { ascending: false }),
+        ctx.supabase
+          .from("colleges")
+          .select("id, campus_id, name, slug, created_at")
+          .order("created_at", { ascending: false }),
+        ctx.supabase
+          .from("programs")
+          .select("id, college_id, name, slug, created_at")
+          .order("created_at", { ascending: false }),
+      ]);
+
+    if (!campuses || !colleges || !programs)
+      throw new TRPCError({ code: "NOT_FOUND", message: "Programs not found" });
 
     return campuses.map((campus) => ({
       ...campus,
@@ -72,9 +98,11 @@ export const adminRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const campus = await ctx.db.query.campuses.findFirst({
-        where: (campuses, { eq }) => eq(campuses.slug, input.slug),
-      });
+      const { data: campus } = await ctx.supabase
+        .from("campuses")
+        .select("id")
+        .eq("slug", input.slug)
+        .single();
 
       if (campus)
         throw new TRPCError({
@@ -82,15 +110,21 @@ export const adminRouter = router({
           message: "Campus acronym already exists",
         });
 
-      await ctx.db.insert(campuses).values({
+      const { error } = await ctx.supabase.from("campuses").insert({
         name: input.name,
         slug: input.slug,
       });
+
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
     }),
   addCollege: protectedProcedure
     .input(
       z.object({
-        campus_id: z.string().nonempty(),
+        campus_id: z.string().min(1),
         name: z.string().min(2, {
           message: "name must be at least 2 characters.",
         }),
@@ -100,13 +134,12 @@ export const adminRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const college = await ctx.db.query.colleges.findFirst({
-        where: (colleges, { eq, and }) =>
-          and(
-            eq(colleges.campus_id, input.campus_id),
-            eq(colleges.slug, input.slug),
-          ),
-      });
+      const { data: college } = await ctx.supabase
+        .from("colleges")
+        .select("id")
+        .eq("slug", input.slug)
+        .eq("campus_id", input.campus_id)
+        .single();
 
       if (college)
         throw new TRPCError({
@@ -114,16 +147,22 @@ export const adminRouter = router({
           message: "Campus acronym already exists",
         });
 
-      await ctx.db.insert(colleges).values({
+      const { error } = await ctx.supabase.from("colleges").insert({
         campus_id: input.campus_id,
         name: input.name,
         slug: input.slug,
       });
+
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
     }),
   addProgram: protectedProcedure
     .input(
       z.object({
-        college_id: z.string().nonempty(),
+        college_id: z.string().min(1),
         name: z.string().min(2, {
           message: "name must be at least 2 characters.",
         }),
@@ -133,13 +172,12 @@ export const adminRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const program = await ctx.db.query.programs.findFirst({
-        where: (programs, { eq, and }) =>
-          and(
-            eq(programs.college_id, input.college_id),
-            eq(programs.slug, input.slug),
-          ),
-      });
+      const { data: program } = await ctx.supabase
+        .from("programs")
+        .select("id")
+        .eq("college_id", input.college_id)
+        .eq("slug", input.slug)
+        .single();
 
       if (program)
         throw new TRPCError({
@@ -147,18 +185,26 @@ export const adminRouter = router({
           message: "Program acronym already exists",
         });
 
-      await ctx.db.insert(programs).values({
+      const { error } = await ctx.supabase.from("programs").insert({
         college_id: input.college_id,
         name: input.name,
         slug: input.slug,
       });
+
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
     }),
   deleteCampus: protectedProcedure
-    .input(z.object({ campus_id: z.string().nonempty() }))
+    .input(z.object({ campus_id: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
-      const campus = await ctx.db.query.campuses.findFirst({
-        where: (campuses, { eq }) => eq(campuses.id, input.campus_id),
-      });
+      const { data: campus } = await ctx.supabase
+        .from("campuses")
+        .select("slug")
+        .eq("id", input.campus_id)
+        .single();
 
       if (!campus)
         throw new TRPCError({
@@ -172,14 +218,25 @@ export const adminRouter = router({
           message: "Cannot delete campus",
         });
 
-      await ctx.db.delete(campuses).where(eq(campuses.id, input.campus_id));
+      const { error } = await ctx.supabase
+        .from("campuses")
+        .delete()
+        .eq("id", input.campus_id);
+
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
     }),
   deleteCollege: protectedProcedure
-    .input(z.object({ college_id: z.string().nonempty() }))
+    .input(z.object({ college_id: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
-      const college = await ctx.db.query.colleges.findFirst({
-        where: (colleges, { eq }) => eq(colleges.id, input.college_id),
-      });
+      const { data: college } = await ctx.supabase
+        .from("colleges")
+        .select("id")
+        .eq("id", input.college_id)
+        .single();
 
       if (!college)
         throw new TRPCError({
@@ -187,14 +244,25 @@ export const adminRouter = router({
           message: "College not found",
         });
 
-      await ctx.db.delete(colleges).where(eq(colleges.id, college.id));
+      const { error } = await ctx.supabase
+        .from("colleges")
+        .delete()
+        .eq("id", college.id);
+
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
     }),
   deleteProgram: protectedProcedure
-    .input(z.object({ program_id: z.string().nonempty() }))
+    .input(z.object({ program_id: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
-      const program = await ctx.db.query.programs.findFirst({
-        where: (programs, { eq }) => eq(programs.id, input.program_id),
-      });
+      const { data: program } = await ctx.supabase
+        .from("programs")
+        .select("id")
+        .eq("id", input.program_id)
+        .single();
 
       if (!program)
         throw new TRPCError({
@@ -202,12 +270,12 @@ export const adminRouter = router({
           message: "Program not found",
         });
 
-      await ctx.db.delete(programs).where(eq(programs.id, program.id));
+      await ctx.supabase.from("programs").delete().eq("id", program.id);
     }),
   editCampus: protectedProcedure
     .input(
       z.object({
-        campus_id: z.string().nonempty(),
+        campus_id: z.string().min(1),
         name: z.string().min(2, {
           message: "name must be at least 2 characters.",
         }),
@@ -217,9 +285,11 @@ export const adminRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const campus = await ctx.db.query.campuses.findFirst({
-        where: (campuses, { eq }) => eq(campuses.id, input.campus_id),
-      });
+      const { data: campus } = await ctx.supabase
+        .from("campuses")
+        .select("slug")
+        .eq("id", input.campus_id)
+        .single();
 
       if (!campus)
         throw new TRPCError({
@@ -233,19 +303,25 @@ export const adminRouter = router({
           message: "Cannot edit main campus",
         });
 
-      await ctx.db
-        .update(campuses)
-        .set({
+      const { error } = await ctx.supabase
+        .from("campuses")
+        .update({
           name: input.name,
           slug: input.slug,
         })
-        .where(eq(campuses.id, input.campus_id));
+        .eq("id", input.campus_id);
+
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
     }),
   editCollege: protectedProcedure
     .input(
       z.object({
-        id: z.string().nonempty(),
-        campus_id: z.string().nonempty(),
+        id: z.string().min(1),
+        campus_id: z.string().min(1),
         name: z.string().min(2, {
           message: "name must be at least 2 characters.",
         }),
@@ -255,13 +331,12 @@ export const adminRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const college = await ctx.db.query.colleges.findFirst({
-        where: (colleges, { eq, and }) =>
-          and(
-            eq(colleges.id, input.id),
-            eq(colleges.campus_id, input.campus_id),
-          ),
-      });
+      const { data: college } = await ctx.supabase
+        .from("colleges")
+        .select("id, slug")
+        .eq("id", input.id)
+        .eq("campus_id", input.campus_id)
+        .single();
 
       if (!college)
         throw new TRPCError({
@@ -270,13 +345,12 @@ export const adminRouter = router({
         });
 
       if (college.slug !== input.slug) {
-        const college = await ctx.db.query.colleges.findFirst({
-          where: (colleges, { eq, and }) =>
-            and(
-              eq(colleges.campus_id, input.campus_id),
-              eq(colleges.slug, input.slug),
-            ),
-        });
+        const { data: college } = await ctx.supabase
+          .from("colleges")
+          .select("id")
+          .eq("campus_id", input.campus_id)
+          .eq("slug", input.slug)
+          .single();
 
         if (college)
           throw new TRPCError({
@@ -285,18 +359,24 @@ export const adminRouter = router({
           });
       }
 
-      await ctx.db
-        .update(colleges)
-        .set({
+      const { error } = await ctx.supabase
+        .from("colleges")
+        .update({
           name: input.name,
         })
-        .where(eq(colleges.id, input.id));
+        .eq("id", input.id);
+
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
     }),
   editProgram: protectedProcedure
     .input(
       z.object({
-        id: z.string().nonempty(),
-        college_id: z.string().nonempty(),
+        id: z.string().min(1),
+        college_id: z.string().min(1),
         name: z.string().min(2, {
           message: "name must be at least 2 characters.",
         }),
@@ -306,13 +386,12 @@ export const adminRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const program = await ctx.db.query.programs.findFirst({
-        where: (programs, { eq, and }) =>
-          and(
-            eq(programs.id, input.id),
-            eq(programs.college_id, input.college_id),
-          ),
-      });
+      const { data: program } = await ctx.supabase
+        .from("programs")
+        .select("id, slug")
+        .eq("id", input.id)
+        .eq("college_id", input.college_id)
+        .single();
 
       if (!program)
         throw new TRPCError({
@@ -321,13 +400,12 @@ export const adminRouter = router({
         });
 
       if (program.slug !== input.slug) {
-        const program = await ctx.db.query.programs.findFirst({
-          where: (programs, { eq, and }) =>
-            and(
-              eq(programs.college_id, input.college_id),
-              eq(programs.slug, input.slug),
-            ),
-        });
+        const { data: program } = await ctx.supabase
+          .from("programs")
+          .select("id")
+          .eq("college_id", input.college_id)
+          .eq("slug", input.slug)
+          .single();
 
         if (program)
           throw new TRPCError({
@@ -336,12 +414,18 @@ export const adminRouter = router({
           });
       }
 
-      await ctx.db
-        .update(programs)
-        .set({
+      const { error } = await ctx.supabase
+        .from("programs")
+        .update({
           name: input.name,
           slug: input.slug,
         })
-        .where(eq(programs.id, input.id));
+        .eq("id", input.id);
+
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
     }),
 });

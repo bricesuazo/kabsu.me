@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import Footer from "@/components/footer";
+
+import Footer from "~/components/footer";
 
 export default function AdventuraPage() {
   return (
@@ -27,7 +28,7 @@ export default function AdventuraPage() {
         <iframe
           src="https://itch.io/embed-upload/7325386?color=4ad946"
           allowFullScreen
-          className="aspect-video h-full w-full"
+          className="aspect-video size-full"
         >
           {/* <a href="https://placide.itch.io/adventura">
           Play Adventura: An Online Interactive Campus Tour on itch.io
@@ -39,7 +40,7 @@ export default function AdventuraPage() {
         <h1 className="text-3xl font-bold text-primary">
           WELCOME TO ADVENTURA
         </h1>
-        <p className="[text-wrap:balance]">
+        <p className="text-balance">
           Adventura is a Visual Novel game that allows the users to navigate
           inside the actual place of Cavite State University Indang Campus.
         </p>
@@ -47,7 +48,7 @@ export default function AdventuraPage() {
 
       <div className="text-center">
         <h1 className="text-xl font-semibold text-primary">About the Game</h1>
-        <p className="[text-wrap:balance]">
+        <p className="text-balance">
           You play as a curious Visitor or a Student of the campus. Navigating
           different places of the campus and learning its history and their
           purpose. Using the Itinerary as list of places the campus has, the
@@ -70,13 +71,13 @@ export default function AdventuraPage() {
           />
         </div>
 
-        <p className="text-center [text-wrap:balance]">
+        <p className="text-balance text-center">
           This game is developed by the Team Sen'Py, consisting of three people
           which are students from Cavite State University Indang Campus.
         </p>
       </div>
 
-      <p className="text-center text-xs [text-wrap:balance]">
+      <p className="text-balance text-center text-xs">
         For more information about the game, please visit the game&apos;s
         itch.io page.
       </p>

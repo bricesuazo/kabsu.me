@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { POST_TYPE_TABS } from "@kabsu.me/constants";
+
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export default function PostTypeTab() {
   const searchParams = useSearchParams();
@@ -24,8 +25,8 @@ export default function PostTypeTab() {
         defaultValue={tab}
         value={tab}
         onValueChange={(value) => {
-          setTab(value);
           router.push(value !== "following" ? `/?tab=${value}` : "/");
+          setTab(value);
         }}
       >
         <TabsList className="flex h-auto w-full justify-between rounded-none bg-transparent p-0">

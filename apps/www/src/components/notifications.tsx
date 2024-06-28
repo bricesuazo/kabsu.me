@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { api } from "@/lib/trpc/client";
+import { formatDistanceToNow } from "date-fns";
 import { Bell, BookOpenCheckIcon } from "lucide-react";
-import moment from "moment";
 
+import { api } from "~/lib/trpc/client";
 import { Icons } from "./icons";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -13,17 +13,10 @@ import { ScrollArea } from "./ui/scroll-area";
 import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
-// import { pusherClient } from "@/lib/pusher";
-// import { useState } from "react";
-
 export default function Notifications() {
-  // const channel = pusherClient.subscribe("my-channel");
-  // channel.bind("my-event", (data: any) => {
-  //   alert(JSON.stringify(data));
-  // });
-
-  // const [open, setOpen] = useState(false);
-  const getAllNotificationsQuery = api.notifications.getAll.useQuery({});
+  const getAllNotificationsQuery = api.notifications.getAll.useQuery({
+    all: false,
+  });
   const markAllNotificationAsReadMutation =
     api.notifications.markAllAsRead.useMutation({
       onSettled: async () => {
@@ -49,15 +42,16 @@ export default function Notifications() {
         >
           <Bell size="1.25rem" className="" />
 
-          {getAllNotificationsQuery &&
-          getAllNotificationsQuery?.data &&
-          getAllNotificationsQuery?.data.filter(
+          {getAllNotificationsQuery.data &&
+          getAllNotificationsQuery.data.filter(
             (notification) => !notification.read,
           ).length > 0 ? (
             <p className="absolute right-0 top-0 flex aspect-square h-4 w-4 items-center justify-center rounded-full bg-primary text-[0.5rem] text-white">
-              {getAllNotificationsQuery.data?.filter(
-                (notification) => !notification.read,
-              ).length ?? 0}
+              {
+                getAllNotificationsQuery.data.filter(
+                  (notification) => !notification.read,
+                ).length
+              }
             </p>
           ) : null}
         </Button>
@@ -113,7 +107,6 @@ export default function Notifications() {
             </div>
           ) : (
             getAllNotificationsQuery.data.map((notification) => {
-              if (!notification.from) return null;
               return (
                 <Link
                   key={notification.id}
@@ -121,7 +114,7 @@ export default function Notifications() {
                     if (notification.type === "follow") {
                       return `/${notification.from.username}`;
                     } else {
-                      return `/${notification.from.username}/${notification.content.id}`;
+                      return `/${notification.from.username}/${notification.content?.id}`;
                     }
                   })()}
                   onClick={(e) => {
@@ -137,16 +130,14 @@ export default function Notifications() {
                       <div className="relative h-8 w-8">
                         <Image
                           src={
-                            notification.from.image
-                              ? typeof notification.from.image === "string"
-                                ? notification.from.image
-                                : notification.from.image.url
+                            notification.from.image_name
+                              ? notification.from.image_url
                               : "/default-avatar.jpg"
                           }
-                          alt={`${notification.from.name} profile picture`}
+                          alt={`${notification.from.username} profile picture`}
                           fill
                           sizes="100%"
-                          className="rounded-full object-cover object-center"
+                          className="aspect-square rounded-full object-cover object-center"
                         />
                       </div>
                     </Link>
@@ -167,7 +158,10 @@ export default function Notifications() {
                         })()}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {moment(notification.created_at).fromNow()}
+                        {formatDistanceToNow(notification.created_at, {
+                          includeSeconds: true,
+                          addSuffix: true,
+                        })}
                       </p>
                     </div>
                   </div>

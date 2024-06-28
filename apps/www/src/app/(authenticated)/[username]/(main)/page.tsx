@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { api } from "@/lib/trpc/server";
 
-import { db } from "@kabsu.me/db";
-
+import { api } from "~/lib/trpc/server";
+import { createClient as createClientAdmin } from "~/supabase/admin";
 import PageWrapper from "./page-wrapper";
 
 export async function generateMetadata({
@@ -11,9 +10,13 @@ export async function generateMetadata({
 }: {
   params: { username: string };
 }): Promise<Metadata> {
-  const user = await db.query.users.findFirst({
-    where: (user, { eq }) => eq(user.username, params.username),
-  });
+  const supabaseAdmin = createClientAdmin();
+
+  const { data: user } = await supabaseAdmin
+    .from("users")
+    .select()
+    .eq("username", params.username)
+    .single();
 
   if (!user) notFound();
 

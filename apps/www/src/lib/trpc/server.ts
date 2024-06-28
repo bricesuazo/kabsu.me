@@ -6,9 +6,9 @@ import { experimental_createTRPCNextAppDirServer as createTRPCNextAppDirServer }
 import superjson from "superjson";
 
 import { appRouter } from "@kabsu.me/api/root";
-import { auth } from "@kabsu.me/auth";
-import { db } from "@kabsu.me/db";
 
+import { createClient as createClientAdmin } from "~/supabase/admin";
+import { createClient as createClientServer } from "~/supabase/server";
 import { endingLink } from "./utils";
 
 /**
@@ -29,9 +29,13 @@ export const api = createTRPCNextAppDirServer<typeof appRouter>({
           revalidate: false,
           router: appRouter,
           async createContext() {
+            const supabase = createClientServer();
+            const {
+              data: { user },
+            } = await supabase.auth.getUser();
             return {
-              session: await auth(),
-              db,
+              auth: user ? { user } : null,
+              supabase: createClientAdmin(),
               headers: {
                 cookie: cookies().toString(),
                 "x-trpc-source": "rsc-invoke",

@@ -3,30 +3,29 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import CommentDropdown from "@/app/(authenticated)/[username]/[post_id]/comment-dropdown";
-import PostComment from "@/components/post-comment";
-import PostDropdown from "@/components/post-dropdown";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { format, formatDistanceToNow } from "date-fns";
+import { Album, Briefcase, GraduationCap } from "lucide-react";
+
+import type { RouterOutputs } from "@kabsu.me/api";
+
+import PostComment from "~/components/post-comment";
+import PostDropdown from "~/components/post-dropdown";
+import { Badge } from "~/components/ui/badge";
+import { Skeleton } from "~/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import VerifiedBadge from "@/components/verified-badge";
-import { api } from "@/lib/trpc/client";
-import { formatText } from "@/lib/utils";
-import type { Comment } from "@kabsu.me/db/schema";
-import { Album, Briefcase, GraduationCap } from "lucide-react";
-import moment from "moment";
+} from "~/components/ui/tooltip";
+import VerifiedBadge from "~/components/verified-badge";
+import { api } from "~/lib/trpc/client";
+import { formatText } from "~/lib/utils";
+import CommentDropdown from "./comment-dropdown";
 
 export default function PostPageComponent({ post_id }: { post_id: string }) {
   const postQuery = api.posts.getPost.useQuery({ post_id }, { retry: 1 });
 
-  if (
-    (postQuery.isSuccess && !postQuery.data) ||
-    postQuery.error?.data?.code === "NOT_FOUND"
-  ) {
+  if (postQuery.error?.data?.code === "NOT_FOUND") {
     notFound();
   }
 
@@ -98,24 +97,20 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                 className="flex gap-x-2"
               >
                 <div className="w-max">
-                  {postQuery.data.post.user.image ? (
+                  {postQuery.data.post.user.image_name ? (
                     <Image
-                      src={
-                        typeof postQuery.data.post.user.image === "string"
-                          ? postQuery.data.post.user.image
-                          : postQuery.data.post.user.image.url
-                      }
+                      src={postQuery.data.post.user.image_url}
                       alt={`${postQuery.data.post.user.name} profile picture`}
-                      width={64}
-                      height={64}
+                      width={56}
+                      height={56}
                       className="aspect-square rounded-full object-cover"
                     />
                   ) : (
                     <Image
                       src="/default-avatar.jpg"
                       alt={`${postQuery.data.post.user.name} profile picture`}
-                      width={64}
-                      height={64}
+                      width={56}
+                      height={56}
                       className="aspect-square rounded-full object-cover"
                     />
                   )}
@@ -146,16 +141,20 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                     <Tooltip delayDuration={250}>
                       <TooltipTrigger>
                         <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                          {moment(postQuery.data.post.created_at).fromNow()}
+                          {formatDistanceToNow(postQuery.data.post.created_at, {
+                            includeSeconds: true,
+                            addSuffix: true,
+                          })}
                         </p>
                         <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                          {moment(postQuery.data.post.created_at).fromNow()}
+                          {formatDistanceToNow(postQuery.data.post.created_at, {
+                            includeSeconds: true,
+                            addSuffix: true,
+                          })}
                         </p>
                       </TooltipTrigger>
                       <TooltipContent>
-                        {moment(postQuery.data.post.created_at).format(
-                          "MMMM Do YYYY, h:mm:ss A",
-                        )}
+                        {format(postQuery.data.post.created_at, "PPpp")}
                       </TooltipContent>
                     </Tooltip>
                   </div>
@@ -167,13 +166,13 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                       <Tooltip delayDuration={250}>
                         <TooltipTrigger>
                           <Badge>
-                            {postQuery.data.post.user.program!.college.campus.slug.toUpperCase()}
+                            {postQuery.data.post.user.programs?.colleges?.campuses?.slug.toUpperCase()}
                           </Badge>
                         </TooltipTrigger>
                         <TooltipContent className="max-w-[12rem]">
                           {
-                            postQuery.data.post.user.program!.college.campus
-                              .name
+                            postQuery.data.post.user.programs?.colleges
+                              ?.campuses?.name
                           }
                         </TooltipContent>
                       </Tooltip>
@@ -181,11 +180,11 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
                       <Tooltip delayDuration={250}>
                         <TooltipTrigger>
                           <Badge variant="outline">
-                            {postQuery.data.post.user.program!.slug.toUpperCase()}
+                            {postQuery.data.post.user.programs?.slug.toUpperCase()}
                           </Badge>
                         </TooltipTrigger>
                         <TooltipContent className="max-w-[12rem]">
-                          {postQuery.data.post.user.program!.name}
+                          {postQuery.data.post.user.programs?.name}
                         </TooltipContent>
                       </Tooltip>
                     </div>
@@ -222,14 +221,18 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
   );
 }
 
-function CommentComponent({ comment }: { comment: Comment }) {
+function CommentComponent({
+  comment,
+}: {
+  comment: RouterOutputs["posts"]["getPost"]["post"]["comments"][number];
+}) {
   const fullCommentQuery = api.comments.getFullComment.useQuery({
     comment_id: comment.id,
   });
 
-  if (!fullCommentQuery.data || fullCommentQuery.isLoading)
+  if (!fullCommentQuery.data)
     return (
-      <div className="space-y-2 border p-4">
+      <div className="space-y-2 border-b p-4 first:border-t">
         <div className="flex justify-between">
           <div className="flex gap-x-2">
             <div className="min-w-max">
@@ -251,19 +254,15 @@ function CommentComponent({ comment }: { comment: Comment }) {
     );
 
   return (
-    <div className="space-y-2 border p-4">
+    <div className="space-y-2 border-b p-4 first:border-t">
       <div className="flex justify-between">
         <div className="flex gap-x-2">
           <div className="min-w-max">
-            <Link href={`/${fullCommentQuery.data.comment.user.username}`}>
-              {fullCommentQuery.data.comment.user.image ? (
+            <Link href={`/${fullCommentQuery.data.comment.users.username}`}>
+              {fullCommentQuery.data.comment.users.image_name ? (
                 <Image
-                  src={
-                    typeof fullCommentQuery.data.comment.user.image === "string"
-                      ? fullCommentQuery.data.comment.user.image
-                      : fullCommentQuery.data.comment.user.image.url
-                  }
-                  alt={`${fullCommentQuery.data.comment.user.name} profile picture`}
+                  src={fullCommentQuery.data.comment.users.image_url}
+                  alt={`${fullCommentQuery.data.comment.users.name} profile picture`}
                   width={40}
                   height={40}
                   className="aspect-square rounded-full object-cover object-center"
@@ -271,7 +270,7 @@ function CommentComponent({ comment }: { comment: Comment }) {
               ) : (
                 <Image
                   src="/default-avatar.jpg"
-                  alt={`${fullCommentQuery.data.comment.user.name} profile picture`}
+                  alt={`${fullCommentQuery.data.comment.users.name} profile picture`}
                   width={40}
                   height={40}
                   className="aspect-square rounded-full"
@@ -282,13 +281,13 @@ function CommentComponent({ comment }: { comment: Comment }) {
           <div className="flex flex-col">
             <div className="flex items-center gap-x-2">
               <Link
-                href={`/${fullCommentQuery.data.comment.user.username}`}
+                href={`/${fullCommentQuery.data.comment.users.username}`}
                 className="flex items-center gap-x-1"
               >
                 <p className="line-clamp-1 font-bold group-hover:underline">
-                  {fullCommentQuery.data.comment.user.name}
+                  {fullCommentQuery.data.comment.users.name}
                 </p>
-                {fullCommentQuery.data.comment.user.verified_at && (
+                {fullCommentQuery.data.comment.users.verified_at && (
                   <VerifiedBadge size="sm" />
                 )}
               </Link>
@@ -297,24 +296,34 @@ function CommentComponent({ comment }: { comment: Comment }) {
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                    {moment(fullCommentQuery.data.comment.created_at).fromNow()}
+                    {formatDistanceToNow(
+                      fullCommentQuery.data.comment.created_at,
+                      {
+                        includeSeconds: true,
+                        addSuffix: true,
+                      },
+                    )}
                   </p>
                   <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                    {moment(fullCommentQuery.data.comment.created_at).fromNow()}
+                    {formatDistanceToNow(
+                      fullCommentQuery.data.comment.created_at,
+                      {
+                        includeSeconds: true,
+                        addSuffix: true,
+                      },
+                    )}
                   </p>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {moment(fullCommentQuery.data.comment.created_at).format(
-                    "MMMM Do YYYY, h:mm:ss A",
-                  )}
+                  {format(fullCommentQuery.data.comment.created_at, "PPpp")}
                 </TooltipContent>
               </Tooltip>
             </div>
             <Link
-              href={`/${fullCommentQuery.data.comment.user.username}`}
+              href={`/${fullCommentQuery.data.comment.users.username}`}
               className="line-clamp-1 flex-1 break-all text-sm text-foreground/70 hover:underline"
             >
-              @{fullCommentQuery.data.comment.user.username}
+              @{fullCommentQuery.data.comment.users.username}
             </Link>
           </div>
         </div>

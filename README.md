@@ -5,29 +5,9 @@ A social media platform exclusive only for Cavite State University students, fac
 ### Tech Stack
 
 - [Next.js](https://nextjs.org/) - React Framework
-- [Auth.js](https://authjs.dev/) - Authentication
+- [Supabase](https://supabase.com/) - Database, Storage, & Authentication
 - [Tailwind CSS](https://tailwindcss.com/) - CSS Framework
-- [Drizzle ORM](https://orm.drizzle.team/) - ORM
-- [PlanetScale](https://planetscale.com/) - Database
 - [Vercel](https://vercel.com/) - Hosting
-
-### Roadmap
-
-- [x] Authentication
-- [x] Profile
-- [x] Posts
-- [x] Comments
-- [x] Likes
-- [x] Follows
-- [x] Notifications
-- [x] Infinite scrolling
-- [x] Search
-- [ ] Ratelimit
-- [ ] Account settings
-- [ ] Realtime
-- [ ] Messages
-- [ ] Tasks management
-- [ ] Mobile app?
 
 ### Development
 

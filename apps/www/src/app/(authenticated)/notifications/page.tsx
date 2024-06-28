@@ -2,17 +2,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Icons } from "@/components/icons";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { formatDistanceToNow } from "date-fns";
+import { Bell, BookOpenCheckIcon } from "lucide-react";
+
+import { Icons } from "~/components/icons";
+import { Button } from "~/components/ui/button";
+import { Skeleton } from "~/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { api } from "@/lib/trpc/client";
-import { Bell, BookOpenCheckIcon } from "lucide-react";
-import moment from "moment";
+} from "~/components/ui/tooltip";
+import { api } from "~/lib/trpc/client";
 
 export default function NotificationPage() {
   const getAllNotificationsQuery = api.notifications.getAll.useQuery({
@@ -89,7 +90,7 @@ export default function NotificationPage() {
                   if (notification.type === "follow") {
                     return `/${notification.from.username}`;
                   } else {
-                    return `/${notification.from.username}/${notification.content.id}`;
+                    return `/${notification.from.username}/${notification.id}`;
                   }
                 })()}
                 onClick={() =>
@@ -100,22 +101,18 @@ export default function NotificationPage() {
                 <div className="flex gap-x-2">
                   {/* <Link href={`/${notification.from.username}`}> */}
                   <div className="relative h-10 w-10">
-                    {notification.from.image ? (
+                    {notification.from.image_name ? (
                       <Image
-                        src={
-                          typeof notification.from.image === "string"
-                            ? notification.from.image
-                            : notification.from.image.url
-                        }
-                        alt={`${notification.from.name} profile picture`}
+                        src={notification.from.image_url}
+                        alt={`${notification.from.username} profile picture`}
                         fill
                         sizes="100%"
-                        className="rounded-full object-cover object-center"
+                        className="aspect-square rounded-full object-cover object-center"
                       />
                     ) : (
                       <Image
                         src="/default-avatar.jpg"
-                        alt={`${notification.from.name} profile picture`}
+                        alt={`${notification.from.username} profile picture`}
                         fill
                         sizes="100%"
                         className="rounded-full"
@@ -140,7 +137,10 @@ export default function NotificationPage() {
                       })()}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {moment(notification.created_at).fromNow()}
+                      {formatDistanceToNow(notification.created_at, {
+                        includeSeconds: true,
+                        addSuffix: true,
+                      })}
                     </p>
                   </div>
                 </div>
