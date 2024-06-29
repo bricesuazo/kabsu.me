@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ImageUp, Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
+import { v4 } from "uuid";
 import { z } from "zod";
 
 import { POST_TYPE_TABS } from "@kabsu.me/constants";
@@ -123,21 +124,30 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isFocused, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFocused]);
 
   async function handleSubmit() {
     await form.handleSubmit(async (values) => {
       const supabase = createClient();
 
+      const images = values.images.map((image, index) => ({
+        image,
+        name: v4(),
+        order: index,
+      }));
+
       const { signed_urls } = await createPostMutation.mutateAsync({
         type: values.type,
         content: values.content,
-        images_length: values.images.length,
+        images,
       });
 
       await Promise.all(
-        signed_urls.map(async (url, index) => {
-          const file = values.images[index];
+        signed_urls.map(async (url) => {
+          const file = images.find(
+            (image) => image.name === url.path.split("/").pop(),
+          )?.image;
 
           if (!file) return;
 
@@ -189,7 +199,13 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
         </Link>
       )}
       <Form {...form}>
-        <form onSubmit={() => handleSubmit()} className="flex-1 space-y-4">
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            await handleSubmit();
+          }}
+          className="flex-1 space-y-4"
+        >
           {isDesktop ? (
             <Dialog
               open={imageUploaderOpen}
@@ -366,6 +382,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                   size="icon"
                   variant="ghost"
                   type="button"
+                  disabled={form.formState.isSubmitting}
                   onClick={() => {
                     form.reset();
                     setIsFocused(false);
@@ -418,7 +435,7 @@ function ImageUpload({
               onValueChange={field.onChange}
               maxSize={1024 * 1024 * 5} // 5MB
               disabled={form.formState.isSubmitting}
-              maxFiles={10}
+              maxFiles={9}
               itemType="image/*"
               multiple
             />

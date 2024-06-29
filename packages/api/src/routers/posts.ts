@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { v4 as uuid, v4 } from "uuid";
+import { v4 as uuid } from "uuid";
 import { z } from "zod";
 
 import type { Database } from "../../../../supabase/types";
@@ -12,7 +12,7 @@ export const postsRouter = router({
       const { data: post } = await ctx.supabase
         .from("posts")
         .select(
-          "id, content, type, user_id, created_at, likes(post_id, user_id), comments(id), user: users(name, username, image_name, type, verified_at, programs(name, slug, college_id, colleges(name, slug, campus_id, campuses(name, slug))))",
+          "id, content, type, user_id, created_at, posts_images(*), likes(post_id, user_id), comments(id), user: users(name, username, image_name, type, verified_at, programs(name, slug, college_id, colleges(name, slug, campus_id, campuses(name, slug))))",
         )
         .eq("id", input.post_id)
         .is("deleted_at", null)
@@ -21,10 +21,36 @@ export const postsRouter = router({
           ascending: false,
           referencedTable: "comments",
         })
+        .order("order", {
+          ascending: true,
+          referencedTable: "posts_images",
+        })
         .single();
 
       if (!post)
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
+
+      const post_image_urls: {
+        error: string | null;
+        path: string | null;
+        signedUrl: string;
+      }[] = [];
+      if (post.posts_images.length > 0) {
+        const { data, error } = await ctx.supabase.storage
+          .from("posts")
+          .createSignedUrls(
+            post.posts_images.map((image) => post.id + "/images/" + image.name),
+            60,
+          );
+
+        if (error)
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: error.message,
+          });
+
+        post_image_urls.push(...data);
+      }
 
       let image_url: string | null = null;
       if (
@@ -46,6 +72,22 @@ export const postsRouter = router({
         userId: ctx.auth.user.id,
         post: {
           ...post,
+          posts_images: post.posts_images
+            .filter(
+              (image) =>
+                post_image_urls.find(
+                  (url) => url.path === post.id + "/images/" + image.name,
+                )?.signedUrl,
+            )
+            .map((image) => {
+              return {
+                ...image,
+                signed_url:
+                  post_image_urls.find(
+                    (url) => url.path === post.id + "/images/" + image.name,
+                  )?.signedUrl ?? "",
+              };
+            }),
           user: post.user?.image_name?.startsWith("https://")
             ? { ...post.user, image_url: post.user.image_name }
             : post.user?.image_name && image_url
@@ -346,7 +388,12 @@ export const postsRouter = router({
         type: z
           .custom<Database["public"]["Enums"]["post_type"]>()
           .default("following"),
-        images_length: z.number().nonnegative(),
+        images: z
+          .object({
+            name: z.string().uuid(),
+            order: z.number().nonnegative(),
+          })
+          .array(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -372,18 +419,16 @@ export const postsRouter = router({
         path: string;
       }[] = [];
 
-      if (input.images_length > 0) {
+      if (input.images.length > 0) {
         const data = await Promise.all(
-          Array.from({ length: input.images_length }).map(async (_, order) => {
-            const name = v4();
-
+          input.images.map(async (image) => {
             const { data } = await ctx.supabase.storage
               .from("posts")
-              .createSignedUploadUrl(post.id + "/images/" + name);
+              .createSignedUploadUrl(post.id + "/images/" + image.name);
             await ctx.supabase.from("posts_images").insert({
               post_id: post.id,
-              name,
-              order,
+              name: image.name,
+              order: image.order,
             });
 
             if (!data)

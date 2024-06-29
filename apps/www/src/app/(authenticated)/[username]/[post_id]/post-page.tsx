@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -8,6 +9,7 @@ import { Album, Briefcase, GraduationCap } from "lucide-react";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 
+import { ImagesViewer } from "~/components/images-viewer";
 import PostComment from "~/components/post-comment";
 import PostDropdown from "~/components/post-dropdown";
 import { Badge } from "~/components/ui/badge";
@@ -19,11 +21,13 @@ import {
 } from "~/components/ui/tooltip";
 import VerifiedBadge from "~/components/verified-badge";
 import { api } from "~/lib/trpc/client";
-import { formatText } from "~/lib/utils";
+import { cn, formatText } from "~/lib/utils";
 import CommentDropdown from "./comment-dropdown";
 
 export default function PostPageComponent({ post_id }: { post_id: string }) {
+  const [openImagesViewer, setOpenImagesViewer] = useState(false);
   const postQuery = api.posts.getPost.useQuery({ post_id }, { retry: 1 });
+  const [scrollTo, setScrollTo] = useState(0);
 
   if (postQuery.error?.data?.code === "NOT_FOUND") {
     notFound();
@@ -31,6 +35,15 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
 
   return (
     <>
+      <ImagesViewer
+        open={openImagesViewer}
+        setOpen={setOpenImagesViewer}
+        images={
+          postQuery.data?.post.posts_images.map((image) => image.signed_url) ??
+          []
+        }
+        scrollTo={scrollTo}
+      />
       {postQuery.isLoading ? (
         <div className="min-h-screen space-y-2 p-4">
           <div className="flex justify-between">
@@ -202,6 +215,38 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
             <div className="whitespace-pre-wrap break-words">
               {formatText(postQuery.data.post.content)}
             </div>
+
+            {postQuery.data.post.posts_images.length > 0 && (
+              <div
+                className={cn(
+                  "grid grid-cols-3 gap-2",
+                  postQuery.data.post.posts_images.length === 1 &&
+                    "grid-cols-1",
+                  postQuery.data.post.posts_images.length === 2 &&
+                    "grid-cols-2",
+                  postQuery.data.post.posts_images.length > 3 && "grid-cols-3",
+                )}
+              >
+                {postQuery.data.post.posts_images.map((image, index) => (
+                  <button
+                    key={image.id}
+                    onClick={() => {
+                      setOpenImagesViewer(true);
+                      setScrollTo(index);
+                    }}
+                  >
+                    <Image
+                      src={image.signed_url}
+                      alt={image.name}
+                      width={400}
+                      height={400}
+                      priority
+                      className="aspect-square rounded-lg object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
 
             <PostComment
               userId={postQuery.data.userId}
