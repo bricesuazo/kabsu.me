@@ -190,7 +190,17 @@ export const usersRouter = router({
 
       return !!user;
     }),
-
+  getUserImageUploadSignedUrl: protectedProcedure
+    .input(z.object({ image_name: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { data } = await ctx.supabase.storage
+        .from("users")
+        .createSignedUploadUrl(
+          ctx.auth.user.id + "/avatar/" + input.image_name,
+        );
+      if (!data) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      return data;
+    }),
   isFollower: protectedProcedure
     .input(z.object({ user_id: z.string() }))
     .query(async ({ ctx, input }) => {

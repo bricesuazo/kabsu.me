@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { v4 as uuid } from "uuid";
+import { v4 as uuid, v4 } from "uuid";
 import { z } from "zod";
 
 import type { Database } from "../../../../supabase/types";
@@ -83,7 +83,7 @@ export const postsRouter = router({
       const { data: posts } = await ctx.supabase
         .from("posts")
         .select(
-          "*, likes(*), comments(*), user: users(*, programs(college_id, colleges(campus_id)))",
+          "id, type, user_id, user:users(image_name, program_id, programs(college_id, colleges(campus_id)))",
         )
         .eq("user_id", input.user_id)
         .is("deleted_at", null)
@@ -113,7 +113,7 @@ export const postsRouter = router({
         .createSignedUrls(
           [
             ...new Set(
-              posts.map((post) => post.user?.id + "/" + post.user?.image_name),
+              posts.map((post) => post.user_id + "/" + post.user?.image_name),
             ),
           ],
           60 * 60 * 24,
@@ -125,6 +125,8 @@ export const postsRouter = router({
       return {
         posts: posts.filter(
           (post) =>
+            (post.user?.program_id === current_user_from_db.program_id &&
+              post.type === "program") ||
             (post.user?.programs?.college_id ===
               current_user_from_db.programs?.college_id &&
               post.type === "college") ||
@@ -344,16 +346,61 @@ export const postsRouter = router({
         type: z
           .custom<Database["public"]["Enums"]["post_type"]>()
           .default("following"),
+        images_length: z.number().nonnegative(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.supabase.from("posts").insert({
-        content: input.content,
-        user_id: ctx.auth.user.id,
-        type: input.type,
-      });
-    }),
+      const { data: post, error: post_error } = await ctx.supabase
+        .from("posts")
+        .insert({
+          content: input.content,
+          user_id: ctx.auth.user.id,
+          type: input.type,
+        })
+        .select("id")
+        .single();
 
+      if (post_error)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: post_error.message,
+        });
+
+      const signed_urls: {
+        signedUrl: string;
+        token: string;
+        path: string;
+      }[] = [];
+
+      if (input.images_length > 0) {
+        const data = await Promise.all(
+          Array.from({ length: input.images_length }).map(async (_, order) => {
+            const name = v4();
+
+            const { data } = await ctx.supabase.storage
+              .from("posts")
+              .createSignedUploadUrl(post.id + "/images/" + name);
+            await ctx.supabase.from("posts_images").insert({
+              post_id: post.id,
+              name,
+              order,
+            });
+
+            if (!data)
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Error uploading image",
+              });
+
+            return data;
+          }),
+        );
+
+        signed_urls.push(...data);
+      }
+
+      return { signed_urls };
+    }),
   update: protectedProcedure
     .input(
       z.object({

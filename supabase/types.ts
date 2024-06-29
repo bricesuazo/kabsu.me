@@ -323,6 +323,38 @@ export type Database = {
           },
         ]
       }
+      posts_images: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          order: number
+          post_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          order: number
+          post_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          order?: number
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_posts_images_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       programs: {
         Row: {
           college_id: string

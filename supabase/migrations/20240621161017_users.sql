@@ -7,7 +7,7 @@ create table "public"."users" (
     "email" character varying not null,
     "bio" text,
     "link" text,
-    "image_path" text,
+    "image_name" text,
     "deactivated_at" timestamp with time zone,
     "created_at" timestamp with time zone not null default now(),
     "type" user_type not null,

@@ -84,6 +84,8 @@ export default function EditProfile({
   });
 
   const isUsernameExistsMutation = api.users.isUsernameExists.useMutation();
+  const getUserImageUploadSignedUrlMutation =
+    api.users.getUserImageUploadSignedUrl.useMutation();
   const updateProfileMutation = api.users.updateProfile.useMutation({
     onSuccess: async ({ username }) => {
       if (user.username !== username) {
@@ -160,16 +162,18 @@ export default function EditProfile({
               let image_name: string | undefined | null;
               if (Array.isArray(data.images) && data.images[0]) {
                 const now = Date.now();
-                const uploadData = await supabase.storage
-                  .from("users")
-                  .upload(user.id + "/avatar/" + now, data.images[0]);
 
-                if (uploadData.error) {
-                  toast.error("Failed to upload image", {
-                    description: uploadData.error.message,
+                const upload_signed_url =
+                  await getUserImageUploadSignedUrlMutation.mutateAsync({
+                    image_name: now.toString(),
                   });
-                  return;
-                }
+                await supabase.storage
+                  .from("users")
+                  .uploadToSignedUrl(
+                    upload_signed_url.path,
+                    upload_signed_url.token,
+                    data.images[0],
+                  );
 
                 image_name = now.toString();
               } else if (data.images === null) {
