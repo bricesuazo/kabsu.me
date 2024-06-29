@@ -171,6 +171,16 @@ CREATE TABLE IF NOT EXISTS "public"."posts" (
 
 ALTER TABLE "public"."posts" OWNER TO "postgres";
 
+CREATE TABLE IF NOT EXISTS "public"."posts_images" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "name" "text" NOT NULL,
+    "post_id" "uuid" NOT NULL,
+    "order" smallint NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+ALTER TABLE "public"."posts_images" OWNER TO "postgres";
+
 CREATE TABLE IF NOT EXISTS "public"."programs" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "name" "text" NOT NULL,
@@ -238,12 +248,12 @@ CREATE TABLE IF NOT EXISTS "public"."users" (
     "email" character varying NOT NULL,
     "bio" "text",
     "link" "text",
+    "image_name" "text",
     "deactivated_at" timestamp with time zone,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "type" "public"."user_type" NOT NULL,
     "program_id" "uuid" NOT NULL,
-    "verified_at" timestamp with time zone,
-    "image_name" "text"
+    "verified_at" timestamp with time zone
 );
 
 ALTER TABLE "public"."users" OWNER TO "postgres";
@@ -268,6 +278,9 @@ ALTER TABLE ONLY "public"."likes"
 
 ALTER TABLE ONLY "public"."notifications"
     ADD CONSTRAINT "notifications_pkey" PRIMARY KEY ("id");
+
+ALTER TABLE ONLY "public"."posts_images"
+    ADD CONSTRAINT "posts_images_pkey" PRIMARY KEY ("id");
 
 ALTER TABLE ONLY "public"."posts"
     ADD CONSTRAINT "posts_pkey" PRIMARY KEY ("id");
@@ -337,6 +350,10 @@ CREATE INDEX "notifications_to_id_idx" ON "public"."notifications" USING "btree"
 
 CREATE INDEX "notifications_type_idx" ON "public"."notifications" USING "btree" ("type");
 
+CREATE INDEX "posts_images_id_post_id_idx" ON "public"."posts_images" USING "btree" ("id", "post_id");
+
+CREATE INDEX "posts_images_post_id_idx" ON "public"."posts_images" USING "btree" ("post_id");
+
 CREATE INDEX "posts_type_idx" ON "public"."posts" USING "btree" ("type");
 
 CREATE INDEX "posts_user_id_idx" ON "public"."posts" USING "btree" ("user_id");
@@ -380,6 +397,9 @@ ALTER TABLE ONLY "public"."notifications"
 
 ALTER TABLE ONLY "public"."notifications"
     ADD CONSTRAINT "public_notifications_to_id_fkey" FOREIGN KEY ("to_id") REFERENCES "public"."users"("id");
+
+ALTER TABLE ONLY "public"."posts_images"
+    ADD CONSTRAINT "public_posts_images_post_id_fkey" FOREIGN KEY ("post_id") REFERENCES "public"."posts"("id");
 
 ALTER TABLE ONLY "public"."posts"
     ADD CONSTRAINT "public_posts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
@@ -432,6 +452,8 @@ ALTER TABLE "public"."likes" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."notifications" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."posts" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "public"."posts_images" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."programs" ENABLE ROW LEVEL SECURITY;
 
@@ -489,6 +511,10 @@ GRANT ALL ON TABLE "public"."notifications" TO "service_role";
 GRANT ALL ON TABLE "public"."posts" TO "anon";
 GRANT ALL ON TABLE "public"."posts" TO "authenticated";
 GRANT ALL ON TABLE "public"."posts" TO "service_role";
+
+GRANT ALL ON TABLE "public"."posts_images" TO "anon";
+GRANT ALL ON TABLE "public"."posts_images" TO "authenticated";
+GRANT ALL ON TABLE "public"."posts_images" TO "service_role";
 
 GRANT ALL ON TABLE "public"."programs" TO "anon";
 GRANT ALL ON TABLE "public"."programs" TO "authenticated";

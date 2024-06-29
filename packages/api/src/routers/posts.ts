@@ -12,7 +12,7 @@ export const postsRouter = router({
       const { data: post } = await ctx.supabase
         .from("posts")
         .select(
-          "id, content, type, user_id, created_at, likes(post_id, user_id), comments(id), user: users(name, username, image_name, type, verified_at, programs(name, slug, college_id, colleges(name, slug, campus_id, campuses(name, slug))))",
+          "id, content, type, user_id, created_at, posts_images(*), likes(post_id, user_id), comments(id), user: users(name, username, image_name, type, verified_at, programs(name, slug, college_id, colleges(name, slug, campus_id, campuses(name, slug))))",
         )
         .eq("id", input.post_id)
         .is("deleted_at", null)
@@ -21,10 +21,36 @@ export const postsRouter = router({
           ascending: false,
           referencedTable: "comments",
         })
+        .order("order", {
+          ascending: true,
+          referencedTable: "posts_images",
+        })
         .single();
 
       if (!post)
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
+
+      const post_image_urls: {
+        error: string | null;
+        path: string | null;
+        signedUrl: string;
+      }[] = [];
+      if (post.posts_images.length > 0) {
+        const { data, error } = await ctx.supabase.storage
+          .from("posts")
+          .createSignedUrls(
+            post.posts_images.map((image) => post.id + "/images/" + image.name),
+            60,
+          );
+
+        if (error)
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: error.message,
+          });
+
+        post_image_urls.push(...data);
+      }
 
       let image_url: string | null = null;
       if (
@@ -46,6 +72,22 @@ export const postsRouter = router({
         userId: ctx.auth.user.id,
         post: {
           ...post,
+          posts_images: post.posts_images
+            .filter(
+              (image) =>
+                post_image_urls.find(
+                  (url) => url.path === post.id + "/images/" + image.name,
+                )?.signedUrl,
+            )
+            .map((image) => {
+              return {
+                ...image,
+                signed_url:
+                  post_image_urls.find(
+                    (url) => url.path === post.id + "/images/" + image.name,
+                  )?.signedUrl ?? "",
+              };
+            }),
           user: post.user?.image_name?.startsWith("https://")
             ? { ...post.user, image_url: post.user.image_name }
             : post.user?.image_name && image_url
@@ -83,7 +125,7 @@ export const postsRouter = router({
       const { data: posts } = await ctx.supabase
         .from("posts")
         .select(
-          "*, likes(*), comments(*), user: users(*, programs(college_id, colleges(campus_id)))",
+          "id, type, user_id, user:users(image_name, program_id, programs(college_id, colleges(campus_id)))",
         )
         .eq("user_id", input.user_id)
         .is("deleted_at", null)
@@ -113,7 +155,7 @@ export const postsRouter = router({
         .createSignedUrls(
           [
             ...new Set(
-              posts.map((post) => post.user?.id + "/" + post.user?.image_name),
+              posts.map((post) => post.user_id + "/" + post.user?.image_name),
             ),
           ],
           60 * 60 * 24,
@@ -125,6 +167,8 @@ export const postsRouter = router({
       return {
         posts: posts.filter(
           (post) =>
+            (post.user?.program_id === current_user_from_db.program_id &&
+              post.type === "program") ||
             (post.user?.programs?.college_id ===
               current_user_from_db.programs?.college_id &&
               post.type === "college") ||
@@ -344,16 +388,64 @@ export const postsRouter = router({
         type: z
           .custom<Database["public"]["Enums"]["post_type"]>()
           .default("following"),
+        images: z
+          .object({
+            name: z.string().uuid(),
+            order: z.number().nonnegative(),
+          })
+          .array(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.supabase.from("posts").insert({
-        content: input.content,
-        user_id: ctx.auth.user.id,
-        type: input.type,
-      });
-    }),
+      const { data: post, error: post_error } = await ctx.supabase
+        .from("posts")
+        .insert({
+          content: input.content,
+          user_id: ctx.auth.user.id,
+          type: input.type,
+        })
+        .select("id")
+        .single();
 
+      if (post_error)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: post_error.message,
+        });
+
+      const signed_urls: {
+        signedUrl: string;
+        token: string;
+        path: string;
+      }[] = [];
+
+      if (input.images.length > 0) {
+        const data = await Promise.all(
+          input.images.map(async (image) => {
+            const { data } = await ctx.supabase.storage
+              .from("posts")
+              .createSignedUploadUrl(post.id + "/images/" + image.name);
+            await ctx.supabase.from("posts_images").insert({
+              post_id: post.id,
+              name: image.name,
+              order: image.order,
+            });
+
+            if (!data)
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Error uploading image",
+              });
+
+            return data;
+          }),
+        );
+
+        signed_urls.push(...data);
+      }
+
+      return { signed_urls };
+    }),
   update: protectedProcedure
     .input(
       z.object({
