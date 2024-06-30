@@ -16,6 +16,7 @@ export const env = createEnv({
   },
   server: {
     SUPABASE_SERVICE_ROLE_KEY: z.string(),
+    SUPERADMIN_EMAIL: z.string().email(),
   },
   client: {
     NEXT_PUBLIC_SUPABASE_URL: z.string().url(),

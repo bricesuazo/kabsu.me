@@ -14,7 +14,10 @@ export async function GET(request: Request) {
 
     if (error) return NextResponse.json({ error }, { status: 500 });
 
-    if (!data.user.email?.endsWith("@cvsu.edu.ph")) {
+    if (
+      !data.user.email?.endsWith("@cvsu.edu.ph") &&
+      data.user.email !== env.SUPERADMIN_EMAIL
+    ) {
       await supabase.auth.signOut();
       return NextResponse.redirect(`${origin}?error=AccessDenied`);
     } else if (

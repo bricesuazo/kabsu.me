@@ -262,8 +262,8 @@ export default function Post({
                 <Image
                   src={image.signed_url}
                   alt={image.name}
-                  width={500}
-                  height={500}
+                  width={400}
+                  height={400}
                   className="aspect-square rounded-lg object-cover"
                 />
               </button>

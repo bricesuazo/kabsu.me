@@ -215,7 +215,10 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                 <DialogHeader>
                   <DialogTitle>Upload images</DialogTitle>
                 </DialogHeader>
-                <ImageUpload form={form} />
+                <ImageUpload
+                  form={form}
+                  setImageUploaderOpen={setImageUploaderOpen}
+                />
                 <Button onClick={() => setImageUploaderOpen(false)}>
                   Save
                 </Button>
@@ -231,7 +234,10 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                   <DrawerTitle>Upload images</DrawerTitle>
                 </DrawerHeader>
                 <div className="px-4">
-                  <ImageUpload form={form} />
+                  <ImageUpload
+                    form={form}
+                    setImageUploaderOpen={setImageUploaderOpen}
+                  />
                 </div>
                 <DrawerFooter className="pt-2">
                   <DrawerClose asChild>
@@ -412,6 +418,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
 
 function ImageUpload({
   form,
+  setImageUploaderOpen,
 }: {
   form: UseFormReturn<
     {
@@ -422,6 +429,7 @@ function ImageUpload({
     unknown,
     undefined
   >;
+  setImageUploaderOpen: (open: boolean) => void;
 }) {
   return (
     <FormField
@@ -432,7 +440,10 @@ function ImageUpload({
           <FormControl>
             <FileUploader
               value={field.value}
-              onValueChange={field.onChange}
+              onValueChange={(props) => {
+                field.onChange(props);
+                setImageUploaderOpen(false);
+              }}
               maxSize={1024 * 1024 * 5} // 5MB
               disabled={form.formState.isSubmitting}
               maxFiles={9}
