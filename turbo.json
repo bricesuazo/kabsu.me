@@ -26,6 +26,8 @@
     "NEXT_PUBLIC_SUPABASE_ANON_KEY",
     "CI",
     "SKIP_ENV_VALIDATION",
+    "ENV",
+    "STAGING_TEST_EMAILS",
     "npm_lifecycle_event"
   ]
 }

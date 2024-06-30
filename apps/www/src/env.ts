@@ -9,7 +9,10 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "production", "test"])
       .default("development"),
-    VERCEL_URL: z.string().optional(),
+    ENV: z
+      .enum(["development", "staging", "production"])
+      .default("development"),
+    STAGING_TEST_EMAILS: z.string().optional(),
   },
   server: {
     SUPABASE_SERVICE_ROLE_KEY: z.string(),
@@ -21,8 +24,9 @@ export const env = createEnv({
   experimental__runtimeEnv: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    VERCEL_URL: undefined,
     NODE_ENV: undefined,
+    ENV: process.env.ENV,
+    STAGING_TEST_EMAILS: process.env.STAGING_TEST_EMAILS,
   },
   skipValidation:
     !!process.env.CI ||

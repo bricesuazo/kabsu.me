@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { env } from "~/env";
 import { createClient } from "~/supabase/server";
 
 export async function GET(request: Request) {
@@ -16,6 +17,12 @@ export async function GET(request: Request) {
     if (!data.user.email?.endsWith("@cvsu.edu.ph")) {
       await supabase.auth.signOut();
       return NextResponse.redirect(`${origin}?error=AccessDenied`);
+    } else if (
+      env.ENV === "staging" &&
+      !env.STAGING_TEST_EMAILS?.split(", ").includes(data.user.email)
+    ) {
+      await supabase.auth.signOut();
+      return NextResponse.redirect(`${origin}?error=StagingAccessDenied`);
     }
 
     return NextResponse.redirect(`${origin}${next}`);

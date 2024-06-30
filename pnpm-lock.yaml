@@ -306,9 +306,6 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.44.2
         version: 2.44.2
-      '@t3-oss/env-nextjs':
-        specifier: ^0.10.1
-        version: 0.10.1(typescript@5.5.2)(zod@3.23.8)
       '@trpc/client':
         specifier: 11.0.0-next-beta.208
         version: 11.0.0-next-beta.208

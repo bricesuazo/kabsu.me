@@ -61,12 +61,18 @@ export default function HomePublic({ error }: { error?: string }) {
           <Alert variant="destructive" className="mx-auto max-w-xs">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>
-              {error === "AccessDenied" ? "Access Denied" : "Error"}
+              {error === "AccessDenied"
+                ? "Access Denied"
+                : error === "StagingAccessDenied"
+                  ? "Unauthorized"
+                  : "Error"}
             </AlertTitle>
             <AlertDescription>
               {error === "AccessDenied"
                 ? "Please use your CvSU email address. You must be a CvSU student, faculty, or alumni to access this site."
-                : "An error occured."}
+                : error === "StagingAccessDenied"
+                  ? "You are not authorized to access this site. Please contact the developer for more information."
+                  : "An error occured."}
             </AlertDescription>
           </Alert>
         )}
