@@ -22,7 +22,8 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${origin}?error=AccessDenied`);
     } else if (
       env.ENV === "staging" &&
-      !env.STAGING_TEST_EMAILS?.split(", ").includes(data.user.email)
+      !env.STAGING_TEST_EMAILS?.split(", ").includes(data.user.email) &&
+      data.user.email !== env.SUPERADMIN_EMAIL
     ) {
       await supabase.auth.signOut();
       return NextResponse.redirect(`${origin}?error=StagingAccessDenied`);

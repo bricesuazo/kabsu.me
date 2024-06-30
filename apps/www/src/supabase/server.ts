@@ -1,3 +1,4 @@
+import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
@@ -13,6 +14,15 @@ export const createClient = () => {
       cookies: {
         getAll() {
           return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(
+              name,
+              value,
+              options as Partial<ResponseCookie> | undefined,
+            ),
+          );
         },
       },
     },
