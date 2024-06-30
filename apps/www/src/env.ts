@@ -13,10 +13,10 @@ export const env = createEnv({
       .enum(["development", "staging", "production"])
       .default("development"),
     STAGING_TEST_EMAILS: z.string().optional(),
+    SUPERADMIN_EMAIL: z.string().email(),
   },
   server: {
     SUPABASE_SERVICE_ROLE_KEY: z.string(),
-    SUPERADMIN_EMAIL: z.string().email(),
   },
   client: {
     NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
@@ -28,6 +28,7 @@ export const env = createEnv({
     NODE_ENV: undefined,
     ENV: process.env.ENV,
     STAGING_TEST_EMAILS: process.env.STAGING_TEST_EMAILS,
+    SUPERADMIN_EMAIL: process.env.SUPERADMIN_EMAIL,
   },
   skipValidation:
     !!process.env.CI ||

@@ -27,6 +27,7 @@
     "SKIP_ENV_VALIDATION",
     "ENV",
     "STAGING_TEST_EMAILS",
+    "SUPERADMIN_EMAIL",
     "npm_lifecycle_event"
   ]
 }
