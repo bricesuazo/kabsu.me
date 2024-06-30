@@ -12,10 +12,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const supabaseServer = createClientServer();
   const {
-    data: { session },
-  } = await supabaseServer.auth.getSession();
+    data: { user },
+  } = await supabaseServer.auth.getUser();
 
-  if (!session) notFound();
+  if (!user) notFound();
 
   const supabaseAdmin = createClientAdmin();
 
@@ -28,11 +28,11 @@ export async function generateMetadata({
 
   if (!post) notFound();
 
-  if ((post.user_id !== session.user.id && post.type) === "following") {
+  if ((post.user_id !== user.id && post.type) === "following") {
     const { data: is_follower } = await supabaseAdmin
       .from("followers")
       .select()
-      .eq("follower_id", session.user.id)
+      .eq("follower_id", user.id)
       .eq("followee_id", post.user_id)
       .single();
 
@@ -42,7 +42,7 @@ export async function generateMetadata({
   const { data: current_user_in_db } = await supabaseAdmin
     .from("users")
     .select("*, programs(*, colleges(*))")
-    .eq("id", session.user.id)
+    .eq("id", user.id)
     .single();
 
   if (!current_user_in_db) notFound();

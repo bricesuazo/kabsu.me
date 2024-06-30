@@ -22,14 +22,12 @@ export default async function FollowingPage({
 }) {
   const supabaseServer = createClientServer();
   const {
-    data: { session },
-  } = await supabaseServer.auth.getSession();
+    data: { user },
+  } = await supabaseServer.auth.getUser();
 
-  if (!session) notFound();
+  if (!user) notFound();
 
   const data = await api.users.getAllFollowings.query({ username });
 
-  return (
-    <Following input={{ username }} output={data} user_id={session.user.id} />
-  );
+  return <Following input={{ username }} output={data} user_id={user.id} />;
 }

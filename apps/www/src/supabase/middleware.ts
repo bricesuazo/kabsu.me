@@ -1,14 +1,41 @@
+import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 
-import { createClient } from "./server";
+import { env } from "~/env";
 
 export async function updateSession(request: NextRequest) {
-  const supabaseResponse = NextResponse.next({
+  let supabaseResponse = NextResponse.next({
     request,
   });
 
-  const supabase = createClient();
+  const supabase = createServerClient(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value),
+          );
+          supabaseResponse = NextResponse.next({
+            request,
+          });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(
+              name,
+              value,
+              options as Partial<ResponseCookie> | undefined,
+            ),
+          );
+        },
+      },
+    },
+  );
 
   const {
     data: { user },
