@@ -17,7 +17,7 @@ export default function SigninButton() {
         setLoading(true);
         if (env.NEXT_PUBLIC_SUPABASE_URL === "http://localhost:54321") {
           await supabase.auth.signInWithOtp({
-            email: "bricebrine.suazo@cvsu.edu.ph",
+            email: env.SUPERADMIN_EMAIL,
           });
         } else {
           await supabase.auth.signInWithOAuth({

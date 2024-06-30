@@ -7,6 +7,7 @@ createJiti(fileURLToPath(import.meta.url))("./src/env");
 /** @type {import('next').NextConfig} */
 const config = {
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "http",
@@ -16,6 +17,10 @@ const config = {
       {
         protocol: "https",
         hostname: "yqzqvzfpaiptblzdkphp.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "mcquriygnthreskhulbh.supabase.co",
       },
       {
         protocol: "https",
