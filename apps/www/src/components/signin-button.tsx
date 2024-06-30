@@ -17,7 +17,7 @@ export default function SigninButton() {
         setLoading(true);
         if (env.NEXT_PUBLIC_SUPABASE_URL === "http://localhost:54321") {
           await supabase.auth.signInWithOtp({
-            email: env.SUPERADMIN_EMAIL,
+            email: env.NEXT_PUBLIC_SUPERADMIN_EMAIL,
           });
         } else {
           await supabase.auth.signInWithOAuth({

@@ -16,14 +16,14 @@ export async function GET(request: Request) {
 
     if (
       !data.user.email?.endsWith("@cvsu.edu.ph") &&
-      data.user.email !== env.SUPERADMIN_EMAIL
+      data.user.email !== env.NEXT_PUBLIC_SUPERADMIN_EMAIL
     ) {
       await supabase.auth.signOut();
       return NextResponse.redirect(`${origin}?error=AccessDenied`);
     } else if (
       env.ENV === "staging" &&
       !env.STAGING_TEST_EMAILS?.split(", ").includes(data.user.email) &&
-      data.user.email !== env.SUPERADMIN_EMAIL
+      data.user.email !== env.NEXT_PUBLIC_SUPERADMIN_EMAIL
     ) {
       await supabase.auth.signOut();
       return NextResponse.redirect(`${origin}?error=StagingAccessDenied`);
