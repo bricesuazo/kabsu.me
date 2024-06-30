@@ -117,6 +117,23 @@ export default function PostComment({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
+  async function handleSubmit() {
+    await form.handleSubmit(async (values) => {
+      await createCommentMutation.mutateAsync({
+        post_id: post.id,
+        content: values.comment,
+      });
+      await context.posts.getPost.invalidate({ post_id: post.id });
+
+      form.reset();
+      setIsFocused(false);
+      if (searchParams.has("comment"))
+        router.push(
+          `/${params.username as string}/${params.post_id as string}`,
+        );
+    })();
+  }
+
   return (
     <div className="space-y-4">
       <div className="space-y-2">
@@ -363,110 +380,79 @@ export default function PostComment({
         </div>
       </div>
 
-      <div className="flex flex-col items-end gap-2">
+      <div className="flex w-full gap-x-2">
+        <div className="min-w-max">
+          {getCurrentUserQuery.data ? (
+            <Image
+              src={
+                getCurrentUserQuery.data.image_name
+                  ? getCurrentUserQuery.data.image_url
+                  : "/default-avatar.jpg"
+              }
+              alt="Image"
+              width={40}
+              height={40}
+              className="aspect-square rounded-full object-cover object-center"
+            />
+          ) : (
+            <Skeleton className="h-10 w-10 rounded-full object-cover object-center" />
+          )}
+        </div>
         {isFocused ? (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(async (values) => {
-                await createCommentMutation.mutateAsync({
-                  post_id: post.id,
-                  content: values.comment,
-                });
-                await context.posts.getPost.invalidate({ post_id: post.id });
-
-                form.reset();
-                setIsFocused(false);
-                if (searchParams.has("comment"))
-                  router.push(
-                    `/${params.username as string}/${params.post_id as string}`,
-                  );
-              })}
-              className="w-full"
-            >
-              <div className="flex w-full gap-x-2">
-                <div className="min-w-max">
-                  {getCurrentUserQuery.data ? (
-                    <>
-                      {getCurrentUserQuery.data.image_name && (
-                        <Image
-                          src={getCurrentUserQuery.data.image_url}
-                          alt="Image"
-                          width={40}
-                          height={40}
-                          className="aspect-square rounded-full object-cover object-center"
-                        />
-                      )}
-                    </>
-                  ) : (
-                    <Skeleton className="h-10 w-10 rounded-full object-cover object-center" />
-                  )}
-                </div>
-                <FormField
-                  control={form.control}
-                  name="comment"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Write a comment..."
-                          autoFocus
-                          disabled={form.formState.isSubmitting}
-                        />
-                      </FormControl>
-                      <div className="flex justify-between">
-                        <div className="">
-                          <FormMessage />
-                        </div>
-
-                        <Button
-                          type="submit"
-                          size="sm"
-                          className="w-fit"
-                          disabled={
-                            form.formState.isSubmitting ||
-                            !form.formState.isValid
+            <form onSubmit={handleSubmit} className="flex w-full gap-x-2">
+              <FormField
+                control={form.control}
+                name="comment"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder="Write a comment..."
+                        autoFocus
+                        disabled={form.formState.isSubmitting}
+                        onKeyDown={async (e) => {
+                          if (e.key === "Enter" && e.ctrlKey) {
+                            e.preventDefault();
+                            await handleSubmit();
                           }
-                        >
-                          {form.formState.isSubmitting && (
-                            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                          )}
-                          Comment
-                        </Button>
+                        }}
+                      />
+                    </FormControl>
+                    <div className="flex justify-between">
+                      <div className="">
+                        <FormMessage />
                       </div>
-                    </FormItem>
-                  )}
-                />
-              </div>
+
+                      <Button
+                        type="submit"
+                        size="sm"
+                        className="w-fit"
+                        disabled={
+                          form.formState.isSubmitting || !form.formState.isValid
+                        }
+                      >
+                        {form.formState.isSubmitting && (
+                          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                        Comment
+                      </Button>
+                    </div>
+                  </FormItem>
+                )}
+              />
             </form>
           </Form>
         ) : (
-          <div className="flex w-full gap-x-2">
-            <div className="min-w-max">
-              {getCurrentUserQuery.data ? (
-                <>
-                  {getCurrentUserQuery.data.image_name && (
-                    <Image
-                      src={getCurrentUserQuery.data.image_url}
-                      alt="Image"
-                      width={40}
-                      height={40}
-                      className="aspect-square rounded-full object-cover object-center"
-                    />
-                  )}
-                </>
-              ) : (
-                <Skeleton className="h-10 w-10 rounded-full" />
-              )}
-            </div>
-            <div className="flex-1">
-              <Input
-                placeholder="Write a comment..."
-                onFocus={() => setIsFocused(true)}
-              />
-            </div>
+          <div className="flex flex-1 gap-x-2">
+            <Input
+              placeholder="Write a comment..."
+              onFocus={() => setIsFocused(true)}
+              className="flex-1"
+            />
 
-            <Button size="sm" disabled>
+            <Button size="sm" className="h-10" disabled>
               Comment
             </Button>
           </div>
