@@ -119,6 +119,15 @@ CREATE TABLE IF NOT EXISTS "public"."comments" (
 
 ALTER TABLE "public"."comments" OWNER TO "postgres";
 
+CREATE TABLE IF NOT EXISTS "public"."comments_likes" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "comment_id" "uuid" NOT NULL,
+    "user_id" "uuid" NOT NULL
+);
+
+ALTER TABLE "public"."comments_likes" OWNER TO "postgres";
+
 CREATE TABLE IF NOT EXISTS "public"."followees" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "followee_id" "uuid" NOT NULL,
@@ -264,6 +273,9 @@ ALTER TABLE ONLY "public"."campuses"
 ALTER TABLE ONLY "public"."colleges"
     ADD CONSTRAINT "colleges_pkey" PRIMARY KEY ("id");
 
+ALTER TABLE ONLY "public"."comments_likes"
+    ADD CONSTRAINT "comments_likes_pkey" PRIMARY KEY ("id");
+
 ALTER TABLE ONLY "public"."comments"
     ADD CONSTRAINT "comments_pkey" PRIMARY KEY ("id");
 
@@ -318,6 +330,12 @@ CREATE INDEX "colleges_campus_id_idx" ON "public"."colleges" USING "btree" ("cam
 
 CREATE INDEX "colleges_slug_idx" ON "public"."colleges" USING "btree" ("slug");
 
+CREATE INDEX "comments_likes_comment_id_idx" ON "public"."comments_likes" USING "btree" ("comment_id");
+
+CREATE INDEX "comments_likes_comment_id_user_id_idx" ON "public"."comments_likes" USING "btree" ("comment_id", "user_id");
+
+CREATE INDEX "comments_likes_user_id_idx" ON "public"."comments_likes" USING "btree" ("user_id");
+
 CREATE INDEX "comments_post_id_idx" ON "public"."comments" USING "btree" ("post_id");
 
 CREATE INDEX "comments_post_id_user_id_idx" ON "public"."comments" USING "btree" ("post_id", "user_id");
@@ -364,6 +382,12 @@ CREATE INDEX "programs_slug_idx" ON "public"."programs" USING "btree" ("slug");
 
 ALTER TABLE ONLY "public"."colleges"
     ADD CONSTRAINT "public_colleges_campus_id_fkey" FOREIGN KEY ("campus_id") REFERENCES "public"."campuses"("id");
+
+ALTER TABLE ONLY "public"."comments_likes"
+    ADD CONSTRAINT "public_comments_likes_comment_id_fkey" FOREIGN KEY ("comment_id") REFERENCES "public"."comments"("id");
+
+ALTER TABLE ONLY "public"."comments_likes"
+    ADD CONSTRAINT "public_comments_likes_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
 
 ALTER TABLE ONLY "public"."comments"
     ADD CONSTRAINT "public_comments_post_id_fkey" FOREIGN KEY ("post_id") REFERENCES "public"."posts"("id");
@@ -443,6 +467,8 @@ ALTER TABLE "public"."colleges" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."comments" ENABLE ROW LEVEL SECURITY;
 
+ALTER TABLE "public"."comments_likes" ENABLE ROW LEVEL SECURITY;
+
 ALTER TABLE "public"."followees" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."followers" ENABLE ROW LEVEL SECURITY;
@@ -491,6 +517,10 @@ GRANT ALL ON TABLE "public"."colleges" TO "service_role";
 GRANT ALL ON TABLE "public"."comments" TO "anon";
 GRANT ALL ON TABLE "public"."comments" TO "authenticated";
 GRANT ALL ON TABLE "public"."comments" TO "service_role";
+
+GRANT ALL ON TABLE "public"."comments_likes" TO "anon";
+GRANT ALL ON TABLE "public"."comments_likes" TO "authenticated";
+GRANT ALL ON TABLE "public"."comments_likes" TO "service_role";
 
 GRANT ALL ON TABLE "public"."followees" TO "anon";
 GRANT ALL ON TABLE "public"."followees" TO "authenticated";

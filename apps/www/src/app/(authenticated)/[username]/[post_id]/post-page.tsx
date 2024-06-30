@@ -1,11 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { format, formatDistanceToNow } from "date-fns";
-import { Album, Briefcase, GraduationCap } from "lucide-react";
+import {
+  Album,
+  Briefcase,
+  GraduationCap,
+  Heart,
+  MessageCircle,
+} from "lucide-react";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 
@@ -14,6 +20,7 @@ import PostComment from "~/components/post-comment";
 import PostDropdown from "~/components/post-dropdown";
 import { Badge } from "~/components/ui/badge";
 import { Skeleton } from "~/components/ui/skeleton";
+import { Toggle } from "~/components/ui/toggle";
 import {
   Tooltip,
   TooltipContent,
@@ -259,7 +266,11 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
 
           <div>
             {postQuery.data.post.comments.map((comment) => (
-              <CommentComponent key={comment.id} comment={comment} />
+              <CommentComponent
+                key={comment.id}
+                comment={comment}
+                userId={postQuery.data.userId}
+              />
             ))}
           </div>
         </div>
@@ -270,12 +281,23 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
 
 function CommentComponent({
   comment,
+  userId,
 }: {
   comment: RouterOutputs["posts"]["getPost"]["post"]["comments"][number];
+  userId: string;
 }) {
   const fullCommentQuery = api.comments.getFullComment.useQuery({
     comment_id: comment.id,
   });
+  const [likes, setLikes] = useState(fullCommentQuery.data?.comment.likes);
+  const [commentEnabled, setCommentEnabled] = useState(false);
+
+  const likeCommentMutation = api.comments.like.useMutation();
+  const unlikeCommentMutation = api.comments.unlike.useMutation();
+
+  useEffect(() => {
+    setLikes(fullCommentQuery.data?.comment.likes);
+  }, [fullCommentQuery.data?.comment.likes]);
 
   if (!fullCommentQuery.data)
     return (
@@ -385,6 +407,48 @@ function CommentComponent({
       </div>
       <div className="whitespace-pre-wrap break-words">
         {formatText(fullCommentQuery.data.comment.content)}
+      </div>
+
+      <div className="flex gap-x-1">
+        <Toggle
+          size="sm"
+          pressed={likes?.some((like) => like.user_id === userId)}
+          onClick={(e) => e.stopPropagation()}
+          onPressedChange={async (pressed) => {
+            if (likes === undefined) return;
+
+            if (pressed) {
+              setLikes([...likes, { user_id: userId }]);
+
+              await likeCommentMutation.mutateAsync({ comment_id: comment.id });
+            } else {
+              setLikes(likes.filter((like) => like.user_id !== userId));
+
+              await unlikeCommentMutation.mutateAsync({
+                comment_id: comment.id,
+              });
+            }
+            await fullCommentQuery.refetch();
+          }}
+        >
+          <Heart
+            className={cn(
+              "mr-1.5 h-4 w-4",
+              likes?.some((like) => like.user_id === userId) &&
+                "fill-primary text-primary",
+            )}
+          />
+          <span className="text-xs">{likes?.length ?? 0}</span>
+        </Toggle>
+
+        <Toggle
+          size="sm"
+          pressed={commentEnabled}
+          onPressedChange={(pressed) => setCommentEnabled(pressed)}
+        >
+          <MessageCircle className="mr-1.5 h-4 w-4" />
+           <span className="text-xs">{likes?.length ?? 0}</span>
+        </Toggle>
       </div>
     </div>
   );
