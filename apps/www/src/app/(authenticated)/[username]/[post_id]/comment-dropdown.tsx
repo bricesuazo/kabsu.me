@@ -89,7 +89,8 @@ export default function CommentDropdown({
 
   useEffect(() => {
     if (openReport) reportForm.reset();
-  }, [openReport, reportForm]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openReport]);
 
   return (
     <>

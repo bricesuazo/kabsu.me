@@ -24,7 +24,8 @@ export default function SearchPage() {
     } else {
       searchMutation.reset();
     }
-  }, [searchMutation, value]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
   return (
     <div className="p-4">
       <div className="space-y-4">

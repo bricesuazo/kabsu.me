@@ -50,8 +50,6 @@ export default function HomeProtected({
 }
 
 function Posts({ tab }: { tab: (typeof POST_TYPE_TABS)[number]["id"] }) {
-  console.log("rendering posts");
-
   const posts = api.posts.getPosts.useInfiniteQuery(
     { type: tab },
     {

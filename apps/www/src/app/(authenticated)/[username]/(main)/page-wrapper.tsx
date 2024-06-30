@@ -87,7 +87,8 @@ export default function UserPageWrapper({
 
   useEffect(() => {
     if (openReport) reportForm.reset();
-  }, [openReport, reportForm]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openReport]);
 
   return (
     <div className="relative min-h-screen space-y-4 border-b">

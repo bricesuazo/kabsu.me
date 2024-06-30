@@ -109,11 +109,13 @@ export default function PostComment({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isFocused, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFocused]);
 
   useEffect(() => {
     form.reset();
-  }, [isFocused, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFocused]);
 
   return (
     <div className="space-y-4">

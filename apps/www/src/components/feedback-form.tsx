@@ -70,7 +70,8 @@ export default function FeedbackForm({
 
   useEffect(() => {
     if (open) form.reset();
-  }, [form, open]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

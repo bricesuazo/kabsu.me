@@ -117,7 +117,8 @@ export default function OnboardingForm({ user }: { user: User }) {
       user.email?.split("@")[0]?.replace(".", "-") ?? "",
     );
     form.setValue("name", "");
-  }, [form, user.email]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.email]);
 
   const [signoutLoading, setSignoutLoading] = useState(false);
 

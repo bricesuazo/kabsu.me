@@ -103,7 +103,8 @@ export default function PostDropdown({
 
   useEffect(() => {
     if (openReport) reportForm.reset();
-  }, [openReport, reportForm]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openReport]);
 
   return (
     <div onClick={(e) => e.stopPropagation()}>

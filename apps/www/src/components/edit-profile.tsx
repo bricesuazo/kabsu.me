@@ -118,7 +118,8 @@ export default function EditProfile({
         link: user.link?.split("https://")[1] ?? "",
         images: user.image_name ? user.image_url : undefined,
       });
-  }, [open, form, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   function mapToPercentage(value: number) {
     return (Math.min(128, Math.max(0, value)) / 128) * 100;

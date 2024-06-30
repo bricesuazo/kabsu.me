@@ -58,7 +58,8 @@ export default function UpdatePost({
         post_id: post.id,
       });
     }
-  }, [open, form, post.content, post.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   async function onSubmit(values: z.infer<typeof Schema>) {
     if (!form.formState.isDirty) return;
