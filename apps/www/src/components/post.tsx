@@ -96,9 +96,10 @@ export default function Post({
       <ImagesViewer
         open={openImagesViewer}
         setOpen={setOpenImagesViewer}
-        images={getPostQuery.data.post.posts_images.map(
-          (image) => image.signed_url,
-        )}
+        images={getPostQuery.data.post.posts_images.map((image) => ({
+          id: image.id,
+          url: image.signed_url,
+        }))}
         scrollTo={scrollTo}
       />
       <div

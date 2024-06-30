@@ -1,4 +1,5 @@
 import type { ClassValue } from "clsx";
+import { Fragment } from "react";
 import Link from "next/link";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -41,25 +42,24 @@ export function formatText(text: string) {
   const link_class = "text-primary hover:underline break-all";
   return (
     <>
-      {words.map((word) => {
+      {words.map((word, index) => {
         if (word.match(USERNAME_REGEX)) {
           const username = word.slice(1);
           return (
-            <>
+            <Fragment key={index}>
               <Link
-                key={word}
                 onClick={(e) => e.stopPropagation()}
                 href={`/${username}`}
                 className={link_class}
               >
                 {word}
               </Link>{" "}
-            </>
+            </Fragment>
           );
         }
 
         return word.match(URL_REGEX) ? (
-          <>
+          <Fragment key={index}>
             <Link
               href={word}
               target="_blank"
@@ -68,7 +68,7 @@ export function formatText(text: string) {
             >
               {word}
             </Link>{" "}
-          </>
+          </Fragment>
         ) : (
           word + " "
         );

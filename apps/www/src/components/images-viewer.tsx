@@ -24,7 +24,7 @@ export function ImagesViewer({
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
-  images: string[];
+  images: { id: string; url: string }[];
   scrollTo: number;
 }) {
   const [api, setApi] = useState<CarouselApi>();
@@ -54,9 +54,9 @@ export function ImagesViewer({
         <Carousel setApi={setApi}>
           <CarouselContent>
             {images.map((image) => (
-              <CarouselItem key={image} className="relative h-96">
+              <CarouselItem key={image.id} className="relative h-96">
                 <Image
-                  src={image}
+                  src={image.url}
                   alt="Image"
                   fill
                   className="object-contain"

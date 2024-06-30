@@ -39,8 +39,10 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
         open={openImagesViewer}
         setOpen={setOpenImagesViewer}
         images={
-          postQuery.data?.post.posts_images.map((image) => image.signed_url) ??
-          []
+          postQuery.data?.post.posts_images.map((image) => ({
+            id: image.id,
+            url: image.signed_url,
+          })) ?? []
         }
         scrollTo={scrollTo}
       />

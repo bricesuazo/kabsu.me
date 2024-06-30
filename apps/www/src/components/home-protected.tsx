@@ -23,7 +23,6 @@ export default function HomeProtected({
     college: "See posts of your college.",
     program: "See posts of your program.",
   };
-
   return (
     <div className="border-x">
       <div className="sticky top-0 z-50 backdrop-blur-lg">
@@ -51,6 +50,8 @@ export default function HomeProtected({
 }
 
 function Posts({ tab }: { tab: (typeof POST_TYPE_TABS)[number]["id"] }) {
+  console.log("rendering posts");
+
   const posts = api.posts.getPosts.useInfiniteQuery(
     { type: tab },
     {
@@ -70,7 +71,8 @@ function Posts({ tab }: { tab: (typeof POST_TYPE_TABS)[number]["id"] }) {
         await posts.fetchNextPage();
       }
     })();
-  }, [inView, posts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inView]);
 
   return (
     <div className="">
