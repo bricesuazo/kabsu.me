@@ -153,7 +153,7 @@ export default function UserPageWrapper({
 
           <Dialog>
             <DialogTrigger asChild className="hover:cursor-pointer">
-              <div className="relative aspect-square h-20 min-w-max overflow-clip rounded-full xs:h-32">
+              <div className="relative aspect-square h-28 overflow-clip rounded-full xs:h-32">
                 <div className="absolute bottom-0 flex w-full justify-center bg-gradient-to-t from-black to-transparent p-2">
                   <Tooltip delayDuration={250}>
                     {(() => {
