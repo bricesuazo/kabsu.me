@@ -48,12 +48,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Skeleton } from "./ui/skeleton";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 const typeSchema = z
   .custom<Database["public"]["Enums"]["post_type"]>()
@@ -325,22 +320,20 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
           </div>
           {isFocused && (
             <div className="flex justify-between gap-x-2">
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      type="button"
-                      className="text-muted-foreground hover:text-secondary-foreground"
-                      onClick={() => setImageUploaderOpen(true)}
-                    >
-                      <ImageUp />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Upload images</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    type="button"
+                    className="text-muted-foreground hover:text-secondary-foreground"
+                    onClick={() => setImageUploaderOpen(true)}
+                  >
+                    <ImageUp />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Upload images</TooltipContent>
+              </Tooltip>
 
               <div className="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center">
                 <FormField
