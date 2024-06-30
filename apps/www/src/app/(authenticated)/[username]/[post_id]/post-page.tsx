@@ -1,11 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { format, formatDistanceToNow } from "date-fns";
-import { Album, Briefcase, GraduationCap } from "lucide-react";
+import {
+  Album,
+  Briefcase,
+  GraduationCap,
+  Heart,
+  MessageCircle,
+} from "lucide-react";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 
@@ -13,7 +19,10 @@ import { ImagesViewer } from "~/components/images-viewer";
 import PostComment from "~/components/post-comment";
 import PostDropdown from "~/components/post-dropdown";
 import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
+import { Textarea } from "~/components/ui/textarea";
+import { Toggle } from "~/components/ui/toggle";
 import {
   Tooltip,
   TooltipContent,
@@ -257,9 +266,14 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
             />
           </div>
 
-          <div>
+          <div className="p-4 pt-0">
             {postQuery.data.post.comments.map((comment) => (
-              <CommentComponent key={comment.id} comment={comment} />
+              <CommentComponent
+                key={comment.id}
+                comment={comment}
+                userId={postQuery.data.userId}
+                post_id={postQuery.data.post.id}
+              />
             ))}
           </div>
         </div>
@@ -270,122 +284,217 @@ export default function PostPageComponent({ post_id }: { post_id: string }) {
 
 function CommentComponent({
   comment,
+  userId,
+  post_id,
 }: {
   comment: RouterOutputs["posts"]["getPost"]["post"]["comments"][number];
+  userId: string;
+  post_id: string;
 }) {
   const fullCommentQuery = api.comments.getFullComment.useQuery({
     comment_id: comment.id,
   });
+  const [likes, setLikes] = useState(fullCommentQuery.data?.comment.likes);
+  const [commentEnabled, setCommentEnabled] = useState(false);
 
-  if (!fullCommentQuery.data)
-    return (
-      <div className="space-y-2 border-b p-4 first:border-t">
-        <div className="flex justify-between">
-          <div className="flex gap-x-2">
-            <div className="min-w-max">
-              <Skeleton className="h-10 w-10 rounded-full" />
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-x-2">
-                <Skeleton className="h-4 w-36" />
-                <Skeleton className="h-1 w-1" />
-                <div className="hidden sm:block">
-                  <Skeleton className="h-4 w-20" />
+  const likeCommentMutation = api.comments.like.useMutation();
+  const unlikeCommentMutation = api.comments.unlike.useMutation();
+  const replyCommentMutation = api.comments.reply.useMutation();
+  const [reply, setReply] = useState("");
+
+  useEffect(() => {
+    setLikes(fullCommentQuery.data?.comment.likes);
+  }, [fullCommentQuery.data?.comment.likes]);
+
+  return (
+    <>
+      {!fullCommentQuery.data ? (
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <div className="flex gap-x-2">
+              <div className="min-w-max">
+                <Skeleton className="h-10 w-10 rounded-full" />
+              </div>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-x-2">
+                  <Skeleton className="h-4 w-36" />
+                  <Skeleton className="h-1 w-1" />
+                  <div className="hidden sm:block">
+                    <Skeleton className="h-4 w-20" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+          <Skeleton className="h-4" />
         </div>
-        <Skeleton className="h-4" />
-      </div>
-    );
-
-  return (
-    <div className="space-y-2 border-b p-4 first:border-t">
-      <div className="flex justify-between">
-        <div className="flex gap-x-2">
-          <div className="min-w-max">
-            <Link href={`/${fullCommentQuery.data.comment.users.username}`}>
-              {fullCommentQuery.data.comment.users.image_name ? (
-                <Image
-                  src={fullCommentQuery.data.comment.users.image_url}
-                  alt={`${fullCommentQuery.data.comment.users.name} profile picture`}
-                  width={40}
-                  height={40}
-                  className="aspect-square rounded-full object-cover object-center"
-                />
-              ) : (
-                <Image
-                  src="/default-avatar.jpg"
-                  alt={`${fullCommentQuery.data.comment.users.name} profile picture`}
-                  width={40}
-                  height={40}
-                  className="aspect-square rounded-full"
-                />
-              )}
-            </Link>
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-x-2">
-              <Link
-                href={`/${fullCommentQuery.data.comment.users.username}`}
-                className="flex items-center gap-x-1"
-              >
-                <p className="line-clamp-1 font-bold group-hover:underline">
-                  {fullCommentQuery.data.comment.users.name}
-                </p>
-                {fullCommentQuery.data.comment.users.verified_at && (
-                  <VerifiedBadge size="sm" />
-                )}
-              </Link>
-              <p className="pointer-events-none select-none">·</p>
-
-              <Tooltip delayDuration={250}>
-                <TooltipTrigger>
-                  <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                    {formatDistanceToNow(
-                      fullCommentQuery.data.comment.created_at,
-                      {
-                        includeSeconds: true,
-                        addSuffix: true,
-                      },
+      ) : (
+        <div className="mt-4 space-y-2">
+          <div className="flex justify-between">
+            <div className="flex gap-x-2">
+              <div className="min-w-max">
+                <Link href={`/${fullCommentQuery.data.comment.users.username}`}>
+                  <Image
+                    src={
+                      fullCommentQuery.data.comment.users.image_name
+                        ? fullCommentQuery.data.comment.users.image_url
+                        : "/default-avatar.jpg"
+                    }
+                    alt={`${fullCommentQuery.data.comment.users.name} profile picture`}
+                    width={40}
+                    height={40}
+                    className="aspect-square rounded-full object-cover object-center"
+                  />
+                </Link>
+              </div>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-x-2">
+                  <Link
+                    href={`/${fullCommentQuery.data.comment.users.username}`}
+                    className="flex items-center gap-x-1"
+                  >
+                    <p className="line-clamp-1 font-bold group-hover:underline">
+                      {fullCommentQuery.data.comment.users.name}
+                    </p>
+                    {fullCommentQuery.data.comment.users.verified_at && (
+                      <VerifiedBadge size="sm" />
                     )}
-                  </p>
-                  <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                    {formatDistanceToNow(
-                      fullCommentQuery.data.comment.created_at,
-                      {
-                        includeSeconds: true,
-                        addSuffix: true,
-                      },
-                    )}
-                  </p>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {format(fullCommentQuery.data.comment.created_at, "PPpp")}
-                </TooltipContent>
-              </Tooltip>
+                  </Link>
+                  <p className="pointer-events-none select-none">·</p>
+
+                  <Tooltip delayDuration={250}>
+                    <TooltipTrigger>
+                      <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
+                        {formatDistanceToNow(
+                          fullCommentQuery.data.comment.created_at,
+                          {
+                            includeSeconds: true,
+                            addSuffix: true,
+                          },
+                        )}
+                      </p>
+                      <p className="text-xs text-muted-foreground hover:underline xs:hidden">
+                        {formatDistanceToNow(
+                          fullCommentQuery.data.comment.created_at,
+                          {
+                            includeSeconds: true,
+                            addSuffix: true,
+                          },
+                        )}
+                      </p>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {format(fullCommentQuery.data.comment.created_at, "PPpp")}
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <Link
+                  href={`/${fullCommentQuery.data.comment.users.username}`}
+                  className="line-clamp-1 flex-1 break-all text-sm text-foreground/70 hover:underline"
+                >
+                  @{fullCommentQuery.data.comment.users.username}
+                </Link>
+              </div>
             </div>
-            <Link
-              href={`/${fullCommentQuery.data.comment.users.username}`}
-              className="line-clamp-1 flex-1 break-all text-sm text-foreground/70 hover:underline"
+
+            <CommentDropdown
+              comment_id={comment.id}
+              isMyComment={
+                fullCommentQuery.data.comment.user_id ===
+                fullCommentQuery.data.userId
+              }
+            />
+          </div>
+          <div className="whitespace-pre-wrap break-words">
+            {formatText(fullCommentQuery.data.comment.content)}
+          </div>
+
+          <div className="flex gap-x-1">
+            <Toggle
+              size="sm"
+              pressed={likes?.some((like) => like.user_id === userId)}
+              onClick={(e) => e.stopPropagation()}
+              onPressedChange={async (pressed) => {
+                if (likes === undefined) return;
+
+                if (pressed) {
+                  setLikes([...likes, { user_id: userId }]);
+
+                  await likeCommentMutation.mutateAsync({
+                    comment_id: comment.id,
+                  });
+                } else {
+                  setLikes(likes.filter((like) => like.user_id !== userId));
+
+                  await unlikeCommentMutation.mutateAsync({
+                    comment_id: comment.id,
+                  });
+                }
+                await fullCommentQuery.refetch();
+              }}
             >
-              @{fullCommentQuery.data.comment.users.username}
-            </Link>
+              <Heart
+                className={cn(
+                  "mr-1.5 h-4 w-4",
+                  likes?.some((like) => like.user_id === userId) &&
+                    "fill-primary text-primary",
+                )}
+              />
+              <span className="text-xs">{likes?.length ?? 0}</span>
+            </Toggle>
+
+            <Toggle
+              size="sm"
+              pressed={commentEnabled}
+              onPressedChange={(pressed) => setCommentEnabled(pressed)}
+            >
+              <MessageCircle className="mr-1.5 h-4 w-4" />
+              <span className="text-xs">
+                {
+                  (fullCommentQuery.data.comment.replies as { id: string }[])
+                    .length
+                }
+              </span>
+            </Toggle>
+          </div>
+          <div className="pl-4">
+            {fullCommentQuery.data.comment.replies.map((reply) => (
+              <CommentComponent
+                userId={userId}
+                comment={reply}
+                post_id={post_id}
+              />
+            ))}
+            {commentEnabled && (
+              <div className="space-y-2">
+                <Textarea
+                  placeholder="Reply"
+                  disabled={replyCommentMutation.isPending}
+                  value={reply}
+                  onChange={(e) => setReply(e.target.value)}
+                />
+                <Button
+                  className="ml-auto"
+                  size="sm"
+                  disabled={replyCommentMutation.isPending}
+                  onClick={async () => {
+                    await replyCommentMutation.mutateAsync({
+                      comment_id: comment.id,
+                      content: reply,
+                      post_id,
+                    });
+                    setReply("");
+                    setCommentEnabled(false);
+                    await fullCommentQuery.refetch();
+                  }}
+                >
+                  {replyCommentMutation.isPending ? "Replying..." : "Reply"}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
-
-        <CommentDropdown
-          comment_id={comment.id}
-          isMyComment={
-            fullCommentQuery.data.comment.user_id ===
-            fullCommentQuery.data.userId
-          }
-        />
-      </div>
-      <div className="whitespace-pre-wrap break-words">
-        {formatText(fullCommentQuery.data.comment.content)}
-      </div>
-    </div>
+      )}
+    </>
   );
 }

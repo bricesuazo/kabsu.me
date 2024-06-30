@@ -12,11 +12,12 @@ export const postsRouter = router({
       const { data: post } = await ctx.supabase
         .from("posts")
         .select(
-          "id, content, type, user_id, created_at, posts_images(*), likes(post_id, user_id), comments(id), user: users(name, username, image_name, type, verified_at, programs(name, slug, college_id, colleges(name, slug, campus_id, campuses(name, slug))))",
+          "id, content, type, user_id, created_at, posts_images(*), likes(post_id, user_id), comments!inner(id, thread_id, deleted_at), user: users(name, username, image_name, type, verified_at, programs(name, slug, college_id, colleges(name, slug, campus_id, campuses(name, slug))))",
         )
         .eq("id", input.post_id)
         .is("deleted_at", null)
         .is("comments.deleted_at", null)
+        .is("comments.thread_id", null)
         .order("created_at", {
           ascending: false,
           referencedTable: "comments",
