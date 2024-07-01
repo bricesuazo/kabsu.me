@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import imageCompression from "browser-image-compression";
 import { ImageUp, Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
@@ -146,9 +147,15 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
 
           if (!file) return;
 
+          const compressedFile = await imageCompression(file, {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 720,
+            useWebWorker: true,
+          });
+
           await supabase.storage
             .from("posts")
-            .uploadToSignedUrl(url.path, url.token, file);
+            .uploadToSignedUrl(url.path, url.token, compressedFile);
         }),
       );
 
