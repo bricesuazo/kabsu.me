@@ -46,11 +46,11 @@ export default function PostsWrapper({
           {postsQuery.error?.message ?? "An error occurred."}
         </p>
       ) : postsQuery.data.pages.flatMap((page) => page.posts).length === 0 ? (
-        <div className="text-center">
-          <div className="text-2xl font-semibold">No posts yet</div>
-          <div className="mt-2 break-words text-gray-500">
+        <div className="p-4 text-center">
+          <h2 className="text-2xl font-semibold">No posts yet</h2>
+          <p className="mt-2 text-balance break-words text-gray-500">
             When @{user.username} posts something, it will show up here.
-          </div>
+          </p>
         </div>
       ) : (
         postsQuery.data.pages.map((page, i) => (
