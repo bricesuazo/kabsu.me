@@ -59,4 +59,9 @@
   body {
     @apply h-full;
   }
+  input,
+  select:focus,
+  textarea {
+    font-size: 16px;
+  }
 }

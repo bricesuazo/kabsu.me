@@ -117,22 +117,18 @@ export default function PostComment({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
-  async function handleSubmit() {
-    await form.handleSubmit(async (values) => {
-      await createCommentMutation.mutateAsync({
-        post_id: post.id,
-        content: values.comment,
-      });
-      await context.posts.getPost.invalidate({ post_id: post.id });
+  const handleSubmit = form.handleSubmit(async (values) => {
+    await createCommentMutation.mutateAsync({
+      post_id: post.id,
+      content: values.comment,
+    });
+    await context.posts.getPost.invalidate({ post_id: post.id });
 
-      form.reset();
-      setIsFocused(false);
-      if (searchParams.has("comment"))
-        router.push(
-          `/${params.username as string}/${params.post_id as string}`,
-        );
-    })();
-  }
+    form.reset();
+    setIsFocused(false);
+    if (searchParams.has("comment"))
+      router.push(`/${params.username as string}/${params.post_id as string}`);
+  });
 
   return (
     <div className="space-y-4">
