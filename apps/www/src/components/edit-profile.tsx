@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import imageCompression from "browser-image-compression";
 import { PenSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -168,12 +169,19 @@ export default function EditProfile({
                   await getUserImageUploadSignedUrlMutation.mutateAsync({
                     image_name: now.toString(),
                   });
+
+                const compressedImage = await imageCompression(data.images[0], {
+                  maxSizeMB: 0.25,
+                  maxWidthOrHeight: 512,
+                  useWebWorker: true,
+                });
+
                 await supabase.storage
                   .from("users")
                   .uploadToSignedUrl(
                     upload_signed_url.path,
                     upload_signed_url.token,
-                    data.images[0],
+                    compressedImage,
                   );
 
                 image_name = now.toString();

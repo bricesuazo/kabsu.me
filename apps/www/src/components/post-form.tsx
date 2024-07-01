@@ -147,15 +147,15 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
 
           if (!file) return;
 
-          const compressedFile = await imageCompression(file, {
-            maxSizeMB: 1,
+          const compressedImage = await imageCompression(file, {
+            maxSizeMB: 0.5,
             maxWidthOrHeight: 720,
             useWebWorker: true,
           });
 
           await supabase.storage
             .from("posts")
-            .uploadToSignedUrl(url.path, url.token, compressedFile);
+            .uploadToSignedUrl(url.path, url.token, compressedImage);
         }),
       );
 
