@@ -1,6 +1,7 @@
 "use client";
 
 import type { User } from "@supabase/supabase-js";
+import type { LucideIcon } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -123,7 +124,7 @@ export default function OnboardingForm({ user }: { user: User }) {
   const [signoutLoading, setSignoutLoading] = useState(false);
 
   return (
-    <div className="space-y-8 py-20">
+    <div className="space-y-8 px-4 py-20">
       <div className="">
         <div className="flex justify-center">
           <ToggleTheme />
@@ -332,14 +333,17 @@ function Page1({
                   What&apos;s your role in CvSU?
                 </h2>
                 <FormControl>
-                  <div className="flex flex-col items-center gap-4 sm:flex-row">
+                  <div className="flex items-center gap-4">
                     {(
                       [
-                        "student",
-                        "faculty",
-                        "alumni",
-                      ] as Database["public"]["Enums"]["user_type"][]
-                    ).map((type) => (
+                        { type: "student", Icon: Album },
+                        { type: "faculty", Icon: Briefcase },
+                        { type: "alumni", Icon: GraduationCap },
+                      ] as {
+                        Icon: LucideIcon;
+                        type: Database["public"]["Enums"]["user_type"];
+                      }[]
+                    ).map(({ type, Icon }) => (
                       <button
                         key={type}
                         onClick={async () => {
@@ -356,39 +360,12 @@ function Page1({
                           )}
                         >
                           <CardHeader className="items-center">
-                            {(() => {
-                              switch (type) {
-                                case "student":
-                                  return (
-                                    <Album
-                                      className={cn(
-                                        "h-10 w-10",
-                                        field.value === type && "text-primary",
-                                      )}
-                                    />
-                                  );
-                                case "faculty":
-                                  return (
-                                    <Briefcase
-                                      className={cn(
-                                        "h-10 w-10",
-                                        field.value === type && "text-primary",
-                                      )}
-                                    />
-                                  );
-                                case "alumni":
-                                  return (
-                                    <GraduationCap
-                                      className={cn(
-                                        "h-10 w-10",
-                                        field.value === type && "text-primary",
-                                      )}
-                                    />
-                                  );
-                                default:
-                                  return null;
-                              }
-                            })()}
+                            <Icon
+                              className={cn(
+                                "size-8 sm:size-10",
+                                field.value === type && "text-primary",
+                              )}
+                            />
                           </CardHeader>
 
                           <CardFooter className="justify-center">
