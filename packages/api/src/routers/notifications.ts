@@ -47,23 +47,22 @@ export const notificationsRouter = router({
         .from("users")
         .createSignedUrls(
           notifications
-            .filter(
-              (notif) =>
-                notif.from !== null &&
-                !notif.from.image_name?.startsWith("https://"),
-            )
-            .map((notif) => notif.from_id + "/" + notif.from?.image_name),
+            .filter((notif) => !notif.from?.image_name?.startsWith("https://"))
+            .map(
+              (notif) => notif.from_id + "/avatar/" + notif.from?.image_name,
+            ),
           60 * 60 * 24,
         );
-      if (data) {
+      if (data !== null) {
         image_urls.push(...data);
       }
+      console.log("🚀 ~ .query ~ image_urls:", image_urls);
 
       return notifications.map((notification) => {
         const signed_url = image_urls.find(
           (url) =>
             url.path ===
-            notification.from_id + "/" + notification.from?.image_name,
+            notification.from_id + "/avatar/" + notification.from?.image_name,
         );
         return {
           ...notification,

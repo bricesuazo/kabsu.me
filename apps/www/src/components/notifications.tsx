@@ -30,6 +30,11 @@ export default function Notifications() {
       },
     });
 
+  console.log(
+    "🚀 ~ getAllNotificationsQuery.data.map ~ getAllNotificationsQuery.data:",
+    getAllNotificationsQuery.data,
+  );
+
   return (
     <Popover
     // open={open} onOpenChange={setOpen}
