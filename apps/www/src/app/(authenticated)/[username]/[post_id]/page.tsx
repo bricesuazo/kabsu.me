@@ -81,16 +81,16 @@ export async function generateMetadata({
 }
 
 export default function PostPage({
-  params: { post_id },
+  params: { username, post_id },
 }: {
-  params: { post_id: string };
+  params: { username: string; post_id: string };
 }) {
   return (
     <>
       {/* <UpdatePost open={openUpdate} setOpen={setOpenUpdate} post={post} /> */}
       {/* <DeletePost open={openDelete} setOpen={setOpenDelete} post_id={post.id} /> */}
 
-      <PostPageComponent post_id={post_id} />
+      <PostPageComponent username={username} post_id={post_id} />
     </>
   );
 }

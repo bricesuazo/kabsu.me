@@ -142,11 +142,8 @@ export default function Header() {
             <Skeleton className="m-1 h-8 w-8 rounded-full" />
           ) : (
             getCurrentUserQuery.data && (
-              <DropdownMenu open={open}>
-                <DropdownMenuTrigger
-                  className="cursor-pointer rounded-full p-1"
-                  onClick={() => setOpen(!open)}
-                >
+              <DropdownMenu open={open} onOpenChange={setOpen}>
+                <DropdownMenuTrigger className="cursor-pointer rounded-full p-1">
                   <div className="relative h-8 w-8">
                     <Image
                       src={
@@ -161,10 +158,7 @@ export default function Header() {
                     />
                   </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  onInteractOutside={() => setOpen(!open)}
-                  className="w-52"
-                >
+                <DropdownMenuContent className="w-52">
                   <DropdownMenuItem
                     asChild
                     className="line-clamp-1 w-full cursor-pointer truncate"
@@ -211,7 +205,6 @@ export default function Header() {
                     onClick={() => {
                       setType("bug");
                       setOpenFeedbackForm(true);
-                      setOpen(false);
                     }}
                   >
                     <AlertTriangle className="mr-2" size="1rem" />
@@ -221,7 +214,6 @@ export default function Header() {
                     onClick={() => {
                       setType("feature");
                       setOpenFeedbackForm(true);
-                      setOpen(false);
                     }}
                   >
                     <SquareMousePointer className="mr-2" size="1rem" />

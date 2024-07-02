@@ -10,7 +10,7 @@ export const notificationsRouter = router({
       const { data: notifications } = await ctx.supabase
         .from("notifications")
         .select(
-          "id, read, type, content_id, created_at, from_id, from:users!public_notifications_from_id_fkey(username, image_name)",
+          "id, read, type, content_id, created_at, from_id, from:users!public_notifications_from_id_fkey(username, image_name), to:users!public_notifications_to_id_fkey(username, image_name)",
         )
         .eq("to_id", ctx.auth.user.id)
         .eq("trash", false)
@@ -56,7 +56,6 @@ export const notificationsRouter = router({
       if (data !== null) {
         image_urls.push(...data);
       }
-      console.log("🚀 ~ .query ~ image_urls:", image_urls);
 
       return notifications.map((notification) => {
         const signed_url = image_urls.find(

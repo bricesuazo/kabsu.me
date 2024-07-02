@@ -90,7 +90,7 @@ export default function NotificationPage() {
                   if (notification.type === "follow") {
                     return `/${notification.from.username}`;
                   } else {
-                    return `/${notification.from.username}/${notification.id}`;
+                    return `/${notification.to?.username}/${notification.content_id}`;
                   }
                 })()}
                 onClick={() =>

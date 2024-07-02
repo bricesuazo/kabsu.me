@@ -33,9 +33,18 @@ import { api } from "~/lib/trpc/client";
 import { cn, formatText } from "~/lib/utils";
 import CommentDropdown from "./comment-dropdown";
 
-export default function PostPageComponent({ post_id }: { post_id: string }) {
+export default function PostPageComponent({
+  username,
+  post_id,
+}: {
+  username: string;
+  post_id: string;
+}) {
   const [openImagesViewer, setOpenImagesViewer] = useState(false);
-  const postQuery = api.posts.getPost.useQuery({ post_id }, { retry: 1 });
+  const postQuery = api.posts.getPost.useQuery(
+    { username, post_id },
+    { retry: 1 },
+  );
   const [scrollTo, setScrollTo] = useState(0);
 
   if (postQuery.error?.data?.code === "NOT_FOUND") {

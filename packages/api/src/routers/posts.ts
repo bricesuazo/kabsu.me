@@ -7,12 +7,14 @@ import { protectedProcedure, router } from "../trpc";
 
 export const postsRouter = router({
   getPost: protectedProcedure
-    .input(z.object({ post_id: z.string().min(1) }))
+    .input(
+      z.object({ username: z.string().optional(), post_id: z.string().min(1) }),
+    )
     .query(async ({ ctx, input }) => {
-      const { data: post } = await ctx.supabase
+      const query = ctx.supabase
         .from("posts")
         .select(
-          "id, content, type, user_id, created_at, posts_images(*), likes(post_id, user_id), comments(id, thread_id, deleted_at), user:users(name, username, image_name, type, verified_at, programs(name, slug, college_id, colleges(name, slug, campus_id, campuses(name, slug))))",
+          "id, content, type, user_id, created_at, posts_images(*), likes(post_id, user_id), comments(id, thread_id, deleted_at), user:users!inner(name, username, image_name, type, verified_at, programs(name, slug, college_id, colleges(name, slug, campus_id, campuses(name, slug))))",
         )
         .eq("id", input.post_id)
         .is("deleted_at", null)
@@ -25,8 +27,10 @@ export const postsRouter = router({
         .order("order", {
           ascending: true,
           referencedTable: "posts_images",
-        })
-        .maybeSingle();
+        });
+      const { data: post } = input.username
+        ? await query.eq("users.username", input.username).maybeSingle()
+        : await query.maybeSingle();
 
       if (!post)
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
@@ -55,7 +59,7 @@ export const postsRouter = router({
 
       let image_url: string | null = null;
       if (
-        post.user?.image_name &&
+        post.user.image_name &&
         !post.user.image_name.startsWith("https://")
       ) {
         const { data } = await ctx.supabase.storage
@@ -89,9 +93,9 @@ export const postsRouter = router({
                   )?.signedUrl ?? "",
               };
             }),
-          user: post.user?.image_name?.startsWith("https://")
+          user: post.user.image_name?.startsWith("https://")
             ? { ...post.user, image_url: post.user.image_name }
-            : post.user?.image_name && image_url
+            : post.user.image_name && image_url
               ? { ...post.user, image_url }
               : { ...post.user, image_name: null },
         },

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -14,31 +15,21 @@ import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export default function Notifications() {
+  const [open, setOpen] = useState(false);
   const getAllNotificationsQuery = api.notifications.getAll.useQuery({
     all: false,
   });
   const markAllNotificationAsReadMutation =
     api.notifications.markAllAsRead.useMutation({
-      onSettled: async () => {
-        await getAllNotificationsQuery.refetch();
-      },
+      onSettled: () => getAllNotificationsQuery.refetch(),
     });
   const markNotificationAsReadMutation =
     api.notifications.markAsRead.useMutation({
-      onSettled: async () => {
-        await getAllNotificationsQuery.refetch();
-      },
+      onSettled: () => getAllNotificationsQuery.refetch(),
     });
 
-  console.log(
-    "🚀 ~ getAllNotificationsQuery.data.map ~ getAllNotificationsQuery.data:",
-    getAllNotificationsQuery.data,
-  );
-
   return (
-    <Popover
-    // open={open} onOpenChange={setOpen}
-    >
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           size="icon"
@@ -119,7 +110,7 @@ export default function Notifications() {
                     if (notification.type === "follow") {
                       return `/${notification.from.username}`;
                     } else {
-                      return `/${notification.from.username}/${notification.content?.id}`;
+                      return `/${notification.to?.username}/${notification.content_id}`;
                     }
                   })()}
                   onClick={(e) => {
@@ -127,6 +118,7 @@ export default function Notifications() {
                     markNotificationAsReadMutation.mutate({
                       id: notification.id,
                     });
+                    setOpen(false);
                   }}
                   className="flex items-center justify-between gap-x-2 rounded p-2 hover:bg-muted"
                 >
@@ -180,7 +172,11 @@ export default function Notifications() {
           )}
         </ScrollArea>
         <Button asChild variant="link" className="w-full" size="sm">
-          <Link href="/notifications" className="text-center text-xs">
+          <Link
+            href="/notifications"
+            className="text-center text-xs"
+            onClick={() => setOpen(false)}
+          >
             Show all notifications
           </Link>
         </Button>
