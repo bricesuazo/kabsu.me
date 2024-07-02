@@ -30,6 +30,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { Label } from "~/components/ui/label";
 import { api } from "~/lib/trpc/client";
 import { createClient } from "~/supabase/client";
 import FeedbackForm from "./feedback-form";
@@ -80,13 +81,18 @@ export default function Header() {
                 <SheetDescription>Navigate to different pages</SheetDescription>
               </SheetHeader>
 
-              {NAVBAR_LINKS.map((link) => (
+              {NAVBAR_LINKS.map((link, index) => (
                 <Fragment key={link.url}>
+                  {index === NAVBAR_LINKS.length - 6 && (
+                    <Label htmlFor="name" className="mb-4 text-right">
+                      Partnership
+                    </Label>
+                  )}
+
                   <Button
                     asChild
                     className="w-full justify-start"
                     variant={pathname === link.url ? "secondary" : "ghost"}
-                    // size="sm"
                   >
                     <SheetClose asChild>
                       <Link
@@ -97,10 +103,11 @@ export default function Header() {
                         }
                       >
                         <link.icon size="1.25rem" />
-                        {link.name}
+                        <p className="truncate">{link.name}</p>
                       </Link>
                     </SheetClose>
                   </Button>
+
                   {link.hasSeparator && <Separator className="my-2" />}
                 </Fragment>
               ))}
