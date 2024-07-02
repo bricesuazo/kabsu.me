@@ -6,6 +6,7 @@ import {
   Github,
   Globe,
   Globe2,
+  GraduationCap,
   HeartHandshake,
   HelpCircle,
   Home,
@@ -460,9 +461,35 @@ export const NAVBAR_LINKS = [
     hasSeparator: true,
   },
   {
-    icon: MapPin,
-    name: "Play Adventura: An online campus tour",
-    url: "/adventura",
+    icon: GraduationCap,
+    name: "Adventura 360° ",
+    url: "https://adventura360.kabsu.me",
+  },
+  {
+    icon: GraduationCap,
+    name: "Arctec  ",
+    url: "https://arctec.kabsu.me",
+  },
+  {
+    icon: GraduationCap,
+    name: "Odyssey",
+    url: "https://odyssey.kabsu.me",
+  },
+  {
+    icon: GraduationCap,
+    name: "Swardify",
+    url: "https://Swardify.kabsu.me",
+  },
+  {
+    icon: GraduationCap,
+    name: "Chromia ",
+    url: "https://chromia.kabsu.me",
+  },
+
+  {
+    icon: GraduationCap,
+    name: "eBoto",
+    url: "https://eboto.app",
   },
 ];
 
