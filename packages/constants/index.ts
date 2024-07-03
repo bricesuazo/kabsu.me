@@ -12,7 +12,6 @@ import {
   Home,
   Instagram,
   Mail,
-  MapPin,
   School,
   School2,
   Twitter,
@@ -20,6 +19,8 @@ import {
   UserSquare2,
 } from "lucide-react";
 import { v4 as uuid } from "uuid";
+
+export const HEADER_HEIGHT = 72;
 
 const CAMPUSES = [
   {
@@ -388,7 +389,13 @@ export const SEED_DATA = CAMPUSES.map((campus) => {
   };
 });
 
-const POST_TYPE = ["following", "program", "college", "campus", "all"] as const;
+export const POST_TYPE = [
+  "following",
+  "program",
+  "college",
+  "campus",
+  "all",
+] as const;
 
 export const POST_TYPE_TABS: {
   id: (typeof POST_TYPE)[number];

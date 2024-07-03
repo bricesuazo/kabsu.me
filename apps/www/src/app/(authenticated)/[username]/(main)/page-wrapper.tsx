@@ -304,7 +304,7 @@ export default function UserPageWrapper({
                 </AlertDialog>
               </div>
             ) : (
-              <EditProfile user={profileQuery.data.user} data-superjson />
+              <EditProfile user={profileQuery.data.user} />
             )}
           </div>
 
@@ -343,7 +343,7 @@ export default function UserPageWrapper({
         )}
       </div>
 
-      <PostsWrapper user={profileQuery.data.user} data-superjson />
+      <PostsWrapper user={profileQuery.data.user} />
     </div>
   );
 }

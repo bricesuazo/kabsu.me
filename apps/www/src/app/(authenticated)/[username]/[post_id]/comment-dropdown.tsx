@@ -51,9 +51,11 @@ import { toast } from "../../../../components/ui/use-toast";
 export default function CommentDropdown({
   comment_id,
   isMyComment,
+  level,
 }: {
   comment_id: string;
   isMyComment: boolean;
+  level: number;
 }) {
   const params = useParams();
   const context = api.useUtils();
@@ -121,6 +123,23 @@ export default function CommentDropdown({
                   await context.posts.getPost.invalidate({
                     post_id: params.post_id as string,
                   });
+
+                  // context.comments.getFullComment.setData(
+                  //   { comment_id },
+                  //   (updater) => {
+                  //     if (!updater) return;
+
+                  //     return {
+                  //       ...updater,
+                  //       comment: {
+                  //         ...updater.comment,
+                  //         replies: updater.comment.replies.filter(
+                  //           (reply) => reply.thread_id !== comment_id,
+                  //         ),
+                  //       },
+                  //     };
+                  //   },
+                  // );
                 }}
                 disabled={loading}
               >
@@ -246,7 +265,9 @@ export default function CommentDropdown({
           </DropdownMenuTrigger>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuLabel>Comment</DropdownMenuLabel>
+          <DropdownMenuLabel>
+            {level === 0 ? "Comment" : "Reply"}
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           {isMyComment ? (
             <DropdownMenuItem

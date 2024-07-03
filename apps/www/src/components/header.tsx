@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
-import { NAVBAR_LINKS } from "@kabsu.me/constants";
+import { HEADER_HEIGHT, NAVBAR_LINKS } from "@kabsu.me/constants";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -32,6 +32,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Label } from "~/components/ui/label";
 import { api } from "~/lib/trpc/client";
+import { cn } from "~/lib/utils";
 import { createClient } from "~/supabase/client";
 import FeedbackForm from "./feedback-form";
 import { Icons } from "./icons";
@@ -67,7 +68,12 @@ export default function Header() {
         open={openFeedbackForm}
         setOpen={setOpenFeedbackForm}
       />
-      <header className="sticky top-0 z-50 flex items-center justify-between gap-x-2 p-4 backdrop-blur-lg">
+      <header
+        className={cn(
+          "sticky top-0 z-50 flex items-center justify-between gap-x-2 p-4 backdrop-blur-lg",
+          `h-[${HEADER_HEIGHT}px]`,
+        )}
+      >
         <div className="flex items-center gap-x-2">
           <Sheet>
             <SheetTrigger asChild>
