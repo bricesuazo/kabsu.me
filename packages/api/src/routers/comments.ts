@@ -199,6 +199,7 @@ export const commentsRouter = router({
         comment_id: z.string().min(1),
         content: z.string().min(1, { message: "Reply cannot be empty." }),
         post_id: z.string().min(1),
+        level: z.number().int().nonnegative(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -216,7 +217,7 @@ export const commentsRouter = router({
 
       const { error } = await ctx.supabase.from("comments").insert({
         user_id: ctx.auth.user.id,
-        thread_id: input.comment_id,
+        thread_id: input.level === 0 ? input.comment_id : comment.thread_id,
         content: input.content,
         post_id: input.post_id,
       });

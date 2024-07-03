@@ -146,7 +146,7 @@ export default function NotificationPage() {
                 </div>
 
                 {!notification.read && (
-                  <div className="aspect-square h-2 w-2 rounded-full bg-primary" />
+                  <div className="aspect-square size-2 rounded-full bg-primary" />
                 )}
               </Link>
             ))}

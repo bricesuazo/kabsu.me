@@ -21,7 +21,7 @@ export const postsRouter = router({
         .is("comments.deleted_at", null)
         .is("comments.thread_id", null)
         .order("created_at", {
-          ascending: false,
+          ascending: true,
           referencedTable: "comments",
         })
         .order("order", {

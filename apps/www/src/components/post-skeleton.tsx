@@ -11,7 +11,7 @@ export function PostSkeletonNoRandom() {
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-x-2">
             <Skeleton className="h-4 w-1/4" />
-            <Skeleton className="hidden h-1 w-1 sm:block" />
+            <Skeleton className="hidden size-1 sm:block" />
             <Skeleton className="hidden h-3 w-10 sm:block" />
           </div>
           <div className="flex items-center gap-x-2">
@@ -63,7 +63,7 @@ export default function PostSkeleton() {
                 width: `${Math.floor(Math.random() * 20 + 25)}%`,
               }}
             />
-            <Skeleton className="hidden h-1 w-1 sm:block" />
+            <Skeleton className="hidden size-1 sm:block" />
             <Skeleton className="hidden h-3 w-32 sm:block" />
           </div>
           <Skeleton
