@@ -259,6 +259,7 @@ export default function Post({
                   setOpenImagesViewer(true);
                   setScrollTo(index);
                 }}
+                className="w-fit"
               >
                 <Image
                   src={image.signed_url}
