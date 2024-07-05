@@ -614,6 +614,7 @@ export type Database = {
           image_name: string | null
           link: string | null
           name: string
+          program_changed_at: string | null
           program_id: string
           type: Database["public"]["Enums"]["user_type"]
           username: string
@@ -628,6 +629,7 @@ export type Database = {
           image_name?: string | null
           link?: string | null
           name: string
+          program_changed_at?: string | null
           program_id: string
           type: Database["public"]["Enums"]["user_type"]
           username: string
@@ -642,6 +644,7 @@ export type Database = {
           image_name?: string | null
           link?: string | null
           name?: string
+          program_changed_at?: string | null
           program_id?: string
           type?: Database["public"]["Enums"]["user_type"]
           username?: string

@@ -13,6 +13,7 @@ import {
   Moon,
   SquareMousePointer,
   Sun,
+  UserCircle,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -120,9 +121,7 @@ export default function Header() {
             </SheetContent>
           </Sheet>
 
-          <div className="hidden sm:block">
-            <Search />
-          </div>
+          <Search />
         </div>
         <Button variant="link" size="icon" asChild className="px-0">
           <Link href="/">
@@ -140,9 +139,7 @@ export default function Header() {
         </Button>
 
         <div className="flex items-center gap-x-2">
-          <div className="hidden sm:block">
-            <Notifications />
-          </div>
+          <Notifications />
 
           {getCurrentUserQuery.isLoading ? (
             <Skeleton className="m-1 h-8 w-8 rounded-full" />
@@ -177,6 +174,15 @@ export default function Header() {
                       {getCurrentUserQuery.data.username.length
                         ? `${getCurrentUserQuery.data.username}`
                         : "My Profile"}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    asChild
+                    className="line-clamp-1 w-full cursor-pointer truncate"
+                  >
+                    <Link href="/account" className="flex w-full items-center">
+                      <UserCircle className="mr-2" size="1rem" />
+                      Account settings
                     </Link>
                   </DropdownMenuItem>
 

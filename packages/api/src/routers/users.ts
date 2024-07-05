@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import { addMonths, isAfter } from "date-fns";
 import { z } from "zod";
 
 import { BLOCKED_USERNAMES } from "@kabsu.me/constants";
@@ -612,5 +613,57 @@ export const usersRouter = router({
           : [];
 
       return { followersUsers, followers, my_followees };
+    }),
+
+  getCurrentUserTypeProgram: protectedProcedure.query(async ({ ctx }) => {
+    const { data: user } = await ctx.supabase
+      .from("users")
+      .select("type, program_id, program_changed_at")
+      .eq("id", ctx.auth.user.id)
+      .single();
+
+    if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+
+    return user;
+  }),
+  changeCurrentUserTypeProgram: protectedProcedure
+    .input(
+      z.object({
+        type: z.custom<Database["public"]["Enums"]["user_type"]>(),
+        program_id: z.string().uuid(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { data: user } = await ctx.supabase
+        .from("users")
+        .select("type, program_id, program_changed_at")
+        .eq("id", ctx.auth.user.id)
+        .single();
+
+      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+
+      if (
+        user.program_changed_at !== null &&
+        !isAfter(new Date(), addMonths(new Date(user.program_changed_at), 3))
+      )
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "You can only change your role and program every 3 months.",
+        });
+
+      if (!(input.type === user.type && input.program_id === user.program_id))
+        await ctx.supabase
+          .from("users")
+          .update({
+            type: input.type,
+            program_id: input.program_id,
+            program_changed_at: new Date().toISOString(),
+          })
+          .eq("id", ctx.auth.user.id);
+      else
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No changes",
+        });
     }),
 });

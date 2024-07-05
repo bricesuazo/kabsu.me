@@ -52,7 +52,7 @@ export default function Notifications() {
           ) : null}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-2" align="end">
+      <PopoverContent className="p-2">
         <div className="flex items-center justify-between">
           <h3 className="flex items-center gap-x-2 p-2 font-semibold">
             <Bell size="1rem" />
