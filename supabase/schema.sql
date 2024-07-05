@@ -262,7 +262,8 @@ CREATE TABLE IF NOT EXISTS "public"."users" (
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "type" "public"."user_type" NOT NULL,
     "program_id" "uuid" NOT NULL,
-    "verified_at" timestamp with time zone
+    "verified_at" timestamp with time zone,
+    "program_changed_at" timestamp with time zone
 );
 
 ALTER TABLE "public"."users" OWNER TO "postgres";

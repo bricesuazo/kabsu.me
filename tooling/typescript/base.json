@@ -17,6 +17,8 @@
     "noUncheckedIndexedAccess": true,
     "checkJs": true,
 
+    "strictNullChecks": true,
+
     "module": "Preserve",
     "moduleResolution": "Bundler",
     "noEmit": true
