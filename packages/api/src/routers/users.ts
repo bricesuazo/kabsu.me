@@ -666,4 +666,22 @@ export const usersRouter = router({
           message: "No changes",
         });
     }),
+  getAllMyReportedProblems: protectedProcedure.query(async ({ ctx }) => {
+    const { data: reported_problems } = await ctx.supabase
+      .from("reported_problems")
+      .select("id, problem, created_at")
+      .eq("reported_by_id", ctx.auth.user.id)
+      .order("created_at", { ascending: false });
+
+    return reported_problems ?? [];
+  }),
+  getAllMySuggestedFeatures: protectedProcedure.query(async ({ ctx }) => {
+    const { data: suggested_features } = await ctx.supabase
+      .from("suggested_features")
+      .select("id, feature, created_at")
+      .eq("suggested_by_id", ctx.auth.user.id)
+      .order("created_at", { ascending: false });
+
+    return suggested_features ?? [];
+  }),
 });
