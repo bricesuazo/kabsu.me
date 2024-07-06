@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format, formatDistanceToNow } from "date-fns";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -25,7 +26,11 @@ import {
   FormLabel,
   FormMessage,
 } from "./ui/form";
+import { Label } from "./ui/label";
+import { ScrollArea } from "./ui/scroll-area";
+import { Skeleton } from "./ui/skeleton";
 import { Textarea } from "./ui/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { toast } from "./ui/use-toast";
 
 const formSchema = z.object({
@@ -43,8 +48,18 @@ export default function FeedbackForm({
   open: boolean;
   setOpen: (open: boolean) => void;
 }) {
+  const getAllMyReportedProblemsQuery =
+    api.users.getAllMyReportedProblems.useQuery(undefined, {
+      enabled: open && type === "bug",
+    });
+  const getAllMySuggestedFeaturesQuery =
+    api.users.getAllMySuggestedFeatures.useQuery(undefined, {
+      enabled: open && type === "feature",
+    });
+
   const reportAProblemMutation = api.users.reportAProblem.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      await getAllMyReportedProblemsQuery.refetch();
       setOpen(false);
       toast({
         title: "Reported a problem",
@@ -53,7 +68,8 @@ export default function FeedbackForm({
     },
   });
   const suggestAFeatureMutation = api.users.suggestAFeature.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      await getAllMySuggestedFeaturesQuery.refetch();
       setOpen(false);
       toast({
         title: "Suggested a feature",
@@ -142,7 +158,83 @@ export default function FeedbackForm({
             </DialogFooter>
           </form>
         </Form>
+
+        <div>
+          <Label>History</Label>
+          <ScrollArea viewportClassName="max-h-60">
+            {type === "bug" ? (
+              getAllMyReportedProblemsQuery.data === undefined ? (
+                <>
+                  <Skeleton className="h-[72px]" />
+                  <Skeleton className="h-[72px]" />
+                  <Skeleton className="h-[72px]" />
+                </>
+              ) : getAllMyReportedProblemsQuery.data.length === 0 ? (
+                <div className="p-4">
+                  <p className="text-center text-sm text-muted-foreground">
+                    No reported problems yet
+                  </p>
+                </div>
+              ) : (
+                getAllMyReportedProblemsQuery.data.map((problem) => (
+                  <HistoryItem
+                    key={problem.id}
+                    item={{
+                      content: problem.problem,
+                      created_at: problem.created_at,
+                    }}
+                  />
+                ))
+              )
+            ) : getAllMySuggestedFeaturesQuery.data === undefined ? (
+              <>
+                <Skeleton className="h-[72px]" />
+                <Skeleton className="h-[72px]" />
+                <Skeleton className="h-[72px]" />
+              </>
+            ) : getAllMySuggestedFeaturesQuery.data.length === 0 ? (
+              <div className="p-4">
+                <p className="text-center text-sm text-muted-foreground">
+                  No suggested features yet
+                </p>
+              </div>
+            ) : (
+              getAllMySuggestedFeaturesQuery.data.map((feature) => (
+                <HistoryItem
+                  key={feature.id}
+                  item={{
+                    content: feature.feature,
+                    created_at: feature.created_at,
+                  }}
+                />
+              ))
+            )}
+          </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function HistoryItem({
+  item,
+}: {
+  item: { content: string; created_at: string };
+}) {
+  return (
+    <div className="space-y-1 rounded-md p-4 hover:bg-muted">
+      <p className="text-sm">{item.content}</p>
+      <Tooltip delayDuration={250}>
+        <TooltipTrigger asChild className="w-fit">
+          <p className="text-xs text-muted-foreground">
+            {formatDistanceToNow(item.created_at, {
+              includeSeconds: true,
+              addSuffix: true,
+            })}
+          </p>
+        </TooltipTrigger>
+        <TooltipContent>{format(item.created_at, "PPpp")}</TooltipContent>
+      </Tooltip>
+    </div>
   );
 }
