@@ -322,7 +322,7 @@ export const usersRouter = router({
         .createSignedUrls(
           users
             .filter((user) => !user.image_name?.startsWith("https"))
-            .map((user) => user.id + "/" + user.image_name),
+            .map((user) => user.id + "/avatar/" + user.image_name),
           60 * 60 * 24,
         );
       if (data) {
@@ -343,7 +343,7 @@ export const usersRouter = router({
             is_verified: !!user.verified_at,
           };
           const signedUrl = image_urls.find(
-            (image) => image.path === user.id + "/" + user.image_name,
+            (image) => image.path === user.id + "/avatar/" + user.image_name,
           )?.signedUrl;
           return user.image_name?.startsWith("https://")
             ? {
