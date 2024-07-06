@@ -7,6 +7,7 @@ import { DEVS_INFO } from "@kabsu.me/constants";
 
 import { api } from "~/lib/trpc/server";
 import Footer from "./footer";
+import NumberTicker from "./magicui/number-ticker";
 import SigninButton from "./signin-button";
 import { ToggleTheme } from "./toggle-theme";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
@@ -199,7 +200,12 @@ async function UsersLength() {
   const getTotalUsersQuery = await api.users.getTotalUsers.query();
   return (
     <p className="text-center text-sm text-muted-foreground">
-      {getTotalUsersQuery} Kabsuhenyos registered
+      {getTotalUsersQuery === 0 ? (
+        "0"
+      ) : (
+        <NumberTicker value={getTotalUsersQuery} />
+      )}{" "}
+      Kabsuhenyos registered
     </p>
   );
 }
