@@ -79,6 +79,44 @@ $$;
 
 ALTER FUNCTION "public"."create_user"("user_id" "uuid", "email" "text", "created_at" timestamp with time zone) OWNER TO "postgres";
 
+CREATE OR REPLACE FUNCTION "public"."get_mention"("user_ids" "text"[]) RETURNS TABLE("id" "uuid", "username" "text", "name" "text")
+    LANGUAGE "plpgsql"
+    AS $$
+declare
+  user_id uuid;
+  user_found boolean;
+  user_id_str varchar;
+begin
+  -- Initialize an empty array to store results
+  FOR user_id_str IN SELECT unnest(user_ids) LOOP
+    -- Attempt to convert user_id_str to UUID
+    BEGIN
+      user_id := user_id_str::uuid;
+    EXCEPTION
+      WHEN others THEN
+        -- Handle invalid UUID (skip or log error as needed)
+        CONTINUE; -- Skip to next iteration if conversion fails
+    END;
+
+    -- Check if user with this ID exists
+    user_found := EXISTS (
+      SELECT 1 FROM users u WHERE u.id = user_id
+    );
+
+    -- If user found, fetch user details and return
+    IF user_found THEN
+      RETURN QUERY
+      SELECT u.id, u.username, u.name FROM users u WHERE u.id = user_id;
+    END IF;
+  END LOOP;
+
+  -- Return empty if no users found
+  RETURN;
+END;
+$$;
+
+ALTER FUNCTION "public"."get_mention"("user_ids" "text"[]) OWNER TO "postgres";
+
 SET default_tablespace = '';
 
 SET default_table_access_method = "heap";
@@ -506,6 +544,10 @@ GRANT USAGE ON SCHEMA "public" TO "service_role";
 GRANT ALL ON FUNCTION "public"."create_user"("user_id" "uuid", "email" "text", "created_at" timestamp with time zone) TO "anon";
 GRANT ALL ON FUNCTION "public"."create_user"("user_id" "uuid", "email" "text", "created_at" timestamp with time zone) TO "authenticated";
 GRANT ALL ON FUNCTION "public"."create_user"("user_id" "uuid", "email" "text", "created_at" timestamp with time zone) TO "service_role";
+
+GRANT ALL ON FUNCTION "public"."get_mention"("user_ids" "text"[]) TO "anon";
+GRANT ALL ON FUNCTION "public"."get_mention"("user_ids" "text"[]) TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_mention"("user_ids" "text"[]) TO "service_role";
 
 GRANT ALL ON TABLE "public"."campuses" TO "anon";
 GRANT ALL ON TABLE "public"."campuses" TO "authenticated";

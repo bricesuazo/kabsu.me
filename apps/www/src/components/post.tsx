@@ -116,13 +116,13 @@ export default function Post({
 
         return (
           <Link
-            href={`/${user ? user.username : "deleted_user"}`}
+            href={`/${user ? user.username : "anonymous_user"}`}
             className={cn("font-medium text-primary", {
               "pointer-events-none font-normal text-black": !user,
             })}
             key={match + i}
           >
-            {`@${user ? user.username : "deleted_user"}`}
+            {`@${user ? user.username : "anonymous_user"}`}
           </Link>
         );
       },

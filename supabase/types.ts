@@ -680,22 +680,6 @@ export type Database = {
         }
         Returns: string
       }
-      fetch_mention: {
-        Args: {
-          user_ids: string[]
-        }
-        Returns: {
-          id: string
-          username: string
-          name: string
-        }[]
-      }
-      fetch_mention_users: {
-        Args: {
-          user_ids: string[]
-        }
-        Returns: Json
-      }
       get_mention: {
         Args: {
           user_ids: string[]
@@ -705,12 +689,6 @@ export type Database = {
           username: string
           name: string
         }[]
-      }
-      get_mention_users: {
-        Args: {
-          user_ids: string[]
-        }
-        Returns: Json
       }
     }
     Enums: {

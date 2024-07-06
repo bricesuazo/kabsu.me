@@ -95,7 +95,7 @@ export async function generateMetadata({
             (user) => user.id === getDisplayData(p1).id,
           );
 
-          return `@${user ? user.username : "deleted_user"}`;
+          return `@${user ? user.username : "anonymous_user"}`;
         },
       );
 
