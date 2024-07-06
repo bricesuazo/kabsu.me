@@ -25,13 +25,13 @@ export default function HomeProtected({
   };
   return (
     <div className="border-x">
-      <div className="sticky top-0 z-50 backdrop-blur-lg">
+      <div className="sticky top-0 z-50">
         <Header />
 
         <PostTypeTab />
       </div>
 
-      <div className="border-b p-3 text-center sm:hidden">
+      <div className="border-b p-3 text-center dark:bg-black sm:hidden">
         <p className="text-sm capitalize text-primary">
           {tab ? tab : "following"} tab
         </p>
