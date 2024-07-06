@@ -1,9 +1,13 @@
 "use client";
 
 import { useCallback } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { ScrollArea } from "~/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export default function MessagesPage() {
@@ -54,8 +58,36 @@ export default function MessagesPage() {
         <TabsContent value="campus">Campus</TabsContent>
         <TabsContent value="college">College</TabsContent>
         <TabsContent value="program">Program</TabsContent>
-        <TabsContent value="">
+        <TabsContent value="" className="space-y-2">
           <Input placeholder="Search" className="rounded-full" />
+
+          <ScrollArea viewportClassName="h-96">
+            <div className="flex flex-col">
+              {Array.from({ length: 20 }).map((_, index) => (
+                <Link
+                  key={index}
+                  href={`/messages/${index}`}
+                  className="flex cursor-pointer gap-2 rounded-md px-4 py-2 hover:bg-muted"
+                >
+                  <div>
+                    <Image
+                      src="/default-avatar.jpg"
+                      width={28}
+                      height={28}
+                      alt="Profile picture"
+                      className="rounded-full"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm">Brice Suazo</p>
+                    <p className="text-sm text-muted-foreground">
+                      Test message - 4 hours ago
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </ScrollArea>
         </TabsContent>
       </Tabs>
     </div>
