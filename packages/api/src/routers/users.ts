@@ -322,7 +322,7 @@ export const usersRouter = router({
         .createSignedUrls(
           users
             .filter((user) => !user.image_name?.startsWith("https"))
-            .map((user) => user.id + "/" + user.image_name),
+            .map((user) => user.id + "/avatar/" + user.image_name),
           60 * 60 * 24,
         );
       if (data) {
@@ -343,7 +343,7 @@ export const usersRouter = router({
             is_verified: !!user.verified_at,
           };
           const signedUrl = image_urls.find(
-            (image) => image.path === user.id + "/" + user.image_name,
+            (image) => image.path === user.id + "/avatar/" + user.image_name,
           )?.signedUrl;
           return user.image_name?.startsWith("https://")
             ? {
@@ -665,5 +665,89 @@ export const usersRouter = router({
           code: "BAD_REQUEST",
           message: "No changes",
         });
+    }),
+  getToMentionUsers: protectedProcedure
+    .input(z.object({ name: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { data: users } = await ctx.supabase
+        .from("users")
+        .select("*")
+        .not("id", "eq", ctx.auth.user.id)
+        .ilike("username", `%${input.name}%`)
+        .limit(5);
+
+      if (users === null) return [];
+
+      const image_urls: {
+        error: string | null;
+        path: string | null;
+        signedUrl: string;
+      }[] = [];
+      const { data } = await ctx.supabase.storage
+        .from("users")
+        .createSignedUrls(
+          users
+            .filter((user) => !user.image_name?.startsWith("https"))
+            .map((user) => user.id + "/avatar/" + user.image_name),
+          60 * 60 * 24,
+        );
+      if (data) {
+        image_urls.push(...data);
+      }
+
+      return users
+        .filter(
+          (user) =>
+            user.name.toLowerCase().includes(input.name.toLowerCase()) ||
+            user.username.toLowerCase().includes(input.name.toLowerCase()),
+        )
+        .map((user) => {
+          const base = {
+            id: user.id,
+            username: user.username,
+            name: user.name,
+            is_verified: !!user.verified_at,
+          };
+          const signedUrl = image_urls.find(
+            (image) => image.path === user.id + "/avatar/" + user.image_name,
+          )?.signedUrl;
+          return user.image_name?.startsWith("https://")
+            ? {
+                ...base,
+                image_name: user.image_name,
+                image_url: user.image_name,
+              }
+            : user.image_name && signedUrl
+              ? {
+                  ...base,
+                  image_name: user.image_name,
+                  image_url: signedUrl,
+                }
+              : {
+                  ...base,
+                  image_name: null,
+                };
+        })
+        .slice(0, 10);
+    }),
+  getMentionedUsers: protectedProcedure
+    .input(
+      z.object({
+        users: z.array(z.string()),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { data, error } = await ctx.supabase.rpc("get_mention", {
+        user_ids: input.users,
+      });
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+      }
+
+      return data;
     }),
 });

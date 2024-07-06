@@ -1,6 +1,7 @@
 "use client";
 
 import type { UseFormReturn } from "react-hook-form";
+import type { SuggestionDataItem } from "react-mentions";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import imageCompression from "browser-image-compression";
 import { ImageUp, Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
-import TextareaAutosize from "react-textarea-autosize";
+import { Mention, MentionsInput } from "react-mentions";
 import { v4 } from "uuid";
 import { z } from "zod";
 
@@ -25,7 +26,9 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { useMediaQuery } from "~/hooks/use-media-query";
+import defaultMentionStyle from "~/lib/MentionDefaultStyle";
 import { api } from "~/lib/trpc/client";
+import { getDisplayData } from "~/lib/utils";
 import { createClient } from "~/supabase/client";
 import { FileUploader } from "./file-uploader";
 import { Icons } from "./icons";
@@ -50,6 +53,7 @@ import {
 } from "./ui/select";
 import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import VerifiedBadge from "./verified-badge";
 
 const typeSchema = z
   .custom<Database["public"]["Enums"]["post_type"]>()
@@ -71,6 +75,8 @@ const Schema = z.object({
 
 export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
   const context = api.useUtils();
+
+  const getToMentionMutation = api.users.getToMentionUsers.useMutation();
   const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
   const [imageUploaderOpen, setImageUploaderOpen] = useState(false);
   const router = useRouter();
@@ -90,8 +96,32 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
   });
 
   const createPostMutation = api.posts.create.useMutation();
-
   const [isFocused, setIsFocused] = useState(false);
+
+  const fetchUsers = async (
+    query: string,
+    callback: (data: SuggestionDataItem[]) => void,
+  ) => {
+    const mentionData = await getToMentionMutation.mutateAsync({
+      name: query,
+    });
+
+    const transformedDataArray = mentionData.map((user) => ({
+      display: `?username=${user.username}&id=${user.id}`,
+      id: user.id,
+      image: user.image_name,
+      is_verified: user.is_verified,
+      name: user.name,
+      image_name: user.image_name,
+      image_url: user.image_name ? user.image_url : undefined,
+    })) as SuggestionDataItem[];
+
+    if (transformedDataArray.length === 0) {
+      return;
+    }
+
+    callback(transformedDataArray);
+  };
 
   useEffect(() => {
     if (searchParams.has("tab")) {
@@ -204,7 +234,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
             e.preventDefault();
             await handleSubmit();
           }}
-          className="flex-1 space-y-4"
+          className="flex-1 space-y-1"
         >
           {isDesktop ? (
             <Dialog
@@ -266,21 +296,37 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                     <FormItem className="flex-1 py-2">
                       {/* <FormLabel>Post</FormLabel> */}
                       <FormControl>
-                        <TextareaAutosize
+                        <MentionsInput
+                          {...field}
                           placeholder="What's on your mind?"
-                          style={{ width: "100%" }}
-                          className="text-base [all:unset]"
                           autoFocus
+                          singleLine={false}
                           maxLength={256}
-                          maxRows={6}
                           onKeyDown={async (e) => {
                             if (e.key === "Enter" && e.ctrlKey) {
                               e.preventDefault();
                               await handleSubmit();
                             }
                           }}
-                          {...field}
-                        />
+                          className="break-all"
+                          style={defaultMentionStyle}
+                        >
+                          <Mention
+                            trigger="@"
+                            displayTransform={(_, display) =>
+                              `@${getDisplayData(display).username}`
+                            }
+                            appendSpaceOnAdd
+                            data={fetchUsers}
+                            renderSuggestion={MentionSuggestion}
+                            className="bg-primary/10"
+                            markup="@[KabsuDotMeNotSoSecret:__display__]"
+                            onAdd={(...props) => {
+                              console.log("🚀 ~ PostForm ~ props:", props);
+                              return;
+                            }}
+                          />
+                        </MentionsInput>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -487,3 +533,34 @@ function ImageUpload({
     />
   );
 }
+
+const MentionSuggestion = (suggestion: SuggestionDataItem) => {
+  return (
+    <div className="flex py-1">
+      <div key={suggestion.id} className="flex gap-x-2 rounded p-2">
+        <div className="min-w-max">
+          <Image
+            src={
+              suggestion.image_name
+                ? suggestion.image_url ?? "/default-avatar.jpg"
+                : "/default-avatar.jpg"
+            }
+            alt=""
+            width={40}
+            height={40}
+            className="aspect-square rounded-full object-cover object-center"
+          />
+        </div>
+        <div>
+          <div className="flex items-center gap-x-1">
+            <p className="line-clamp-1 flex-1">{suggestion.name} </p>
+            {suggestion.is_verified && <VerifiedBadge size="sm" />}
+          </div>
+          <p className="line-clamp-1 text-sm text-muted-foreground">
+            @{getDisplayData(suggestion.display ?? "").username}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};

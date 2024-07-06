@@ -14,6 +14,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import reactStringReplace from "react-string-replace";
 import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
 
@@ -49,7 +50,12 @@ import {
 } from "~/components/ui/tooltip";
 import VerifiedBadge from "~/components/verified-badge";
 import { api } from "~/lib/trpc/client";
-import { cn, formatText } from "~/lib/utils";
+import {
+  cn,
+  extractAllMentions,
+  formatText,
+  getDisplayData,
+} from "~/lib/utils";
 import CommentDropdown from "./comment-dropdown";
 
 export default function PostPageComponent({
@@ -60,6 +66,8 @@ export default function PostPageComponent({
   post_id: string;
 }) {
   const router = useRouter();
+  const [mentionedUser, setMentionedUser] =
+    useState<RouterOutputs["users"]["getMentionedUsers"]>();
   const searchParams = useSearchParams();
   const [openImagesViewer, setOpenImagesViewer] = useState(false);
   const postQuery = api.posts.getPost.useQuery(
@@ -86,6 +94,8 @@ export default function PostPageComponent({
   });
   const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
   const createCommentMutation = api.comments.create.useMutation();
+  const getMentionedUsersMutation = api.users.getMentionedUsers.useMutation();
+
   const [scrollTo, setScrollTo] = useState(0);
   const [likes, setLikes] = useState(postQuery.data?.post.likes ?? []);
 
@@ -126,6 +136,23 @@ export default function PostPageComponent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
+  useEffect(() => {
+    const mentioned = extractAllMentions(postQuery.data?.post.content ?? "");
+
+    void (async () => {
+      try {
+        const data = await getMentionedUsersMutation.mutateAsync({
+          users: mentioned,
+        });
+
+        setMentionedUser(data);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postQuery.data?.post.content]);
+
   const handleSubmit = form.handleSubmit(async (values) => {
     await createCommentMutation.mutateAsync({
       post_id,
@@ -137,6 +164,51 @@ export default function PostPageComponent({
     setIsFocused(false);
     if (searchParams.has("comment")) router.push(`/${username}/${post_id}`);
   });
+
+  const FormattedContent = () => {
+    const text = postQuery.data?.post.content;
+
+    const matchLinks = reactStringReplace(
+      text,
+      /(https?:\/\/\S+)/g,
+      (match, i) => (
+        <Link
+          key={match + i}
+          href={match}
+          target="_blank"
+          onClick={(e) => e.stopPropagation()}
+          className={"break-all text-primary hover:underline"}
+        >
+          {match}
+        </Link>
+      ),
+    );
+
+    const matchMentions = reactStringReplace(
+      matchLinks,
+      /@\[KabsuDotMeNotSoSecret:([^\]]+)]/g,
+      (match, i) => {
+        console.log("🚀 ~ FormattedContent ~ match:", match);
+        const user = mentionedUser?.find(
+          (user) => user.id === getDisplayData(match).id,
+        );
+
+        return (
+          <Link
+            href={`/${user ? user.username : "deleted_user"}`}
+            className={cn("font-medium text-primary", {
+              "pointer-events-none font-normal text-black": !user,
+            })}
+            key={match + i}
+          >
+            {`@${user ? user.username : "deleted_user"}`}
+          </Link>
+        );
+      },
+    );
+
+    return matchMentions;
+  };
 
   if (postQuery.error?.data?.code === "NOT_FOUND") notFound();
 
@@ -153,7 +225,7 @@ export default function PostPageComponent({
         }
         scrollTo={scrollTo}
       />
-      {postQuery.isLoading ? (
+      {postQuery.isLoading || getMentionedUsersMutation.isPending ? (
         <>
           <div className="space-y-2 p-4">
             <div className="flex justify-between">
@@ -342,7 +414,7 @@ export default function PostPageComponent({
               </div>
 
               <div className="whitespace-pre-wrap break-words">
-                {formatText(postQuery.data.post.content)}
+                <FormattedContent />
               </div>
 
               {postQuery.data.post.posts_images.length > 0 && (

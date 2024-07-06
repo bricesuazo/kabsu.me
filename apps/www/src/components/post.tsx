@@ -13,12 +13,13 @@ import {
   Heart,
   MessageCircle,
 } from "lucide-react";
+import reactStringReplace from "react-string-replace";
 import { v4 as uuid } from "uuid";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 
 import { api } from "~/lib/trpc/client";
-import { cn, formatText } from "~/lib/utils";
+import { cn, extractAllMentions, getDisplayData } from "~/lib/utils";
 import { ImagesViewer } from "./images-viewer";
 import PostDropdown from "./post-dropdown";
 import { PostSkeletonNoRandom } from "./post-skeleton";
@@ -32,6 +33,8 @@ export default function Post({
 }: {
   post: RouterOutputs["posts"]["getPosts"]["posts"][number];
 }) {
+  const [mentionedUser, setMentionedUser] =
+    useState<RouterOutputs["users"]["getMentionedUsers"]>();
   const [openImagesViewer, setOpenImagesViewer] = useState(false);
   const [scrollTo, setScrollTo] = useState(0);
   const getPostQuery = api.posts.getPost.useQuery(
@@ -82,6 +85,51 @@ export default function Post({
       ]);
     },
   });
+  const getMentionedUsersMutation = api.users.getMentionedUsers.useMutation();
+
+  const FormattedContent = () => {
+    const text = getPostQuery.data?.post.content;
+
+    const matchLinks = reactStringReplace(
+      text,
+      /(https?:\/\/\S+)/g,
+      (match, i) => (
+        <Link
+          key={match + i}
+          href={match}
+          target="_blank"
+          onClick={(e) => e.stopPropagation()}
+          className={"break-all text-primary hover:underline"}
+        >
+          {match}
+        </Link>
+      ),
+    );
+
+    const matchMentions = reactStringReplace(
+      matchLinks,
+      /@\[KabsuDotMeNotSoSecret:([^\]]+)]/g,
+      (match, i) => {
+        const user = mentionedUser?.find(
+          (user) => user.id === getDisplayData(match).id,
+        );
+
+        return (
+          <Link
+            href={`/${user ? user.username : "deleted_user"}`}
+            className={cn("font-medium text-primary", {
+              "pointer-events-none font-normal text-black": !user,
+            })}
+            key={match + i}
+          >
+            {`@${user ? user.username : "deleted_user"}`}
+          </Link>
+        );
+      },
+    );
+
+    return matchMentions;
+  };
 
   useEffect(() => {
     if (getPostQuery.data) {
@@ -89,7 +137,24 @@ export default function Post({
     }
   }, [getPostQuery.data]);
 
-  if (!getPostQuery.data) return <PostSkeletonNoRandom />;
+  useEffect(() => {
+    const mentioned = extractAllMentions(getPostQuery.data?.post.content ?? "");
+
+    void (async () => {
+      try {
+        const data = await getMentionedUsersMutation.mutateAsync({
+          users: mentioned,
+        });
+
+        setMentionedUser(data);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, [getPostQuery.data?.post.content]);
+
+  if (!getPostQuery.data || getMentionedUsersMutation.isPending)
+    return <PostSkeletonNoRandom />;
 
   return (
     <>
@@ -235,11 +300,13 @@ export default function Post({
         </div>
 
         <div className="whitespace-pre-wrap break-words">
-          {formatText(
+          <FormattedContent />
+
+          {/* {formatText(
             getPostQuery.data.post.content.length > 512
               ? getPostQuery.data.post.content.slice(0, 512) + "..."
               : getPostQuery.data.post.content,
-          )}
+          )} */}
         </div>
 
         {getPostQuery.data.post.posts_images.length > 0 && (

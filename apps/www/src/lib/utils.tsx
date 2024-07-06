@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { ClassValue } from "clsx";
 import { Fragment } from "react";
 import Link from "next/link";
@@ -93,4 +94,43 @@ export function formatBytes(
   return `${(bytes / Math.pow(1024, i)).toFixed(decimals)} ${
     sizeType === "accurate" ? accurateSizes[i] ?? "Bytest" : sizes[i] ?? "Bytes"
   }`;
+}
+
+export function getDisplayData(queryString: string): {
+  username?: string;
+  id?: string;
+} {
+  const params = new URLSearchParams(queryString);
+  const username = params.get("username")!;
+  const id = params.get("id")!;
+  return { username, id };
+}
+
+const regex = /@\[KabsuDotMeNotSoSecret:([^\]]+)]/g;
+
+export function extractAllMentions(input: string): string[] {
+  const matches = input.matchAll(regex);
+  const result: string[] = [];
+
+  for (const match of matches) {
+    result.push(getDisplayData(match[1] ?? "").id ?? ""); // Captured group 1 contains the username
+  }
+
+  return result;
+}
+
+export function replaceMentions(text: string) {
+  const regex =
+    // eslint-disable-next-line no-useless-escape
+    /@\[KabsuDotMeNotSoSecret:\?username=[^\&]+&id=([0-9a-fA-F\-]+)\]/g;
+
+  return text.replace(regex, "@$1");
+}
+
+export function replaceToDeletedMention(text: string) {
+  const regex =
+    // eslint-disable-next-line no-useless-escape
+    /@\[KabsuDotMeNotSoSecret:\?username=[^\&]+&id=([0-9a-fA-F\-]+)\]/g;
+
+  return text.replace(regex, "@$1");
 }

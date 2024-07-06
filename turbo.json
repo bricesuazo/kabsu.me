@@ -28,6 +28,7 @@
     "ENV",
     "STAGING_TEST_EMAILS",
     "NEXT_PUBLIC_SUPERADMIN_EMAIL",
-    "npm_lifecycle_event"
+    "npm_lifecycle_event",
+    "POST_MENTION_SECRET"
   ]
 }
