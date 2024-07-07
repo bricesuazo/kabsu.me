@@ -121,6 +121,7 @@ export default function Post({
               "pointer-events-none font-normal text-black": !user,
             })}
             key={match + i}
+            onClick={(e) => e.stopPropagation()}
           >
             {`@${user ? user.username : "anonymous_user"}`}
           </Link>
@@ -151,6 +152,7 @@ export default function Post({
         console.log(error);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getPostQuery.data?.post.content]);
 
   if (!getPostQuery.data || getMentionedUsersMutation.isPending)
@@ -234,30 +236,27 @@ export default function Post({
               </div>
 
               <div className="flex items-center gap-x-1">
-                {getPostQuery.data.post.user.type && (
-                  <Tooltip delayDuration={250}>
-                    <TooltipTrigger>
-                      {(() => {
-                        switch (getPostQuery.data.post.user.type) {
-                          case "student":
-                            return <Album />;
-                          case "alumni":
-                            return <GraduationCap />;
-                          case "faculty":
-                            return <Briefcase />;
-                          default:
-                            return null;
-                        }
-                      })()}
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-[12rem]">
-                      {getPostQuery.data.post.user.type
-                        .charAt(0)
-                        .toUpperCase() +
-                        getPostQuery.data.post.user.type.slice(1)}
-                    </TooltipContent>
-                  </Tooltip>
-                )}
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger>
+                    {(() => {
+                      switch (getPostQuery.data.post.user.type) {
+                        case "student":
+                          return <Album />;
+                        case "alumni":
+                          return <GraduationCap />;
+                        case "faculty":
+                          return <Briefcase />;
+                        default:
+                          return null;
+                      }
+                    })()}
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[12rem]">
+                    {getPostQuery.data.post.user.type.charAt(0).toUpperCase() +
+                      getPostQuery.data.post.user.type.slice(1)}
+                  </TooltipContent>
+                </Tooltip>
+
                 <Tooltip delayDuration={250}>
                   <TooltipTrigger>
                     <Badge>
