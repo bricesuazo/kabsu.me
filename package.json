@@ -15,6 +15,7 @@
     "db:gen": "supabase gen types typescript --local --schema public > supabase/types.ts",
     "db:reset": "supabase db reset --local",
     "db:dump": "supabase db dump -f supabase/schema.sql --local",
+    "migration:up": "supabase migration up",
     "email:dev": "pnpm with-env turbo --filter=@kabsu.me/email email:dev --no-daemon",
     "with-env": "dotenv -e .env --"
   },
