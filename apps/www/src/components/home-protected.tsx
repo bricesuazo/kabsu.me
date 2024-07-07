@@ -55,7 +55,7 @@ export default function HomeProtected({
         <Tooltip>
           <TooltipTrigger asChild>
             <Button asChild size="icon" className="size-14 rounded-full">
-              <Link href="/messages">
+              <Link href="/chat">
                 <MessageCircle size="1.5rem" color="white" />
               </Link>
             </Button>

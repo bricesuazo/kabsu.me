@@ -124,7 +124,7 @@ export default function RoomPage({ params }: { params: { room_id: string } }) {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView();
+    if (messagesEndRef.current) messagesEndRef.current.scrollIntoView();
   }, [messages]);
 
   return (

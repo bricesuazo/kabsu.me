@@ -4,14 +4,19 @@ import { useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { formatDistanceToNow } from "date-fns";
 
 import { POST_TYPE_TABS } from "@kabsu.me/constants";
 
 import { Input } from "~/components/ui/input";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { api } from "~/lib/trpc/client";
+import { Skeleton } from "./ui/skeleton";
 
-export default function MessagesPage() {
+export default function ChatsPage() {
+  const getAllRoomsQuery = api.chats.getAllRooms.useQuery();
+  // console.log("🚀 ~ ChatsPage ~ getAllRoomsQuery:", getAllRoomsQuery);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -33,7 +38,7 @@ export default function MessagesPage() {
         defaultValue={searchParams.get("type") ?? ""}
         onValueChange={(value) => {
           if (value === "") {
-            router.push("/messages");
+            router.push("/chat");
           } else {
             router.push(pathname + "?" + createQueryString("type", value));
           }
@@ -62,29 +67,44 @@ export default function MessagesPage() {
         <div className="flex h-0 flex-grow">
           <ScrollArea className="flex-1 px-4">
             <div className="pb-4">
-              {Array.from({ length: 20 }).map((_, index) => (
-                <Link
-                  key={index}
-                  href={`/messages/${index}`}
-                  className="flex cursor-pointer gap-2 rounded-md p-2 hover:bg-muted"
-                >
-                  <div>
-                    <Image
-                      src="/default-avatar.jpg"
-                      width={28}
-                      height={28}
-                      alt="Profile picture"
-                      className="rounded-full"
-                    />
-                  </div>
-                  <div>
-                    <p className="text-sm">Brice Suazo</p>
-                    <p className="text-xs text-muted-foreground">
-                      Test message - 4 hours ago
-                    </p>
-                  </div>
-                </Link>
-              ))}
+              {getAllRoomsQuery.data === undefined ? (
+                <div className="flex flex-col gap-y-1">
+                  {Array.from({ length: 20 }).map((_, index) => (
+                    <Skeleton key={index} className="h-13" />
+                  ))}
+                </div>
+              ) : (
+                getAllRoomsQuery.data.map((room) => (
+                  <Link
+                    key={room.id}
+                    href={`/chat/${room.id}`}
+                    className="flex cursor-pointer gap-2 rounded-md p-2 hover:bg-muted"
+                  >
+                    <div>
+                      <Image
+                        src="/default-avatar.jpg"
+                        width={28}
+                        height={28}
+                        alt="Profile picture"
+                        className="rounded-full"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-sm">
+                        {room.rooms_users
+                          .map((user) => `@${user.users?.username}`)
+                          .join(", ")}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Test message -{" "}
+                        {formatDistanceToNow(room.created_at, {
+                          addSuffix: true,
+                        })}
+                      </p>
+                    </div>
+                  </Link>
+                ))
+              )}
             </div>
           </ScrollArea>
         </div>

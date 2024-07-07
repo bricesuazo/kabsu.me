@@ -94,6 +94,18 @@ CREATE TABLE IF NOT EXISTS "public"."campuses" (
 
 ALTER TABLE "public"."campuses" OWNER TO "postgres";
 
+CREATE TABLE IF NOT EXISTS "public"."chats" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "content" "text" NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "room_id" "uuid" NOT NULL,
+    "reply_id" "uuid",
+    "deleted_at" timestamp with time zone
+);
+
+ALTER TABLE "public"."chats" OWNER TO "postgres";
+
 CREATE TABLE IF NOT EXISTS "public"."colleges" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "name" "text" NOT NULL,
@@ -241,6 +253,21 @@ CREATE TABLE IF NOT EXISTS "public"."reported_users" (
 
 ALTER TABLE "public"."reported_users" OWNER TO "postgres";
 
+CREATE TABLE IF NOT EXISTS "public"."rooms" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "deleted_at" timestamp with time zone
+);
+
+ALTER TABLE "public"."rooms" OWNER TO "postgres";
+
+CREATE TABLE IF NOT EXISTS "public"."rooms_users" (
+    "room_id" "uuid" NOT NULL,
+    "user_id" "uuid" NOT NULL
+);
+
+ALTER TABLE "public"."rooms_users" OWNER TO "postgres";
+
 CREATE TABLE IF NOT EXISTS "public"."suggested_features" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "feature" "text" NOT NULL,
@@ -270,6 +297,9 @@ ALTER TABLE "public"."users" OWNER TO "postgres";
 
 ALTER TABLE ONLY "public"."campuses"
     ADD CONSTRAINT "campuses_pkey" PRIMARY KEY ("id");
+
+ALTER TABLE ONLY "public"."chats"
+    ADD CONSTRAINT "chats_pkey" PRIMARY KEY ("id");
 
 ALTER TABLE ONLY "public"."colleges"
     ADD CONSTRAINT "colleges_pkey" PRIMARY KEY ("id");
@@ -313,6 +343,12 @@ ALTER TABLE ONLY "public"."reported_problems"
 ALTER TABLE ONLY "public"."reported_users"
     ADD CONSTRAINT "reported_users_pkey" PRIMARY KEY ("id");
 
+ALTER TABLE ONLY "public"."rooms"
+    ADD CONSTRAINT "rooms_pkey" PRIMARY KEY ("id");
+
+ALTER TABLE ONLY "public"."rooms_users"
+    ADD CONSTRAINT "rooms_users_pkey" PRIMARY KEY ("room_id", "user_id");
+
 ALTER TABLE ONLY "public"."suggested_features"
     ADD CONSTRAINT "suggested_features_pkey" PRIMARY KEY ("id");
 
@@ -326,6 +362,12 @@ ALTER TABLE ONLY "public"."users"
     ADD CONSTRAINT "users_username_key" UNIQUE ("username");
 
 CREATE INDEX "campuses_slug_idx" ON "public"."campuses" USING "btree" ("slug");
+
+CREATE INDEX "chats_room_id_idx" ON "public"."chats" USING "btree" ("room_id");
+
+CREATE INDEX "chats_user_id_idx" ON "public"."chats" USING "btree" ("user_id");
+
+CREATE INDEX "chats_user_id_room_id_idx" ON "public"."chats" USING "btree" ("user_id", "room_id");
 
 CREATE INDEX "colleges_campus_id_idx" ON "public"."colleges" USING "btree" ("campus_id");
 
@@ -380,6 +422,15 @@ CREATE INDEX "posts_user_id_idx" ON "public"."posts" USING "btree" ("user_id");
 CREATE INDEX "programs_college_id_idx" ON "public"."programs" USING "btree" ("college_id");
 
 CREATE INDEX "programs_slug_idx" ON "public"."programs" USING "btree" ("slug");
+
+ALTER TABLE ONLY "public"."chats"
+    ADD CONSTRAINT "public_chats_reply_id_fkey" FOREIGN KEY ("reply_id") REFERENCES "public"."chats"("id");
+
+ALTER TABLE ONLY "public"."chats"
+    ADD CONSTRAINT "public_chats_room_id_fkey" FOREIGN KEY ("room_id") REFERENCES "public"."rooms"("id");
+
+ALTER TABLE ONLY "public"."chats"
+    ADD CONSTRAINT "public_chats_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
 
 ALTER TABLE ONLY "public"."colleges"
     ADD CONSTRAINT "public_colleges_campus_id_fkey" FOREIGN KEY ("campus_id") REFERENCES "public"."campuses"("id");
@@ -453,6 +504,12 @@ ALTER TABLE ONLY "public"."reported_users"
 ALTER TABLE ONLY "public"."reported_users"
     ADD CONSTRAINT "public_reported_users_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
 
+ALTER TABLE ONLY "public"."rooms_users"
+    ADD CONSTRAINT "public_rooms_users_room_id_fkey" FOREIGN KEY ("room_id") REFERENCES "public"."rooms"("id");
+
+ALTER TABLE ONLY "public"."rooms_users"
+    ADD CONSTRAINT "public_rooms_users_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
+
 ALTER TABLE ONLY "public"."suggested_features"
     ADD CONSTRAINT "public_suggested_features_suggested_by_id_fkey" FOREIGN KEY ("suggested_by_id") REFERENCES "public"."users"("id");
 
@@ -463,6 +520,8 @@ ALTER TABLE ONLY "public"."users"
     ADD CONSTRAINT "public_users_program_id_fkey" FOREIGN KEY ("program_id") REFERENCES "public"."programs"("id");
 
 ALTER TABLE "public"."campuses" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "public"."chats" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."colleges" ENABLE ROW LEVEL SECURITY;
 
@@ -492,6 +551,10 @@ ALTER TABLE "public"."reported_problems" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."reported_users" ENABLE ROW LEVEL SECURITY;
 
+ALTER TABLE "public"."rooms" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "public"."rooms_users" ENABLE ROW LEVEL SECURITY;
+
 ALTER TABLE "public"."suggested_features" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."users" ENABLE ROW LEVEL SECURITY;
@@ -510,6 +573,10 @@ GRANT ALL ON FUNCTION "public"."create_user"("user_id" "uuid", "email" "text", "
 GRANT ALL ON TABLE "public"."campuses" TO "anon";
 GRANT ALL ON TABLE "public"."campuses" TO "authenticated";
 GRANT ALL ON TABLE "public"."campuses" TO "service_role";
+
+GRANT ALL ON TABLE "public"."chats" TO "anon";
+GRANT ALL ON TABLE "public"."chats" TO "authenticated";
+GRANT ALL ON TABLE "public"."chats" TO "service_role";
 
 GRANT ALL ON TABLE "public"."colleges" TO "anon";
 GRANT ALL ON TABLE "public"."colleges" TO "authenticated";
@@ -566,6 +633,14 @@ GRANT ALL ON TABLE "public"."reported_problems" TO "service_role";
 GRANT ALL ON TABLE "public"."reported_users" TO "anon";
 GRANT ALL ON TABLE "public"."reported_users" TO "authenticated";
 GRANT ALL ON TABLE "public"."reported_users" TO "service_role";
+
+GRANT ALL ON TABLE "public"."rooms" TO "anon";
+GRANT ALL ON TABLE "public"."rooms" TO "authenticated";
+GRANT ALL ON TABLE "public"."rooms" TO "service_role";
+
+GRANT ALL ON TABLE "public"."rooms_users" TO "anon";
+GRANT ALL ON TABLE "public"."rooms_users" TO "authenticated";
+GRANT ALL ON TABLE "public"."rooms_users" TO "service_role";
 
 GRANT ALL ON TABLE "public"."suggested_features" TO "anon";
 GRANT ALL ON TABLE "public"."suggested_features" TO "authenticated";
