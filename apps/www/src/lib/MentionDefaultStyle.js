@@ -1,7 +1,7 @@
 export default {
-  control: {
-    backgroundColor: "#fff",
-  },
+  // control: {
+  //   backgroundColor: "white",
+  // },
 
   "&multiLine": {
     control: {

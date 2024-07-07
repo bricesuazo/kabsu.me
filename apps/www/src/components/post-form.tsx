@@ -11,6 +11,7 @@ import imageCompression from "browser-image-compression";
 import { ImageUp, Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Mention, MentionsInput } from "react-mentions";
+import { useDebouncedCallback } from "use-debounce";
 import { v4 } from "uuid";
 import { z } from "zod";
 
@@ -84,6 +85,31 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
+  const mentionDebounce = useDebouncedCallback(
+    async (query: string, callback: (data: SuggestionDataItem[]) => void) => {
+      const mentionData = await getToMentionMutation.mutateAsync({
+        name: query,
+      });
+
+      const transformedDataArray = mentionData.map((user) => ({
+        display: `?username=${user.username}&id=${user.id}`,
+        id: user.id,
+        image: user.image_name,
+        is_verified: user.is_verified,
+        name: user.name,
+        image_name: user.image_name,
+        image_url: user.image_name ? user.image_url : undefined,
+      })) as SuggestionDataItem[];
+
+      if (transformedDataArray.length === 0) {
+        return;
+      }
+
+      callback(transformedDataArray);
+    },
+    300,
+  );
+
   const form = useForm<z.infer<typeof Schema>>({
     resolver: zodResolver(Schema),
     defaultValues: {
@@ -102,25 +128,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
     query: string,
     callback: (data: SuggestionDataItem[]) => void,
   ) => {
-    const mentionData = await getToMentionMutation.mutateAsync({
-      name: query,
-    });
-
-    const transformedDataArray = mentionData.map((user) => ({
-      display: `?username=${user.username}&id=${user.id}`,
-      id: user.id,
-      image: user.image_name,
-      is_verified: user.is_verified,
-      name: user.name,
-      image_name: user.image_name,
-      image_url: user.image_name ? user.image_url : undefined,
-    })) as SuggestionDataItem[];
-
-    if (transformedDataArray.length === 0) {
-      return;
-    }
-
-    callback(transformedDataArray);
+    await mentionDebounce(query, callback);
   };
 
   useEffect(() => {
@@ -319,7 +327,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                             appendSpaceOnAdd
                             data={fetchUsers}
                             renderSuggestion={MentionSuggestion}
-                            className="bg-primary/10"
+                            className="bg-primary/10 dark:bg-primary/30"
                             markup="@[KabsuDotMeNotSoSecret:__display__]"
                             onAdd={(...props) => {
                               console.log("🚀 ~ PostForm ~ props:", props);
@@ -553,7 +561,9 @@ const MentionSuggestion = (suggestion: SuggestionDataItem) => {
         </div>
         <div>
           <div className="flex items-center gap-x-1">
-            <p className="line-clamp-1 flex-1">{suggestion.name} </p>
+            <p className="line-clamp-1 flex-1 dark:text-black">
+              {suggestion.name}{" "}
+            </p>
             {suggestion.is_verified && <VerifiedBadge size="sm" />}
           </div>
           <p className="line-clamp-1 text-sm text-muted-foreground">
