@@ -5,10 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { Button } from "~/components/ui/button";
+import { POST_TYPE_TABS } from "@kabsu.me/constants";
+
 import { Input } from "~/components/ui/input";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export default function MessagesPage() {
   const router = useRouter();
@@ -26,8 +27,9 @@ export default function MessagesPage() {
   );
 
   return (
-    <div className="p-4">
+    <>
       <Tabs
+        className="p-0"
         defaultValue={searchParams.get("type") ?? ""}
         onValueChange={(value) => {
           if (value === "") {
@@ -37,37 +39,34 @@ export default function MessagesPage() {
           }
         }}
       >
-        <TabsList className="w-full">
-          <TabsTrigger value="all" className="flex-1">
-            All
-          </TabsTrigger>
-          <TabsTrigger value="campus" className="flex-1">
-            Campus
-          </TabsTrigger>
-          <TabsTrigger value="college" className="flex-1">
-            College
-          </TabsTrigger>
-          <TabsTrigger value="program" className="flex-1">
-            Program
-          </TabsTrigger>
-          <TabsTrigger value="" className="flex-1">
-            My Messages
-          </TabsTrigger>
+        <TabsList className="flex h-auto w-full justify-between rounded-none bg-transparent p-0">
+          {POST_TYPE_TABS.map((select) => (
+            <TabsTrigger
+              key={select.id}
+              className="flex w-full gap-x-2 rounded-none border-b-4 border-transparent py-4 hover:text-foreground data-[state=active]:rounded-none data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=active]:bg-transparent data-[state=active]:text-primary"
+              value={select.id === "following" ? "" : select.id}
+            >
+              <div className="block sm:hidden md:block">
+                <select.icon size="20" />
+              </div>
+              <p className="hidden sm:block">{select.name}</p>
+            </TabsTrigger>
+          ))}
         </TabsList>
-        <TabsContent value="all">All</TabsContent>
-        <TabsContent value="campus">Campus</TabsContent>
-        <TabsContent value="college">College</TabsContent>
-        <TabsContent value="program">Program</TabsContent>
-        <TabsContent value="" className="space-y-2">
+      </Tabs>
+      <div className="flex flex-grow flex-col">
+        <div className="p-4">
           <Input placeholder="Search" className="rounded-full" />
+        </div>
 
-          <ScrollArea viewportClassName="h-96">
-            <div className="flex flex-col">
+        <div className="flex h-0 flex-grow">
+          <ScrollArea className="flex-1 px-4">
+            <div className="pb-4">
               {Array.from({ length: 20 }).map((_, index) => (
                 <Link
                   key={index}
                   href={`/messages/${index}`}
-                  className="flex cursor-pointer gap-2 rounded-md px-4 py-2 hover:bg-muted"
+                  className="flex cursor-pointer gap-2 rounded-md p-2 hover:bg-muted"
                 >
                   <div>
                     <Image
@@ -80,7 +79,7 @@ export default function MessagesPage() {
                   </div>
                   <div>
                     <p className="text-sm">Brice Suazo</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       Test message - 4 hours ago
                     </p>
                   </div>
@@ -88,8 +87,8 @@ export default function MessagesPage() {
               ))}
             </div>
           </ScrollArea>
-        </TabsContent>
-      </Tabs>
-    </div>
+        </div>
+      </div>
+    </>
   );
 }

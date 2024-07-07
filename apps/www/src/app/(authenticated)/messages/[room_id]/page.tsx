@@ -14,11 +14,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Form, FormControl, FormField, FormItem } from "~/components/ui/form";
+import { ScrollArea } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";
 
@@ -31,7 +30,83 @@ export default function RoomPage({ params }: { params: { room_id: string } }) {
       message: string;
       is_me: boolean;
     }[]
-  >([]);
+  >([
+    {
+      id: "1",
+      message: "Hello, how are you?",
+      is_me: false,
+    },
+    {
+      id: "2",
+      message: "I'm good, how about you?",
+      is_me: true,
+    },
+    {
+      id: "3",
+      message: "I'm good too.",
+      is_me: false,
+    },
+    {
+      id: "4",
+      message: "That's great!",
+      is_me: true,
+    },
+    {
+      id: "5",
+      message: "Yeah!",
+      is_me: false,
+    },
+    {
+      id: "6",
+      message: "Hello, how are you?",
+      is_me: false,
+    },
+    {
+      id: "7",
+      message: "I'm good, how about you?",
+      is_me: true,
+    },
+    {
+      id: "8",
+      message: "I'm good too.",
+      is_me: false,
+    },
+    {
+      id: "9",
+      message: "That's great!",
+      is_me: true,
+    },
+    {
+      id: "10",
+      message: "Yeah!",
+      is_me: false,
+    },
+    {
+      id: "11",
+      message: "Hello, how are you?",
+      is_me: false,
+    },
+    {
+      id: "12",
+      message: "I'm good, how about you?",
+      is_me: true,
+    },
+    {
+      id: "13",
+      message: "I'm good too.",
+      is_me: false,
+    },
+    {
+      id: "14",
+      message: "That's great!",
+      is_me: true,
+    },
+    {
+      id: "15",
+      message: "Yeah!",
+      is_me: false,
+    },
+  ]);
 
   const form = useForm<{ message: string }>({
     resolver: zodResolver(
@@ -52,16 +127,15 @@ export default function RoomPage({ params }: { params: { room_id: string } }) {
     messagesEndRef.current?.scrollIntoView();
   }, [messages]);
 
-  // TODO: fix this
   return (
-    <div className={cn("flex flex-col", `h-[calc(100vh-72px)]`)}>
+    <div className="flex flex-1 flex-col">
       <div className="flex justify-between p-4">
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <div>
             <Image
               src="/default-avatar.jpg"
-              width={28}
-              height={28}
+              width={32}
+              height={32}
               alt="Profile picture"
               className="rounded-full"
             />
@@ -81,47 +155,52 @@ export default function RoomPage({ params }: { params: { room_id: string } }) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Billing</DropdownMenuItem>
-            <DropdownMenuItem>Team</DropdownMenuItem>
-            <DropdownMenuItem>Subscription</DropdownMenuItem>
+            <DropdownMenuItem>Test</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
       <Separator />
 
-      <div className="flex-1 space-y-4 overflow-y-auto p-4">
-        {messages.length === 0 ? (
-          <div className="grid h-full place-items-center">
-            <p className="text-muted-foreground">No messages yet.</p>
+      <div className="flex h-0 flex-grow">
+        <ScrollArea className="flex-1 px-4">
+          <div className="space-y-4 py-4">
+            {messages.length === 0 ? (
+              <div className="grid h-full place-items-center">
+                <p className="text-muted-foreground">No messages yet.</p>
+              </div>
+            ) : (
+              messages.map((message, index) => (
+                <div
+                  key={message.id}
+                  ref={messages.length - 1 === index ? messagesEndRef : null}
+                  className={cn(
+                    "flex items-end gap-2",
+                    message.is_me && "flex-row-reverse",
+                  )}
+                >
+                  <div>
+                    <Image
+                      src="/default-avatar.jpg"
+                      width={28}
+                      height={28}
+                      alt="Profile picture"
+                      className="rounded-full"
+                    />
+                  </div>
+                  <div
+                    className={cn(
+                      "max-w-60 rounded-md bg-muted px-3 py-2 xs:max-w-72 sm:max-w-96",
+                      message.is_me ? "rounded-br-none" : "rounded-bl-none",
+                    )}
+                  >
+                    <p>{message.message}</p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
-        ) : (
-          messages.map((message, index) => (
-            <div
-              key={message.id}
-              ref={messages.length - 1 === index ? messagesEndRef : null}
-              className={cn(
-                "flex items-end gap-2",
-                message.is_me && "flex-row-reverse",
-              )}
-            >
-              <div>
-                <Image
-                  src="/default-avatar.jpg"
-                  width={32}
-                  height={32}
-                  alt="Profile picture"
-                  className="rounded-full"
-                />
-              </div>
-              <div className="max-w-60 rounded-md bg-muted p-2 xs:max-w-72 sm:max-w-96">
-                <p>{message.message}</p>
-              </div>
-            </div>
-          ))
-        )}
+        </ScrollArea>
       </div>
 
       <div className="p-4">
