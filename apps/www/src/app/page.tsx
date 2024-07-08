@@ -35,7 +35,7 @@ export default async function Home({
   ]);
 
   return (
-    <main className="container px-0">
+    <main className="container max-w-screen-xl px-0">
       {!getCurrentUserPublic && getCurrentSession ? (
         <OnboardingForm user={getCurrentSession.user} />
       ) : getCurrentUserPublic ? (

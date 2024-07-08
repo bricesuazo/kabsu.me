@@ -1,8 +1,10 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  BadgeCheck,
   Blocks,
   Book,
   BookOpenCheck,
+  Clock,
   Github,
   Globe,
   Globe2,
@@ -10,8 +12,12 @@ import {
   HeartHandshake,
   HelpCircle,
   Home,
+  Image,
   Instagram,
+  Lock,
   Mail,
+  MessageSquareText,
+  RefreshCw,
   School,
   School2,
   Twitter,
@@ -548,6 +554,46 @@ export const BLOCKED_USERNAMES = new Set([
   "donate",
   "privacy",
 ]);
+
+export const NEW_FEATURES = [
+  {
+    index: 0,
+    icon: BadgeCheck,
+    title: "Be Authentic",
+    description:
+      "Kabsu.me verification can be applied to individuals and organizations.",
+  },
+  {
+    index: 1,
+    icon: Image,
+    title: "Picture Perfect",
+    description: "Upload up to 9 images",
+  },
+  {
+    index: 2,
+    icon: Clock,
+    title: "Improved loading speed",
+    description: "Kabsu.me prioritizes your time on our website.",
+  },
+  {
+    index: 3,
+    icon: Lock,
+    title: "Secured",
+    description: "Your information is always secured to us",
+  },
+  {
+    index: 4,
+    icon: MessageSquareText,
+    title: "Replies",
+    description: "You can now reply driectly to a comment.",
+  },
+  {
+    index: 5,
+    icon: RefreshCw,
+    title: "Repost.me",
+    description: "Share another content to other users.",
+  },
+];
 
 export const DEVS_INFO = [
   {

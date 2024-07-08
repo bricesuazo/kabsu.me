@@ -3,9 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { AlertCircle, Github } from "lucide-react";
 
-import { DEVS_INFO } from "@kabsu.me/constants";
+import { DEVS_INFO, NEW_FEATURES } from "@kabsu.me/constants";
 
+import Marquee from "~/components/magicui/marquee";
+import ShineBorder from "~/components/magicui/shine-border";
 import { api } from "~/lib/trpc/server";
+import { cn } from "~/lib/utils";
 import Footer from "./footer";
 import SigninButton from "./signin-button";
 import { ToggleTheme } from "./toggle-theme";
@@ -107,12 +110,61 @@ export default function HomePublic({ error }: { error?: string }) {
         </Suspense>
       </div>
 
-      <iframe
+      {/* <iframe
         src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fbricesuazo%2Fposts%2Fpfbid0brFggarFZmEkXR57W7xZAGGk6JWJQv5kt5LxJUK2omdEqouYfiYz25tZGiDVY1fXl&show_text=true"
         className="aspect-square w-full overflow-hidden border-0 border-none"
         allowFullScreen
         allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-      />
+      /> */}
+
+      <div className="relative flex flex-col gap-y-1">
+        <Marquee pauseOnHover className="[--duration:30s]">
+          {NEW_FEATURES.map((feature) => {
+            return (
+              <ShineBorder
+                key={feature.index}
+                className="flex w-full flex-col items-center justify-center rounded-sm bg-green-50/50 p-4 hover:bg-green-50 dark:bg-green-950/10 hover:dark:bg-green-950/50"
+                color={["#41B75E50", "#227B3C50"]}
+              >
+                <p className="text-primary">
+                  <feature.icon className="size-14" />
+                </p>
+                <p className="text-xl font-bold text-primary">
+                  {feature.title}
+                </p>
+                <p className="text-center text-xs text-muted-foreground">
+                  {feature.description}
+                </p>
+              </ShineBorder>
+            );
+          })}
+        </Marquee>
+        <Marquee reverse pauseOnHover className="[--duration:30s]">
+          {[...NEW_FEATURES.reverse()].map((feature) => {
+            return (
+              <ShineBorder
+                key={feature.index}
+                className="flex w-full flex-col items-center justify-center rounded-sm bg-green-50/50 p-4 hover:bg-green-50 dark:bg-green-950/10 hover:dark:bg-green-950/50"
+                color={["#41B75E50", "#227B3C50"]}
+              >
+                <p className="text-primary">
+                  <feature.icon className="size-14" />
+                </p>
+                <p className="text-xl font-bold text-primary">
+                  {feature.title}
+                </p>
+                <p className="text-center text-xs text-muted-foreground">
+                  {feature.description}
+                </p>
+              </ShineBorder>
+            );
+          })}
+        </Marquee>
+
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-[#121212]"></div>
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-[#121212]"></div>
+      </div>
+
       {/* ABOUT DEV COMPONENT */}
       <div>
         <h2 className="py-4 text-center text-4xl font-bold text-primary">
