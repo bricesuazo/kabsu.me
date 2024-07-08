@@ -3,8 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { AlertCircle, Github } from "lucide-react";
 
-import { DEVS_INFO, NEW_FEATURES } from "@kabsu.me/constants";
+import { DEVS_INFO, NEW_FEATURES, THESIS_INFO } from "@kabsu.me/constants";
 
+import { BentoCard, BentoGrid } from "~/components/magicui/bento-grid";
 import Marquee from "~/components/magicui/marquee";
 import ShineBorder from "~/components/magicui/shine-border";
 import { api } from "~/lib/trpc/server";
@@ -117,6 +118,10 @@ export default function HomePublic({ error }: { error?: string }) {
         allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
       /> */}
 
+      <h1 className="text-center text-4xl font-bold text-primary">
+        New Features
+      </h1>
+
       <div className="relative flex flex-col gap-y-1">
         <Marquee pauseOnHover className="[--duration:30s]">
           {NEW_FEATURES.map((feature) => {
@@ -163,6 +168,26 @@ export default function HomePublic({ error }: { error?: string }) {
 
         <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-[#121212]"></div>
         <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-[#121212]"></div>
+      </div>
+
+      {/* <div className="grid grid-cols-5 gap-4">
+        <div className="col-span-1 rounded-xl border bg-gradient-to-tr from-[#5EA55925] to-[#616F6025] p-4" />
+        <div className="col-span-2 rounded-xl border bg-gradient-to-tr from-[#784E7725] to-[#D300CB25] p-4" />
+        <div className="col-span-2 rounded-xl border bg-gradient-to-tr from-[#556D6B25] to-[#24999025] p-4" />
+        <div className="col-span-2 rounded-xl border bg-gradient-to-tr from-[#55756125] to-[#23C45E25] p-4" />
+        <div className="col-span-3 rounded-xl border bg-gradient-to-tr from-[#5D6C6425] to-[#4C956C25] p-4" />
+      </div> */}
+
+      <h1 className="text-center text-4xl font-bold text-primary">
+        Partnerships
+      </h1>
+
+      <div className="">
+        <BentoGrid className="grid grid-cols-5">
+          {THESIS_INFO.map((thesis, i) => {
+            return <BentoCard {...thesis} />;
+          })}
+        </BentoGrid>
       </div>
 
       {/* ABOUT DEV COMPONENT */}

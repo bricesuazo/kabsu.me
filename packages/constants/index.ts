@@ -595,6 +595,57 @@ export const NEW_FEATURES = [
   },
 ];
 
+export const THESIS_INFO = [
+  {
+    Icon: RefreshCw,
+    name: "Adventura 360°",
+    description:
+      "An Interactive Campus Tour for Cavite State University Don Severino Delas Alas Campus.",
+    className: "col-span-3 bg-gradient-to-tr from-[#5EA55925] to-[#616F6025]",
+    href: "/",
+    cta: "Learn more",
+    background: "",
+  },
+  {
+    Icon: RefreshCw,
+    name: "CHROMIA",
+    description:
+      "A Human-Computer Interaction Design Approach through Speech Command for Google Chrome Website Interaction Extension Plugin",
+    className: "col-span-2 bg-gradient-to-tr from-[#556D6B25] to-[#24999025]",
+    href: "/",
+    cta: "Learn more",
+    background: "",
+  },
+  {
+    Icon: RefreshCw,
+    name: "ARCTEC",
+    description: "Augmented Reality for CvSU Ladislao N. Diwa Memorial Library",
+    className: "col-span-2 bg-gradient-to-tr from-[#5D6C6425] to-[#4C956C25]",
+    href: "/",
+    cta: "Learn more",
+    background: "",
+  },
+  {
+    Icon: RefreshCw,
+    name: "Odyssey",
+    description:
+      "An Android-Based Mobile Augmented Reality Application for Interactive Experience at CvSU Historical and Cultural Museum",
+    className: "col-span-2 bg-gradient-to-tr from-[#55756125] to-[#23C45E25]",
+    href: "/",
+    cta: "Learn more",
+    background: "",
+  },
+  {
+    Icon: RefreshCw,
+    name: "SWARDify",
+    description: "A Bidirectional Swardspeak and Tagalog Translator",
+    className: "col-span-1 bg-gradient-to-tr from-[#784E7725] to-[#D300CB25]",
+    href: "/",
+    cta: "Learn more",
+    background: "",
+  },
+];
+
 export const DEVS_INFO = [
   {
     index: 0,

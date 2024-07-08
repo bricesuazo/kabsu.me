@@ -74,6 +74,9 @@ importers:
       '@radix-ui/react-hover-card':
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@19.0.0-rc-f994737d14-20240522)(react@19.0.0-rc-f994737d14-20240522)
+      '@radix-ui/react-icons':
+        specifier: ^1.3.0
+        version: 1.3.0(react@19.0.0-rc-f994737d14-20240522)
       '@radix-ui/react-label':
         specifier: ^2.1.0
         version: 2.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@19.0.0-rc-f994737d14-20240522)(react@19.0.0-rc-f994737d14-20240522)
@@ -385,7 +388,7 @@ importers:
         version: 7.34.3(eslint@9.6.0)
       eslint-plugin-react-hooks:
         specifier: rc
-        version: 5.1.0-rc-f38c22b244-20240704(eslint@9.6.0)
+        version: 5.1.0-rc-df783f9ea1-20240708(eslint@9.6.0)
       eslint-plugin-turbo:
         specifier: ^2.0.5
         version: 2.0.6(eslint@9.6.0)
@@ -1921,6 +1924,14 @@ packages:
       '@types/react-dom': 18.3.0
       react: 19.0.0-rc-f994737d14-20240522
       react-dom: 19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522)
+    dev: false
+
+  /@radix-ui/react-icons@1.3.0(react@19.0.0-rc-f994737d14-20240522):
+    resolution: {integrity: sha512-jQxj/0LKgp+j9BiTXz3O3sgs26RNet2iLWmsPyRz2SIcR4q/4SbazXfnYwbAr+vLYKSfc7qxzyGQA1HLlYiuNw==}
+    peerDependencies:
+      react: ^16.x || ^17.x || ^18.x
+    dependencies:
+      react: 19.0.0-rc-f994737d14-20240522
     dev: false
 
   /@radix-ui/react-id@1.0.1(@types/react@18.3.3)(react@19.0.0-rc-f994737d14-20240522):
@@ -4641,8 +4652,8 @@ packages:
       eslint: 9.6.0
     dev: false
 
-  /eslint-plugin-react-hooks@5.1.0-rc-f38c22b244-20240704(eslint@9.6.0):
-    resolution: {integrity: sha512-2AFn/7KOJFx6RGA+7d8VluRqhB31bay0binwDJZeYJCdvrNeDQS3SmKv1/7SExyexEHBZZE/0hy6P6IQIaIZkg==}
+  /eslint-plugin-react-hooks@5.1.0-rc-df783f9ea1-20240708(eslint@9.6.0):
+    resolution: {integrity: sha512-5k5nsbbK2NigXkaLG6mwmL58xSVWf/YzYpK5JJJvoiASjZJWf+4y3TBwCszy25xmjjBJ4XZeOxDVII9Oz5g0Dw==}
     engines: {node: '>=10'}
     peerDependencies:
       eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
