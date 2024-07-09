@@ -1,44 +1,38 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDistanceToNow } from "date-fns";
-import { EllipsisVertical, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
 
 import type { RouterOutput } from "@kabsu.me/api/root";
 
-import { Icons } from "~/components/icons";
-import { Button } from "~/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import { Form, FormControl, FormField, FormItem } from "~/components/ui/form";
-import { ScrollArea } from "~/components/ui/scroll-area";
-import { Separator } from "~/components/ui/separator";
 import { api } from "~/lib/trpc/client";
-import { cn } from "~/lib/utils";
+import { Icons } from "./icons";
+import { Button } from "./ui/button";
+import { Form, FormControl, FormField, FormItem } from "./ui/form";
+import { ScrollArea } from "./ui/scroll-area";
+import { Separator } from "./ui/separator";
 
-export default function RoomPageClient({
-  getRoom,
+export default function NewChat({
+  user,
 }: {
-  getRoom: NonNullable<RouterOutput["chats"]["getRoom"]>;
+  user: NonNullable<RouterOutput["chats"]["getOrCreateRoom"]["user"]>;
 }) {
-  const getRoomQuery = api.chats.getRoom.useQuery(
-    { room_id: getRoom.id },
-    { initialData: getRoom },
-  );
-  const sendMessageMutation = api.chats.sendMessage.useMutation();
-  const [messages, setMessages] = useState<
-    NonNullable<RouterOutput["chats"]["getRoom"]>["chats"]
-  >(getRoomQuery.data?.chats ?? []);
-
+  const router = useRouter();
+  const sendNewMessageMutation = api.chats.sendNewMessage.useMutation({
+    onError: (error) => {
+      if (error.message.startsWith("room_"))
+        router.push(error.message.slice(5));
+      if (error.message === "user_not_found") router.push("/chat");
+    },
+    onSuccess: ({ room_id }) => router.push(`/chat/${room_id}`),
+  });
   const form = useForm<{ message: string }>({
     resolver: zodResolver(
       z.object({
@@ -51,13 +45,13 @@ export default function RoomPageClient({
       message: "",
     },
   });
-
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (messagesEndRef.current) messagesEndRef.current.scrollIntoView();
-  }, [messages]);
-
+  const [messages, setMessages] = useState<
+    {
+      id: string;
+      content: string;
+      created_at: string;
+    }[]
+  >([]);
   return (
     <div className="flex flex-1 flex-col">
       <div className="flex justify-between p-4">
@@ -72,27 +66,13 @@ export default function RoomPageClient({
             />
           </div>
           <div>
-            <p className="text-sm">
-              {getRoomQuery.data?.rooms_users
-                .map((user) => `@${user.users?.username}`)
-                .join(", ")}
-            </p>
+            <p className="text-sm">{user.username}</p>
             <div className="flex items-center gap-2">
               <div className="size-2 rounded-full bg-green-500 text-lg" />
               <p className="text-xs text-muted-foreground">Online</p>
             </div>
           </div>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="icon" variant="ghost">
-              <EllipsisVertical size="1rem" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>Test</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
 
       <Separator />
@@ -105,14 +85,10 @@ export default function RoomPageClient({
         ) : (
           <ScrollArea className="flex-1 px-4">
             <div className="space-y-4 py-4">
-              {messages.map((message, index) => (
+              {messages.map((message) => (
                 <div
                   key={message.id}
-                  ref={messages.length - 1 === index ? messagesEndRef : null}
-                  className={cn(
-                    "flex items-end gap-2",
-                    message.is_me && "flex-row-reverse",
-                  )}
+                  className="flex flex-row-reverse items-end gap-2"
                 >
                   <div>
                     <Image
@@ -124,26 +100,11 @@ export default function RoomPageClient({
                     />
                   </div>
 
-                  <div
-                    className={cn(
-                      "group flex items-center gap-2",
-                      message.is_me && "flex-row-reverse",
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "max-w-60 rounded-md bg-muted px-3 py-2 xs:max-w-72 sm:max-w-96",
-                        message.is_me ? "rounded-br-none" : "rounded-bl-none",
-                      )}
-                    >
+                  <div className="group flex flex-row-reverse items-center gap-2">
+                    <div className="max-w-60 rounded-md rounded-br-none bg-muted px-3 py-2 xs:max-w-72 sm:max-w-96">
                       <p>{message.content}</p>
                     </div>
-                    <p
-                      className={cn(
-                        "hidden truncate text-xs text-muted-foreground group-hover:block",
-                        !message.is_me && "text-right",
-                      )}
-                    >
+                    <p className="hidden truncate text-right text-xs text-muted-foreground group-hover:block">
                       {formatDistanceToNow(message.created_at, {
                         addSuffix: true,
                       })}
@@ -161,23 +122,19 @@ export default function RoomPageClient({
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(async (values) => {
-                if (!getRoomQuery.data) return;
-
                 setMessages((prev) => [
                   ...prev,
                   {
                     id: String(prev.length + 1),
                     content: values.message,
-                    is_me: true,
                     created_at: new Date().toISOString(),
                   },
                 ]);
                 form.reset();
-                await sendMessageMutation.mutateAsync({
-                  room_id: getRoomQuery.data.id,
+                await sendNewMessageMutation.mutateAsync({
+                  user_id: user.id,
                   content: values.message,
                 });
-                await getRoomQuery.refetch();
               })}
               className="flex w-full gap-x-2"
             >

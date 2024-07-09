@@ -69,9 +69,13 @@ export default function ChatsPage() {
                   </div>
                   <div>
                     <p className="text-center text-sm">{type.label}</p>
-                    <p className="text-center text-xs text-muted-foreground">
-                      {type.sublabel?.toUpperCase()}
-                    </p>
+                    {type.sublabel === undefined ? (
+                      <Skeleton className="mx-auto my-0.5 h-3 w-14" />
+                    ) : (
+                      <p className="text-center text-xs text-muted-foreground">
+                        {type.sublabel.toUpperCase()}
+                      </p>
+                    )}
                   </div>
                 </Link>
               </TooltipTrigger>
@@ -92,9 +96,9 @@ export default function ChatsPage() {
       <div className="flex h-0 flex-grow">
         <ScrollArea className="flex-1 px-4">
           {getAllRoomsQuery.data === undefined ? (
-            <div className="flex flex-col gap-y-1">
+            <div className="space-y-2">
               {Array.from({ length: 20 }).map((_, index) => (
-                <Skeleton key={index} className="h-13" />
+                <Skeleton key={index} className="h-14" />
               ))}
             </div>
           ) : getAllRoomsQuery.data.length === 0 ? (

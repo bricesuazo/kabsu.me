@@ -234,9 +234,14 @@ export default function UserPageWrapper({
                   isFollower={profileQuery.data.is_follower}
                   user_id={profileQuery.data.user.id}
                 />
+                <Button size="sm" variant="outline" asChild>
+                  <Link href={`/chat?user_id=${profileQuery.data.user.id}`}>
+                    Message
+                  </Link>
+                </Button>
                 <AlertDialog open={openReport} onOpenChange={setOpenReport}>
                   <AlertDialogTrigger asChild>
-                    <Button variant="outline" size="icon">
+                    <Button variant="outline" size="icon" className="size-9">
                       <Flag className="h-4 w-4" />
                     </Button>
                   </AlertDialogTrigger>

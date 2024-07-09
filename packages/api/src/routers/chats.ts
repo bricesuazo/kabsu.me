@@ -65,11 +65,7 @@ export const chatsRouter = router({
         .order("created_at", { ascending: true, referencedTable: "chats" })
         .single();
 
-      if (!room)
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Room not found",
-        });
+      if (!room) return null;
 
       return {
         ...room,
@@ -112,5 +108,102 @@ export const chatsRouter = router({
       });
 
       return chat;
+    }),
+  getOrCreateRoom: protectedProcedure
+    .input(z.object({ user_id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { data: users } = await ctx.supabase
+        .from("rooms_users")
+        .select()
+        .eq("user_id", ctx.auth.user.id);
+
+      if (!users)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+
+      const { data: room } = await ctx.supabase
+        .from("rooms")
+        .select("*, rooms_users(*)")
+        .in("id", [...new Set(users.map((u) => u.room_id))])
+        .eq("rooms_users.user_id", input.user_id)
+        .is("deleted_at", null)
+        .maybeSingle();
+
+      if (room?.id) return { room_id: room.id };
+
+      const { data: user } = await ctx.supabase
+        .from("users")
+        .select("id, username")
+        .eq("id", input.user_id)
+        .single();
+      return { user };
+    }),
+  sendNewMessage: protectedProcedure
+    .input(
+      z.object({
+        user_id: z.string().uuid(),
+        content: z.string(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { data: my_rooms } = await ctx.supabase
+        .from("rooms_users")
+        .select()
+        .eq("user_id", ctx.auth.user.id);
+
+      if (!my_rooms)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+
+      const { data: is_room_exists } = await ctx.supabase
+        .from("rooms")
+        .select("*, rooms_users(*)")
+        .in("id", [...new Set(my_rooms.map((u) => u.room_id))])
+        .eq("rooms_users.user_id", input.user_id)
+        .is("deleted_at", null)
+        .maybeSingle();
+
+      if (is_room_exists)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `room_${is_room_exists.id}`,
+        });
+
+      const { data: is_user_exists } = await ctx.supabase
+        .from("users")
+        .select()
+        .eq("id", input.user_id)
+        .single();
+
+      if (!is_user_exists)
+        throw new TRPCError({ code: "NOT_FOUND", message: "user_not_found" });
+
+      const { data: new_room, error: new_room_error } = await ctx.supabase
+        .from("rooms")
+        .insert({})
+        .select("id")
+        .single();
+
+      if (new_room_error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: new_room_error.message,
+        });
+
+      await ctx.supabase.from("rooms_users").insert([
+        { room_id: new_room.id, user_id: ctx.auth.user.id },
+        { room_id: new_room.id, user_id: input.user_id },
+      ]);
+      await ctx.supabase.from("chats").insert({
+        user_id: ctx.auth.user.id,
+        room_id: new_room.id,
+        content: input.content,
+      });
+
+      return { room_id: new_room.id };
     }),
 });
