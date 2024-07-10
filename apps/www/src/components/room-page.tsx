@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDistanceToNow } from "date-fns";
-import { EllipsisVertical, Send } from "lucide-react";
+import { EllipsisVertical, ExternalLink, Send } from "lucide-react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
@@ -62,7 +63,7 @@ export default function RoomPageClient({
     <div className="flex flex-1 flex-col">
       <div className="flex justify-between p-4">
         <div className="flex items-center gap-2">
-          <div>
+          <Link href={`/${getRoomQuery.data?.rooms_users[0]?.users?.username}`}>
             <Image
               src="/default-avatar.jpg"
               width={32}
@@ -70,13 +71,19 @@ export default function RoomPageClient({
               alt="Profile picture"
               className="rounded-full"
             />
-          </div>
+          </Link>
           <div>
-            <p className="text-sm">
-              {getRoomQuery.data?.rooms_users
-                .map((user) => `@${user.users?.username}`)
-                .join(", ")}
-            </p>
+            <Link
+              href={`/${getRoomQuery.data?.rooms_users[0]?.users?.username}`}
+              className="group flex items-center text-sm"
+            >
+              <span>
+                {getRoomQuery.data?.rooms_users
+                  .map((user) => `@${user.users?.username}`)
+                  .join(", ")}
+              </span>
+              <ExternalLink className="ml-2 size-4 -translate-x-4 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
+            </Link>
             <div className="flex items-center gap-2">
               <div className="size-2 rounded-full bg-green-500 text-lg" />
               <p className="text-xs text-muted-foreground">Online</p>

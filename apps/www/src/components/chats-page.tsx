@@ -1,21 +1,51 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { Book, Globe2, School, School2 } from "lucide-react";
+import { useDebouncedCallback } from "use-debounce";
 
 import { Input } from "~/components/ui/input";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { api } from "~/lib/trpc/client";
+import { Button } from "./ui/button";
 import { Label } from "./ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Separator } from "./ui/separator";
 import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import VerifiedBadge from "./verified-badge";
 
 export default function ChatsPage() {
+  const searchMutation = api.users.search.useMutation();
+  const [search, setSearch] = useState("");
+  const [openSearch, setOpenSearch] = useState(
+    search.length > 0 || (searchMutation.data ?? []).length > 0,
+  );
   const getAllRoomsQuery = api.chats.getAllRooms.useQuery();
+
   const getMyUniversityStatusQuery = api.auth.getMyUniversityStatus.useQuery();
+
+  const debounced = useDebouncedCallback((value: string) => {
+    setSearch(value);
+  }, 1000);
+
+  useEffect(() => {
+    if (search !== "") {
+      searchMutation.mutate({ query: search });
+    } else {
+      searchMutation.reset();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
+  useEffect(() => {
+    setOpenSearch(search.length > 0 || (searchMutation.data ?? []).length > 0);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search, searchMutation.data?.length]);
 
   return (
     <div className="flex flex-grow flex-col">
@@ -90,7 +120,75 @@ export default function ChatsPage() {
       <Separator />
 
       <div className="p-4">
-        <Input placeholder="Search" className="rounded-full" />
+        <Popover open={openSearch} onOpenChange={() => setOpenSearch(false)}>
+          <PopoverTrigger asChild>
+            <div>
+              <Input
+                placeholder="Search"
+                className="rounded-full"
+                onChange={(e) =>
+                  e.target.value === ""
+                    ? setSearch("")
+                    : debounced(e.target.value)
+                }
+              />
+            </div>
+          </PopoverTrigger>
+          <PopoverContent asChild>
+            <ScrollArea className="flex max-h-80 flex-col gap-4">
+              {searchMutation.isPending ? (
+                <div className="flex flex-col gap-y-1">
+                  <Skeleton className="h-16" />
+                  <Skeleton className="h-16" />
+                  <Skeleton className="h-16" />
+                  <Skeleton className="h-16" />
+                </div>
+              ) : !searchMutation.data ? (
+                <p className="my-4 text-center text-sm text-muted-foreground">
+                  Search result will appear here
+                </p>
+              ) : !searchMutation.data.length ? (
+                <p className="my-4 text-center text-sm">
+                  {searchMutation.data.length} results found
+                </p>
+              ) : (
+                <div className="flex flex-col gap-y-1">
+                  {searchMutation.data.map((user) => (
+                    <Link
+                      key={user.id}
+                      href={`/chat?user_id=${user.id}`}
+                      className="flex gap-x-2 rounded p-3 hover:bg-primary-foreground"
+                      onClick={() => setOpenSearch(false)}
+                    >
+                      <div className="min-w-max">
+                        <Image
+                          src={
+                            user.image_name
+                              ? user.image_url
+                              : "/default-avatar.jpg"
+                          }
+                          alt=""
+                          width={40}
+                          height={40}
+                          className="aspect-square rounded-full object-cover object-center"
+                        />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-x-1">
+                          <p className="line-clamp-1 flex-1">{user.name} </p>
+                          {user.is_verified && <VerifiedBadge size="sm" />}
+                        </div>
+                        <p className="line-clamp-1 text-sm text-muted-foreground">
+                          @{user.username}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </ScrollArea>
+          </PopoverContent>
+        </Popover>
       </div>
 
       <div className="flex h-0 flex-grow">
@@ -107,36 +205,42 @@ export default function ChatsPage() {
             </div>
           ) : (
             getAllRoomsQuery.data.map((room) => (
-              <Link
-                key={room.id}
-                href={`/chat/${room.id}`}
-                className="flex cursor-pointer gap-2 rounded-md px-4 py-3 hover:bg-muted"
+              <Button
+                asChild
+                variant="ghost"
+                className="h-auto justify-start px-4 py-3"
               >
-                <div>
-                  <Image
-                    src="/default-avatar.jpg"
-                    width={36}
-                    height={36}
-                    alt="Profile picture"
-                    className="rounded-full"
-                  />
-                </div>
-                <div>
-                  <p className="text-sm">
-                    {room.rooms_users
-                      .map((user) => `@${user.users?.username}`)
-                      .join(", ")}
-                  </p>
-                  {room.chats[0] && (
-                    <p className="text-xs text-muted-foreground">
-                      {room.chats[0].content} -{" "}
-                      {formatDistanceToNow(room.chats[0].created_at, {
-                        addSuffix: true,
-                      })}
+                <Link
+                  key={room.id}
+                  href={`/chat/${room.id}`}
+                  className="flex w-full gap-2 rounded-md"
+                >
+                  <div>
+                    <Image
+                      src="/default-avatar.jpg"
+                      width={36}
+                      height={36}
+                      alt="Profile picture"
+                      className="rounded-full"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm">
+                      {room.rooms_users
+                        .map((user) => `@${user.users?.username}`)
+                        .join(", ")}
                     </p>
-                  )}
-                </div>
-              </Link>
+                    {room.chats[0] && (
+                      <p className="text-xs text-muted-foreground">
+                        {room.chats[0].content} -{" "}
+                        {formatDistanceToNow(room.chats[0].created_at, {
+                          addSuffix: true,
+                        })}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              </Button>
             ))
           )}
         </ScrollArea>
