@@ -205,7 +205,7 @@ export const chatsRouter = router({
 
       const { data: is_room_exists } = await ctx.supabase
         .from("rooms")
-        .select("*, rooms_users(*)")
+        .select("*, rooms_users!inner(*)")
         .in("id", [...new Set(my_rooms.map((u) => u.room_id))])
         .eq("rooms_users.user_id", input.user_id)
         .is("deleted_at", null)
