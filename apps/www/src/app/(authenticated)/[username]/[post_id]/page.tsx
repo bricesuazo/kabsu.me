@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { extractAllMentions, getDisplayData, REGEX } from "~/lib/utils";
+import { extractAllMentions, REGEX } from "~/lib/utils";
 import { createClient as createClientAdmin } from "~/supabase/admin";
 import { createClient as createClientServer } from "~/supabase/server";
 import PostPageComponent from "./post-page";

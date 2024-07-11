@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { format, formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { format, formatDistanceToNow } from "date-fns";
+import { useEffect, useState } from "react";
 // import UpdatePost from "./update-post";
 import {
   Album,
@@ -19,7 +19,7 @@ import { v4 as uuid } from "uuid";
 import type { RouterOutputs } from "@kabsu.me/api";
 
 import { api } from "~/lib/trpc/client";
-import { cn, extractAllMentions, getDisplayData } from "~/lib/utils";
+import { cn, extractAllMentions } from "~/lib/utils";
 import { ImagesViewer } from "./images-viewer";
 import PostDropdown from "./post-dropdown";
 import { PostSkeletonNoRandom } from "./post-skeleton";

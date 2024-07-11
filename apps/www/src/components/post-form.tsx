@@ -80,6 +80,10 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
     RouterOutputs["users"]["getToMentionUsers"]
   >([]);
 
+  const [mentioned, setMentioned] = useState<
+    RouterOutputs["users"]["getToMentionUsers"]
+  >([]);
+  console.log("🚀 ~ PostForm ~ mentioned:", mentioned);
   const [currentMention, setCurrentMention] = useState("");
   const getToMentionMutation = api.users.getToMentionUsers.useMutation();
   const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
@@ -96,7 +100,6 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
       });
 
       setMentionData(mentionData);
-
       const transformedDataArray = mentionData.map((user) => ({
         display: user.username,
         id: user.id,
@@ -136,6 +139,14 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
   ) => {
     await mentionDebounce(query, callback);
   };
+
+  useEffect(() => {
+    const user = mentionData.find((user) => {
+      return user.id === currentMention;
+    });
+
+    if (user) setMentioned((curr) => [...curr, user]);
+  }, [mentionData, currentMention]);
 
   useEffect(() => {
     if (searchParams.has("tab")) {
@@ -329,7 +340,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                             trigger="@"
                             markup={`@__id__ `}
                             displayTransform={(id, _) =>
-                              `@${mentionData.find((user) => user.id === id)?.username ?? "anonymous_user"}`
+                              `@${mentionData.find((user) => user.id === id)?.username ? mentionData.find((user) => user.id === id)?.username : mentioned.find((user) => user.id === id)?.username ? mentioned.find((user) => user.id === id)?.username : "anonymous_user"}`
                             }
                             appendSpaceOnAdd
                             key={currentMention + currentMention.length}
@@ -337,7 +348,6 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                             renderSuggestion={MentionSuggestion}
                             className="bg-primary/10 dark:bg-primary/30"
                             onAdd={(id) => {
-                              console.log("🚀 ~ PostForm ~ id:", id);
                               setCurrentMention(id as string);
                             }}
                           />
