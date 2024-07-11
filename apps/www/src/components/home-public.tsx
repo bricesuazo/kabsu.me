@@ -32,8 +32,7 @@ const THESIS_INFO = [
     name: "Adventura 360°",
     description:
       "An Interactive Campus Tour for Cavite State University Don Severino Delas Alas Campus.",
-    className:
-      "col-span-5 lg:col-span-2 bg-gradient-to-tr from-[#5EA55925] to-[#616F6025]",
+    className: "col-span-5 lg:col-span-2",
     href: "https://adventura360.kabsu.me/",
     cta: "Learn more",
     background: (
@@ -42,7 +41,7 @@ const THESIS_INFO = [
         src="/thesis-pics/adventura-background.png"
         width={1000}
         height={1000}
-        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_0%,#000_100%)]"
+        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
       />
     ),
   },
@@ -57,8 +56,7 @@ const THESIS_INFO = [
     ),
     name: "ARCTEC",
     description: "Augmented Reality for CvSU Ladislao N. Diwa Memorial Library",
-    className:
-      "col-span-5 lg:col-span-2 bg-gradient-to-tr from-[#5D6C6425] to-[#4C956C25]",
+    className: "col-span-5 lg:col-span-2",
     href: "https://arctec.kabsu.me/",
     cta: "Learn more",
     background: (
@@ -67,7 +65,7 @@ const THESIS_INFO = [
         src="/thesis-pics/arctec-background.png"
         width={1000}
         height={1000}
-        className="absolute top-0 h-full w-full object-cover [--duration:20s] [mask-image:linear-gradient(to_top,transparent_10%,#000_100%)]"
+        className="absolute top-0 h-full w-full object-cover [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
       />
     ),
   },
@@ -81,10 +79,8 @@ const THESIS_INFO = [
       />
     ),
     name: "CHROMIA",
-    description:
-      "A Human-Computer Interaction Design Approach through Speech Command for Google Chrome",
-    className:
-      "col-span-5 lg:col-span-1 bg-gradient-to-tr from-[#556D6B25] to-[#24999025]",
+    description: "A Speech Command HCI Design for Google Chrome",
+    className: "col-span-5 lg:col-span-1",
     href: "https://chromia.kabsu.me/",
     cta: "Learn more",
     background: (
@@ -93,7 +89,7 @@ const THESIS_INFO = [
         src="/thesis-pics/chromia-background.png"
         width={1000}
         height={1000}
-        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_20%,#000_100%)]"
+        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
       />
     ),
   },
@@ -108,8 +104,7 @@ const THESIS_INFO = [
     ),
     name: "eBoto",
     description: "One Stop Online Voting Solution",
-    className:
-      "col-span-5 lg:col-span-1 bg-gradient-to-tr from-[#55756125] to-[#23C45E25]",
+    className: "col-span-5 lg:col-span-1",
     href: "https://eboto.app/",
     cta: "Learn more",
     background: (
@@ -118,7 +113,7 @@ const THESIS_INFO = [
         src="/thesis-pics/eboto-background.png"
         width={1000}
         height={1000}
-        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_20%,#000_100%)]"
+        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
       />
     ),
   },
@@ -134,8 +129,7 @@ const THESIS_INFO = [
     name: "Odyssey",
     description:
       "An Android-Based Mobile Augmented Reality Application for Interactive Experience at CvSU Historical and Cultural Museum",
-    className:
-      "col-span-5 lg:col-span-2 bg-gradient-to-tr from-[#55756125] to-[#23C45E25]",
+    className: "col-span-5 lg:col-span-2",
     href: "https://odyssey.kabsu.me/",
     cta: "Learn more",
     background: (
@@ -144,7 +138,7 @@ const THESIS_INFO = [
         src="/thesis-pics/odyssey-background.png"
         width={1000}
         height={1000}
-        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_20%,#000_100%)]"
+        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
       />
     ),
   },
@@ -159,8 +153,7 @@ const THESIS_INFO = [
     ),
     name: "SWARDify",
     description: "A Bidirectional Swardspeak and Tagalog Translator",
-    className:
-      "col-span-5 lg:col-span-2 bg-gradient-to-tr from-[#784E7725] to-[#D300CB25]",
+    className: "col-span-5 lg:col-span-2",
     href: "https://swardify.kabsu.me/",
     cta: "Learn more",
     background: (
@@ -169,7 +162,7 @@ const THESIS_INFO = [
         src="/thesis-pics/swardify-background.png"
         width={1000}
         height={1000}
-        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_10%,#000_100%)]"
+        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
       />
     ),
   },
