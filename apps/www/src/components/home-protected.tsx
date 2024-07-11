@@ -28,28 +28,26 @@ export default function HomeProtected({
     program: "See posts of your program.",
   };
   return (
-    <>
-      <div className="border-x">
-        <div className="sticky top-0 z-50 backdrop-blur-lg">
-          <Header />
+    <div className="border-x">
+      <div className="sticky top-0 z-50">
+        <Header />
 
-          <PostTypeTab />
-        </div>
+        <PostTypeTab />
+      </div>
 
-        <div className="border-b p-3 text-center sm:hidden">
-          <p className="text-sm capitalize text-primary">
-            {tab ? tab : "following"} tab
-          </p>
-          <p className="text-xs text-muted-foreground">
-            {tab ? TABS_TITLE[tab] : "See posts of who you are following."}
-          </p>
-        </div>
+      <div className="border-b p-3 text-center sm:hidden">
+        <p className="text-sm capitalize text-primary">
+          {tab ? tab : "following"} tab
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {tab ? TABS_TITLE[tab] : "See posts of who you are following."}
+        </p>
+      </div>
 
-        <div className="min-h-screen">
-          <PostForm hasRedirect />
+      <div className="min-h-screen">
+        <PostForm hasRedirect />
 
-          <Posts tab={tab ? tab : "following"} />
-        </div>
+        <Posts tab={tab ? tab : "following"} />
       </div>
       <div className="fixed bottom-0 right-0 p-4">
         <Tooltip>
@@ -63,7 +61,7 @@ export default function HomeProtected({
           <TooltipContent>Messages</TooltipContent>
         </Tooltip>
       </div>
-    </>
+    </div>
   );
 }
 

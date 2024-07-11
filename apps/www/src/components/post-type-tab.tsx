@@ -29,11 +29,11 @@ export default function PostTypeTab() {
           setTab(value);
         }}
       >
-        <TabsList className="flex h-auto w-full justify-between rounded-none bg-transparent p-0">
+        <TabsList className="flex h-auto w-full justify-between rounded-none bg-background p-0 dark:bg-black sm:dark:bg-[#121212]">
           {POST_TYPE_TABS.map((select) => (
             <TabsTrigger
               key={select.id}
-              className="flex w-full gap-x-2 rounded-none border-b-4 border-transparent py-4 hover:text-foreground data-[state=active]:rounded-none data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=active]:bg-transparent data-[state=active]:text-primary"
+              className="flex w-full gap-x-2 rounded-none border-b-4 border-transparent py-4 hover:text-foreground data-[state=active]:rounded-none data-[state=active]:border-b-primary data-[state=active]:bg-transparent data-[state=active]:text-primary md:data-[state=active]:border-b-4"
               value={select.id}
             >
               <div className="block sm:hidden md:block">

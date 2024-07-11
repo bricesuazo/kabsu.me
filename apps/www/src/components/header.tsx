@@ -72,7 +72,7 @@ export default function Header() {
       />
       <header
         className={cn(
-          "sticky top-0 z-50 flex items-center justify-between gap-x-2 p-4 backdrop-blur-lg",
+          "sticky top-0 z-50 flex items-center justify-between gap-x-2 bg-background p-4 dark:bg-black sm:dark:bg-[#121212]",
           `h-[${HEADER_HEIGHT}px]`,
         )}
       >
