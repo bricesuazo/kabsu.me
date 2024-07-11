@@ -1,6 +1,8 @@
 "use client";
 
 import { Fragment, useEffect } from "react";
+import Link from "next/link";
+import { MessageCircle } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 
 import type { POST_TYPE_TABS } from "@kabsu.me/constants";
@@ -11,6 +13,8 @@ import { Icons } from "./icons";
 import Post from "./post";
 import PostForm from "./post-form";
 import PostTypeTab from "./post-type-tab";
+import { Button } from "./ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export default function HomeProtected({
   tab,
@@ -31,7 +35,7 @@ export default function HomeProtected({
         <PostTypeTab />
       </div>
 
-      <div className="border-b p-3 text-center dark:bg-black sm:hidden">
+      <div className="border-b p-3 text-center sm:hidden">
         <p className="text-sm capitalize text-primary">
           {tab ? tab : "following"} tab
         </p>
@@ -44,6 +48,18 @@ export default function HomeProtected({
         <PostForm hasRedirect />
 
         <Posts tab={tab ? tab : "following"} />
+      </div>
+      <div className="fixed bottom-0 right-0 p-4">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button asChild size="icon" className="size-14 rounded-full">
+              <Link href="/chat">
+                <MessageCircle size="1.5rem" color="white" />
+              </Link>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Messages</TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );

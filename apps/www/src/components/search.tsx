@@ -50,7 +50,6 @@ export default function Search() {
       <PopoverContent asChild>
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-x-2">
-            {/* <SearchIcon className="w-5" /> */}
             <Input
               className="h-10 flex-1 rounded-full"
               placeholder="Search"
