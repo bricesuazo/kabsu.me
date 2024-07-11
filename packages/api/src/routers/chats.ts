@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
+import type { Database } from "../../../../supabase/types";
 import { protectedProcedure, router } from "../trpc";
 
 export const chatsRouter = router({
@@ -79,35 +80,51 @@ export const chatsRouter = router({
     }),
   sendMessage: protectedProcedure
     .input(
-      z.object({
-        room_id: z.string().uuid(),
-        content: z.string().min(1),
-        reply_id: z.string().optional(),
-      }),
+      z
+        .object({
+          type: z.literal("room"),
+          room_id: z.string().uuid(),
+          content: z.string().min(1),
+          reply_id: z.string().optional(),
+        })
+        .or(
+          z.object({
+            type: z.enum(["all", "campus", "college", "program"]),
+            content: z.string().min(1),
+            reply_id: z.string().optional(),
+          }),
+        ),
     )
     .mutation(async ({ ctx, input }) => {
-      const { data: room } = await ctx.supabase
-        .from("rooms")
-        .select("*, rooms_users(user_id)")
-        .eq("id", input.room_id)
-        .eq("rooms_users.user_id", ctx.auth.user.id)
-        .is("deleted_at", null)
-        .single();
+      if (input.type === "room") {
+        const { data: room } = await ctx.supabase
+          .from("rooms")
+          .select("*, rooms_users(user_id)")
+          .eq("id", input.room_id)
+          .eq("rooms_users.user_id", ctx.auth.user.id)
+          .is("deleted_at", null)
+          .single();
 
-      if (!room)
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Room not found",
+        if (!room)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Room not found",
+          });
+
+        await ctx.supabase.from("chats").insert({
+          room_id: room.id,
+          user_id: ctx.auth.user.id,
+          content: input.content,
+          reply_id: input.reply_id,
         });
-
-      const { data: chat } = await ctx.supabase.from("chats").insert({
-        room_id: room.id,
-        user_id: ctx.auth.user.id,
-        content: input.content,
-        reply_id: input.reply_id,
-      });
-
-      return chat;
+      } else {
+        await ctx.supabase.from("global_chats").insert({
+          content: input.content,
+          user_id: ctx.auth.user.id,
+          type: input.type,
+          reply_id: input.reply_id,
+        });
+      }
     }),
   getOrCreateRoom: protectedProcedure
     .input(z.object({ user_id: z.string() }))
@@ -205,5 +222,54 @@ export const chatsRouter = router({
       });
 
       return { room_id: new_room.id };
+    }),
+  getGlobalChatMessages: protectedProcedure
+    .input(
+      z.object({
+        type: z.custom<Database["public"]["Enums"]["global_chat_type"]>(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { data: user } = await ctx.supabase
+        .from("users")
+        .select("program_id, programs(college_id, colleges(campus_id))")
+        .eq("id", ctx.auth.user.id)
+        .single();
+
+      if (!user?.programs?.colleges)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+
+      let query = ctx.supabase
+        .from("global_chats")
+        .select(
+          "*, users(program_id, programs(college_id, colleges(campus_id)))",
+        )
+        .eq("type", input.type)
+        .order("created_at")
+        .is("deleted_at", null);
+
+      if (input.type === "campus") {
+        query = query.eq(
+          "users.programs.colleges.campus_id",
+          user.programs.colleges.campus_id,
+        );
+      } else if (input.type === "college") {
+        query = query.eq("users.programs.college_id", user.programs.college_id);
+      } else if (input.type === "program") {
+        query = query.eq("users.program_id", user.program_id);
+      }
+
+      const { data: messages, error } = await query;
+      console.log("🚀 ~ .query ~ error:", error);
+
+      return (messages ?? []).map((message) => ({
+        id: message.id,
+        content: message.content,
+        created_at: message.created_at,
+        is_me: message.user_id === ctx.auth.user.id,
+      }));
     }),
 });

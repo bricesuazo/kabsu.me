@@ -289,6 +289,51 @@ export type Database = {
           },
         ]
       }
+      global_chats: {
+        Row: {
+          content: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          reply_id: string | null
+          type: Database["public"]["Enums"]["global_chat_type"]
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          reply_id?: string | null
+          type: Database["public"]["Enums"]["global_chat_type"]
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          reply_id?: string | null
+          type?: Database["public"]["Enums"]["global_chat_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_global_chats_reply_id_fkey"
+            columns: ["reply_id"]
+            isOneToOne: false
+            referencedRelation: "global_chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_global_chats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       likes: {
         Row: {
           created_at: string
@@ -782,6 +827,7 @@ export type Database = {
       }
     }
     Enums: {
+      global_chat_type: "all" | "campus" | "college" | "program"
       notification_type:
         | "like"
         | "comment"

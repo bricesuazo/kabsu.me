@@ -28,6 +28,15 @@ CREATE EXTENSION IF NOT EXISTS "supabase_vault" WITH SCHEMA "vault";
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
 
+CREATE TYPE "public"."global_chat_type" AS ENUM (
+    'all',
+    'campus',
+    'college',
+    'program'
+);
+
+ALTER TYPE "public"."global_chat_type" OWNER TO "postgres";
+
 CREATE TYPE "public"."notification_type" AS ENUM (
     'like',
     'comment',
@@ -157,6 +166,18 @@ CREATE TABLE IF NOT EXISTS "public"."followers" (
 );
 
 ALTER TABLE "public"."followers" OWNER TO "postgres";
+
+CREATE TABLE IF NOT EXISTS "public"."global_chats" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "type" "public"."global_chat_type" NOT NULL,
+    "content" "text" NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "reply_id" "uuid",
+    "deleted_at" timestamp with time zone
+);
+
+ALTER TABLE "public"."global_chats" OWNER TO "postgres";
 
 CREATE TABLE IF NOT EXISTS "public"."likes" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
@@ -316,6 +337,9 @@ ALTER TABLE ONLY "public"."followees"
 ALTER TABLE ONLY "public"."followers"
     ADD CONSTRAINT "followers_pkey" PRIMARY KEY ("id");
 
+ALTER TABLE ONLY "public"."global_chats"
+    ADD CONSTRAINT "global_chats_pkey" PRIMARY KEY ("id");
+
 ALTER TABLE ONLY "public"."likes"
     ADD CONSTRAINT "likes_pkey" PRIMARY KEY ("id");
 
@@ -399,6 +423,10 @@ CREATE INDEX "followers_follower_id_followee_id_idx" ON "public"."followers" USI
 
 CREATE INDEX "followers_follower_id_idx" ON "public"."followers" USING "btree" ("follower_id");
 
+CREATE INDEX "global_chats_type_idx" ON "public"."global_chats" USING "btree" ("type");
+
+CREATE INDEX "global_chats_user_id_idx" ON "public"."global_chats" USING "btree" ("user_id");
+
 CREATE INDEX "likes_post_id_idx" ON "public"."likes" USING "btree" ("post_id");
 
 CREATE INDEX "likes_user_id_idx" ON "public"."likes" USING "btree" ("user_id");
@@ -461,6 +489,12 @@ ALTER TABLE ONLY "public"."followers"
 
 ALTER TABLE ONLY "public"."followers"
     ADD CONSTRAINT "public_followers_follower_id_fkey" FOREIGN KEY ("follower_id") REFERENCES "public"."users"("id");
+
+ALTER TABLE ONLY "public"."global_chats"
+    ADD CONSTRAINT "public_global_chats_reply_id_fkey" FOREIGN KEY ("reply_id") REFERENCES "public"."global_chats"("id");
+
+ALTER TABLE ONLY "public"."global_chats"
+    ADD CONSTRAINT "public_global_chats_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
 
 ALTER TABLE ONLY "public"."likes"
     ADD CONSTRAINT "public_likes_post_id_fkey" FOREIGN KEY ("post_id") REFERENCES "public"."posts"("id");
@@ -533,6 +567,8 @@ ALTER TABLE "public"."followees" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."followers" ENABLE ROW LEVEL SECURITY;
 
+ALTER TABLE "public"."global_chats" ENABLE ROW LEVEL SECURITY;
+
 ALTER TABLE "public"."likes" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."notifications" ENABLE ROW LEVEL SECURITY;
@@ -597,6 +633,10 @@ GRANT ALL ON TABLE "public"."followees" TO "service_role";
 GRANT ALL ON TABLE "public"."followers" TO "anon";
 GRANT ALL ON TABLE "public"."followers" TO "authenticated";
 GRANT ALL ON TABLE "public"."followers" TO "service_role";
+
+GRANT ALL ON TABLE "public"."global_chats" TO "anon";
+GRANT ALL ON TABLE "public"."global_chats" TO "authenticated";
+GRANT ALL ON TABLE "public"."global_chats" TO "service_role";
 
 GRANT ALL ON TABLE "public"."likes" TO "anon";
 GRANT ALL ON TABLE "public"."likes" TO "authenticated";
