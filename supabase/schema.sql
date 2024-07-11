@@ -174,7 +174,10 @@ CREATE TABLE IF NOT EXISTS "public"."global_chats" (
     "content" "text" NOT NULL,
     "user_id" "uuid" NOT NULL,
     "reply_id" "uuid",
-    "deleted_at" timestamp with time zone
+    "deleted_at" timestamp with time zone,
+    "campus_id" "uuid",
+    "college_id" "uuid",
+    "program_id" "uuid"
 );
 
 ALTER TABLE "public"."global_chats" OWNER TO "postgres";
@@ -489,6 +492,15 @@ ALTER TABLE ONLY "public"."followers"
 
 ALTER TABLE ONLY "public"."followers"
     ADD CONSTRAINT "public_followers_follower_id_fkey" FOREIGN KEY ("follower_id") REFERENCES "public"."users"("id");
+
+ALTER TABLE ONLY "public"."global_chats"
+    ADD CONSTRAINT "public_global_chats_campus_id_fkey" FOREIGN KEY ("campus_id") REFERENCES "public"."campuses"("id");
+
+ALTER TABLE ONLY "public"."global_chats"
+    ADD CONSTRAINT "public_global_chats_college_id_fkey" FOREIGN KEY ("college_id") REFERENCES "public"."colleges"("id");
+
+ALTER TABLE ONLY "public"."global_chats"
+    ADD CONSTRAINT "public_global_chats_program_id_fkey" FOREIGN KEY ("program_id") REFERENCES "public"."programs"("id");
 
 ALTER TABLE ONLY "public"."global_chats"
     ADD CONSTRAINT "public_global_chats_reply_id_fkey" FOREIGN KEY ("reply_id") REFERENCES "public"."global_chats"("id");

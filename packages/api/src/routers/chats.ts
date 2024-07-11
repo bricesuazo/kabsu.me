@@ -118,12 +118,39 @@ export const chatsRouter = router({
           reply_id: input.reply_id,
         });
       } else {
-        await ctx.supabase.from("global_chats").insert({
+        const { data: user } = await ctx.supabase
+          .from("users")
+          .select("program_id, programs(college_id, colleges(campus_id))")
+          .eq("id", ctx.auth.user.id)
+          .single();
+
+        if (!user?.programs?.colleges)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        const default_insert = {
           content: input.content,
           user_id: ctx.auth.user.id,
           type: input.type,
           reply_id: input.reply_id,
-        });
+        };
+        await ctx.supabase.from("global_chats").insert(
+          input.type === "campus"
+            ? {
+                ...default_insert,
+                campus_id: user.programs.colleges.campus_id,
+              }
+            : input.type === "college"
+              ? {
+                  ...default_insert,
+                  college_id: user.programs.college_id,
+                }
+              : input.type === "program"
+                ? {
+                    ...default_insert,
+                    program_id: user.program_id,
+                  }
+                : default_insert,
+        );
       }
     }),
   getOrCreateRoom: protectedProcedure
@@ -252,14 +279,11 @@ export const chatsRouter = router({
         .is("deleted_at", null);
 
       if (input.type === "campus") {
-        query = query.eq(
-          "users.programs.colleges.campus_id",
-          user.programs.colleges.campus_id,
-        );
+        query = query.eq("campus_id", user.programs.colleges.campus_id);
       } else if (input.type === "college") {
-        query = query.eq("users.programs.college_id", user.programs.college_id);
+        query = query.eq("college_id", user.programs.college_id);
       } else if (input.type === "program") {
-        query = query.eq("users.program_id", user.program_id);
+        query = query.eq("program_id", user.program_id);
       }
 
       const { data: messages } = await query;

@@ -291,33 +291,63 @@ export type Database = {
       }
       global_chats: {
         Row: {
+          campus_id: string | null
+          college_id: string | null
           content: string
           created_at: string
           deleted_at: string | null
           id: string
+          program_id: string | null
           reply_id: string | null
           type: Database["public"]["Enums"]["global_chat_type"]
           user_id: string
         }
         Insert: {
+          campus_id?: string | null
+          college_id?: string | null
           content: string
           created_at?: string
           deleted_at?: string | null
           id?: string
+          program_id?: string | null
           reply_id?: string | null
           type: Database["public"]["Enums"]["global_chat_type"]
           user_id: string
         }
         Update: {
+          campus_id?: string | null
+          college_id?: string | null
           content?: string
           created_at?: string
           deleted_at?: string | null
           id?: string
+          program_id?: string | null
           reply_id?: string | null
           type?: Database["public"]["Enums"]["global_chat_type"]
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "public_global_chats_campus_id_fkey"
+            columns: ["campus_id"]
+            isOneToOne: false
+            referencedRelation: "campuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_global_chats_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_global_chats_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "public_global_chats_reply_id_fkey"
             columns: ["reply_id"]
