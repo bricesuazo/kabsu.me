@@ -242,35 +242,29 @@ export const chatsRouter = router({
           message: "User not found",
         });
 
-      const query = ctx.supabase
+      let query = ctx.supabase
         .from("global_chats")
         .select(
-          "*, users(program_id, programs(college_id, colleges(campus_id)))",
+          "*, users!inner(program_id, programs!inner(college_id, colleges!inner(campus_id)))",
         )
         .eq("type", input.type)
         .order("created_at")
         .is("deleted_at", null);
 
-      const messages = [];
-
       if (input.type === "campus") {
-        const { data } = await query.eq(
+        query = query.eq(
           "users.programs.colleges.campus_id",
           user.programs.colleges.campus_id,
         );
-        messages.push(...(data ?? []));
       } else if (input.type === "college") {
-        const { data } = await query.eq(
-          "users.programs.college_id",
-          user.programs.college_id,
-        );
-        messages.push(...(data ?? []));
+        query = query.eq("users.programs.college_id", user.programs.college_id);
       } else if (input.type === "program") {
-        const { data } = await query.eq("users.program_id", user.program_id);
-        messages.push(...(data ?? []));
+        query = query.eq("users.program_id", user.program_id);
       }
 
-      return messages.map((message) => ({
+      const { data: messages } = await query;
+
+      return (messages ?? []).map((message) => ({
         id: message.id,
         content: message.content,
         created_at: message.created_at,
