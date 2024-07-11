@@ -340,7 +340,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                             trigger="@"
                             markup={`@__id__ `}
                             displayTransform={(id, _) =>
-                              `@${mentionData.find((user) => user.id === id)?.username ? mentionData.find((user) => user.id === id)?.username : mentioned.find((user) => user.id === id)?.username ? mentioned.find((user) => user.id === id)?.username : "anonymous_user"}`
+                              `@${mentionData.find((user) => user.id === id)?.username ?? mentioned.find((user) => user.id === id)?.username ?? "anonymous_user"}`
                             }
                             appendSpaceOnAdd
                             key={currentMention + currentMention.length}
