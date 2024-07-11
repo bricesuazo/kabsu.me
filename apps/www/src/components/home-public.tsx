@@ -42,7 +42,7 @@ const THESIS_INFO = [
         src="/thesis-pics/adventura-background.png"
         width={1000}
         height={1000}
-        className="absolute h-full w-full object-cover [--duration:20s] [mask-image:linear-gradient(to_top,transparent_0%,#000_100%)]"
+        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_0%,#000_100%)]"
       />
     ),
   },
@@ -67,7 +67,7 @@ const THESIS_INFO = [
         src="/thesis-pics/arctec-background.png"
         width={1000}
         height={1000}
-        className="absolute h-full w-full object-cover [--duration:20s] [mask-image:linear-gradient(to_top,transparent_10%,#000_100%)]"
+        className="absolute top-0 h-full w-full object-cover [--duration:20s] [mask-image:linear-gradient(to_top,transparent_10%,#000_100%)]"
       />
     ),
   },
@@ -93,7 +93,7 @@ const THESIS_INFO = [
         src="/thesis-pics/chromia-background.png"
         width={1000}
         height={1000}
-        className="absolute h-full w-full object-cover [--duration:20s] [mask-image:linear-gradient(to_top,transparent_20%,#000_100%)]"
+        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_20%,#000_100%)]"
       />
     ),
   },
@@ -118,7 +118,7 @@ const THESIS_INFO = [
         src="/thesis-pics/eboto-background.png"
         width={1000}
         height={1000}
-        className="absolute h-full w-full object-cover [--duration:20s] [mask-image:linear-gradient(to_top,transparent_20%,#000_100%)]"
+        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_20%,#000_100%)]"
       />
     ),
   },
@@ -144,7 +144,7 @@ const THESIS_INFO = [
         src="/thesis-pics/odyssey-background.png"
         width={1000}
         height={1000}
-        className="absolute h-full w-full object-cover [--duration:20s] [mask-image:linear-gradient(to_top,transparent_20%,#000_100%)]"
+        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_20%,#000_100%)]"
       />
     ),
   },
@@ -169,7 +169,7 @@ const THESIS_INFO = [
         src="/thesis-pics/swardify-background.png"
         width={1000}
         height={1000}
-        className="absolute h-full w-full object-cover [--duration:20s] [mask-image:linear-gradient(to_top,transparent_10%,#000_100%)]"
+        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_10%,#000_100%)]"
       />
     ),
   },
@@ -398,7 +398,7 @@ async function UsersLength() {
   const getTotalUsersQuery = await api.users.getTotalUsers.query();
   return (
     <p className="flex items-center justify-center gap-x-1 text-center text-sm text-muted-foreground">
-      <NumberTicker value={getTotalUsersQuery + 2639} />
+      <NumberTicker value={getTotalUsersQuery} />
       Kabsuhenyos registered
     </p>
   );
