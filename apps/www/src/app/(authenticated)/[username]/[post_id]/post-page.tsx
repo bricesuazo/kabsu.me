@@ -50,12 +50,7 @@ import {
 } from "~/components/ui/tooltip";
 import VerifiedBadge from "~/components/verified-badge";
 import { api } from "~/lib/trpc/client";
-import {
-  cn,
-  extractAllMentions,
-  formatText,
-  getDisplayData,
-} from "~/lib/utils";
+import { cn, extractAllMentions, formatText, REGEX } from "~/lib/utils";
 import CommentDropdown from "./comment-dropdown";
 
 export default function PostPageComponent({
@@ -184,28 +179,21 @@ export default function PostPageComponent({
       ),
     );
 
-    const matchMentions = reactStringReplace(
-      matchLinks,
-      /@\[KabsuDotMeNotSoSecret:([^\]]+)]/g,
-      (match, i) => {
-        console.log("🚀 ~ FormattedContent ~ match:", match);
-        const user = mentionedUser?.find(
-          (user) => user.id === getDisplayData(match).id,
-        );
+    const matchMentions = reactStringReplace(matchLinks, REGEX, (match, i) => {
+      const user = mentionedUser?.find((user) => user.id === match);
 
-        return (
-          <Link
-            href={`/${user ? user.username : "anonymous_user"}`}
-            className={cn("font-medium text-primary", {
-              "pointer-events-none font-normal text-black": !user,
-            })}
-            key={match + i}
-          >
-            {`@${user ? user.username : "anonymous_user"}`}
-          </Link>
-        );
-      },
-    );
+      return (
+        <Link
+          href={`/${user ? user.username : "anonymous_user"}`}
+          className={cn("font-medium text-primary", {
+            "pointer-events-none font-normal text-black": !user,
+          })}
+          key={match + i}
+        >
+          {`@${user ? user.username : "anonymous_user"}`}
+        </Link>
+      );
+    });
 
     return matchMentions;
   };

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { extractAllMentions, getDisplayData } from "~/lib/utils";
+import { extractAllMentions, getDisplayData, REGEX } from "~/lib/utils";
 import { createClient as createClientAdmin } from "~/supabase/admin";
 import { createClient as createClientServer } from "~/supabase/server";
 import PostPageComponent from "./post-page";
@@ -87,17 +87,11 @@ export async function generateMetadata({
       if (!text) return "";
 
       // Replace mentions
-      const formattedText = text.replace(
-        /@\[KabsuDotMeNotSoSecret:([^\]]+)]/g,
-        (_, p1) => {
-          const user = data?.find(
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            (user) => user.id === getDisplayData(p1).id,
-          );
+      const formattedText = text.replace(REGEX, (_, p1) => {
+        const user = data?.find((user) => user.id === p1);
 
-          return `@${user ? user.username : "anonymous_user"}`;
-        },
-      );
+        return `@${user ? user.username : "anonymous_user"}`;
+      });
 
       return formattedText;
     };

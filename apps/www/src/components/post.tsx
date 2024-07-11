@@ -108,11 +108,9 @@ export default function Post({
 
     const matchMentions = reactStringReplace(
       matchLinks,
-      /@\[KabsuDotMeNotSoSecret:([^\]]+)]/g,
+      /@([\w-]+)/g,
       (match, i) => {
-        const user = mentionedUser?.find(
-          (user) => user.id === getDisplayData(match).id,
-        );
+        const user = mentionedUser?.find((user) => user.id === match);
 
         return (
           <Link
@@ -139,6 +137,7 @@ export default function Post({
 
   useEffect(() => {
     const mentioned = extractAllMentions(getPostQuery.data?.post.content ?? "");
+    console.log("🚀 ~ useEffect ~ mentioned:", mentioned);
 
     void (async () => {
       try {

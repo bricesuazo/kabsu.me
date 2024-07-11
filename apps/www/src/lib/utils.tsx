@@ -106,31 +106,22 @@ export function getDisplayData(queryString: string): {
   return { username, id };
 }
 
-const regex = /@\[KabsuDotMeNotSoSecret:([^\]]+)]/g;
+export const REGEX = /@([\w-]+)/g;
 
-export function extractAllMentions(input: string): string[] {
-  const matches = input.matchAll(regex);
-  const result: string[] = [];
+export function extractAllMentions(text: string): string[] {
+  // Use a regular expression to match words after @
 
-  for (const match of matches) {
-    result.push(getDisplayData(match[1] ?? "").id ?? ""); // Captured group 1 contains the username
+  let matches;
+  const results = [];
+
+  // Use regex exec to find all matches
+  while ((matches = REGEX.exec(text)) !== null) {
+    results.push(matches[1] ?? "");
   }
 
-  return result;
+  return results;
 }
 
 export function replaceMentions(text: string) {
-  const regex =
-    // eslint-disable-next-line no-useless-escape
-    /@\[KabsuDotMeNotSoSecret:\?username=[^\&]+&id=([0-9a-fA-F\-]+)\]/g;
-
-  return text.replace(regex, "@$1");
-}
-
-export function replaceToDeletedMention(text: string) {
-  const regex =
-    // eslint-disable-next-line no-useless-escape
-    /@\[KabsuDotMeNotSoSecret:\?username=[^\&]+&id=([0-9a-fA-F\-]+)\]/g;
-
-  return text.replace(regex, "@$1");
+  return text.replace(REGEX, "@$1");
 }

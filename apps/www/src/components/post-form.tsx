@@ -8,13 +8,14 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import imageCompression from "browser-image-compression";
+import { debounce } from "lodash";
 import { ImageUp, Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Mention, MentionsInput } from "react-mentions";
-import { useDebouncedCallback } from "use-debounce";
 import { v4 } from "uuid";
 import { z } from "zod";
 
+import type { RouterOutputs } from "@kabsu.me/api";
 import { POST_TYPE_TABS } from "@kabsu.me/constants";
 
 import type { Database } from "../../../../supabase/types";
@@ -29,7 +30,6 @@ import {
 import { useMediaQuery } from "~/hooks/use-media-query";
 import defaultMentionStyle from "~/lib/MentionDefaultStyle";
 import { api } from "~/lib/trpc/client";
-import { getDisplayData } from "~/lib/utils";
 import { createClient } from "~/supabase/client";
 import { FileUploader } from "./file-uploader";
 import { Icons } from "./icons";
@@ -76,7 +76,11 @@ const Schema = z.object({
 
 export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
   const context = api.useUtils();
+  const [mentionData, setMentionData] = useState<
+    RouterOutputs["users"]["getToMentionUsers"]
+  >([]);
 
+  const [currentMention, setCurrentMention] = useState("");
   const getToMentionMutation = api.users.getToMentionUsers.useMutation();
   const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
   const [imageUploaderOpen, setImageUploaderOpen] = useState(false);
@@ -85,14 +89,16 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  const mentionDebounce = useDebouncedCallback(
+  const mentionDebounce = debounce(
     async (query: string, callback: (data: SuggestionDataItem[]) => void) => {
       const mentionData = await getToMentionMutation.mutateAsync({
         name: query,
       });
 
+      setMentionData(mentionData);
+
       const transformedDataArray = mentionData.map((user) => ({
-        display: `?username=${user.username}&id=${user.id}`,
+        display: user.username,
         id: user.id,
         image: user.image_name,
         is_verified: user.is_verified,
@@ -316,22 +322,23 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                               await handleSubmit();
                             }
                           }}
-                          className="break-all"
+                          className="w-full break-all"
                           style={defaultMentionStyle}
                         >
                           <Mention
                             trigger="@"
-                            displayTransform={(_, display) =>
-                              `@${getDisplayData(display).username}`
+                            markup={`@__id__ `}
+                            displayTransform={(id, _) =>
+                              `@${mentionData.find((user) => user.id === id)?.username ?? "anonymous_user"}`
                             }
                             appendSpaceOnAdd
+                            key={currentMention + currentMention.length}
                             data={fetchUsers}
                             renderSuggestion={MentionSuggestion}
                             className="bg-primary/10 dark:bg-primary/30"
-                            markup="@[KabsuDotMeNotSoSecret:__display__]"
-                            onAdd={(...props) => {
-                              console.log("🚀 ~ PostForm ~ props:", props);
-                              return;
+                            onAdd={(id) => {
+                              console.log("🚀 ~ PostForm ~ id:", id);
+                              setCurrentMention(id as string);
                             }}
                           />
                         </MentionsInput>
@@ -567,7 +574,7 @@ const MentionSuggestion = (suggestion: SuggestionDataItem) => {
             {suggestion.is_verified && <VerifiedBadge size="sm" />}
           </div>
           <p className="line-clamp-1 text-sm text-muted-foreground">
-            @{getDisplayData(suggestion.display ?? "").username}
+            @{suggestion.display}
           </p>
         </div>
       </div>
