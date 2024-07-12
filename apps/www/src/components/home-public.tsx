@@ -171,24 +171,24 @@ const THESIS_INFO = [
 
 export default function HomePublic({ error }: { error?: string }) {
   return (
-    <>
+    <div className="bg-background">
       {/* NAV BAR */}
-      <nav className="fixed z-50 w-full border-b bg-white p-4 dark:bg-[#121212]">
+      <nav className="fixed z-50 w-full border-b bg-background px-1 py-4 sm:p-4">
         <div className="container flex max-w-screen-xl items-center justify-between">
-          <div className="flex items-center gap-x-2">
+          <Link href="/" className="flex items-center gap-x-2">
             <Image
               src="/logo.svg"
               alt="Logo"
               width={40}
               height={40}
               priority
-              className="pointer-events-none mx-auto select-none"
+              className="w-9 xs:w-10"
             />
-            <h1 className="text-center text-xl font-semibold xs:text-2xl">
+            <h1 className="text-md text-center font-semibold xs:text-2xl">
               Kabsu.me
             </h1>
-          </div>
-          <div className="flex items-center gap-x-2">
+          </Link>
+          <div className="flex items-center gap-x-0 sm:gap-x-2">
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
                 <Button
@@ -263,12 +263,13 @@ export default function HomePublic({ error }: { error?: string }) {
           This website is not affiliated with Cavite State University.
         </p>
       </div>
-      <div className="container max-w-screen-xl space-y-10">
+
+      {/* FEATURES SECTION */}
+      <div className="space-y-10 py-10">
         <h1 className="text-center text-4xl font-bold text-primary">
           New Features
         </h1>
 
-        {/* FEATURES SECTION */}
         <div className="relative flex flex-col gap-y-1">
           <Marquee pauseOnHover className="[--duration:30s]">
             {NEW_FEATURES.map((feature) => {
@@ -313,15 +314,17 @@ export default function HomePublic({ error }: { error?: string }) {
             })}
           </Marquee>
 
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-[#121212]"></div>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-[#121212]"></div>
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-background"></div>
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-background"></div>
         </div>
+      </div>
 
+      {/* PARTNERSHIPS SECTION */}
+      <div className="container max-w-screen-xl space-y-10">
         <h1 className="text-center text-4xl font-bold text-primary">
           Partnerships
         </h1>
 
-        {/* PARTNERSHIPS SECTION */}
         <div className="">
           <BentoGrid className="grid grid-cols-5">
             {THESIS_INFO.map((thesis) => {
@@ -384,7 +387,7 @@ export default function HomePublic({ error }: { error?: string }) {
           <Footer />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
