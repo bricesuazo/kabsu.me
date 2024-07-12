@@ -4,7 +4,13 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Album, Briefcase, Flag, GraduationCap } from "lucide-react";
+import {
+  Album,
+  Briefcase,
+  Flag,
+  GraduationCap,
+  MessageCircle,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -234,9 +240,14 @@ export default function UserPageWrapper({
                   isFollower={profileQuery.data.is_follower}
                   user_id={profileQuery.data.user.id}
                 />
+                <Button size="sm" variant="outline" asChild>
+                  <Link href={`/chat?user_id=${profileQuery.data.user.id}`}>
+                    <MessageCircle className="mr-2 size-4" /> Message
+                  </Link>
+                </Button>
                 <AlertDialog open={openReport} onOpenChange={setOpenReport}>
                   <AlertDialogTrigger asChild>
-                    <Button variant="outline" size="icon">
+                    <Button variant="outline" size="icon" className="size-9">
                       <Flag className="h-4 w-4" />
                     </Button>
                   </AlertDialogTrigger>
