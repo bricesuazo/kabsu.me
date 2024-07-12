@@ -13,6 +13,7 @@ export default function SigninButton() {
   return (
     <Button
       disabled={loading}
+      className="rounded-full"
       onClick={async () => {
         setLoading(true);
         if (env.NEXT_PUBLIC_SUPABASE_URL === "http://localhost:54321") {

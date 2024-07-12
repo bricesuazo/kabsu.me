@@ -1,8 +1,11 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  BadgeCheck,
   Blocks,
   Book,
   BookOpenCheck,
+  Clock,
+  Facebook,
   Github,
   Globe,
   Globe2,
@@ -10,8 +13,12 @@ import {
   HeartHandshake,
   HelpCircle,
   Home,
+  Image,
   Instagram,
+  Lock,
   Mail,
+  MessageSquareText,
+  RefreshCw,
   School,
   School2,
   Twitter,
@@ -553,11 +560,51 @@ export const BLOCKED_USERNAMES = new Set([
   "chats",
 ]);
 
+export const NEW_FEATURES = [
+  {
+    index: 0,
+    icon: BadgeCheck,
+    title: "Be Authentic",
+    description:
+      "Kabsu.me verification can be applied to individuals and organizations.",
+  },
+  {
+    index: 1,
+    icon: Image,
+    title: "Picture Perfect",
+    description: "Upload up to 9 images",
+  },
+  {
+    index: 2,
+    icon: Clock,
+    title: "Improved loading speed",
+    description: "Kabsu.me prioritizes your time on our website.",
+  },
+  {
+    index: 3,
+    icon: Lock,
+    title: "Secured",
+    description: "Your information is always secured to us",
+  },
+  {
+    index: 4,
+    icon: MessageSquareText,
+    title: "Replies",
+    description: "You can now reply driectly to a comment.",
+  },
+  {
+    index: 5,
+    icon: RefreshCw,
+    title: "Repost.me",
+    description: "Share another content to other users.",
+  },
+];
+
 export const DEVS_INFO = [
   {
     index: 0,
     name: "Brice Suazo",
-    role: "Full-stack Developer",
+    role: "Full Stack Developer",
     image: "/dev-pics/brice.png",
     username: "@bricesuazo",
     link: "https://kabsu.me/bricesuazo",
@@ -598,7 +645,7 @@ export const DEVS_INFO = [
   {
     index: 3,
     name: "Alexis Ken Alvarez",
-    role: "Full-stack Developer",
+    role: "Full Stack Developer",
     image: "/dev-pics/aki.jpg",
     username: "@alexisken_alvarez",
     link: "https://kabsu.me/alexisken_alvarez",
@@ -625,7 +672,7 @@ export const DEVS_INFO = [
   {
     index: 5,
     name: "Bernard Sarroca",
-    role: "Backend Developer",
+    role: "Quality Assurance Tester",
     image: "/dev-pics/bernard.jpg",
     username: "@iamnards",
     link: "https://kabsu.me/iamnards",
@@ -672,6 +719,19 @@ export const DEVS_INFO = [
       { icon: Mail, url: "mailto:kevinroi.nuesca@cvsu.edu.ph" },
       { icon: Instagram, url: "https://www.instagram.com/tfudoinkebs/" },
       { icon: Github, url: "https://github.com/tfudoinkebs" },
+    ],
+  },
+  {
+    index: 9,
+    name: "Rey Anthony de Luna",
+    role: "Social Media Manager",
+    image: "/dev-pics/rey.png",
+    username: "@reydeluna",
+    link: "https://kabsu.me/reydeluna",
+    links: [
+      { icon: Mail, url: "mailto:reyanthony.deluna@cvsu.edu.ph" },
+      { icon: Facebook, url: "https://facebook.com/reyanthony.deluna/" },
+      { icon: Instagram, url: "https://www.instagram.com/rythnyln/" },
     ],
   },
 ];

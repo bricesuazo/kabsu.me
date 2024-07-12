@@ -35,14 +35,18 @@ export default async function Home({
   ]);
 
   return (
-    <main className="container px-0">
+    <>
       {!getCurrentUserPublic && getCurrentSession ? (
-        <OnboardingForm user={getCurrentSession.user} />
+        <main className="container px-0">
+          <OnboardingForm user={getCurrentSession.user} />
+        </main>
       ) : getCurrentUserPublic ? (
-        <HomeProtected tab={tab} />
+        <main className="container px-0">
+          <HomeProtected tab={tab} />
+        </main>
       ) : (
         <HomePublic error={error} />
       )}
-    </main>
+    </>
   );
 }

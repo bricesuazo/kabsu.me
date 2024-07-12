@@ -10,7 +10,7 @@
     "clean:workspaces": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "db:cli": "pnpm db:dump && pnpm db:gen && pnpm db:diff",
-    "db:push": "supabase db push",
+    "db:push": "supabase db push --include-all",
     "db:diff": "supabase db diff --local -f",
     "db:gen": "supabase gen types typescript --local --schema public > supabase/types.ts",
     "db:reset": "supabase db reset --local",

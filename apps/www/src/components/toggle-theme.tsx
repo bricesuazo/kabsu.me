@@ -14,6 +14,7 @@ export function ToggleTheme({
     <Button
       variant="outline"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+      className="rounded-full"
       {...props}
     >
       <div className="flex items-center dark:hidden">
