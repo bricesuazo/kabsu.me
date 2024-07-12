@@ -855,6 +855,16 @@ export type Database = {
         }
         Returns: string
       }
+      get_mention: {
+        Args: {
+          user_ids: string[]
+        }
+        Returns: {
+          id: string
+          username: string
+          name: string
+        }[]
+      }
     }
     Enums: {
       global_chat_type: "all" | "campus" | "college" | "program"

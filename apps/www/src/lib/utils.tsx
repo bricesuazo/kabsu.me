@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { ClassValue } from "clsx";
 import { Fragment } from "react";
 import Link from "next/link";
@@ -93,4 +94,34 @@ export function formatBytes(
   return `${(bytes / Math.pow(1024, i)).toFixed(decimals)} ${
     sizeType === "accurate" ? accurateSizes[i] ?? "Bytest" : sizes[i] ?? "Bytes"
   }`;
+}
+
+export function getDisplayData(queryString: string): {
+  username?: string;
+  id?: string;
+} {
+  const params = new URLSearchParams(queryString);
+  const username = params.get("username")!;
+  const id = params.get("id")!;
+  return { username, id };
+}
+
+export const REGEX = /@([\w-]+)/g;
+
+export function extractAllMentions(text: string): string[] {
+  // Use a regular expression to match words after @
+
+  let matches;
+  const results = [];
+
+  // Use regex exec to find all matches
+  while ((matches = REGEX.exec(text)) !== null) {
+    results.push(matches[1] ?? "");
+  }
+
+  return results;
+}
+
+export function replaceMentions(text: string) {
+  return text.replace(REGEX, "@$1");
 }

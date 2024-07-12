@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import debounce from "lodash.debounce";
 import { Book, Globe2, School, School2 } from "lucide-react";
-import { useDebouncedCallback } from "use-debounce";
+
+
 
 import { Input } from "~/components/ui/input";
 import { ScrollArea } from "~/components/ui/scroll-area";
@@ -18,6 +20,7 @@ import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import VerifiedBadge from "./verified-badge";
 
+
 export default function ChatsPage() {
   const searchMutation = api.users.search.useMutation();
   const [search, setSearch] = useState("");
@@ -28,7 +31,7 @@ export default function ChatsPage() {
 
   const getMyUniversityStatusQuery = api.auth.getMyUniversityStatus.useQuery();
 
-  const debounced = useDebouncedCallback((value: string) => {
+  const debounced = debounce((value: string) => {
     setSearch(value);
   }, 1000);
 

@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import debounce from "lodash.debounce";
 import { Search as SearchIcon } from "lucide-react";
-import { useDebouncedCallback } from "use-debounce";
 
 import { api } from "~/lib/trpc/client";
 import { Button } from "./ui/button";
@@ -19,7 +19,7 @@ export default function Search() {
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
 
-  const debounced = useDebouncedCallback((value: string) => {
+  const debounced = debounce((value: string) => {
     setValue(value);
   }, 500);
 
