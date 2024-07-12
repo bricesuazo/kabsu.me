@@ -50,7 +50,7 @@ import {
 } from "~/components/ui/tooltip";
 import VerifiedBadge from "~/components/verified-badge";
 import { api } from "~/lib/trpc/client";
-import { cn, extractAllMentions, formatText, REGEX } from "~/lib/utils";
+import { cn, formatText, REGEX } from "~/lib/utils";
 import CommentDropdown from "./comment-dropdown";
 
 export default function PostPageComponent({
@@ -61,8 +61,6 @@ export default function PostPageComponent({
   post_id: string;
 }) {
   const router = useRouter();
-  const [mentionedUser, setMentionedUser] =
-    useState<RouterOutputs["users"]["getMentionedUsers"]>();
   const searchParams = useSearchParams();
   const [openImagesViewer, setOpenImagesViewer] = useState(false);
   const postQuery = api.posts.getPost.useQuery(
@@ -89,7 +87,6 @@ export default function PostPageComponent({
   });
   const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
   const createCommentMutation = api.comments.create.useMutation();
-  const getMentionedUsersMutation = api.users.getMentionedUsers.useMutation();
 
   const [scrollTo, setScrollTo] = useState(0);
   const [likes, setLikes] = useState(postQuery.data?.post.likes ?? []);
@@ -131,23 +128,6 @@ export default function PostPageComponent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
-  useEffect(() => {
-    const mentioned = extractAllMentions(postQuery.data?.post.content ?? "");
-
-    void (async () => {
-      try {
-        const data = await getMentionedUsersMutation.mutateAsync({
-          users: mentioned,
-        });
-
-        setMentionedUser(data);
-      } catch (error) {
-        console.log(error);
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [postQuery.data?.post.content]);
-
   const handleSubmit = form.handleSubmit(async (values) => {
     await createCommentMutation.mutateAsync({
       post_id,
@@ -180,17 +160,17 @@ export default function PostPageComponent({
     );
 
     const matchMentions = reactStringReplace(matchLinks, REGEX, (match, i) => {
-      const user = mentionedUser?.find((user) => user.id === match);
+      const user = postQuery.data?.mentioned_users.find(
+        (user) => user.id === match,
+      );
 
       return (
         <Link
-          href={`/${user ? user.username : "anonymous_user"}`}
-          className={cn("font-medium text-primary", {
-            "pointer-events-none font-normal text-black": !user,
-          })}
           key={match + i}
+          href={`/${user ? user.username : match}`}
+          className="font-medium text-primary"
         >
-          {`@${user ? user.username : "anonymous_user"}`}
+          {`@${user ? user.username : match}`}
         </Link>
       );
     });
@@ -213,7 +193,7 @@ export default function PostPageComponent({
         }
         scrollTo={scrollTo}
       />
-      {postQuery.isLoading || getMentionedUsersMutation.isPending ? (
+      {postQuery.isLoading  ? (
         <>
           <div className="space-y-2 p-4">
             <div className="flex justify-between">

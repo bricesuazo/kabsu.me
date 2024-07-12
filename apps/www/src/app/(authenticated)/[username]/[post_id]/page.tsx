@@ -90,7 +90,7 @@ export async function generateMetadata({
       const formattedText = text.replace(REGEX, (_, p1) => {
         const user = data?.find((user) => user.id === p1);
 
-        return `@${user ? user.username : "anonymous_user"}`;
+        return `@${user ? user.username : p1}`;
       });
 
       return formattedText;

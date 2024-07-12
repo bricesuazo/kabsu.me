@@ -730,26 +730,4 @@ export const usersRouter = router({
         })
         .slice(0, 10);
     }),
-  getMentionedUsers: protectedProcedure
-    .input(
-      z.object({
-        users: z.array(z.string()),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      console.log("🚀 ~ .mutation ~ input:", input);
-      const { data, error } = await ctx.supabase.rpc("get_mention", {
-        user_ids: input.users,
-      });
-      console.log("🚀 ~ .mutation ~ data:", data);
-
-      if (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: error.message,
-        });
-      }
-
-      return data;
-    }),
 });

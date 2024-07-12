@@ -1,25 +1,23 @@
 "use client";
 
-import { format, formatDistanceToNow } from "date-fns";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { format, formatDistanceToNow } from "date-fns";
 // import UpdatePost from "./update-post";
-import {
-  Album,
-  Briefcase,
-  GraduationCap,
-  Heart,
-  MessageCircle,
-} from "lucide-react";
+import { Album, Briefcase, GraduationCap, Heart, MessageCircle } from "lucide-react";
 import reactStringReplace from "react-string-replace";
 import { v4 as uuid } from "uuid";
 
+
+
 import type { RouterOutputs } from "@kabsu.me/api";
 
+
+
 import { api } from "~/lib/trpc/client";
-import { cn, extractAllMentions } from "~/lib/utils";
+import { cn } from "~/lib/utils";
 import { ImagesViewer } from "./images-viewer";
 import PostDropdown from "./post-dropdown";
 import { PostSkeletonNoRandom } from "./post-skeleton";
@@ -28,23 +26,15 @@ import { Toggle } from "./ui/toggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import VerifiedBadge from "./verified-badge";
 
+
 export default function Post({
   post,
 }: {
   post: RouterOutputs["posts"]["getPosts"]["posts"][number];
 }) {
-  const [mentionedUser, setMentionedUser] =
-    useState<RouterOutputs["users"]["getMentionedUsers"]>();
   const [openImagesViewer, setOpenImagesViewer] = useState(false);
   const [scrollTo, setScrollTo] = useState(0);
-  const getPostQuery = api.posts.getPost.useQuery(
-    { post_id: post.id },
-    {
-      // refetchOnMount: false,
-      // refetchOnWindowFocus: false,
-      // refetchOnReconnect: false,
-    },
-  );
+  const getPostQuery = api.posts.getPost.useQuery({ post_id: post.id });
   const router = useRouter();
   const searchParams = useSearchParams();
   const [likes, setLikes] = useState<
@@ -85,7 +75,6 @@ export default function Post({
       ]);
     },
   });
-  const getMentionedUsersMutation = api.users.getMentionedUsers.useMutation();
 
   const FormattedContent = () => {
     const text = getPostQuery.data?.post.content;
@@ -110,18 +99,15 @@ export default function Post({
       matchLinks,
       /@([\w-]+)/g,
       (match, i) => {
-        const user = mentionedUser?.find((user) => user.id === match);
-
+        const user = getPostQuery.data?.mentioned_users.find((user) => user.id === match);
         return (
           <Link
-            href={`/${user ? user.username : "anonymous_user"}`}
-            className={cn("font-medium text-primary", {
-              "pointer-events-none font-normal text-black": !user,
-            })}
+            href={`/${user ? user.username : match}`}
+            className="font-medium text-primary"
             key={match + i}
             onClick={(e) => e.stopPropagation()}
           >
-            {`@${user ? user.username : "anonymous_user"}`}
+            {`@${user ? user.username : match}`}
           </Link>
         );
       },
@@ -136,26 +122,7 @@ export default function Post({
     }
   }, [getPostQuery.data]);
 
-  useEffect(() => {
-    const mentioned = extractAllMentions(getPostQuery.data?.post.content ?? "");
-    console.log("🚀 ~ useEffect ~ mentioned:", mentioned);
-
-    void (async () => {
-      try {
-        const data = await getMentionedUsersMutation.mutateAsync({
-          users: mentioned,
-        });
-
-        setMentionedUser(data);
-      } catch (error) {
-        console.log(error);
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getPostQuery.data?.post.content]);
-
-  if (!getPostQuery.data || getMentionedUsersMutation.isPending)
-    return <PostSkeletonNoRandom />;
+  if (!getPostQuery.data) return <PostSkeletonNoRandom />;
 
   return (
     <>
