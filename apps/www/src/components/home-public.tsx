@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { AlertCircle, Github } from "lucide-react";
 
 import { DEVS_INFO, NEW_FEATURES } from "@kabsu.me/constants";
@@ -325,7 +324,7 @@ export default function HomePublic({ error }: { error?: string }) {
         {/* PARTNERSHIPS SECTION */}
         <div className="">
           <BentoGrid className="grid grid-cols-5">
-            {THESIS_INFO.map((thesis, i) => {
+            {THESIS_INFO.map((thesis) => {
               return <BentoCard {...thesis} />;
             })}
           </BentoGrid>

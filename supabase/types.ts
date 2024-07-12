@@ -36,6 +36,58 @@ export type Database = {
         }
         Relationships: []
       }
+      chats: {
+        Row: {
+          content: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          reply_id: string | null
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          reply_id?: string | null
+          room_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          reply_id?: string | null
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_chats_reply_id_fkey"
+            columns: ["reply_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_chats_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_chats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       colleges: {
         Row: {
           campus_id: string
@@ -231,6 +283,81 @@ export type Database = {
           {
             foreignKeyName: "public_followers_follower_id_fkey"
             columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      global_chats: {
+        Row: {
+          campus_id: string | null
+          college_id: string | null
+          content: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          program_id: string | null
+          reply_id: string | null
+          type: Database["public"]["Enums"]["global_chat_type"]
+          user_id: string
+        }
+        Insert: {
+          campus_id?: string | null
+          college_id?: string | null
+          content: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          program_id?: string | null
+          reply_id?: string | null
+          type: Database["public"]["Enums"]["global_chat_type"]
+          user_id: string
+        }
+        Update: {
+          campus_id?: string | null
+          college_id?: string | null
+          content?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          program_id?: string | null
+          reply_id?: string | null
+          type?: Database["public"]["Enums"]["global_chat_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_global_chats_campus_id_fkey"
+            columns: ["campus_id"]
+            isOneToOne: false
+            referencedRelation: "campuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_global_chats_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_global_chats_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_global_chats_reply_id_fkey"
+            columns: ["reply_id"]
+            isOneToOne: false
+            referencedRelation: "global_chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_global_chats_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -575,6 +702,54 @@ export type Database = {
           },
         ]
       }
+      rooms: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      rooms_users: {
+        Row: {
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          room_id: string
+          user_id: string
+        }
+        Update: {
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_rooms_users_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_rooms_users_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suggested_features: {
         Row: {
           created_at: string
@@ -680,8 +855,19 @@ export type Database = {
         }
         Returns: string
       }
+      get_mention: {
+        Args: {
+          user_ids: string[]
+        }
+        Returns: {
+          id: string
+          username: string
+          name: string
+        }[]
+      }
     }
     Enums: {
+      global_chat_type: "all" | "campus" | "college" | "program"
       notification_type:
         | "like"
         | "comment"

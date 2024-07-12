@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import debounce from "lodash.debounce";
 import { Search as SearchIcon } from "lucide-react";
-import { useDebouncedCallback } from "use-debounce";
 
 import { api } from "~/lib/trpc/client";
 import { Button } from "./ui/button";
@@ -19,7 +19,7 @@ export default function Search() {
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
 
-  const debounced = useDebouncedCallback((value: string) => {
+  const debounced = debounce((value: string) => {
     setValue(value);
   }, 500);
 
@@ -50,7 +50,6 @@ export default function Search() {
       <PopoverContent asChild>
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-x-2">
-            {/* <SearchIcon className="w-5" /> */}
             <Input
               className="h-10 flex-1 rounded-full"
               placeholder="Search"

@@ -28,6 +28,15 @@ CREATE EXTENSION IF NOT EXISTS "supabase_vault" WITH SCHEMA "vault";
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
 
+CREATE TYPE "public"."global_chat_type" AS ENUM (
+    'all',
+    'campus',
+    'college',
+    'program'
+);
+
+ALTER TYPE "public"."global_chat_type" OWNER TO "postgres";
+
 CREATE TYPE "public"."notification_type" AS ENUM (
     'like',
     'comment',
@@ -79,6 +88,44 @@ $$;
 
 ALTER FUNCTION "public"."create_user"("user_id" "uuid", "email" "text", "created_at" timestamp with time zone) OWNER TO "postgres";
 
+CREATE OR REPLACE FUNCTION "public"."get_mention"("user_ids" "text"[]) RETURNS TABLE("id" "uuid", "username" "text", "name" "text")
+    LANGUAGE "plpgsql"
+    AS $$
+declare
+  user_id uuid;
+  user_found boolean;
+  user_id_str varchar;
+begin
+  -- Initialize an empty array to store results
+  FOR user_id_str IN SELECT unnest(user_ids) LOOP
+    -- Attempt to convert user_id_str to UUID
+    BEGIN
+      user_id := user_id_str::uuid;
+    EXCEPTION
+      WHEN others THEN
+        -- Handle invalid UUID (skip or log error as needed)
+        CONTINUE; -- Skip to next iteration if conversion fails
+    END;
+
+    -- Check if user with this ID exists
+    user_found := EXISTS (
+      SELECT 1 FROM users u WHERE u.id = user_id
+    );
+
+    -- If user found, fetch user details and return
+    IF user_found THEN
+      RETURN QUERY
+      SELECT u.id, u.username, u.name FROM users u WHERE u.id = user_id;
+    END IF;
+  END LOOP;
+
+  -- Return empty if no users found
+  RETURN;
+END;
+$$;
+
+ALTER FUNCTION "public"."get_mention"("user_ids" "text"[]) OWNER TO "postgres";
+
 SET default_tablespace = '';
 
 SET default_table_access_method = "heap";
@@ -93,6 +140,18 @@ CREATE TABLE IF NOT EXISTS "public"."campuses" (
 );
 
 ALTER TABLE "public"."campuses" OWNER TO "postgres";
+
+CREATE TABLE IF NOT EXISTS "public"."chats" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "content" "text" NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "room_id" "uuid" NOT NULL,
+    "reply_id" "uuid",
+    "deleted_at" timestamp with time zone
+);
+
+ALTER TABLE "public"."chats" OWNER TO "postgres";
 
 CREATE TABLE IF NOT EXISTS "public"."colleges" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
@@ -145,6 +204,21 @@ CREATE TABLE IF NOT EXISTS "public"."followers" (
 );
 
 ALTER TABLE "public"."followers" OWNER TO "postgres";
+
+CREATE TABLE IF NOT EXISTS "public"."global_chats" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "type" "public"."global_chat_type" NOT NULL,
+    "content" "text" NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "reply_id" "uuid",
+    "deleted_at" timestamp with time zone,
+    "campus_id" "uuid",
+    "college_id" "uuid",
+    "program_id" "uuid"
+);
+
+ALTER TABLE "public"."global_chats" OWNER TO "postgres";
 
 CREATE TABLE IF NOT EXISTS "public"."likes" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
@@ -241,6 +315,21 @@ CREATE TABLE IF NOT EXISTS "public"."reported_users" (
 
 ALTER TABLE "public"."reported_users" OWNER TO "postgres";
 
+CREATE TABLE IF NOT EXISTS "public"."rooms" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "deleted_at" timestamp with time zone
+);
+
+ALTER TABLE "public"."rooms" OWNER TO "postgres";
+
+CREATE TABLE IF NOT EXISTS "public"."rooms_users" (
+    "room_id" "uuid" NOT NULL,
+    "user_id" "uuid" NOT NULL
+);
+
+ALTER TABLE "public"."rooms_users" OWNER TO "postgres";
+
 CREATE TABLE IF NOT EXISTS "public"."suggested_features" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "feature" "text" NOT NULL,
@@ -271,6 +360,9 @@ ALTER TABLE "public"."users" OWNER TO "postgres";
 ALTER TABLE ONLY "public"."campuses"
     ADD CONSTRAINT "campuses_pkey" PRIMARY KEY ("id");
 
+ALTER TABLE ONLY "public"."chats"
+    ADD CONSTRAINT "chats_pkey" PRIMARY KEY ("id");
+
 ALTER TABLE ONLY "public"."colleges"
     ADD CONSTRAINT "colleges_pkey" PRIMARY KEY ("id");
 
@@ -285,6 +377,9 @@ ALTER TABLE ONLY "public"."followees"
 
 ALTER TABLE ONLY "public"."followers"
     ADD CONSTRAINT "followers_pkey" PRIMARY KEY ("id");
+
+ALTER TABLE ONLY "public"."global_chats"
+    ADD CONSTRAINT "global_chats_pkey" PRIMARY KEY ("id");
 
 ALTER TABLE ONLY "public"."likes"
     ADD CONSTRAINT "likes_pkey" PRIMARY KEY ("id");
@@ -313,6 +408,12 @@ ALTER TABLE ONLY "public"."reported_problems"
 ALTER TABLE ONLY "public"."reported_users"
     ADD CONSTRAINT "reported_users_pkey" PRIMARY KEY ("id");
 
+ALTER TABLE ONLY "public"."rooms"
+    ADD CONSTRAINT "rooms_pkey" PRIMARY KEY ("id");
+
+ALTER TABLE ONLY "public"."rooms_users"
+    ADD CONSTRAINT "rooms_users_pkey" PRIMARY KEY ("room_id", "user_id");
+
 ALTER TABLE ONLY "public"."suggested_features"
     ADD CONSTRAINT "suggested_features_pkey" PRIMARY KEY ("id");
 
@@ -326,6 +427,12 @@ ALTER TABLE ONLY "public"."users"
     ADD CONSTRAINT "users_username_key" UNIQUE ("username");
 
 CREATE INDEX "campuses_slug_idx" ON "public"."campuses" USING "btree" ("slug");
+
+CREATE INDEX "chats_room_id_idx" ON "public"."chats" USING "btree" ("room_id");
+
+CREATE INDEX "chats_user_id_idx" ON "public"."chats" USING "btree" ("user_id");
+
+CREATE INDEX "chats_user_id_room_id_idx" ON "public"."chats" USING "btree" ("user_id", "room_id");
 
 CREATE INDEX "colleges_campus_id_idx" ON "public"."colleges" USING "btree" ("campus_id");
 
@@ -357,6 +464,10 @@ CREATE INDEX "followers_follower_id_followee_id_idx" ON "public"."followers" USI
 
 CREATE INDEX "followers_follower_id_idx" ON "public"."followers" USING "btree" ("follower_id");
 
+CREATE INDEX "global_chats_type_idx" ON "public"."global_chats" USING "btree" ("type");
+
+CREATE INDEX "global_chats_user_id_idx" ON "public"."global_chats" USING "btree" ("user_id");
+
 CREATE INDEX "likes_post_id_idx" ON "public"."likes" USING "btree" ("post_id");
 
 CREATE INDEX "likes_user_id_idx" ON "public"."likes" USING "btree" ("user_id");
@@ -380,6 +491,15 @@ CREATE INDEX "posts_user_id_idx" ON "public"."posts" USING "btree" ("user_id");
 CREATE INDEX "programs_college_id_idx" ON "public"."programs" USING "btree" ("college_id");
 
 CREATE INDEX "programs_slug_idx" ON "public"."programs" USING "btree" ("slug");
+
+ALTER TABLE ONLY "public"."chats"
+    ADD CONSTRAINT "public_chats_reply_id_fkey" FOREIGN KEY ("reply_id") REFERENCES "public"."chats"("id");
+
+ALTER TABLE ONLY "public"."chats"
+    ADD CONSTRAINT "public_chats_room_id_fkey" FOREIGN KEY ("room_id") REFERENCES "public"."rooms"("id");
+
+ALTER TABLE ONLY "public"."chats"
+    ADD CONSTRAINT "public_chats_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
 
 ALTER TABLE ONLY "public"."colleges"
     ADD CONSTRAINT "public_colleges_campus_id_fkey" FOREIGN KEY ("campus_id") REFERENCES "public"."campuses"("id");
@@ -410,6 +530,21 @@ ALTER TABLE ONLY "public"."followers"
 
 ALTER TABLE ONLY "public"."followers"
     ADD CONSTRAINT "public_followers_follower_id_fkey" FOREIGN KEY ("follower_id") REFERENCES "public"."users"("id");
+
+ALTER TABLE ONLY "public"."global_chats"
+    ADD CONSTRAINT "public_global_chats_campus_id_fkey" FOREIGN KEY ("campus_id") REFERENCES "public"."campuses"("id");
+
+ALTER TABLE ONLY "public"."global_chats"
+    ADD CONSTRAINT "public_global_chats_college_id_fkey" FOREIGN KEY ("college_id") REFERENCES "public"."colleges"("id");
+
+ALTER TABLE ONLY "public"."global_chats"
+    ADD CONSTRAINT "public_global_chats_program_id_fkey" FOREIGN KEY ("program_id") REFERENCES "public"."programs"("id");
+
+ALTER TABLE ONLY "public"."global_chats"
+    ADD CONSTRAINT "public_global_chats_reply_id_fkey" FOREIGN KEY ("reply_id") REFERENCES "public"."global_chats"("id");
+
+ALTER TABLE ONLY "public"."global_chats"
+    ADD CONSTRAINT "public_global_chats_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
 
 ALTER TABLE ONLY "public"."likes"
     ADD CONSTRAINT "public_likes_post_id_fkey" FOREIGN KEY ("post_id") REFERENCES "public"."posts"("id");
@@ -453,6 +588,12 @@ ALTER TABLE ONLY "public"."reported_users"
 ALTER TABLE ONLY "public"."reported_users"
     ADD CONSTRAINT "public_reported_users_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
 
+ALTER TABLE ONLY "public"."rooms_users"
+    ADD CONSTRAINT "public_rooms_users_room_id_fkey" FOREIGN KEY ("room_id") REFERENCES "public"."rooms"("id");
+
+ALTER TABLE ONLY "public"."rooms_users"
+    ADD CONSTRAINT "public_rooms_users_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
+
 ALTER TABLE ONLY "public"."suggested_features"
     ADD CONSTRAINT "public_suggested_features_suggested_by_id_fkey" FOREIGN KEY ("suggested_by_id") REFERENCES "public"."users"("id");
 
@@ -464,6 +605,8 @@ ALTER TABLE ONLY "public"."users"
 
 ALTER TABLE "public"."campuses" ENABLE ROW LEVEL SECURITY;
 
+ALTER TABLE "public"."chats" ENABLE ROW LEVEL SECURITY;
+
 ALTER TABLE "public"."colleges" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."comments" ENABLE ROW LEVEL SECURITY;
@@ -473,6 +616,8 @@ ALTER TABLE "public"."comments_likes" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."followees" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."followers" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "public"."global_chats" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."likes" ENABLE ROW LEVEL SECURITY;
 
@@ -492,6 +637,10 @@ ALTER TABLE "public"."reported_problems" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."reported_users" ENABLE ROW LEVEL SECURITY;
 
+ALTER TABLE "public"."rooms" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "public"."rooms_users" ENABLE ROW LEVEL SECURITY;
+
 ALTER TABLE "public"."suggested_features" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."users" ENABLE ROW LEVEL SECURITY;
@@ -507,9 +656,17 @@ GRANT ALL ON FUNCTION "public"."create_user"("user_id" "uuid", "email" "text", "
 GRANT ALL ON FUNCTION "public"."create_user"("user_id" "uuid", "email" "text", "created_at" timestamp with time zone) TO "authenticated";
 GRANT ALL ON FUNCTION "public"."create_user"("user_id" "uuid", "email" "text", "created_at" timestamp with time zone) TO "service_role";
 
+GRANT ALL ON FUNCTION "public"."get_mention"("user_ids" "text"[]) TO "anon";
+GRANT ALL ON FUNCTION "public"."get_mention"("user_ids" "text"[]) TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_mention"("user_ids" "text"[]) TO "service_role";
+
 GRANT ALL ON TABLE "public"."campuses" TO "anon";
 GRANT ALL ON TABLE "public"."campuses" TO "authenticated";
 GRANT ALL ON TABLE "public"."campuses" TO "service_role";
+
+GRANT ALL ON TABLE "public"."chats" TO "anon";
+GRANT ALL ON TABLE "public"."chats" TO "authenticated";
+GRANT ALL ON TABLE "public"."chats" TO "service_role";
 
 GRANT ALL ON TABLE "public"."colleges" TO "anon";
 GRANT ALL ON TABLE "public"."colleges" TO "authenticated";
@@ -530,6 +687,10 @@ GRANT ALL ON TABLE "public"."followees" TO "service_role";
 GRANT ALL ON TABLE "public"."followers" TO "anon";
 GRANT ALL ON TABLE "public"."followers" TO "authenticated";
 GRANT ALL ON TABLE "public"."followers" TO "service_role";
+
+GRANT ALL ON TABLE "public"."global_chats" TO "anon";
+GRANT ALL ON TABLE "public"."global_chats" TO "authenticated";
+GRANT ALL ON TABLE "public"."global_chats" TO "service_role";
 
 GRANT ALL ON TABLE "public"."likes" TO "anon";
 GRANT ALL ON TABLE "public"."likes" TO "authenticated";
@@ -566,6 +727,14 @@ GRANT ALL ON TABLE "public"."reported_problems" TO "service_role";
 GRANT ALL ON TABLE "public"."reported_users" TO "anon";
 GRANT ALL ON TABLE "public"."reported_users" TO "authenticated";
 GRANT ALL ON TABLE "public"."reported_users" TO "service_role";
+
+GRANT ALL ON TABLE "public"."rooms" TO "anon";
+GRANT ALL ON TABLE "public"."rooms" TO "authenticated";
+GRANT ALL ON TABLE "public"."rooms" TO "service_role";
+
+GRANT ALL ON TABLE "public"."rooms_users" TO "anon";
+GRANT ALL ON TABLE "public"."rooms_users" TO "authenticated";
+GRANT ALL ON TABLE "public"."rooms_users" TO "service_role";
 
 GRANT ALL ON TABLE "public"."suggested_features" TO "anon";
 GRANT ALL ON TABLE "public"."suggested_features" TO "authenticated";

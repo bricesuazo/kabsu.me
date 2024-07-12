@@ -10,6 +10,7 @@ import {
   Check,
   LogOut,
   Menu,
+  MessageCircle,
   Moon,
   SquareMousePointer,
   Sun,
@@ -183,6 +184,18 @@ export default function Header() {
                     <Link href="/account" className="flex w-full items-center">
                       <UserCircle className="mr-2" size="1rem" />
                       Account settings
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    asChild
+                    className="line-clamp-1 w-full cursor-pointer truncate"
+                  >
+                    <Link href="/chat" className="flex w-full items-center">
+                      <MessageCircle className="mr-2" size="1rem" />
+                      Messages
                     </Link>
                   </DropdownMenuItem>
 

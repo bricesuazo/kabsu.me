@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { extractAllMentions, REGEX } from "~/lib/utils";
 import { createClient as createClientAdmin } from "~/supabase/admin";
 import { createClient as createClientServer } from "~/supabase/server";
 import PostPageComponent from "./post-page";
@@ -74,6 +75,33 @@ export async function generateMetadata({
       user_of_post.programs?.colleges?.campus_id
   )
     notFound();
+
+  try {
+    const mentioned = extractAllMentions(post.content);
+
+    const { data } = await supabaseAdmin.rpc("get_mention", {
+      user_ids: mentioned,
+    });
+
+    const formatMentions = (text: string) => {
+      if (!text) return "";
+
+      // Replace mentions
+      const formattedText = text.replace(REGEX, (_, p1) => {
+        const user = data?.find((user) => user.id === p1);
+
+        return `@${user ? user.username : p1}`;
+      });
+
+      return formattedText;
+    };
+
+    return {
+      title: `${formatMentions(post.content)} - @${params.username}`,
+    };
+  } catch (error) {
+    console.log(error);
+  }
 
   return {
     title: `${post.content} - @${params.username}`,

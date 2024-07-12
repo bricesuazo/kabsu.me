@@ -554,6 +554,10 @@ export const BLOCKED_USERNAMES = new Set([
   "system",
   "donate",
   "privacy",
+  "messages",
+  "message",
+  "chat",
+  "chats",
 ]);
 
 export const NEW_FEATURES = [
