@@ -19,11 +19,11 @@ export function ToggleTheme({
     >
       <div className="flex items-center dark:hidden">
         <Sun size="1.25rem" />
-        {/* <span className="ml-1">Light Mode</span> */}
+        <span className="ml-1">Light Mode</span>
       </div>
       <div className="hidden items-center dark:flex">
         <Moon size="1.25rem" />
-        {/* <span className="ml-1">Dark Mode</span> */}
+        <span className="ml-1">Dark Mode</span>
       </div>
     </Button>
   );

@@ -1,4 +1,7 @@
+"use client";
+
 import React, { CSSProperties } from "react";
+import { motion } from "framer-motion";
 
 interface RippleProps {
   mainCircleSize?: number;
@@ -12,7 +15,12 @@ const Ripple = React.memo(function Ripple({
   numCircles = 8,
 }: RippleProps) {
   return (
-    <div className="absolute inset-0 flex items-center justify-center [mask-image:linear-gradient(to_bottom,white,transparent)]">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="absolute inset-0 flex items-center justify-center [mask-image:linear-gradient(to_bottom,white,transparent)]"
+    >
       {Array.from({ length: numCircles }, (_, i) => {
         const size = mainCircleSize + i * 70;
         const opacity = mainCircleOpacity - i * 0.03;
@@ -38,7 +46,7 @@ const Ripple = React.memo(function Ripple({
           />
         );
       })}
-    </div>
+    </motion.div>
   );
 });
 

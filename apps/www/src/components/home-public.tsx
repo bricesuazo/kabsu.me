@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { AlertCircle, Github } from "lucide-react";
 
 import { DEVS_INFO, NEW_FEATURES } from "@kabsu.me/constants";
@@ -18,6 +19,7 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { Skeleton } from "./ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 const THESIS_INFO = [
   {
@@ -170,11 +172,10 @@ const THESIS_INFO = [
 
 export default function HomePublic({ error }: { error?: string }) {
   return (
-    <div className="space-y-10 px-4">
-      {/* NEW HERO SECTION */}
-      <div className="relative h-screen w-full overflow-hidden">
-        <Ripple />
-        <nav className="relative z-50 flex w-full items-center justify-between border-b p-4">
+    <>
+      {/* NAV BAR */}
+      <nav className="fixed z-50 w-full border-b bg-white p-4 dark:bg-[#121212]">
+        <div className="container flex max-w-screen-xl items-center justify-between">
           <div className="flex items-center gap-x-2">
             <Image
               src="/logo.svg"
@@ -184,18 +185,39 @@ export default function HomePublic({ error }: { error?: string }) {
               priority
               className="pointer-events-none mx-auto select-none"
             />
-            <h1 className="text-center text-2xl font-bold">Kabsu.me</h1>
+            <h1 className="text-center text-xl font-semibold xs:text-2xl">
+              Kabsu.me
+            </h1>
           </div>
           <div className="flex items-center gap-x-2">
-            <Link href="https://github.com/bricesuazo/kabsu.me" target="_blank">
-              <Button variant="outline" className="rounded-full">
-                <Github size="1.25rem" />
-              </Button>
-            </Link>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="rounded-full"
+                  asChild
+                >
+                  <Link
+                    href="https://github.com/bricesuazo/kabsu.me"
+                    target="_blank"
+                  >
+                    <Github size="1.25rem" />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Source Code</TooltipContent>
+            </Tooltip>
+
             <ToggleTheme />
           </div>
-        </nav>
-        <div className="relative flex h-full w-full flex-col items-center justify-center gap-y-8 lg:gap-y-12">
+        </div>
+      </nav>
+
+      {/* HERO SECTION */}
+      <div className="container relative flex min-h-screen w-full max-w-screen-xl items-center justify-center overflow-hidden px-0">
+        <Ripple />
+        <div className="relative flex h-full w-full flex-col items-center justify-center gap-y-8 px-4 lg:gap-y-12">
           <h1 className="text-balance text-center text-5xl font-semibold text-primary dark:text-white lg:text-7xl">
             Exclusive Social Hub for Cavite State University
           </h1>
@@ -204,8 +226,8 @@ export default function HomePublic({ error }: { error?: string }) {
             University students, faculty, and alumni.
           </h4>
 
-          <div className="flex flex-col gap-y-2">
-            <div className="z-50 mx-auto">
+          <div className="flex flex-col gap-y-4">
+            <div className="mx-auto">
               <SigninButton />
             </div>
 
@@ -230,7 +252,9 @@ export default function HomePublic({ error }: { error?: string }) {
             )}
 
             <Suspense
-              fallback={<Skeleton className="my-1 h-3 w-36 rounded-full" />}
+              fallback={
+                <Skeleton className="mx-auto my-1 h-3 w-56 rounded-full" />
+              }
             >
               <UsersLength />
             </Suspense>
@@ -240,150 +264,128 @@ export default function HomePublic({ error }: { error?: string }) {
           This website is not affiliated with Cavite State University.
         </p>
       </div>
+      <div className="container max-w-screen-xl space-y-10">
+        <h1 className="text-center text-4xl font-bold text-primary">
+          New Features
+        </h1>
 
-      <h1 className="text-center text-4xl font-bold text-primary">
-        New Features
-      </h1>
+        {/* FEATURES SECTION */}
+        <div className="relative flex flex-col gap-y-1">
+          <Marquee pauseOnHover className="[--duration:30s]">
+            {NEW_FEATURES.map((feature) => {
+              return (
+                <ShineBorder
+                  key={feature.index}
+                  className="flex w-full flex-col items-center justify-center rounded-sm bg-green-50/50 p-4 hover:bg-green-50 dark:bg-green-950/10 hover:dark:bg-green-950/50"
+                  color={["#41B75E50", "#227B3C50"]}
+                >
+                  <p className="text-primary">
+                    <feature.icon className="size-14" />
+                  </p>
+                  <p className="text-xl font-bold text-primary">
+                    {feature.title}
+                  </p>
+                  <p className="text-center text-xs text-muted-foreground">
+                    {feature.description}
+                  </p>
+                </ShineBorder>
+              );
+            })}
+          </Marquee>
+          <Marquee reverse pauseOnHover className="[--duration:30s]">
+            {[...NEW_FEATURES.reverse()].map((feature) => {
+              return (
+                <ShineBorder
+                  key={feature.index}
+                  className="flex w-full flex-col items-center justify-center rounded-sm bg-green-50/50 p-4 hover:bg-green-50 dark:bg-green-950/10 hover:dark:bg-green-950/50"
+                  color={["#41B75E50", "#227B3C50"]}
+                >
+                  <p className="text-primary">
+                    <feature.icon className="size-14" />
+                  </p>
+                  <p className="text-xl font-bold text-primary">
+                    {feature.title}
+                  </p>
+                  <p className="text-center text-xs text-muted-foreground">
+                    {feature.description}
+                  </p>
+                </ShineBorder>
+              );
+            })}
+          </Marquee>
 
-      <div className="relative flex flex-col gap-y-1">
-        <Marquee pauseOnHover className="[--duration:30s]">
-          {NEW_FEATURES.map((feature) => {
-            return (
-              <ShineBorder
-                key={feature.index}
-                className="flex w-full flex-col items-center justify-center rounded-sm bg-green-50/50 p-4 hover:bg-green-50 dark:bg-green-950/10 hover:dark:bg-green-950/50"
-                color={["#41B75E50", "#227B3C50"]}
-              >
-                <p className="text-primary">
-                  <feature.icon className="size-14" />
-                </p>
-                <p className="text-xl font-bold text-primary">
-                  {feature.title}
-                </p>
-                <p className="text-center text-xs text-muted-foreground">
-                  {feature.description}
-                </p>
-              </ShineBorder>
-            );
-          })}
-        </Marquee>
-        <Marquee reverse pauseOnHover className="[--duration:30s]">
-          {[...NEW_FEATURES.reverse()].map((feature) => {
-            return (
-              <ShineBorder
-                key={feature.index}
-                className="flex w-full flex-col items-center justify-center rounded-sm bg-green-50/50 p-4 hover:bg-green-50 dark:bg-green-950/10 hover:dark:bg-green-950/50"
-                color={["#41B75E50", "#227B3C50"]}
-              >
-                <p className="text-primary">
-                  <feature.icon className="size-14" />
-                </p>
-                <p className="text-xl font-bold text-primary">
-                  {feature.title}
-                </p>
-                <p className="text-center text-xs text-muted-foreground">
-                  {feature.description}
-                </p>
-              </ShineBorder>
-            );
-          })}
-        </Marquee>
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-[#121212]"></div>
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-[#121212]"></div>
+        </div>
 
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-[#121212]"></div>
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-[#121212]"></div>
-      </div>
+        <h1 className="text-center text-4xl font-bold text-primary">
+          Partnerships
+        </h1>
 
-      <h1 className="text-center text-4xl font-bold text-primary">
-        Partnerships
-      </h1>
+        {/* PARTNERSHIPS SECTION */}
+        <div className="">
+          <BentoGrid className="grid grid-cols-5">
+            {THESIS_INFO.map((thesis, i) => {
+              return <BentoCard {...thesis} />;
+            })}
+          </BentoGrid>
+        </div>
 
-      <div className="">
-        <BentoGrid className="grid grid-cols-5">
-          {THESIS_INFO.map((thesis, i) => {
-            return <BentoCard {...thesis} />;
-          })}
-        </BentoGrid>
-      </div>
+        {/* ABOUT DEV COMPONENT */}
+        <div>
+          <h2 className="py-4 text-center text-4xl font-bold text-primary">
+            Development Team
+          </h2>
+          <p className="mx-auto max-w-lg text-center">
+            We are a group of passionate Computer Science students at Cavite
+            State University - Main Campus.
+          </p>
 
-      {/* ABOUT DEV COMPONENT */}
-      <div>
-        <h2 className="py-4 text-center text-4xl font-bold text-primary">
-          Development Team
-        </h2>
-        <p className="mx-auto max-w-lg text-center">
-          We are a group of passionate Computer Science students at Cavite State
-          University - Main Campus.
-        </p>
-
-        <div className="mx-auto mt-4 grid grid-cols-1 gap-4 rounded-lg border-2 p-4 md:grid-cols-3 lg:grid-cols-5">
-          {DEVS_INFO.map((dev) => {
-            return (
-              <div
-                key={dev.index}
-                className="flex flex-col items-center gap-y-4 rounded-lg p-3"
-              >
-                <Image
-                  src={dev.image}
-                  alt={dev.name}
-                  className="aspect-square rounded-full object-cover object-center saturate-0"
-                  width="80"
-                  height="80"
-                />
-                <div className="flex flex-col items-center text-center">
-                  <p className="font-semibold">{dev.name}</p>
-                  <p className="text-sm">{dev.role}</p>
-                  <div className="flex gap-x-1 pt-2">
-                    {dev.links.map((link, i) => {
-                      return (
-                        <Link
-                          key={i}
-                          href={link.url}
-                          target="_blank"
-                          className="hover:text-primary"
-                        >
-                          <div className="grid place-items-center p-1">
-                            <link.icon size="1rem" />
-                          </div>
-                        </Link>
-                      );
-                    })}
+          <div className="mx-auto mt-4 grid grid-cols-1 gap-4 rounded-lg border-2 p-4 md:grid-cols-3 lg:grid-cols-5">
+            {DEVS_INFO.map((dev) => {
+              return (
+                <div
+                  key={dev.index}
+                  className="flex flex-col items-center gap-y-4 rounded-lg p-3"
+                >
+                  <Image
+                    src={dev.image}
+                    alt={dev.name}
+                    className="aspect-square rounded-full object-cover object-center saturate-0"
+                    width="80"
+                    height="80"
+                  />
+                  <div className="flex flex-col items-center text-center">
+                    <p className="font-semibold">{dev.name}</p>
+                    <p className="text-sm">{dev.role}</p>
+                    <div className="flex gap-x-1 pt-2">
+                      {dev.links.map((link, i) => {
+                        return (
+                          <Link
+                            key={i}
+                            href={link.url}
+                            target="_blank"
+                            className="hover:text-primary"
+                          >
+                            <div className="grid place-items-center p-1">
+                              <link.icon size="1rem" />
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+        </div>
+        <div>
+          <Separator className="mx-auto w-8" />
+          <Footer />
         </div>
       </div>
-      {/* <div className="grid place-items-center space-y-8">
-        <div className="">
-          <div className="relative mx-auto aspect-video w-80">
-            <Image
-              src="/adventura-logo.png"
-              alt=""
-              fill
-              sizes="100%"
-              className="pointer-events-none hidden select-none object-contain dark:block"
-            />
-            <Image
-              src="/adventura-logo-dark.png"
-              alt=""
-              fill
-              sizes="100%"
-              className="pointer-events-none select-none object-contain dark:hidden"
-            />
-          </div>
-          <p className="text-balance text-center">
-            Adventura is a Visual Novel game that allows the users to navigate
-            inside the actual place of Cavite State University Indang Campus.
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/adventura">Play Adventura</Link>
-        </Button>
-      </div> */}
-      <Separator className="mx-auto w-8" />
-      <Footer />
-    </div>
+    </>
   );
 }
 
