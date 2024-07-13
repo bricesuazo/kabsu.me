@@ -28,25 +28,65 @@ export const chatsRouter = router({
       .is("deleted_at", null)
       .neq("rooms_users.user_id", ctx.auth.user.id);
 
-    // let image_url: string | null = null;
-    // if (user.image_name && !user.image_name.startsWith("https://")) {
-    //   const { data } = await ctx.supabase.storage
-    //     .from("users")
-    //     .createSignedUrl(user.id + "/avatar/" + user.image_name, 60 * 60 * 24);
-    //   if (data) {
-    //     image_url = data.signedUrl;
-    //   }
-    // }
-    // return user.image_name?.startsWith("https://")
-    //   ? {
-    //       ...user,
-    //       image_url: user.image_name,
-    //     }
-    //   : user.image_name && image_url
-    //     ? { ...user, image_url }
-    //     : { ...user, image_name: null };
+    const image_urls: {
+      error: string | null;
+      path: string | null;
+      signedUrl: string;
+    }[] = [];
 
-    return rooms ?? [];
+    const { data } = await ctx.supabase.storage
+      .from("users")
+      .createSignedUrls(
+        [
+          ...new Set(
+            (rooms ?? []).flatMap((room) =>
+              room.rooms_users
+                .filter((user) => !user.users?.image_name?.startsWith("https:"))
+                .map((user) =>
+                  user.users?.image_name &&
+                  !user.users.image_name.startsWith("https:")
+                    ? user.users.id + "/avatar/" + user.users.image_name
+                    : "",
+                ),
+            ),
+          ),
+        ],
+        60 * 60 * 24,
+      );
+
+    if (data !== null) {
+      image_urls.push(...data);
+    }
+
+    return (rooms ?? []).map((room) => ({
+      ...room,
+      rooms_users: room.rooms_users.map((user) => {
+        const signed_url = image_urls.find(
+          (url) =>
+            url.path === user.users?.id + "/avatar/" + user.users?.image_name,
+        );
+        return {
+          ...user,
+          users: {
+            id: user.users?.id,
+            username: user.users?.username,
+            ...(user.users?.image_name?.startsWith("https:")
+              ? {
+                  image_name: user.users.image_name,
+                  image_url: user.users.image_name,
+                }
+              : user.users?.image_name && signed_url
+                ? {
+                    image_name: user.users.image_name,
+                    image_url: signed_url.signedUrl,
+                  }
+                : {
+                    image_name: null,
+                  }),
+          },
+        };
+      }),
+    }));
   }),
   getRoom: protectedProcedure
     .input(
@@ -58,7 +98,7 @@ export const chatsRouter = router({
       const { data: room } = await ctx.supabase
         .from("rooms")
         .select(
-          "*, chats(id, content, user_id, created_at), rooms_users(users(id, username, image_name))",
+          "*, chats(id, content, user_id, users(image_name), created_at), rooms_users!inner(user_id, users(id, username, image_name))",
         )
         .eq("id", input.room_id)
         .neq("rooms_users.user_id", ctx.auth.user.id)
@@ -66,16 +106,117 @@ export const chatsRouter = router({
         .order("created_at", { ascending: true, referencedTable: "chats" })
         .single();
 
-      if (!room) return null;
+      if (!room?.rooms_users[0]?.users) return null;
+
+      const image_urls: {
+        error: string | null;
+        path: string | null;
+        signedUrl: string;
+      }[] = [];
+
+      const { data } = await ctx.supabase.storage
+        .from("users")
+        .createSignedUrls(
+          room.rooms_users[0]?.users?.image_name &&
+            !room.rooms_users[0].users.image_name.startsWith("https:")
+            ? [
+                ...new Set([
+                  ...room.chats
+                    .filter(
+                      (message) =>
+                        !message.users?.image_name?.startsWith("https://") &&
+                        message.user_id !== ctx.auth.user.id,
+                    )
+                    .map(
+                      (message) =>
+                        message.user_id +
+                        "/avatar/" +
+                        message.users?.image_name,
+                    ),
+                  room.rooms_users[0].user_id +
+                    "/avatar/" +
+                    room.rooms_users[0].users.image_name,
+                ]),
+              ]
+            : [
+                ...new Set(
+                  room.chats
+                    .filter(
+                      (message) =>
+                        !message.users?.image_name?.startsWith("https://") &&
+                        message.user_id !== ctx.auth.user.id,
+                    )
+                    .map(
+                      (message) =>
+                        message.user_id +
+                        "/avatar/" +
+                        message.users?.image_name,
+                    ),
+                ),
+              ],
+          60 * 60 * 24,
+        );
+
+      if (data !== null) {
+        image_urls.push(...data);
+      }
+
+      const to_signed_url = image_urls.find(
+        (url) =>
+          url.path ===
+          room.rooms_users[0]?.user_id +
+            "/avatar/" +
+            room.rooms_users[0]?.users?.image_name,
+      );
 
       return {
-        ...room,
-        chats: room.chats.map((chat) => ({
-          id: chat.id,
-          content: chat.content,
-          created_at: chat.created_at,
-          is_me: chat.user_id === ctx.auth.user.id,
-        })),
+        id: room.id,
+        to: room.rooms_users[0].users.image_name?.startsWith("https://")
+          ? {
+              id: room.rooms_users[0].user_id,
+              username: room.rooms_users[0].users.username,
+              image_name: room.rooms_users[0].users.image_name,
+              image_url: room.rooms_users[0].users.image_name,
+            }
+          : room.rooms_users[0].users.image_name && to_signed_url
+            ? {
+                id: room.rooms_users[0].user_id,
+                username: room.rooms_users[0].users.username,
+                image_name: room.rooms_users[0].users.image_name,
+                image_url: to_signed_url.signedUrl,
+              }
+            : {
+                id: room.rooms_users[0].user_id,
+                username: room.rooms_users[0].users.username,
+                image_name: null,
+              },
+
+        chats: room.chats.map((message) => {
+          const signed_url = image_urls.find(
+            (url) =>
+              url.path ===
+              message.user_id + "/avatar/" + message.users?.image_name,
+          );
+          return {
+            id: message.id,
+            content: message.content,
+            created_at: message.created_at,
+            user_id: message.user_id,
+            user: message.users?.image_name?.startsWith("https://")
+              ? {
+                  image_name: message.users.image_name,
+                  image_url: message.users.image_name,
+                }
+              : message.users?.image_name && signed_url
+                ? {
+                    image_name: message.users.image_name,
+                    image_url: signed_url.signedUrl,
+                  }
+                : {
+                    image_name: null,
+                  },
+          };
+        }),
       };
     }),
   sendMessage: protectedProcedure
@@ -259,7 +400,9 @@ export const chatsRouter = router({
     .query(async ({ ctx, input }) => {
       const { data: user } = await ctx.supabase
         .from("users")
-        .select("program_id, programs(college_id, colleges(campus_id))")
+        .select(
+          "image_name, program_id, programs(college_id, colleges(campus_id))",
+        )
         .eq("id", ctx.auth.user.id)
         .single();
 
@@ -272,7 +415,7 @@ export const chatsRouter = router({
       let query = ctx.supabase
         .from("global_chats")
         .select(
-          "*, users!inner(program_id, programs!inner(college_id, colleges!inner(campus_id)))",
+          "*, users!inner(image_name, program_id, programs!inner(college_id, colleges!inner(campus_id)))",
         )
         .eq("type", input.type)
         .order("created_at")
@@ -288,11 +431,60 @@ export const chatsRouter = router({
 
       const { data: messages } = await query;
 
-      return (messages ?? []).map((message) => ({
-        id: message.id,
-        content: message.content,
-        created_at: message.created_at,
-        is_me: message.user_id === ctx.auth.user.id,
-      }));
+      const image_urls: {
+        error: string | null;
+        path: string | null;
+        signedUrl: string;
+      }[] = [];
+      const { data } = await ctx.supabase.storage
+        .from("users")
+        .createSignedUrls(
+          [
+            ...new Set(
+              (messages ?? [])
+                .filter(
+                  (message) =>
+                    !message.users.image_name?.startsWith("https://") &&
+                    message.user_id !== ctx.auth.user.id,
+                )
+                .map(
+                  (message) =>
+                    message.user_id + "/avatar/" + message.users.image_name,
+                ),
+            ),
+          ],
+          60 * 60 * 24,
+        );
+
+      if (data !== null) {
+        image_urls.push(...data);
+      }
+
+      return (messages ?? []).map((message) => {
+        const signed_url = image_urls.find(
+          (url) =>
+            url.path ===
+            message.user_id + "/avatar/" + message.users.image_name,
+        );
+        return {
+          id: message.id,
+          content: message.content,
+          created_at: message.created_at,
+          user_id: message.user_id,
+          user: message.users.image_name?.startsWith("https://")
+            ? {
+                image_name: message.users.image_name,
+                image_url: message.users.image_name,
+              }
+            : message.users.image_name && signed_url
+              ? {
+                  image_name: message.users.image_name,
+                  image_url: signed_url.signedUrl,
+                }
+              : {
+                  image_name: null,
+                },
+        };
+      });
     }),
 });

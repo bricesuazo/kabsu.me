@@ -41,17 +41,35 @@ export default function Chat(
     | {
         type: "room";
         room_id: string;
-        to: {
-          id: string;
-          username: string;
-        };
+        to:
+          | {
+              id: string;
+              username: string;
+              image_name: string;
+              image_url: string;
+            }
+          | {
+              id: string;
+              username: string;
+              image_name: null;
+            };
       }
   ) & {
+    current_user: RouterOutput["auth"]["getCurrentUser"];
     messages: {
       id: string;
       content: string;
       created_at: string;
-      is_me: boolean;
+      user_id: string;
+      user:
+        | {
+            image_name: string;
+            image_url: string;
+          }
+        | {
+            image_name: null;
+            image_url?: undefined;
+          };
     }[];
   },
 ) {
@@ -98,7 +116,11 @@ export default function Chat(
             <>
               <Link href={`/${props.to.username}`}>
                 <Image
-                  src="/default-avatar.jpg"
+                  src={
+                    props.to.image_name
+                      ? props.to.image_url
+                      : "/default-avatar.jpg"
+                  }
                   width={32}
                   height={32}
                   alt="Profile picture"
@@ -163,12 +185,21 @@ export default function Chat(
                   ref={messages.length - 1 === index ? messagesEndRef : null}
                   className={cn(
                     "flex items-end gap-2",
-                    message.is_me && "flex-row-reverse",
+                    message.user_id === props.current_user.id &&
+                      "flex-row-reverse",
                   )}
                 >
                   <div>
                     <Image
-                      src="/default-avatar.jpg"
+                      src={
+                        props.current_user.id === message.user_id
+                          ? props.current_user.image_name
+                            ? props.current_user.image_url
+                            : "/default-avatar.jpg"
+                          : message.user.image_name
+                            ? message.user.image_url
+                            : "/default-avatar.jpg"
+                      }
                       width={28}
                       height={28}
                       alt="Profile picture"
@@ -179,13 +210,16 @@ export default function Chat(
                   <div
                     className={cn(
                       "group flex items-center gap-2",
-                      message.is_me && "flex-row-reverse",
+                      message.user_id === props.current_user.id &&
+                        "flex-row-reverse",
                     )}
                   >
                     <div
                       className={cn(
                         "max-w-60 rounded-md bg-muted px-3 py-2 xs:max-w-72 sm:max-w-96",
-                        message.is_me ? "rounded-br-none" : "rounded-bl-none",
+                        message.user_id === props.current_user.id
+                          ? "rounded-br-none"
+                          : "rounded-bl-none",
                       )}
                     >
                       <p>{message.content}</p>
@@ -193,7 +227,8 @@ export default function Chat(
                     <p
                       className={cn(
                         "hidden truncate text-xs text-muted-foreground group-hover:block",
-                        !message.is_me && "text-right",
+                        message.user_id !== props.current_user.id &&
+                          "text-right",
                       )}
                     >
                       {formatDistanceToNow(message.created_at, {
@@ -219,7 +254,13 @@ export default function Chat(
                     id: String(Math.random()),
                     content: values.message,
                     created_at: new Date().toISOString(),
-                    is_me: true,
+                    user_id: props.current_user.id,
+                    user: props.current_user.image_name
+                      ? {
+                          image_name: props.current_user.image_name,
+                          image_url: props.current_user.image_url,
+                        }
+                      : { image_name: null },
                   },
                 ]);
                 form.reset();

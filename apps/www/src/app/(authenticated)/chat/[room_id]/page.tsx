@@ -15,23 +15,28 @@ export default async function RoomPage({
     room_id === "college" ||
     room_id === "program"
   ) {
-    const [chats, getMyUniversityStatus] = await Promise.all([
+    const [chats, getMyUniversityStatus, getCurrentUser] = await Promise.all([
       api.chats.getGlobalChatMessages.query({
         type: room_id,
       }),
       api.auth.getMyUniversityStatus.query(),
+      api.auth.getCurrentUser.query(),
     ]);
     return (
       <GlobalChatClient
         type={room_id}
         chats={chats}
         my_university_status={getMyUniversityStatus}
+        current_user={getCurrentUser}
       />
     );
   }
 
-  const getRoom = await api.chats.getRoom.query({ room_id });
+  const [getRoom, getCurrentUser] = await Promise.all([
+    api.chats.getRoom.query({ room_id }),
+    api.auth.getCurrentUser.query(),
+  ]);
   if (!getRoom) redirect("/chat");
 
-  return <RoomPageClient getRoom={getRoom} />;
+  return <RoomPageClient getRoom={getRoom} current_user={getCurrentUser} />;
 }

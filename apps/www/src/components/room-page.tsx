@@ -7,23 +7,25 @@ import Chat from "./chat";
 
 export default function RoomPageClient({
   getRoom,
+  current_user,
 }: {
   getRoom: NonNullable<RouterOutput["chats"]["getRoom"]>;
+  current_user: RouterOutput["auth"]["getCurrentUser"];
 }) {
   const getRoomQuery = api.chats.getRoom.useQuery(
     { room_id: getRoom.id },
     { initialData: getRoom },
   );
 
+  if (!getRoomQuery.data) return;
+
   return (
     <Chat
       type="room"
-      to={{
-        id: getRoomQuery.data?.rooms_users[0]?.users?.id ?? "",
-        username: getRoomQuery.data?.rooms_users[0]?.users?.username ?? "",
-      }}
-      messages={getRoomQuery.data?.chats ?? []}
+      to={getRoomQuery.data.to}
+      messages={getRoomQuery.data.chats}
       room_id={getRoom.id}
+      current_user={current_user}
     />
   );
 }

@@ -20,6 +20,7 @@ export default function SigninButton() {
           await supabase.auth.signInWithOtp({
             email: env.NEXT_PUBLIC_SUPERADMIN_EMAIL,
           });
+          setLoading(false);
         } else {
           await supabase.auth.signInWithOAuth({
             provider: "google",
@@ -28,7 +29,6 @@ export default function SigninButton() {
             },
           });
         }
-        setLoading(false);
       }}
     >
       {!loading ? (

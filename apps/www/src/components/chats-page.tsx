@@ -7,8 +7,6 @@ import { formatDistanceToNow } from "date-fns";
 import debounce from "lodash.debounce";
 import { Book, Globe2, School, School2 } from "lucide-react";
 
-
-
 import { Input } from "~/components/ui/input";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { api } from "~/lib/trpc/client";
@@ -19,7 +17,6 @@ import { Separator } from "./ui/separator";
 import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import VerifiedBadge from "./verified-badge";
-
 
 export default function ChatsPage() {
   const searchMutation = api.users.search.useMutation();
@@ -209,6 +206,7 @@ export default function ChatsPage() {
           ) : (
             getAllRoomsQuery.data.map((room) => (
               <Button
+                key={room.id}
                 asChild
                 variant="ghost"
                 className="h-auto justify-start px-4 py-3"
@@ -220,7 +218,11 @@ export default function ChatsPage() {
                 >
                   <div>
                     <Image
-                      src="/default-avatar.jpg"
+                      src={
+                        room.rooms_users[0]?.users.image_name
+                          ? room.rooms_users[0]?.users.image_url
+                          : "/default-avatar.jpg"
+                      }
                       width={36}
                       height={36}
                       alt="Profile picture"
@@ -230,7 +232,7 @@ export default function ChatsPage() {
                   <div>
                     <p className="text-sm">
                       {room.rooms_users
-                        .map((user) => `@${user.users?.username}`)
+                        .map((user) => `@${user.users.username}`)
                         .join(", ")}
                     </p>
                     {room.chats[0] && (
