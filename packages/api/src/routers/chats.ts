@@ -98,7 +98,7 @@ export const chatsRouter = router({
       const { data: room } = await ctx.supabase
         .from("rooms")
         .select(
-          "*, chats(id, content, user_id, users(image_name), created_at), rooms_users!inner(user_id, users(id, username, image_name))",
+          "*, chats(id, content, user_id, users(name, username, image_name), created_at), rooms_users!inner(user_id, users(id, username, image_name))",
         )
         .eq("id", input.room_id)
         .neq("rooms_users.user_id", ctx.auth.user.id)
@@ -171,26 +171,23 @@ export const chatsRouter = router({
 
       return {
         id: room.id,
-        to: room.rooms_users[0].users.image_name?.startsWith("https://")
-          ? {
-              id: room.rooms_users[0].user_id,
-              username: room.rooms_users[0].users.username,
-              image_name: room.rooms_users[0].users.image_name,
-              image_url: room.rooms_users[0].users.image_name,
-            }
-          : room.rooms_users[0].users.image_name && to_signed_url
+        to: {
+          id: room.rooms_users[0].user_id,
+          username: room.rooms_users[0].users.username,
+          ...(room.rooms_users[0].users.image_name?.startsWith("https://")
             ? {
-                id: room.rooms_users[0].user_id,
-                username: room.rooms_users[0].users.username,
                 image_name: room.rooms_users[0].users.image_name,
-                image_url: to_signed_url.signedUrl,
+                image_url: room.rooms_users[0].users.image_name,
               }
-            : {
-                id: room.rooms_users[0].user_id,
-                username: room.rooms_users[0].users.username,
-                image_name: null,
-              },
-
+            : room.rooms_users[0].users.image_name && to_signed_url
+              ? {
+                  image_name: room.rooms_users[0].users.image_name,
+                  image_url: to_signed_url.signedUrl,
+                }
+              : {
+                  image_name: null,
+                }),
+        },
         chats: room.chats.map((message) => {
           const signed_url = image_urls.find(
             (url) =>
@@ -202,19 +199,23 @@ export const chatsRouter = router({
             content: message.content,
             created_at: message.created_at,
             user_id: message.user_id,
-            user: message.users?.image_name?.startsWith("https://")
-              ? {
-                  image_name: message.users.image_name,
-                  image_url: message.users.image_name,
-                }
-              : message.users?.image_name && signed_url
+            user: {
+              name: message.users?.name ?? "",
+              username: message.users?.username ?? "",
+              ...(message.users?.image_name?.startsWith("https://")
                 ? {
                     image_name: message.users.image_name,
-                    image_url: signed_url.signedUrl,
+                    image_url: message.users.image_name,
                   }
-                : {
-                    image_name: null,
-                  },
+                : message.users?.image_name && signed_url
+                  ? {
+                      image_name: message.users.image_name,
+                      image_url: signed_url.signedUrl,
+                    }
+                  : {
+                      image_name: null,
+                    }),
+            },
           };
         }),
       };
@@ -415,7 +416,7 @@ export const chatsRouter = router({
       let query = ctx.supabase
         .from("global_chats")
         .select(
-          "*, users!inner(image_name, program_id, programs!inner(college_id, colleges!inner(campus_id)))",
+          "*, users!inner(name, username, image_name, program_id, programs!inner(college_id, colleges!inner(campus_id)))",
         )
         .eq("type", input.type)
         .order("created_at")
@@ -471,19 +472,23 @@ export const chatsRouter = router({
           content: message.content,
           created_at: message.created_at,
           user_id: message.user_id,
-          user: message.users.image_name?.startsWith("https://")
-            ? {
-                image_name: message.users.image_name,
-                image_url: message.users.image_name,
-              }
-            : message.users.image_name && signed_url
+          user: {
+            name: message.users.name,
+            username: message.users.username,
+            ...(message.users.image_name?.startsWith("https://")
               ? {
                   image_name: message.users.image_name,
-                  image_url: signed_url.signedUrl,
+                  image_url: message.users.image_name,
                 }
-              : {
-                  image_name: null,
-                },
+              : message.users.image_name && signed_url
+                ? {
+                    image_name: message.users.image_name,
+                    image_url: signed_url.signedUrl,
+                  }
+                : {
+                    image_name: null,
+                  }),
+          },
         };
       });
     }),

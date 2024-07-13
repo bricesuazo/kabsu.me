@@ -26,7 +26,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { Form, FormControl, FormField, FormItem } from "~/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "~/components/ui/form";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
 import { api } from "~/lib/trpc/client";
@@ -61,7 +67,10 @@ export default function Chat(
       content: string;
       created_at: string;
       user_id: string;
-      user:
+      user: {
+        name: string;
+        username: string;
+      } & (
         | {
             image_name: string;
             image_url: string;
@@ -69,7 +78,8 @@ export default function Chat(
         | {
             image_name: null;
             image_url?: undefined;
-          };
+          }
+      );
     }[];
   },
 ) {
@@ -82,14 +92,20 @@ export default function Chat(
   const form = useForm<{ message: string }>({
     resolver: zodResolver(
       z.object({
-        message: z.string().min(1, {
-          message: "Message cannot be empty.",
-        }),
+        message: z
+          .string()
+          .min(1, {
+            message: "Message cannot be empty.",
+          })
+          .max(512, {
+            message: "Message cannot be longer than 512 characters.",
+          }),
       }),
     ),
     defaultValues: {
       message: "",
     },
+    mode: "onChange",
   });
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -189,52 +205,79 @@ export default function Chat(
                       "flex-row-reverse",
                   )}
                 >
-                  <div>
-                    <Image
-                      src={
-                        props.current_user.id === message.user_id
-                          ? props.current_user.image_name
-                            ? props.current_user.image_url
-                            : "/default-avatar.jpg"
-                          : message.user.image_name
-                            ? message.user.image_url
-                            : "/default-avatar.jpg"
-                      }
-                      width={28}
-                      height={28}
-                      alt="Profile picture"
-                      className="rounded-full"
-                    />
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <Image
+                        src={
+                          props.current_user.id === message.user_id
+                            ? props.current_user.image_name
+                              ? props.current_user.image_url
+                              : "/default-avatar.jpg"
+                            : message.user.image_name
+                              ? message.user.image_url
+                              : "/default-avatar.jpg"
+                        }
+                        width={32}
+                        height={32}
+                        alt="Profile picture"
+                        className="rounded-full"
+                      />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/${message.user.username}`}>
+                          View Profile
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
 
                   <div
                     className={cn(
-                      "group flex items-center gap-2",
-                      message.user_id === props.current_user.id &&
-                        "flex-row-reverse",
+                      "flex flex-1 flex-col gap-y-1",
+                      message.user_id === props.current_user.id
+                        ? "items-end"
+                        : "items-start",
                     )}
                   >
+                    <Link
+                      href={`/${message.user.username}`}
+                      className="max-w-60 truncate text-sm text-muted-foreground"
+                    >
+                      {message.user.name} — @{message.user.username}
+                    </Link>
+
                     <div
                       className={cn(
-                        "max-w-60 rounded-md bg-muted px-3 py-2 xs:max-w-72 sm:max-w-96",
-                        message.user_id === props.current_user.id
-                          ? "rounded-br-none"
-                          : "rounded-bl-none",
+                        "group flex items-center gap-2",
+                        message.user_id === props.current_user.id &&
+                          "flex-row-reverse",
                       )}
                     >
-                      <p>{message.content}</p>
+                      <div
+                        className={cn(
+                          "max-w-60 rounded-md bg-muted px-3 py-2 xs:max-w-72 sm:max-w-96",
+                          message.user_id === props.current_user.id
+                            ? "rounded-br-none"
+                            : "rounded-bl-none",
+                        )}
+                      >
+                        <p className="whitespace-pre-wrap break-words">
+                          {message.content}
+                        </p>
+                      </div>
+                      <p
+                        className={cn(
+                          "hidden text-xs text-muted-foreground group-hover:block",
+                          message.user_id === props.current_user.id &&
+                            "text-right",
+                        )}
+                      >
+                        {formatDistanceToNow(message.created_at, {
+                          addSuffix: true,
+                        })}
+                      </p>
                     </div>
-                    <p
-                      className={cn(
-                        "hidden truncate text-xs text-muted-foreground group-hover:block",
-                        message.user_id !== props.current_user.id &&
-                          "text-right",
-                      )}
-                    >
-                      {formatDistanceToNow(message.created_at, {
-                        addSuffix: true,
-                      })}
-                    </p>
                   </div>
                 </div>
               ))}
@@ -255,12 +298,16 @@ export default function Chat(
                     content: values.message,
                     created_at: new Date().toISOString(),
                     user_id: props.current_user.id,
-                    user: props.current_user.image_name
-                      ? {
-                          image_name: props.current_user.image_name,
-                          image_url: props.current_user.image_url,
-                        }
-                      : { image_name: null },
+                    user: {
+                      name: props.current_user.name,
+                      username: props.current_user.username,
+                      ...(props.current_user.image_name
+                        ? {
+                            image_name: props.current_user.image_name,
+                            image_url: props.current_user.image_url,
+                          }
+                        : { image_name: null }),
+                    },
                   },
                 ]);
                 form.reset();
@@ -278,43 +325,45 @@ export default function Chat(
                 }
                 await utils.chats.getRoom.invalidate();
               })}
-              className="flex w-full gap-x-2"
+              className="w-full gap-x-2"
             >
               <FormField
                 control={form.control}
                 name="message"
                 render={({ field }) => (
-                  <FormItem className="flex flex-1 items-center gap-2 space-y-0">
-                    <FormControl>
-                      <TextareaAutosize
-                        {...field}
-                        placeholder="Write a message..."
-                        autoFocus
-                        disabled={form.formState.isSubmitting}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && e.ctrlKey) {
-                            e.preventDefault();
-                          }
-                        }}
-                        rows={1}
-                        maxRows={3}
-                        className="flex w-full flex-1 resize-none rounded-md border border-input bg-background px-3 py-1.5 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      />
-                    </FormControl>
-                    <Button
-                      type="submit"
-                      size="icon"
-                      variant="outline"
-                      disabled={
-                        form.formState.isSubmitting || !form.formState.isValid
-                      }
-                    >
-                      {form.formState.isSubmitting ? (
-                        <Icons.spinner className="size-4 animate-spin" />
-                      ) : (
-                        <Send className="size-4" />
-                      )}
-                    </Button>
+                  <FormItem className="space-y-2">
+                    <FormMessage />
+                    <div className="flex flex-1 items-center gap-2 space-y-0">
+                      <FormControl>
+                        <TextareaAutosize
+                          {...field}
+                          placeholder="Write a message..."
+                          disabled={form.formState.isSubmitting}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && e.ctrlKey) {
+                              e.preventDefault();
+                            }
+                          }}
+                          rows={1}
+                          maxRows={3}
+                          className="flex w-full flex-1 resize-none rounded-md border border-input bg-background px-3 py-1.5 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                      </FormControl>
+                      <Button
+                        type="submit"
+                        size="icon"
+                        variant="outline"
+                        disabled={
+                          form.formState.isSubmitting || !form.formState.isValid
+                        }
+                      >
+                        {form.formState.isSubmitting ? (
+                          <Icons.spinner className="size-4 animate-spin" />
+                        ) : (
+                          <Send className="size-4" />
+                        )}
+                      </Button>
+                    </div>
                   </FormItem>
                 )}
               />
