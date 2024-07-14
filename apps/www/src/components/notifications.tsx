@@ -30,28 +30,33 @@ export default function Notifications() {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          size="icon"
-          variant="ghost"
-          className="relative h-9 w-9 rounded-full"
-        >
-          <Bell size="1.25rem" className="" />
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <PopoverTrigger asChild>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="relative h-9 w-9 rounded-full"
+            >
+              <Bell className="size-5" />
 
-          {getAllNotificationsQuery.data &&
-          getAllNotificationsQuery.data.filter(
-            (notification) => !notification.read,
-          ).length > 0 ? (
-            <p className="absolute right-0 top-0 flex aspect-square h-4 w-4 items-center justify-center rounded-full bg-primary text-[0.5rem] text-white">
-              {
-                getAllNotificationsQuery.data.filter(
-                  (notification) => !notification.read,
-                ).length
-              }
-            </p>
-          ) : null}
-        </Button>
-      </PopoverTrigger>
+              {getAllNotificationsQuery.data &&
+              getAllNotificationsQuery.data.filter(
+                (notification) => !notification.read,
+              ).length > 0 ? (
+                <p className="absolute right-0 top-0 flex aspect-square h-4 w-4 items-center justify-center rounded-full bg-primary text-[0.5rem] text-white">
+                  {
+                    getAllNotificationsQuery.data.filter(
+                      (notification) => !notification.read,
+                    ).length
+                  }
+                </p>
+              ) : null}
+            </Button>
+          </PopoverTrigger>
+        </TooltipTrigger>
+        <TooltipContent>Notifications</TooltipContent>
+      </Tooltip>
       <PopoverContent className="p-2">
         <div className="flex items-center justify-between">
           <h3 className="flex items-center gap-x-2 p-2 font-semibold">

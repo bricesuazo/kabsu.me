@@ -262,12 +262,10 @@ export const chatsRouter = router({
     }),
   getRoomChats: protectedProcedure
     .input(
-      z.object({ cursor: z.number().default(0) }).and(
-        z.object({ type: z.literal("room"), room_id: z.string().uuid() }).or(
-          z.object({
-            type: z.custom<Database["public"]["Enums"]["global_chat_type"]>(),
-          }),
-        ),
+      z.object({ type: z.literal("room"), room_id: z.string().uuid() }).or(
+        z.object({
+          type: z.custom<Database["public"]["Enums"]["global_chat_type"]>(),
+        }),
       ),
     )
     .query(async ({ ctx, input }) => {
@@ -284,7 +282,250 @@ export const chatsRouter = router({
           .is("deleted_at", null)
           .order("created_at", { ascending: false, referencedTable: "chats" })
           .limit(limit, { referencedTable: "chats" })
-          .range(input.cursor * limit, (input.cursor + 1) * limit - 1, {
+          .single();
+
+        if (!room?.rooms_users[0]?.users) return null;
+
+        const image_urls: {
+          error: string | null;
+          path: string | null;
+          signedUrl: string;
+        }[] = [];
+
+        const users_avatar_path = [
+          ...new Set(
+            room.chats
+              .filter(
+                (message) =>
+                  !message.users?.image_name?.startsWith("https://") &&
+                  message.user_id !== ctx.auth.user.id,
+              )
+              .map(
+                (message) =>
+                  message.user_id + "/avatar/" + message.users?.image_name,
+              ),
+          ),
+        ];
+
+        const { data } = await ctx.supabase.storage
+          .from("users")
+          .createSignedUrls(
+            room.rooms_users[0]?.users?.image_name &&
+              !room.rooms_users[0].users.image_name.startsWith("https:")
+              ? [
+                  ...users_avatar_path,
+                  room.rooms_users[0].user_id +
+                    "/avatar/" +
+                    room.rooms_users[0].users.image_name,
+                ]
+              : users_avatar_path,
+            60 * 60 * 24,
+          );
+
+        if (data !== null) {
+          image_urls.push(...data);
+        }
+
+        const to_signed_url = image_urls.find(
+          (url) =>
+            url.path ===
+            room.rooms_users[0]?.user_id +
+              "/avatar/" +
+              room.rooms_users[0]?.users?.image_name,
+        );
+
+        return {
+          type: input.type,
+          room: {
+            id: room.id,
+            to: {
+              id: room.rooms_users[0].user_id,
+              username: room.rooms_users[0].users.username,
+              ...(room.rooms_users[0].users.image_name?.startsWith("https://")
+                ? {
+                    image_name: room.rooms_users[0].users.image_name,
+                    image_url: room.rooms_users[0].users.image_name,
+                  }
+                : room.rooms_users[0].users.image_name && to_signed_url
+                  ? {
+                      image_name: room.rooms_users[0].users.image_name,
+                      image_url: to_signed_url.signedUrl,
+                    }
+                  : {
+                      image_name: null,
+                    }),
+            },
+            chats: room.chats
+              .sort(
+                (a, b) =>
+                  new Date(a.created_at).getTime() -
+                  new Date(b.created_at).getTime(),
+              )
+              .map((message) => {
+                const signed_url = image_urls.find(
+                  (url) =>
+                    url.path ===
+                    message.user_id + "/avatar/" + message.users?.image_name,
+                );
+                return {
+                  id: message.id,
+                  content: message.content,
+                  created_at: message.created_at,
+                  user_id: message.user_id,
+                  user: {
+                    name: message.users?.name ?? "",
+                    username: message.users?.username ?? "",
+                    ...(message.users?.image_name?.startsWith("https://")
+                      ? {
+                          image_name: message.users.image_name,
+                          image_url: message.users.image_name,
+                        }
+                      : message.users?.image_name && signed_url
+                        ? {
+                            image_name: message.users.image_name,
+                            image_url: signed_url.signedUrl,
+                          }
+                        : {
+                            image_name: null,
+                          }),
+                  },
+                };
+              }),
+          },
+        };
+      } else {
+        const { data: user } = await ctx.supabase
+          .from("users")
+          .select(
+            "image_name, program_id, programs(college_id, colleges(campus_id))",
+          )
+          .eq("id", ctx.auth.user.id)
+          .single();
+
+        if (!user?.programs?.colleges)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "User not found",
+          });
+
+        let query = ctx.supabase
+          .from("global_chats")
+          .select(
+            "*, users!inner(name, username, image_name, program_id, programs!inner(college_id, colleges!inner(campus_id)))",
+          )
+          .eq("type", input.type)
+          .is("deleted_at", null)
+          .order("created_at", { ascending: false })
+          .limit(limit);
+
+        if (input.type === "campus") {
+          query = query.eq("campus_id", user.programs.colleges.campus_id);
+        } else if (input.type === "college") {
+          query = query.eq("college_id", user.programs.college_id);
+        } else if (input.type === "program") {
+          query = query.eq("program_id", user.program_id);
+        }
+
+        const { data: messages } = await query;
+
+        const image_urls: {
+          error: string | null;
+          path: string | null;
+          signedUrl: string;
+        }[] = [];
+        const { data } = await ctx.supabase.storage
+          .from("users")
+          .createSignedUrls(
+            [
+              ...new Set(
+                (messages ?? [])
+                  .filter(
+                    (message) =>
+                      !message.users.image_name?.startsWith("https://") &&
+                      message.user_id !== ctx.auth.user.id,
+                  )
+                  .map(
+                    (message) =>
+                      message.user_id + "/avatar/" + message.users.image_name,
+                  ),
+              ),
+            ],
+            60 * 60 * 24,
+          );
+
+        if (data !== null) {
+          image_urls.push(...data);
+        }
+
+        return {
+          type: input.type,
+          room: {
+            id: input.type,
+            chats: (messages ?? [])
+              .sort(
+                (a, b) =>
+                  new Date(a.created_at).getTime() -
+                  new Date(b.created_at).getTime(),
+              )
+              .map((message) => {
+                const signed_url = image_urls.find(
+                  (url) =>
+                    url.path ===
+                    message.user_id + "/avatar/" + message.users.image_name,
+                );
+                return {
+                  id: message.id,
+                  content: message.content,
+                  created_at: message.created_at,
+                  user_id: message.user_id,
+                  user: {
+                    name: message.users.name,
+                    username: message.users.username,
+                    ...(message.users.image_name?.startsWith("https://")
+                      ? {
+                          image_name: message.users.image_name,
+                          image_url: message.users.image_name,
+                        }
+                      : message.users.image_name && signed_url
+                        ? {
+                            image_name: message.users.image_name,
+                            image_url: signed_url.signedUrl,
+                          }
+                        : {
+                            image_name: null,
+                          }),
+                  },
+                };
+              }),
+          },
+        };
+      }
+    }),
+  loadMoreMessages: protectedProcedure
+    .input(
+      z.object({ len: z.number().default(0) }).and(
+        z.object({ type: z.literal("room"), room_id: z.string().uuid() }).or(
+          z.object({
+            type: z.custom<Database["public"]["Enums"]["global_chat_type"]>(),
+          }),
+        ),
+      ),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const limit = 20;
+
+      if (input.type === "room") {
+        const { data: room } = await ctx.supabase
+          .from("rooms")
+          .select(
+            "*, chats(id, content, user_id, users(name, username, image_name), created_at), rooms_users!inner(user_id, users(id, username, image_name))",
+          )
+          .eq("id", input.room_id)
+          .neq("rooms_users.user_id", ctx.auth.user.id)
+          .is("deleted_at", null)
+          .order("created_at", { ascending: false, referencedTable: "chats" })
+          .limit(limit, { referencedTable: "chats" })
+          .range(input.len, input.len + limit, {
             referencedTable: "chats",
           })
           .single();
@@ -339,13 +580,7 @@ export const chatsRouter = router({
               room.rooms_users[0]?.users?.image_name,
         );
 
-        let nextCursor: typeof input.cursor | undefined = undefined;
-        if (room.chats.length >= limit) {
-          nextCursor = input.cursor + 1;
-        }
-
         return {
-          nextCursor,
           type: input.type,
           room: {
             id: room.id,
@@ -428,7 +663,7 @@ export const chatsRouter = router({
           .is("deleted_at", null)
           .order("created_at", { ascending: false })
           .limit(limit)
-          .range(input.cursor * limit, (input.cursor + 1) * limit - 1);
+          .range(input.len, input.len + limit);
 
         if (input.type === "campus") {
           query = query.eq("campus_id", user.programs.colleges.campus_id);
@@ -469,13 +704,7 @@ export const chatsRouter = router({
           image_urls.push(...data);
         }
 
-        let nextCursor: typeof input.cursor | undefined = undefined;
-        if ((messages ?? []).length >= limit) {
-          nextCursor = input.cursor + 1;
-        }
-
         return {
-          nextCursor,
           type: input.type,
           room: {
             id: input.type,

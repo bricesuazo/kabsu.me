@@ -51,6 +51,7 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import { Skeleton } from "./ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export default function Header() {
   const pathname = usePathname();
@@ -76,13 +77,18 @@ export default function Header() {
           `h-[${HEADER_HEIGHT}px]`,
         )}
       >
-        <div className="flex items-center gap-x-2">
+        <div className="flex items-center gap-x-1 xs:gap-x-2">
           <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu size="1rem" className="" />
-              </Button>
-            </SheetTrigger>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu size="1rem" className="" />
+                  </Button>
+                </SheetTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Navigations</TooltipContent>
+            </Tooltip>
             <SheetContent side="left">
               <SheetHeader className="mb-4">
                 <SheetTitle>Kabsu.me</SheetTitle>
@@ -123,23 +129,47 @@ export default function Header() {
           </Sheet>
 
           <Search />
-        </div>
-        <Button variant="link" size="icon" asChild className="px-0">
-          <Link href="/">
-            <div className="w-max">
-              <Image
-                src="/logo.svg"
-                alt=""
-                width={40}
-                height={40}
-                priority
-                className="object-cover"
-              />
-            </div>
-          </Link>
-        </Button>
 
-        <div className="flex items-center gap-x-2">
+          <div className="size-9" />
+        </div>
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger asChild>
+            <Button variant="link" size="icon" asChild className="px-0">
+              <Link href="/">
+                <div className="w-max">
+                  <Image
+                    src="/logo.svg"
+                    alt=""
+                    width={40}
+                    height={40}
+                    priority
+                    className="object-cover"
+                  />
+                </div>
+              </Link>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Go to the homepage</TooltipContent>
+        </Tooltip>
+
+        <div className="flex items-center gap-x-1 xs:gap-x-2">
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="relative h-9 w-9 rounded-full"
+                asChild
+              >
+                <Link href="/chat">
+                  <MessageCircle className="size-5" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+
+            <TooltipContent>Chat</TooltipContent>
+          </Tooltip>
+
           <Notifications />
 
           {getCurrentUserQuery.isLoading ? (
@@ -147,21 +177,27 @@ export default function Header() {
           ) : (
             getCurrentUserQuery.data && (
               <DropdownMenu open={open} onOpenChange={setOpen}>
-                <DropdownMenuTrigger className="cursor-pointer rounded-full p-1">
-                  <div className="relative h-8 w-8">
-                    <Image
-                      src={
-                        getCurrentUserQuery.data.image_name
-                          ? getCurrentUserQuery.data.image_url
-                          : "/default-avatar.jpg"
-                      }
-                      alt="Image"
-                      width={40}
-                      height={40}
-                      className="aspect-square rounded-full object-cover object-center"
-                    />
-                  </div>
-                </DropdownMenuTrigger>
+                <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger className="cursor-pointer rounded-full p-1">
+                      <div className="relative h-8 w-8">
+                        <Image
+                          src={
+                            getCurrentUserQuery.data.image_name
+                              ? getCurrentUserQuery.data.image_url
+                              : "/default-avatar.jpg"
+                          }
+                          alt="Image"
+                          width={40}
+                          height={40}
+                          className="aspect-square rounded-full object-cover object-center"
+                        />
+                      </div>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+
+                  <TooltipContent>Profile</TooltipContent>
+                </Tooltip>
                 <DropdownMenuContent className="w-52">
                   <DropdownMenuItem
                     asChild

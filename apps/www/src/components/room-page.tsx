@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,23 +44,41 @@ export default function RoomPageClient(props: {
   current_user: RouterOutput["auth"]["getCurrentUser"];
   getRoomChats: NonNullable<RouterOutput["chats"]["getRoomChats"]>;
 }) {
-  const getRoomChatsQuery = api.chats.getRoomChats.useInfiniteQuery(
+  const getRoomChatsQuery = api.chats.getRoomChats.useQuery(
     {
       ...(props.type === "room"
         ? { type: props.type, room_id: props.getRoomChats.room.id }
         : { type: props.type }),
     },
-    {
-      initialData: {
-        pages: [props.getRoomChats],
-        pageParams: [0],
-      },
-      getPreviousPageParam: (firstPage) => firstPage?.nextCursor,
-      getNextPageParam: (lastPage) => lastPage?.nextCursor,
-    },
+    { initialData: props.getRoomChats },
   );
   const getMyUniversityStatusQuery = api.auth.getMyUniversityStatus.useQuery();
   const sendMessageMutation = api.chats.sendMessage.useMutation();
+  const [chats, setChats] = useState(getRoomChatsQuery.data?.room.chats ?? []);
+  const [hasMore, setHasMore] = useState(true);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const { ref } = useInView({
+    onChange: (inView) => {
+      if (inView && hasMore) {
+        loadMoreMessagesMutation.mutate({
+          len: chats.length,
+          ...(props.type === "room"
+            ? { type: props.type, room_id: props.getRoomChats.room.id }
+            : { type: props.type }),
+        });
+      }
+    },
+  });
+  const loadMoreMessagesMutation = api.chats.loadMoreMessages.useMutation({
+    onSuccess: (data) => {
+      const new_data = data?.room.chats ?? [];
+      setHasMore(new_data.length !== 0);
+      if (new_data.length > 0) scrollRef.current?.scrollIntoView();
+
+      setChats((prev) => [...new_data, ...prev]);
+    },
+  });
 
   const form = useForm<{ message: string }>({
     resolver: zodResolver(
@@ -81,21 +99,8 @@ export default function RoomPageClient(props: {
     mode: "onChange",
   });
 
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-  function scrollToBottom() {
-    if (messagesEndRef.current) messagesEndRef.current.scrollIntoView();
-  }
-
-  const { ref } = useInView({
-    onChange: (inView) =>
-      inView &&
-      getRoomChatsQuery.hasPreviousPage &&
-      void getRoomChatsQuery.fetchPreviousPage(),
-  });
-
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView(false);
   }, []);
 
   return (
@@ -176,107 +181,108 @@ export default function RoomPageClient(props: {
       <Separator />
 
       <div className="flex h-0 flex-grow">
-        {getRoomChatsQuery.data?.pages.length === 0 ? (
+        {chats.length === 0 ? (
           <div className="grid flex-1 place-items-center">
             <p className="text-muted-foreground">No messages yet.</p>
           </div>
         ) : (
           <ScrollArea className="flex-1 px-4">
-            <div ref={ref} className="grid place-items-center p-4">
-              {getRoomChatsQuery.isFetchingPreviousPage && (
-                <Icons.spinner className="size-5 animate-spin" />
-              )}
-            </div>
             <div className="space-y-4 py-4">
-              {(getRoomChatsQuery.data?.pages ?? []).map((page) =>
-                (page?.room.chats ?? []).map((chat) => (
+              <div ref={ref}>
+                <p className="text-center text-sm text-muted-foreground">
+                  {loadMoreMessagesMutation.isPending && hasMore
+                    ? "Loading more messages..."
+                    : "No more messages."}
+                </p>
+              </div>
+              <div ref={scrollRef} />
+              {chats.map((chat) => (
+                <div
+                  key={chat.id}
+                  className={cn(
+                    "flex items-end gap-2",
+                    chat.user_id === props.current_user.id &&
+                      "flex-row-reverse",
+                  )}
+                >
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <Image
+                        src={
+                          props.current_user.id === chat.user_id
+                            ? props.current_user.image_name
+                              ? props.current_user.image_url
+                              : "/default-avatar.jpg"
+                            : chat.user.image_name
+                              ? chat.user.image_url
+                              : "/default-avatar.jpg"
+                        }
+                        width={32}
+                        height={32}
+                        alt="Profile picture"
+                        className="rounded-full"
+                      />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/${chat.user.username}`}>
+                          View Profile
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
                   <div
-                    key={chat.id}
                     className={cn(
-                      "flex items-end gap-2",
-                      chat.user_id === props.current_user.id &&
-                        "flex-row-reverse",
+                      "flex flex-1 flex-col gap-y-1",
+                      chat.user_id === props.current_user.id
+                        ? "items-end"
+                        : "items-start",
                     )}
                   >
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <Image
-                          src={
-                            props.current_user.id === chat.user_id
-                              ? props.current_user.image_name
-                                ? props.current_user.image_url
-                                : "/default-avatar.jpg"
-                              : chat.user.image_name
-                                ? chat.user.image_url
-                                : "/default-avatar.jpg"
-                          }
-                          width={32}
-                          height={32}
-                          alt="Profile picture"
-                          className="rounded-full"
-                        />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem asChild>
-                          <Link href={`/${chat.user.username}`}>
-                            View Profile
-                          </Link>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Link
+                      href={`/${chat.user.username}`}
+                      className="max-w-52 truncate text-sm text-muted-foreground xs:max-w-60"
+                    >
+                      {chat.user.name} — {chat.user.username}
+                    </Link>
 
                     <div
                       className={cn(
-                        "flex flex-1 flex-col gap-y-1",
-                        chat.user_id === props.current_user.id
-                          ? "items-end"
-                          : "items-start",
+                        "group flex items-center gap-2",
+                        chat.user_id === props.current_user.id &&
+                          "flex-row-reverse",
                       )}
                     >
-                      <Link
-                        href={`/${chat.user.username}`}
-                        className="max-w-60 truncate text-sm text-muted-foreground"
-                      >
-                        {chat.user.name} — {chat.user.username}
-                      </Link>
-
                       <div
                         className={cn(
-                          "group flex items-center gap-2",
-                          chat.user_id === props.current_user.id &&
-                            "flex-row-reverse",
+                          "max-w-60 rounded-md bg-muted px-3 py-2 xs:max-w-72 sm:max-w-96",
+                          chat.user_id === props.current_user.id
+                            ? "rounded-br-none"
+                            : "rounded-bl-none",
                         )}
                       >
-                        <div
-                          className={cn(
-                            "max-w-60 rounded-md bg-muted px-3 py-2 xs:max-w-72 sm:max-w-96",
-                            chat.user_id === props.current_user.id
-                              ? "rounded-br-none"
-                              : "rounded-bl-none",
-                          )}
-                        >
-                          <p className="whitespace-pre-wrap break-words">
-                            {chat.content}
-                          </p>
-                        </div>
-                        <p
-                          className={cn(
-                            "hidden text-xs text-muted-foreground group-hover:block",
-                            chat.user_id === props.current_user.id &&
-                              "text-right",
-                          )}
-                        >
-                          {formatDistanceToNow(chat.created_at, {
-                            addSuffix: true,
-                          })}
+                        <p className="whitespace-pre-wrap break-words">
+                          {chat.content}
                         </p>
                       </div>
+                      <p
+                        className={cn(
+                          "hidden text-xs text-muted-foreground group-hover:block",
+                          chat.user_id === props.current_user.id &&
+                            "text-right",
+                        )}
+                      >
+                        {formatDistanceToNow(chat.created_at, {
+                          addSuffix: true,
+                        })}
+                      </p>
                     </div>
                   </div>
-                )),
-              )}
-              <div ref={messagesEndRef} />
+                </div>
+              ))}
             </div>
+            <div ref={messagesEndRef} />
           </ScrollArea>
         )}
       </div>
@@ -286,27 +292,27 @@ export default function RoomPageClient(props: {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(async (values) => {
-                // setChats((prevChats) => [
-                //   ...prevChats,
-                //   {
-                //     id: new Date().toISOString(),
-                //     content: values.message,
-                //     created_at: new Date().toISOString(),
-                //     user_id: props.current_user.id,
-                //     user: {
-                //       id: props.current_user.id,
-                //       name: props.current_user.name,
-                //       username: props.current_user.username,
-                //       ...(props.current_user.image_name
-                //         ? {
-                //             image_name: props.current_user.image_name,
-                //             image_url: props.current_user.image_url,
-                //           }
-                //         : { image_name: null }),
-                //     },
-                //   },
-                // ]);
-                scrollToBottom();
+                setChats((prev) => [
+                  ...prev,
+                  {
+                    id: new Date().toISOString(),
+                    content: values.message,
+                    created_at: new Date().toISOString(),
+                    user_id: props.current_user.id,
+                    user: {
+                      id: props.current_user.id,
+                      name: props.current_user.name,
+                      username: props.current_user.username,
+                      ...(props.current_user.image_name
+                        ? {
+                            image_name: props.current_user.image_name,
+                            image_url: props.current_user.image_url,
+                          }
+                        : { image_name: null }),
+                    },
+                  },
+                ]);
+                messagesEndRef.current?.scrollIntoView(false);
                 form.reset();
 
                 await sendMessageMutation.mutateAsync(
