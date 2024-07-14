@@ -5,7 +5,7 @@ import { Poppins } from "next/font/google";
 import { headers } from "next/headers";
 import { Analytics } from "@vercel/analytics/react";
 
-import QueryProvider from "~/components/query-provider";
+// import QueryProvider from "~/components/query-provider";
 import { ThemeProvider } from "~/components/theme-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { TooltipProvider } from "~/components/ui/tooltip";
@@ -37,21 +37,21 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(font.className)}>
-        <QueryProvider>
-          <ThemeProvider attribute="class" defaultTheme="light">
-            <TooltipProvider>
-              <TRPCProvider headers={headers()}>
-                {children}
+        {/* <QueryProvider> */}
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <TooltipProvider>
+            <TRPCProvider headers={headers()}>
+              {children}
 
-                <Analytics />
-                {/* TODO: */}
-                {/* {session && <FooterMenu />} */}
-              </TRPCProvider>
-            </TooltipProvider>
+              <Analytics />
+              {/* TODO: */}
+              {/* {session && <FooterMenu />} */}
+            </TRPCProvider>
+          </TooltipProvider>
 
-            <Toaster />
-          </ThemeProvider>
-        </QueryProvider>
+          <Toaster />
+        </ThemeProvider>
+        {/* </QueryProvider> */}
       </body>
     </html>
   );

@@ -193,7 +193,7 @@ export default function PostPageComponent({
         }
         scrollTo={scrollTo}
       />
-      {postQuery.isLoading  ? (
+      {postQuery.isLoading ? (
         <>
           <div className="space-y-2 p-4">
             <div className="flex justify-between">
