@@ -56,16 +56,19 @@ export default function RoomPageClient(
 ) {
   const supabase = createClient();
 
-  const getRoomChatsQuery = api.chats.getRoomChats.useQuery(
-    {
-      ...(props.type === "room"
-        ? { type: props.type, room_id: props.getRoomChats.room.id }
-        : { type: props.type }),
-    },
-    { initialData: props.getRoomChats },
-  );
+  // const getRoomChatsQuery = api.chats.getRoomChats.useQuery(
+  //   {
+  //     ...(props.type === "room"
+  //       ? { type: props.type, room_id: props.getRoomChats.room.id }
+  //       : { type: props.type }),
+  //   },
+  //   { initialData: props.getRoomChats },
+  // );
   const sendMessageMutation = api.chats.sendMessage.useMutation();
-  const [chats, setChats] = useState(getRoomChatsQuery.data?.room.chats ?? []);
+  const [chats, setChats] = useState(
+    // getRoomChatsQuery.data?.room.chats ?? []
+    props.getRoomChats.room.chats,
+  );
   const [hasMore, setHasMore] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -94,14 +97,9 @@ export default function RoomPageClient(
   const form = useForm<{ message: string }>({
     resolver: zodResolver(
       z.object({
-        message: z
-          .string()
-          .min(1, {
-            message: "Message cannot be empty.",
-          })
-          .max(512, {
-            message: "Message cannot be longer than 512 characters.",
-          }),
+        message: z.string().max(512, {
+          message: "Message cannot be longer than 512 characters.",
+        }),
       }),
     ),
     defaultValues: {
@@ -118,10 +116,15 @@ export default function RoomPageClient(
     );
 
     channel
-      .on("broadcast", { event: "new" }, ({ payload }) => {
-        setChats((prev) => [...prev, payload as (typeof chats)[number]]);
-        messagesEndRef.current?.scrollIntoView(false);
-      })
+      .on(
+        "broadcast",
+        { event: "new" },
+        ({ payload }: { payload: (typeof chats)[number] }) => {
+          if (props.current_user.id === payload.user_id) return;
+          setChats((prev) => [...prev, payload]);
+          messagesEndRef.current?.scrollIntoView(false);
+        },
+      )
       .subscribe();
 
     return () => {
@@ -327,17 +330,7 @@ export default function RoomPageClient(
                     content: values.message,
                     created_at: new Date().toISOString(),
                     user_id: props.current_user.id,
-                    user: {
-                      id: props.current_user.id,
-                      name: props.current_user.name,
-                      username: props.current_user.username,
-                      ...(props.current_user.image_name
-                        ? {
-                            image_name: props.current_user.image_name,
-                            image_url: props.current_user.image_url,
-                          }
-                        : { image_name: null }),
-                    },
+                    user: props.current_user,
                   },
                 ]);
                 messagesEndRef.current?.scrollIntoView(false);
@@ -387,7 +380,9 @@ export default function RoomPageClient(
                         size="icon"
                         variant="outline"
                         disabled={
-                          form.formState.isSubmitting || !form.formState.isValid
+                          form.formState.isSubmitting ||
+                          !form.formState.isValid ||
+                          form.watch("message").trim().length === 0
                         }
                       >
                         {form.formState.isSubmitting ? (
