@@ -38,12 +38,24 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
 import { api } from "~/lib/trpc/client";
 import { cn } from "~/lib/utils";
+import { createClient } from "~/supabase/client";
 
-export default function RoomPageClient(props: {
-  type: Database["public"]["Enums"]["global_chat_type"] | "room";
-  current_user: RouterOutput["auth"]["getCurrentUser"];
-  getRoomChats: NonNullable<RouterOutput["chats"]["getRoomChats"]>;
-}) {
+export default function RoomPageClient(
+  props: (
+    | {
+        type: Database["public"]["Enums"]["global_chat_type"];
+        getMyUniversityStatus: RouterOutput["auth"]["getMyUniversityStatus"];
+      }
+    | {
+        type: "room";
+      }
+  ) & {
+    current_user: RouterOutput["auth"]["getCurrentUser"];
+    getRoomChats: NonNullable<RouterOutput["chats"]["getRoomChats"]>;
+  },
+) {
+  const supabase = createClient();
+
   const getRoomChatsQuery = api.chats.getRoomChats.useQuery(
     {
       ...(props.type === "room"
@@ -52,7 +64,6 @@ export default function RoomPageClient(props: {
     },
     { initialData: props.getRoomChats },
   );
-  const getMyUniversityStatusQuery = api.auth.getMyUniversityStatus.useQuery();
   const sendMessageMutation = api.chats.sendMessage.useMutation();
   const [chats, setChats] = useState(getRoomChatsQuery.data?.room.chats ?? []);
   const [hasMore, setHasMore] = useState(true);
@@ -101,6 +112,23 @@ export default function RoomPageClient(props: {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView(false);
+
+    const channel = supabase.channel(
+      `chat_${props.type}_${props.type === "room" ? props.getRoomChats.room.id : props.type === "all" ? "all" : props.type === "campus" ? props.getMyUniversityStatus?.programs?.colleges?.campuses?.id : props.type === "college" ? props.getMyUniversityStatus?.programs?.colleges?.id : props.getMyUniversityStatus?.programs?.id}`,
+    );
+
+    channel
+      .on("broadcast", { event: "new" }, ({ payload }) => {
+        setChats((prev) => [...prev, payload as (typeof chats)[number]]);
+        messagesEndRef.current?.scrollIntoView(false);
+      })
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+      void channel.unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -153,13 +181,13 @@ export default function RoomPageClient(props: {
                 : props.type.charAt(0).toUpperCase() +
                   props.type.slice(1) +
                   `${
-                    getMyUniversityStatusQuery.data
+                    props.getMyUniversityStatus
                       ? `(${
                           props.type === "campus"
-                            ? getMyUniversityStatusQuery.data.programs?.colleges?.campuses?.slug.toUpperCase()
+                            ? props.getMyUniversityStatus.programs?.colleges?.campuses?.slug.toUpperCase()
                             : props.type === "college"
-                              ? getMyUniversityStatusQuery.data.programs?.colleges?.slug.toUpperCase()
-                              : getMyUniversityStatusQuery.data.programs?.slug.toUpperCase()
+                              ? props.getMyUniversityStatus.programs?.colleges?.slug.toUpperCase()
+                              : props.getMyUniversityStatus.programs?.slug.toUpperCase()
                         })`
                       : ""
                   }`}

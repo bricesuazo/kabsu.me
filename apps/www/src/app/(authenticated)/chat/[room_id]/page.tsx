@@ -1,7 +1,10 @@
 import { redirect } from "next/navigation";
 
+
+
 import RoomPageClient from "~/components/room-page";
 import { api } from "~/lib/trpc/server";
+
 
 export default async function RoomPage({
   params: { room_id },
@@ -14,12 +17,14 @@ export default async function RoomPage({
     room_id === "college" ||
     room_id === "program"
   ) {
-    const [getRoomChats, getCurrentUser] = await Promise.all([
-      api.chats.getRoomChats.query({
-        type: room_id,
-      }),
-      api.auth.getCurrentUser.query(),
-    ]);
+    const [getRoomChats, getCurrentUser, getMyUniversityStatus] =
+      await Promise.all([
+        api.chats.getRoomChats.query({
+          type: room_id,
+        }),
+        api.auth.getCurrentUser.query(),
+        api.auth.getMyUniversityStatus.query(),
+      ]);
 
     if (!getRoomChats) redirect("/chat");
 
@@ -28,6 +33,7 @@ export default async function RoomPage({
         type={room_id}
         getRoomChats={getRoomChats}
         current_user={getCurrentUser}
+        getMyUniversityStatus={getMyUniversityStatus}
       />
     );
   } else {

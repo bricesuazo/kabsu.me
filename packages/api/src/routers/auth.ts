@@ -52,7 +52,7 @@ export const authRouter = router({
     const { data: user } = await ctx.supabase
       .from("users")
       .select(
-        "programs(name, slug, colleges(name, slug, campuses(name, slug)))",
+        "programs(id, name, slug, colleges(id, name, slug, campuses(id, name, slug)))",
       )
       .eq("id", ctx.auth.user.id)
       .single();

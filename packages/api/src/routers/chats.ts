@@ -1,3 +1,4 @@
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -106,6 +107,7 @@ export const chatsRouter = router({
         ),
     )
     .mutation(async ({ ctx, input }) => {
+      let channel: RealtimeChannel | undefined = undefined;
       if (input.type === "room") {
         const { data: room } = await ctx.supabase
           .from("rooms")
@@ -121,11 +123,70 @@ export const chatsRouter = router({
             message: "Room not found",
           });
 
-        await ctx.supabase.from("chats").insert({
-          room_id: room.id,
-          user_id: ctx.auth.user.id,
-          content: input.content,
-          reply_id: input.reply_id,
+        const { data: chat } = await ctx.supabase
+          .from("chats")
+          .insert({
+            room_id: room.id,
+            user_id: ctx.auth.user.id,
+            content: input.content,
+            reply_id: input.reply_id,
+          })
+          .select(
+            "id, content, user_id, created_at, users(name, username, image_name)",
+          )
+          .single();
+
+        if (!chat)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to insert chat",
+          });
+
+        let signed_url: string | null = null;
+
+        if (
+          chat.users?.image_name &&
+          !chat.users.image_name.startsWith("https:")
+        ) {
+          const { data } = await ctx.supabase.storage
+            .from("users")
+            .createSignedUrl(
+              chat.user_id + "/avatar/" + chat.users.image_name,
+              60 * 60 * 24,
+            );
+          if (data !== null) {
+            signed_url = data.signedUrl;
+          }
+        }
+
+        channel = ctx.supabase.channel(`chat_${input.type}_${input.room_id}`);
+
+        await channel.send({
+          type: "broadcast",
+          event: "new",
+          payload: {
+            id: chat.id,
+            content: chat.content,
+            created_at: chat.created_at,
+            user_id: chat.user_id,
+            user: {
+              name: chat.users?.name ?? "",
+              username: chat.users?.username ?? "",
+              ...(chat.users?.image_name?.startsWith("https://")
+                ? {
+                    image_name: chat.users.image_name,
+                    image_url: chat.users.image_name,
+                  }
+                : chat.users?.image_name && signed_url
+                  ? {
+                      image_name: chat.users.image_name,
+                      image_url: signed_url,
+                    }
+                  : {
+                      image_name: null,
+                    }),
+            },
+          },
         });
       } else {
         const { data: user } = await ctx.supabase
@@ -143,25 +204,87 @@ export const chatsRouter = router({
           type: input.type,
           reply_id: input.reply_id,
         };
-        await ctx.supabase.from("global_chats").insert(
-          input.type === "campus"
-            ? {
-                ...default_insert,
-                campus_id: user.programs.colleges.campus_id,
-              }
-            : input.type === "college"
+        const { data: chat } = await ctx.supabase
+          .from("global_chats")
+          .insert(
+            input.type === "campus"
               ? {
                   ...default_insert,
-                  college_id: user.programs.college_id,
+                  campus_id: user.programs.colleges.campus_id,
                 }
-              : input.type === "program"
+              : input.type === "college"
                 ? {
                     ...default_insert,
-                    program_id: user.program_id,
+                    college_id: user.programs.college_id,
                   }
-                : default_insert,
+                : input.type === "program"
+                  ? {
+                      ...default_insert,
+                      program_id: user.program_id,
+                    }
+                  : default_insert,
+          )
+          .select(
+            "id, content, user_id, created_at, users(name, username, image_name)",
+          )
+          .single();
+
+        if (!chat)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to insert chat",
+          });
+
+        let signed_url: string | null = null;
+
+        if (
+          chat.users?.image_name &&
+          !chat.users.image_name.startsWith("https:")
+        ) {
+          const { data } = await ctx.supabase.storage
+            .from("users")
+            .createSignedUrl(
+              chat.user_id + "/avatar/" + chat.users.image_name,
+              60 * 60 * 24,
+            );
+          if (data !== null) {
+            signed_url = data.signedUrl;
+          }
+        }
+
+        channel = ctx.supabase.channel(
+          `chat_${input.type}_${input.type === "all" ? "all" : input.type === "campus" ? user.programs.colleges.campus_id : input.type === "college" ? user.programs.college_id : user.program_id}`,
         );
+        await channel.send({
+          type: "broadcast",
+          event: "new",
+          payload: {
+            id: chat.id,
+            content: chat.content,
+            created_at: chat.created_at,
+            user_id: chat.user_id,
+            user: {
+              name: chat.users?.name ?? "",
+              username: chat.users?.username ?? "",
+              ...(chat.users?.image_name?.startsWith("https://")
+                ? {
+                    image_name: chat.users.image_name,
+                    image_url: chat.users.image_name,
+                  }
+                : chat.users?.image_name && signed_url
+                  ? {
+                      image_name: chat.users.image_name,
+                      image_url: signed_url,
+                    }
+                  : {
+                      image_name: null,
+                    }),
+            },
+          },
+        });
       }
+
+      await ctx.supabase.removeChannel(channel);
     }),
   getOrCreateRoom: protectedProcedure
     .input(z.object({ user_id: z.string() }))
