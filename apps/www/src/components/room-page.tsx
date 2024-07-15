@@ -17,6 +17,7 @@ import {
 import { useForm } from "react-hook-form";
 import { useInView } from "react-intersection-observer";
 import TextareaAutosize from "react-textarea-autosize";
+import { v4 } from "uuid";
 import { z } from "zod";
 
 import type { RouterOutput } from "@kabsu.me/api/root";
@@ -72,10 +73,14 @@ export default function RoomPageClient(
   const sendMessageMutation = api.chats.sendMessage.useMutation();
   const [chats, setChats] = useState(
     // getRoomChatsQuery.data?.room.chats ?? []
-    props.getRoomChats.room.chats,
+    props.getRoomChats.room.chats.map((chat) => ({
+      ...chat,
+      status: "success",
+    })),
   );
 
   const [hasMore, setHasMore] = useState(true);
+  const [isScrollToBottom, setIsScrollToBottom] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const { ref } = useInView({
@@ -96,7 +101,13 @@ export default function RoomPageClient(
       setHasMore(new_data.length !== 0);
       if (new_data.length > 0) scrollRef.current?.scrollIntoView();
 
-      setChats((prev) => [...new_data, ...prev]);
+      setChats((prev) => [
+        ...new_data.map((chat) => ({
+          ...chat,
+          status: "success",
+        })),
+        ...prev,
+      ]);
     },
   });
 
@@ -149,6 +160,13 @@ export default function RoomPageClient(
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (isScrollToBottom) {
+      messagesEndRef.current?.scrollIntoView(false);
+      setIsScrollToBottom(false);
+    }
+  }, [isScrollToBottom]);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -341,22 +359,28 @@ export default function RoomPageClient(
                                 {chat.content}
                               </p>
                             </div>
-                            <div className="opacity-0 group-hover:opacity-100">
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="size-8 rounded-full"
-                                onClick={() =>
-                                  form.setValue("reply", {
-                                    id: chat.id,
-                                    content: chat.content,
-                                    username: chat.user.username,
-                                  })
-                                }
-                              >
-                                <Reply className="size-4" />
-                              </Button>
-                            </div>
+                            {chat.status === "success" ? (
+                              <div className="opacity-0 group-hover:opacity-100">
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="size-8 rounded-full"
+                                  onClick={() =>
+                                    form.setValue("reply", {
+                                      id: chat.id,
+                                      content: chat.content,
+                                      username: chat.user.username,
+                                    })
+                                  }
+                                >
+                                  <Reply className="size-4" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="rounded-full bg-muted p-2">
+                                <Icons.spinner className="size-4 animate-spin" />
+                              </div>
+                            )}
                           </div>
                         </div>
                       </TooltipTrigger>
@@ -398,14 +422,16 @@ export default function RoomPageClient(
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(async (values) => {
+                const id = v4();
                 setChats((prev) => [
                   ...prev,
                   {
-                    id: new Date().toISOString(),
+                    id,
                     content: values.message,
                     created_at: new Date().toISOString(),
                     user_id: props.current_user.id,
                     user: props.current_user,
+                    status: "pending",
                     reply: values.reply
                       ? {
                           id: values.reply.id,
@@ -420,25 +446,37 @@ export default function RoomPageClient(
                       : null,
                   },
                 ]);
-                messagesEndRef.current?.scrollIntoView(false);
+                setIsScrollToBottom(true);
                 form.reset();
 
-                await sendMessageMutation.mutateAsync(
-                  props.type === "room"
-                    ? {
-                        type: props.type,
-                        room_id: props.getRoomChats.room.id,
-                        content: values.message,
-                        reply_id: values.reply?.id,
-                      }
-                    : {
-                        type: props.type,
-                        content: values.message,
-                        reply_id: values.reply?.id,
-                      },
-                );
+                const { id: new_chat_id } =
+                  await sendMessageMutation.mutateAsync(
+                    props.type === "room"
+                      ? {
+                          id,
+                          type: props.type,
+                          room_id: props.getRoomChats.room.id,
+                          content: values.message,
+                          reply_id: values.reply?.id,
+                        }
+                      : {
+                          id,
+                          type: props.type,
+                          content: values.message,
+                          reply_id: values.reply?.id,
+                        },
+                  );
 
-                // await getRoomChatsQuery.refetch();
+                setChats((prev) =>
+                  prev.map((chat) =>
+                    chat.id === new_chat_id
+                      ? {
+                          ...chat,
+                          status: "success",
+                        }
+                      : chat,
+                  ),
+                );
               })}
               className="w-full gap-x-2"
             >

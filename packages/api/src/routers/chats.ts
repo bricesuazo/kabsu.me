@@ -93,6 +93,7 @@ export const chatsRouter = router({
     .input(
       z
         .object({
+          id: z.string().uuid(),
           type: z.literal("room"),
           room_id: z.string().uuid(),
           content: z.string().min(1),
@@ -100,6 +101,7 @@ export const chatsRouter = router({
         })
         .or(
           z.object({
+            id: z.string().uuid(),
             type: z.enum(["all", "campus", "college", "program"]),
             content: z.string().min(1),
             reply_id: z.string().optional(),
@@ -126,6 +128,7 @@ export const chatsRouter = router({
         const { data: chat } = await ctx.supabase
           .from("chats")
           .insert({
+            id: input.id,
             room_id: room.id,
             user_id: ctx.auth.user.id,
             content: input.content,
@@ -200,6 +203,7 @@ export const chatsRouter = router({
           throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         const default_insert = {
+          id: input.id,
           content: input.content,
           user_id: ctx.auth.user.id,
           type: input.type,
@@ -287,6 +291,8 @@ export const chatsRouter = router({
       }
 
       await ctx.supabase.removeChannel(channel);
+
+      return { id: input.id };
     }),
   getOrCreateRoom: protectedProcedure
     .input(z.object({ user_id: z.string() }))
