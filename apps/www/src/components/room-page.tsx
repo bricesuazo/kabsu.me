@@ -3,17 +3,21 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 import {
   ChevronLeft,
   EllipsisVertical,
   ExternalLink,
+  Reply,
   Send,
+  X,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useInView } from "react-intersection-observer";
 import TextareaAutosize from "react-textarea-autosize";
+import { v4 } from "uuid";
 import { z } from "zod";
 
 import type { RouterOutput } from "@kabsu.me/api/root";
@@ -39,6 +43,7 @@ import { Separator } from "~/components/ui/separator";
 import { api } from "~/lib/trpc/client";
 import { cn } from "~/lib/utils";
 import { createClient } from "~/supabase/client";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export default function RoomPageClient(
   props: (
@@ -55,6 +60,7 @@ export default function RoomPageClient(
   },
 ) {
   const supabase = createClient();
+  const searchParams = useSearchParams();
 
   // const getRoomChatsQuery = api.chats.getRoomChats.useQuery(
   //   {
@@ -67,9 +73,14 @@ export default function RoomPageClient(
   const sendMessageMutation = api.chats.sendMessage.useMutation();
   const [chats, setChats] = useState(
     // getRoomChatsQuery.data?.room.chats ?? []
-    props.getRoomChats.room.chats,
+    props.getRoomChats.room.chats.map((chat) => ({
+      ...chat,
+      status: "success",
+    })),
   );
+
   const [hasMore, setHasMore] = useState(true);
+  const [isScrollToBottom, setIsScrollToBottom] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const { ref } = useInView({
@@ -90,16 +101,32 @@ export default function RoomPageClient(
       setHasMore(new_data.length !== 0);
       if (new_data.length > 0) scrollRef.current?.scrollIntoView();
 
-      setChats((prev) => [...new_data, ...prev]);
+      setChats((prev) => [
+        ...new_data.map((chat) => ({
+          ...chat,
+          status: "success",
+        })),
+        ...prev,
+      ]);
     },
   });
 
-  const form = useForm<{ message: string }>({
+  const form = useForm<{
+    message: string;
+    reply?: { id: string; content: string; username: string };
+  }>({
     resolver: zodResolver(
       z.object({
         message: z.string().max(512, {
           message: "Message cannot be longer than 512 characters.",
         }),
+        reply: z
+          .object({
+            id: z.string(),
+            content: z.string(),
+            username: z.string(),
+          })
+          .optional(),
       }),
     ),
     defaultValues: {
@@ -133,6 +160,13 @@ export default function RoomPageClient(
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (isScrollToBottom) {
+      messagesEndRef.current?.scrollIntoView(false);
+      setIsScrollToBottom(false);
+    }
+  }, [isScrollToBottom]);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -218,7 +252,7 @@ export default function RoomPageClient(
           </div>
         ) : (
           <ScrollArea className="flex-1 px-4">
-            <div className="space-y-4 py-4">
+            <div className="space-y-2 py-4">
               <div ref={ref}>
                 <p className="text-center text-sm text-muted-foreground">
                   {loadMoreMessagesMutation.isPending && hasMore
@@ -265,7 +299,7 @@ export default function RoomPageClient(
 
                   <div
                     className={cn(
-                      "flex flex-1 flex-col gap-y-1",
+                      "group flex flex-1 flex-col gap-y-1",
                       chat.user_id === props.current_user.id
                         ? "items-end"
                         : "items-start",
@@ -273,42 +307,87 @@ export default function RoomPageClient(
                   >
                     <Link
                       href={`/${chat.user.username}`}
-                      className="max-w-52 truncate text-sm text-muted-foreground xs:max-w-60"
+                      className="max-w-52 truncate text-xs text-muted-foreground opacity-0 group-hover:opacity-100 xs:max-w-60"
                     >
                       {chat.user.name} — {chat.user.username}
                     </Link>
 
-                    <div
-                      className={cn(
-                        "group flex items-center gap-2",
-                        chat.user_id === props.current_user.id &&
-                          "flex-row-reverse",
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          "max-w-60 rounded-md bg-muted px-3 py-2 xs:max-w-72 sm:max-w-96",
-                          chat.user_id === props.current_user.id
-                            ? "rounded-br-none"
-                            : "rounded-bl-none",
-                        )}
-                      >
-                        <p className="whitespace-pre-wrap break-words">
-                          {chat.content}
-                        </p>
-                      </div>
-                      <p
-                        className={cn(
-                          "hidden text-xs text-muted-foreground group-hover:block",
-                          chat.user_id === props.current_user.id &&
-                            "text-right",
-                        )}
-                      >
-                        {formatDistanceToNow(chat.created_at, {
-                          addSuffix: true,
-                        })}
-                      </p>
-                    </div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          className={cn(
+                            "flex flex-col",
+                            chat.user_id === props.current_user.id
+                              ? "items-end"
+                              : "items-start",
+                          )}
+                        >
+                          {chat.reply && (
+                            <Link
+                              href={{
+                                query: { chat_id: chat.reply.id },
+                              }}
+                              className="max-w-40 rounded-md bg-muted/50 p-2 text-start"
+                            >
+                              <p className="text-xs text-muted-foreground">
+                                Reply to:
+                              </p>
+                              <p className="truncate text-sm text-muted-foreground">
+                                {chat.reply.content}
+                              </p>
+                            </Link>
+                          )}
+                          <div
+                            className={cn(
+                              "flex items-center gap-2",
+                              chat.user_id === props.current_user.id
+                                ? "flex-row-reverse"
+                                : "flex-row",
+                            )}
+                          >
+                            <div
+                              className={cn(
+                                "max-w-60 rounded-lg border bg-muted px-3 py-2 xs:max-w-72 sm:max-w-96",
+                                searchParams.get("chat_id") === chat.id &&
+                                  "border-primary",
+                                chat.user_id === props.current_user.id
+                                  ? "rounded-br-none"
+                                  : "rounded-bl-none",
+                              )}
+                            >
+                              <p className="whitespace-pre-wrap break-words">
+                                {chat.content}
+                              </p>
+                            </div>
+                            {chat.status === "success" ? (
+                              <div className="opacity-0 group-hover:opacity-100">
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="size-8 rounded-full"
+                                  onClick={() =>
+                                    form.setValue("reply", {
+                                      id: chat.id,
+                                      content: chat.content,
+                                      username: chat.user.username,
+                                    })
+                                  }
+                                >
+                                  <Reply className="size-4" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="rounded-full bg-muted p-2">
+                                <Icons.spinner className="size-4 animate-spin" />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p>{format(chat.created_at, "Pp")}</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 </div>
               ))}
@@ -317,39 +396,87 @@ export default function RoomPageClient(
           </ScrollArea>
         )}
       </div>
-
       <div className="p-4">
+        {form.watch("reply") && (
+          <div className="flex items-center gap-2 rounded-t-md bg-muted px-4 py-2">
+            <div className="flex-1">
+              <p className="line-clamp-1 text-xs text-muted-foreground">
+                Replying to - @{form.watch("reply.username")}
+              </p>
+              <p className="line-clamp-2 break-all text-xs text-secondary-foreground">
+                {form.watch("reply.content")}
+              </p>
+            </div>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7 rounded-full"
+              onClick={() => form.setValue("reply", undefined)}
+            >
+              <X className="size-4" />
+            </Button>
+          </div>
+        )}
         <div className="flex items-center gap-2">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(async (values) => {
+                const id = v4();
                 setChats((prev) => [
                   ...prev,
                   {
-                    id: new Date().toISOString(),
+                    id,
                     content: values.message,
                     created_at: new Date().toISOString(),
                     user_id: props.current_user.id,
                     user: props.current_user,
+                    status: "pending",
+                    reply: values.reply
+                      ? {
+                          id: values.reply.id,
+                          content: values.reply.content,
+                          user_id: props.current_user.id,
+                          created_at: new Date().toISOString(),
+                          users: {
+                            name: values.reply.username,
+                            username: values.reply.username,
+                          },
+                        }
+                      : null,
                   },
                 ]);
-                messagesEndRef.current?.scrollIntoView(false);
+                setIsScrollToBottom(true);
                 form.reset();
 
-                await sendMessageMutation.mutateAsync(
-                  props.type === "room"
-                    ? {
-                        type: props.type,
-                        room_id: props.getRoomChats.room.id,
-                        content: values.message,
-                      }
-                    : {
-                        type: props.type,
-                        content: values.message,
-                      },
-                );
+                const { id: new_chat_id } =
+                  await sendMessageMutation.mutateAsync(
+                    props.type === "room"
+                      ? {
+                          id,
+                          type: props.type,
+                          room_id: props.getRoomChats.room.id,
+                          content: values.message,
+                          reply_id: values.reply?.id,
+                        }
+                      : {
+                          id,
+                          type: props.type,
+                          content: values.message,
+                          reply_id: values.reply?.id,
+                        },
+                  );
 
-                // await getRoomChatsQuery.refetch();
+                setChats((prev) =>
+                  prev.map((chat) =>
+                    chat.id === new_chat_id
+                      ? {
+                          ...chat,
+                          status: "success",
+                        }
+                      : chat,
+                  ),
+                );
               })}
               className="w-full gap-x-2"
             >
