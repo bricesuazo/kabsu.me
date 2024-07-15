@@ -132,7 +132,7 @@ export const chatsRouter = router({
             reply_id: input.reply_id,
           })
           .select(
-            "id, content, user_id, created_at, users(name, username, image_name)",
+            "id, content, user_id, created_at, users(name, username, image_name), reply:chats(id, content, user_id, users(name, username))",
           )
           .single();
 
@@ -169,6 +169,7 @@ export const chatsRouter = router({
             content: chat.content,
             created_at: chat.created_at,
             user_id: chat.user_id,
+            reply: chat.reply,
             user: {
               name: chat.users?.name ?? "",
               username: chat.users?.username ?? "",
@@ -225,7 +226,7 @@ export const chatsRouter = router({
                   : default_insert,
           )
           .select(
-            "id, content, user_id, created_at, users(name, username, image_name)",
+            "id, content, user_id, created_at, users(name, username, image_name), reply:global_chats(id, content, user_id, users(name, username))",
           )
           .single();
 
@@ -263,6 +264,7 @@ export const chatsRouter = router({
             content: chat.content,
             created_at: chat.created_at,
             user_id: chat.user_id,
+            reply: chat.reply,
             user: {
               name: chat.users?.name ?? "",
               username: chat.users?.username ?? "",
@@ -398,7 +400,7 @@ export const chatsRouter = router({
         const { data: room } = await ctx.supabase
           .from("rooms")
           .select(
-            "*, chats(id, content, user_id, users(name, username, image_name), created_at), rooms_users!inner(user_id, users(id, username, image_name))",
+            "*, chats!inner(id, content, user_id, created_at, reply_id, users(name, username, image_name)), rooms_users!inner(user_id, users(id, username, image_name))",
           )
           .eq("id", input.room_id)
           .neq("rooms_users.user_id", ctx.auth.user.id)
@@ -408,6 +410,18 @@ export const chatsRouter = router({
           .single();
 
         if (!room?.rooms_users[0]?.users) return null;
+
+        const { data: replies, error } = await ctx.supabase
+          .from("chats")
+          .select("id, content")
+          .in(
+            "id",
+            room.chats
+              .filter((message) => message.reply_id)
+              .map((chat) => chat.reply_id),
+          );
+        console.log("🚀 ~ .query ~ error:", error);
+        console.log("🚀 ~ .query ~ replies:", replies);
 
         const image_urls: {
           error: string | null;
@@ -495,6 +509,9 @@ export const chatsRouter = router({
                   content: message.content,
                   created_at: message.created_at,
                   user_id: message.user_id,
+                  reply:
+                    replies?.find((reply) => reply.id === message.reply_id) ??
+                    null,
                   user: {
                     name: message.users?.name ?? "",
                     username: message.users?.username ?? "",
@@ -549,7 +566,23 @@ export const chatsRouter = router({
           query = query.eq("program_id", user.program_id);
         }
 
-        const { data: messages } = await query;
+        const { data: messages, error } = await query;
+
+        if (error)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: error.message,
+          });
+
+        const { data: replies } = await ctx.supabase
+          .from("global_chats")
+          .select("id, content")
+          .in(
+            "id",
+            messages
+              .filter((message) => message.reply_id)
+              .map((chat) => chat.reply_id),
+          );
 
         const image_urls: {
           error: string | null;
@@ -561,7 +594,7 @@ export const chatsRouter = router({
           .createSignedUrls(
             [
               ...new Set(
-                (messages ?? [])
+                messages
                   .filter(
                     (message) =>
                       !message.users.image_name?.startsWith("https://") &&
@@ -584,7 +617,7 @@ export const chatsRouter = router({
           type: input.type,
           room: {
             id: input.type,
-            chats: (messages ?? [])
+            chats: messages
               .sort(
                 (a, b) =>
                   new Date(a.created_at).getTime() -
@@ -601,6 +634,9 @@ export const chatsRouter = router({
                   content: message.content,
                   created_at: message.created_at,
                   user_id: message.user_id,
+                  reply:
+                    replies?.find((reply) => reply.id === message.reply_id) ??
+                    null,
                   user: {
                     name: message.users.name,
                     username: message.users.username,
@@ -641,7 +677,7 @@ export const chatsRouter = router({
         const { data: room } = await ctx.supabase
           .from("rooms")
           .select(
-            "*, chats(id, content, user_id, users(name, username, image_name), created_at), rooms_users!inner(user_id, users(id, username, image_name))",
+            "*, chats(id, content, user_id, created_at, reply_id, users(name, username, image_name)), rooms_users!inner(user_id, users(id, username, image_name))",
           )
           .eq("id", input.room_id)
           .neq("rooms_users.user_id", ctx.auth.user.id)
@@ -654,6 +690,16 @@ export const chatsRouter = router({
           .single();
 
         if (!room?.rooms_users[0]?.users) return null;
+
+        const { data: replies } = await ctx.supabase
+          .from("chats")
+          .select("id, content")
+          .in(
+            "id",
+            room.chats
+              .filter((message) => message.reply_id)
+              .map((chat) => chat.reply_id),
+          );
 
         const image_urls: {
           error: string | null;
@@ -741,6 +787,9 @@ export const chatsRouter = router({
                   content: message.content,
                   created_at: message.created_at,
                   user_id: message.user_id,
+                  reply:
+                    replies?.find((reply) => reply.id === message.reply_id) ??
+                    null,
                   user: {
                     name: message.users?.name ?? "",
                     username: message.users?.username ?? "",
@@ -796,7 +845,23 @@ export const chatsRouter = router({
           query = query.eq("program_id", user.program_id);
         }
 
-        const { data: messages } = await query;
+        const { data: messages, error } = await query;
+
+        if (error)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: error.message,
+          });
+
+        const { data: replies } = await ctx.supabase
+          .from("global_chats")
+          .select("id, content")
+          .in(
+            "id",
+            messages
+              .filter((message) => message.reply_id)
+              .map((chat) => chat.reply_id),
+          );
 
         const image_urls: {
           error: string | null;
@@ -808,7 +873,7 @@ export const chatsRouter = router({
           .createSignedUrls(
             [
               ...new Set(
-                (messages ?? [])
+                messages
                   .filter(
                     (message) =>
                       !message.users.image_name?.startsWith("https://") &&
@@ -831,7 +896,7 @@ export const chatsRouter = router({
           type: input.type,
           room: {
             id: input.type,
-            chats: (messages ?? [])
+            chats: messages
               .sort(
                 (a, b) =>
                   new Date(a.created_at).getTime() -
@@ -848,6 +913,9 @@ export const chatsRouter = router({
                   content: message.content,
                   created_at: message.created_at,
                   user_id: message.user_id,
+                  reply:
+                    replies?.find((reply) => reply.id === message.reply_id) ??
+                    null,
                   user: {
                     name: message.users.name,
                     username: message.users.username,

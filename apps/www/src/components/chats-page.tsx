@@ -209,34 +209,32 @@ export default function ChatsPage() {
                 key={room.id}
                 asChild
                 variant="ghost"
-                className="h-auto justify-start px-4 py-3"
+                className="h-auto w-full whitespace-normal px-4 py-3"
               >
                 <Link
                   key={room.id}
                   href={`/chat/${room.id}`}
-                  className="flex w-full gap-2 rounded-md"
+                  className="flex flex-1 gap-2 rounded-md"
                 >
-                  <div>
-                    <Image
-                      src={
-                        room.rooms_users[0]?.users.image_name
-                          ? room.rooms_users[0]?.users.image_url
-                          : "/default-avatar.jpg"
-                      }
-                      width={36}
-                      height={36}
-                      alt="Profile picture"
-                      className="rounded-full"
-                    />
-                  </div>
-                  <div>
-                    <p className="text-sm">
+                  <Image
+                    src={
+                      room.rooms_users[0]?.users.image_name
+                        ? room.rooms_users[0]?.users.image_url
+                        : "/default-avatar.jpg"
+                    }
+                    width={36}
+                    height={36}
+                    alt="Profile picture"
+                    className="rounded-full"
+                  />
+                  <div className="flex flex-1 flex-col">
+                    <p className="line-clamp-1 break-all text-sm">
                       {room.rooms_users
                         .map((user) => `@${user.users.username}`)
                         .join(", ")}
                     </p>
                     {room.chats[0] && (
-                      <p className="text-xs text-muted-foreground">
+                      <p className="line-clamp-1 break-all text-xs text-muted-foreground">
                         {room.chats[0].content} -{" "}
                         {formatDistanceToNow(room.chats[0].created_at, {
                           addSuffix: true,
