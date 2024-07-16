@@ -11,8 +11,15 @@ import {
   Briefcase,
   GraduationCap,
   Heart,
+  ImageDown,
   MessageCircle,
+  Moon,
+  RectangleHorizontal,
+  RectangleVertical,
+  Square,
+  Sun,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
 import reactStringReplace from "react-string-replace";
 import TextareaAutosize from "react-textarea-autosize";
@@ -20,6 +27,7 @@ import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 
+import { DialogAndDrawer } from "~/components/dialog-and-drawer";
 import { Icons } from "~/components/icons";
 import { ImagesViewer } from "~/components/images-viewer";
 import PostDropdown from "~/components/post-dropdown";
@@ -39,9 +47,11 @@ import {
   FormItem,
   FormMessage,
 } from "~/components/ui/form";
+import { Label } from "~/components/ui/label";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Toggle } from "~/components/ui/toggle";
 import {
   Tooltip,
@@ -60,6 +70,7 @@ export default function PostPageComponent({
   username: string;
   post_id: string;
 }) {
+  const { theme } = useTheme();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [openImagesViewer, setOpenImagesViewer] = useState(false);
@@ -87,6 +98,11 @@ export default function PostPageComponent({
   });
   const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
   const createCommentMutation = api.comments.create.useMutation();
+
+  const [imageSettings, setImageSettings] = useState({
+    theme: theme ?? "light",
+    ratio: "square",
+  });
 
   const [scrollTo, setScrollTo] = useState(0);
   const [likes, setLikes] = useState(postQuery.data?.post.likes ?? []);
@@ -479,6 +495,91 @@ export default function PostPageComponent({
                   >
                     <MessageCircle className="h-4 w-4" />
                   </Toggle>
+
+                  <DialogAndDrawer
+                    title="Share post"
+                    trigger={
+                      <Button size="icon" variant="ghost" className="size-9">
+                        <ImageDown className="size-4" />
+                      </Button>
+                    }
+                    dialogClassName={cn(
+                      imageSettings.ratio === "portrait"
+                        ? "max-w-[400px]"
+                        : "max-w-screen-sm",
+                    )}
+                  >
+                    <div className="flex items-center justify-between">
+                      <Tabs
+                        value={imageSettings.theme}
+                        onValueChange={(value) =>
+                          setImageSettings((prev) => ({
+                            ...prev,
+                            theme: value,
+                          }))
+                        }
+                        className="flex flex-col"
+                      >
+                        <Label>Theme</Label>
+                        <TabsList>
+                          <TabsTrigger value="light">
+                            <Sun className="size-4" />
+                          </TabsTrigger>
+                          <TabsTrigger value="dark">
+                            <Moon className="size-4" />
+                          </TabsTrigger>
+                        </TabsList>
+                      </Tabs>
+                      <Tabs
+                        value={imageSettings.ratio}
+                        onValueChange={(value) =>
+                          setImageSettings((prev) => ({
+                            ...prev,
+                            ratio: value,
+                          }))
+                        }
+                        className="flex flex-col"
+                      >
+                        <Label>Size</Label>
+                        <TabsList>
+                          <TabsTrigger value="square">
+                            <Square className="size-4" />
+                          </TabsTrigger>
+                          <TabsTrigger value="portrait">
+                            <RectangleVertical className="size-4" />
+                          </TabsTrigger>
+                          <TabsTrigger value="landscape">
+                            <RectangleHorizontal className="size-4" />
+                          </TabsTrigger>
+                        </TabsList>
+                      </Tabs>
+                    </div>
+                    <div className="w-full">
+                      <Image
+                        src={
+                          "/api/post-share?" +
+                          new URLSearchParams(imageSettings).toString()
+                        }
+                        alt=""
+                        width={720}
+                        height={720}
+                      />
+                    </div>
+                    <Button
+                      onClick={() => {
+                        const link = document.createElement("a");
+                        link.href =
+                          "/api/post-share?" +
+                          new URLSearchParams(imageSettings).toString();
+                        link.download = `Kabsu.me - ${postQuery.data.post.id}.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                    >
+                      Download
+                    </Button>
+                  </DialogAndDrawer>
                 </div>
 
                 <div className="flex items-center gap-x-2">

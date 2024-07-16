@@ -114,8 +114,8 @@ export default function PostDropdown({
             <AlertDialogHeader>
               <AlertDialogTitle>Delete Post</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete your
-                account and remove your data from our servers.
+                This action cannot be undone. Are you sure you want to delete
+                this post?
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
