@@ -13,15 +13,15 @@
   },
   "dependencies": {
     "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.4",
+    "tailwindcss": "^3.4.5",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@kabsu.me/eslint-config": "workspace:*",
     "@kabsu.me/prettier-config": "workspace:*",
     "@kabsu.me/tsconfig": "workspace:*",
-    "eslint": "^9.5.0",
-    "prettier": "^3.3.2",
+    "eslint": "^9.7.0",
+    "prettier": "^3.3.3",
     "typescript": "^5.5.2"
   },
   "prettier": "@kabsu.me/prettier-config"

@@ -35,7 +35,7 @@ import { toast } from "./ui/use-toast";
 
 const formSchema = z.object({
   content: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+    message: "Please provide a detailed description",
   }),
 });
 
