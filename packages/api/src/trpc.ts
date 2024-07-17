@@ -1,42 +1,36 @@
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
 import { initTRPC, TRPCError } from "@trpc/server";
+import { Redis } from "@upstash/redis";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import type { Database } from "./../../../supabase/types";
 import { env } from "./../../../apps/www/src/env";
 
-interface CreateContextOptions {
-  auth: {
-    user: User;
-    // user: Database["public"]["Tables"]["users"]["Row"];
-  } | null;
-}
+export const createTRPCContext = (opts: {
+  headers: Headers;
+  auth: { user: User } | null;
+}) => {
+  const auth = opts.auth;
+  const source = opts.headers.get("x-trpc-source") ?? "unknown";
 
-const createInnerTRPCContext = (opts: CreateContextOptions) => {
+  console.log(">>> tRPC Request from", source, "by", auth?.user.email);
+
   const supabase = createClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.SUPABASE_SERVICE_ROLE_KEY,
   );
+  const redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  });
+
   return {
     supabase,
+    redis,
     ...opts,
   };
-};
-
-export const createTRPCContext = (opts: {
-  req?: Request;
-  auth: CreateContextOptions["auth"];
-}) => {
-  const auth = opts.auth;
-  const source = opts.req?.headers.get("x-trpc-source") ?? "unknown";
-
-  console.log(">>> tRPC Request from", source, "by", auth?.user.email);
-
-  return createInnerTRPCContext({
-    auth,
-  });
 };
 
 export type Context = Awaited<ReturnType<typeof createTRPCContext>>;
@@ -79,3 +73,5 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 });
 
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+export const createCallerFactory = t.createCallerFactory;

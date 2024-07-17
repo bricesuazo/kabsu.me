@@ -6,15 +6,17 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { format, formatDistanceToNow } from "date-fns";
 // import UpdatePost from "./update-post";
-import { Album, Briefcase, GraduationCap, Heart, MessageCircle } from "lucide-react";
+import {
+  Album,
+  Briefcase,
+  GraduationCap,
+  Heart,
+  MessageCircle,
+} from "lucide-react";
 import reactStringReplace from "react-string-replace";
 import { v4 as uuid } from "uuid";
 
-
-
 import type { RouterOutputs } from "@kabsu.me/api";
-
-
 
 import { api } from "~/lib/trpc/client";
 import { cn } from "~/lib/utils";
@@ -25,7 +27,6 @@ import { Badge } from "./ui/badge";
 import { Toggle } from "./ui/toggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import VerifiedBadge from "./verified-badge";
-
 
 export default function Post({
   post,
@@ -99,7 +100,9 @@ export default function Post({
       matchLinks,
       /@([\w-]+)/g,
       (match, i) => {
-        const user = getPostQuery.data?.mentioned_users.find((user) => user.id === match);
+        const user = getPostQuery.data?.mentioned_users.find(
+          (user) => user.id === match,
+        );
         return (
           <Link
             href={`/${user ? user.username : match}`}

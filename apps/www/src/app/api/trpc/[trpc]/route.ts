@@ -1,46 +1,38 @@
+import type { NextRequest } from "next/server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { appRouter } from "@kabsu.me/api/root";
 import { createTRPCContext } from "@kabsu.me/api/trpc";
 
+import { env } from "~/env";
 import { createClient } from "~/supabase/server";
 
-// export const runtime = "edge";
-
-function setCorsHeaders(res: Response) {
-  res.headers.set("Access-Control-Allow-Origin", "*");
-  res.headers.set("Access-Control-Request-Method", "*");
-  res.headers.set("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
-  res.headers.set("Access-Control-Allow-Headers", "*");
-}
-
-export function OPTIONS() {
-  const response = new Response(null, {
-    status: 204,
-  });
-  setCorsHeaders(response);
-  return response;
-}
-
-const handler = async (req: Request) => {
+const createContext = async (req: NextRequest) => {
   const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const response = await fetchRequestHandler({
-    endpoint: "/api/trpc",
-    router: appRouter,
-    req,
-    createContext: () =>
-      createTRPCContext({ auth: user ? { user } : null, req }),
-    onError({ error, path }) {
-      console.error(`>>> tRPC Error on '${path}'`, error);
-    },
+  return createTRPCContext({
+    headers: req.headers,
+    auth: user ? { user } : null,
   });
-
-  setCorsHeaders(response);
-  return response;
 };
+
+const handler = (req: NextRequest) =>
+  fetchRequestHandler({
+    endpoint: "/api/trpc",
+    req,
+    router: appRouter,
+    createContext: () => createContext(req),
+    onError:
+      env.NODE_ENV === "development"
+        ? ({ path, error }) => {
+            console.error(
+              `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`,
+            );
+          }
+        : undefined,
+  });
 
 export { handler as GET, handler as POST };

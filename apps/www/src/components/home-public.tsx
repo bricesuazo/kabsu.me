@@ -392,7 +392,7 @@ export default function HomePublic({ error }: { error?: string }) {
 }
 
 async function UsersLength() {
-  const getTotalUsersQuery = await api.users.getTotalUsers.query();
+  const getTotalUsersQuery = await api.users.getTotalUsers();
   return (
     <p className="flex items-center justify-center gap-x-1 text-center text-sm text-muted-foreground">
       <NumberTicker value={getTotalUsersQuery} />
