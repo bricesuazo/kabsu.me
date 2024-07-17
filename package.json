@@ -1,6 +1,6 @@
 {
   "name": "kabsu.me",
-  "packageManager": "pnpm@9.4.0",
+  "packageManager": "pnpm@9.5.0",
   "scripts": {
     "build": "turbo run build --parallel --no-daemon",
     "dev": "pnpm with-env turbo run dev --no-daemon",
@@ -10,7 +10,7 @@
     "clean:workspaces": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "db:cli": "pnpm db:dump && pnpm db:gen && pnpm db:diff",
-    "db:push": "supabase db push",
+    "db:push": "supabase db push --include-all",
     "db:diff": "supabase db diff --local -f",
     "db:gen": "supabase gen types typescript --local --schema public > supabase/types.ts",
     "db:reset": "supabase db reset --local",
@@ -25,8 +25,8 @@
     "@kabsu.me/tsconfig": "workspace:*",
     "@turbo/gen": "^2.0.5",
     "dotenv-cli": "^7.4.2",
-    "eslint": "^9.5.0",
-    "prettier": "^3.3.2",
+    "eslint": "^9.7.0",
+    "prettier": "^3.3.3",
     "turbo": "^2.0.5"
   },
   "prettier": "@kabsu.me/prettier-config"

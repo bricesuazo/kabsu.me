@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useDebouncedCallback } from "use-debounce";
+import debounce from "lodash.debounce";
 
 import { Input } from "~/components/ui/input";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -14,7 +14,7 @@ export default function SearchPage() {
   const searchMutation = api.users.search.useMutation();
   const [value, setValue] = useState("");
 
-  const debounced = useDebouncedCallback((value: string) => {
+  const debounced = debounce((value: string) => {
     setValue(value);
   }, 500);
 

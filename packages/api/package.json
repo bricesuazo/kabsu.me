@@ -30,7 +30,7 @@
     "@kabsu.me/eslint-config": "workspace:*",
     "@kabsu.me/tsconfig": "workspace:*",
     "@types/uuid": "^10.0.0",
-    "eslint": "^9.5.0",
+    "eslint": "^9.7.0",
     "typescript": "^5.5.2"
   },
   "eslintConfig": {

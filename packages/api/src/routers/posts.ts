@@ -29,6 +29,7 @@ export const postsRouter = router({
           ascending: true,
           referencedTable: "posts_images",
         });
+
       const { data: post } = input.username
         ? await query.eq("users.username", input.username).maybeSingle()
         : await query.maybeSingle();
@@ -74,8 +75,30 @@ export const postsRouter = router({
         }
       }
 
+      const REGEX = new RegExp(/@([\w-]+)/g);
+
+      let matches;
+      const results = [];
+
+      while ((matches = REGEX.exec(post.content)) !== null) {
+        results.push(matches[1] ?? "");
+      }
+
+      const { data: mentioned_users, error: mentioned_users_error } =
+        await ctx.supabase.rpc("get_mention", {
+          user_ids: results,
+          // user_ids: [],
+        });
+
+      if (mentioned_users_error)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: mentioned_users_error.message,
+        });
+
       return {
         userId: ctx.auth.user.id,
+        mentioned_users,
         post: {
           ...post,
           posts_images: post.posts_images
@@ -420,7 +443,7 @@ export const postsRouter = router({
       const { data: post, error: post_error } = await ctx.supabase
         .from("posts")
         .insert({
-          content: input.content,
+          content: input.content.replaceAll("  ", " ").trim(),
           user_id: ctx.auth.user.id,
           type: input.type,
         })

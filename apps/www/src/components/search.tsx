@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import debounce from "lodash.debounce";
 import { Search as SearchIcon } from "lucide-react";
-import { useDebouncedCallback } from "use-debounce";
 
 import { api } from "~/lib/trpc/client";
 import { Button } from "./ui/button";
@@ -12,6 +12,7 @@ import { Input } from "./ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
 import { Skeleton } from "./ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import VerifiedBadge from "./verified-badge";
 
 export default function Search() {
@@ -19,7 +20,7 @@ export default function Search() {
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
 
-  const debounced = useDebouncedCallback((value: string) => {
+  const debounced = debounce((value: string) => {
     setValue(value);
   }, 500);
 
@@ -42,15 +43,24 @@ export default function Search() {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button size="icon" variant="ghost" className="h-9 w-9 rounded-full">
-          <SearchIcon size="1rem" className="" />
-        </Button>
-      </PopoverTrigger>
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <PopoverTrigger asChild>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-9 w-9 rounded-full"
+            >
+              <SearchIcon size="1rem" className="" />
+            </Button>
+          </PopoverTrigger>
+        </TooltipTrigger>
+
+        <TooltipContent>Search</TooltipContent>
+      </Tooltip>
       <PopoverContent asChild>
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-x-2">
-            {/* <SearchIcon className="w-5" /> */}
             <Input
               className="h-10 flex-1 rounded-full"
               placeholder="Search"

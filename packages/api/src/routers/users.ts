@@ -730,24 +730,22 @@ export const usersRouter = router({
         })
         .slice(0, 10);
     }),
-  getMentionedUsers: protectedProcedure
-    .input(
-      z.object({
-        users: z.array(z.string()),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { data, error } = await ctx.supabase.rpc("get_mention", {
-        user_ids: input.users,
-      });
+  getAllMyReportedProblems: protectedProcedure.query(async ({ ctx }) => {
+    const { data: reported_problems } = await ctx.supabase
+      .from("reported_problems")
+      .select("id, problem, created_at")
+      .eq("reported_by_id", ctx.auth.user.id)
+      .order("created_at", { ascending: false });
 
-      if (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: error.message,
-        });
-      }
+    return reported_problems ?? [];
+  }),
+  getAllMySuggestedFeatures: protectedProcedure.query(async ({ ctx }) => {
+    const { data: suggested_features } = await ctx.supabase
+      .from("suggested_features")
+      .select("id, feature, created_at")
+      .eq("suggested_by_id", ctx.auth.user.id)
+      .order("created_at", { ascending: false });
 
-      return data;
-    }),
+    return suggested_features ?? [];
+  }),
 });

@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import imageCompression from "browser-image-compression";
-import { debounce } from "lodash";
+import debounce from "lodash.debounce";
 import { ImageUp, Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Mention, MentionsInput } from "react-mentions";
@@ -350,8 +350,8 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                           <Mention
                             trigger="@"
                             markup={`@__id__ `}
-                            displayTransform={(id, _) =>
-                              `@${mentionData.find((user) => user.id === id)?.username ?? mentioned.find((user) => user.id === id)?.username ?? "anonymous_user"}`
+                            displayTransform={(id, display) =>
+                              `@${mentionData.find((user) => user.id === id)?.username ?? mentioned.find((user) => user.id === id)?.username ?? display}`
                             }
                             appendSpaceOnAdd
                             key={currentMention + currentMention.length}

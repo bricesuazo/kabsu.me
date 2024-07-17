@@ -46,4 +46,17 @@ export const authRouter = router({
 
     return user;
   }),
+  getMyUniversityStatus: publicProcedure.query(async ({ ctx }) => {
+    if (!ctx.auth) return null;
+
+    const { data: user } = await ctx.supabase
+      .from("users")
+      .select(
+        "programs(id, name, slug, colleges(id, name, slug, campuses(id, name, slug)))",
+      )
+      .eq("id", ctx.auth.user.id)
+      .single();
+
+    return user;
+  }),
 });
