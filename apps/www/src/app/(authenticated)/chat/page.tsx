@@ -10,7 +10,7 @@ export default async function MessagesPage({
   searchParams: Record<string, string | string[] | undefined>;
 }) {
   if (typeof searchParams.user_id === "string") {
-    const room = await api.chats.getOrCreateRoom.query({
+    const room = await api.chats.getOrCreateRoom({
       user_id: searchParams.user_id,
     });
 

@@ -426,8 +426,6 @@ export const chatsRouter = router({
               .filter((message) => message.reply_id)
               .map((chat) => chat.reply_id),
           );
-        console.log("🚀 ~ .query ~ error:", error);
-        console.log("🚀 ~ .query ~ replies:", replies);
 
         const image_urls: {
           error: string | null;
