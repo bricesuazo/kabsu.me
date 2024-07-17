@@ -9,6 +9,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import {
   Album,
   Briefcase,
+  Download,
   GraduationCap,
   Heart,
   ImageDown,
@@ -21,7 +22,6 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
-import reactStringReplace from "react-string-replace";
 import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
 
@@ -60,7 +60,7 @@ import {
 } from "~/components/ui/tooltip";
 import VerifiedBadge from "~/components/verified-badge";
 import { api } from "~/lib/trpc/client";
-import { cn, formatText, REGEX } from "~/lib/utils";
+import { cn, FormattedContent, formatText } from "~/lib/utils";
 import { PostShareSchema } from "~/schema";
 import CommentDropdown from "./comment-dropdown";
 
@@ -160,60 +160,6 @@ export default function PostPageComponent({
     if (searchParams.has("comment")) router.push(`/${username}/${post_id}`);
   });
 
-  const FormattedContent = ({ textOnly }: { textOnly?: boolean }) => {
-    const text = postQuery.data?.post.content;
-
-    if (textOnly) {
-      let updatedContent = text ?? "";
-
-      postQuery.data?.mentioned_users.forEach((user) => {
-        const mentionId = `@${user.id}`;
-        const mentionUsername = `@${user.username}`;
-        updatedContent = updatedContent.replace(mentionId, mentionUsername);
-      });
-
-      return updatedContent;
-    } else {
-      const matchLinks = reactStringReplace(
-        text,
-        /(https?:\/\/\S+)/g,
-        (match, i) => (
-          <Link
-            key={match + i}
-            href={match}
-            target="_blank"
-            onClick={(e) => e.stopPropagation()}
-            className={"break-all text-primary hover:underline"}
-          >
-            {match}
-          </Link>
-        ),
-      );
-
-      const matchMentions = reactStringReplace(
-        matchLinks,
-        REGEX,
-        (match, i) => {
-          const user = postQuery.data?.mentioned_users.find(
-            (user) => user.id === match,
-          );
-
-          return (
-            <Link
-              key={match + i}
-              href={`/${user ? user.username : match}`}
-              className="font-medium text-primary"
-            >
-              {`@${user ? user.username : match}`}
-            </Link>
-          );
-        },
-      );
-
-      return matchMentions;
-    }
-  };
-
   if (postQuery.error?.data?.code === "NOT_FOUND") notFound();
 
   return (
@@ -300,7 +246,11 @@ export default function PostPageComponent({
               : "",
             username: postQuery.data.post.user.username,
             name: postQuery.data.post.user.name,
-            content: FormattedContent({ textOnly: true }),
+            content: FormattedContent({
+              text: postQuery.data.post.content,
+              textOnly: true,
+              mentioned_users: postQuery.data.mentioned_users,
+            }),
             created_at: formatDistanceToNow(postQuery.data.post.created_at, {
               includeSeconds: true,
               addSuffix: true,
@@ -447,7 +397,10 @@ export default function PostPageComponent({
                   </div>
 
                   <div className="whitespace-pre-wrap break-words">
-                    <FormattedContent />
+                    <FormattedContent
+                      text={postQuery.data.post.content}
+                      mentioned_users={postQuery.data.mentioned_users}
+                    />
                   </div>
 
                   {postQuery.data.post.posts_images.length > 0 && (
@@ -632,7 +585,7 @@ export default function PostPageComponent({
                             document.body.removeChild(link);
                           }}
                         >
-                          Download
+                          Download <Download className="ml-2 size-4" />
                         </Button>
                       </DialogAndDrawer>
                     </div>

@@ -30,7 +30,7 @@ export default async function UserPage({
 }: {
   params: { username: string };
 }) {
-  const profile = await api.users.getUserProfile.query({ username });
+  const profile = await api.users.getUserProfile({ username });
 
   return <PageWrapper profile={profile} username={username} />;
 }

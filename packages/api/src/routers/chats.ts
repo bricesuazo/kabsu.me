@@ -417,7 +417,7 @@ export const chatsRouter = router({
 
         if (!room?.rooms_users[0]?.users) return null;
 
-        const { data: replies, error } = await ctx.supabase
+        const { data: replies } = await ctx.supabase
           .from("chats")
           .select("id, content")
           .in(
@@ -426,8 +426,6 @@ export const chatsRouter = router({
               .filter((message) => message.reply_id)
               .map((chat) => chat.reply_id),
           );
-        console.log("🚀 ~ .query ~ error:", error);
-        console.log("🚀 ~ .query ~ replies:", replies);
 
         const image_urls: {
           error: string | null;

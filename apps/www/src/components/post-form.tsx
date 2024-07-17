@@ -129,7 +129,15 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
     },
   });
 
-  const createPostMutation = api.posts.create.useMutation();
+  const createPostMutation = api.posts.create.useMutation({
+    onError: (error) => {
+      form.setError("content", {
+        type: "manual",
+        message: error.message,
+      });
+    },
+  });
+
   const [isFocused, setIsFocused] = useState(false);
 
   const fetchUsers = async (
@@ -178,56 +186,60 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
   }, [isFocused]);
 
   const handleSubmit = form.handleSubmit(async (values) => {
-    const supabase = createClient();
+    try {
+      const supabase = createClient();
 
-    const images = values.images.map((image, index) => ({
-      image,
-      name: v4(),
-      order: index,
-    }));
+      const images = values.images.map((image, index) => ({
+        image,
+        name: v4(),
+        order: index,
+      }));
 
-    const { signed_urls } = await createPostMutation.mutateAsync({
-      type: values.type,
-      content: values.content,
-      images,
-    });
+      const { signed_urls } = await createPostMutation.mutateAsync({
+        type: values.type,
+        content: values.content,
+        images,
+      });
 
-    await Promise.all(
-      signed_urls.map(async (url) => {
-        const file = images.find(
-          (image) => image.name === url.path.split("/").pop(),
-        )?.image;
+      await Promise.all(
+        signed_urls.map(async (url) => {
+          const file = images.find(
+            (image) => image.name === url.path.split("/").pop(),
+          )?.image;
 
-        if (!file) return;
+          if (!file) return;
 
-        const compressedImage = await imageCompression(file, {
-          maxSizeMB: 0.5,
-          maxWidthOrHeight: 720,
-          useWebWorker: true,
-        });
+          const compressedImage = await imageCompression(file, {
+            maxSizeMB: 0.5,
+            maxWidthOrHeight: 720,
+            useWebWorker: true,
+          });
 
-        await supabase.storage
-          .from("posts")
-          .uploadToSignedUrl(url.path, url.token, compressedImage);
-      }),
-    );
-
-    if (hasRedirect) {
-      router.push(
-        form.getValues("type") === "following"
-          ? "/"
-          : `/?tab=${form.getValues("type")}`,
+          await supabase.storage
+            .from("posts")
+            .uploadToSignedUrl(url.path, url.token, compressedImage);
+        }),
       );
-    } else {
-      await Promise.all([
-        context.users.getUserProfile.reset(),
-        context.posts.getUserPosts.reset(),
-      ]);
+
+      if (hasRedirect) {
+        router.push(
+          form.getValues("type") === "following"
+            ? "/"
+            : `/?tab=${form.getValues("type")}`,
+        );
+      } else {
+        await Promise.all([
+          context.users.getUserProfile.reset(),
+          context.posts.getUserPosts.reset(),
+        ]);
+      }
+      await context.posts.getPosts.invalidate({
+        type: form.getValues("type"),
+      });
+      form.reset();
+    } catch (error) {
+      return error;
     }
-    await context.posts.getPosts.invalidate({
-      type: form.getValues("type"),
-    });
-    form.reset();
   });
 
   return (

@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import { Ratelimit } from "@upstash/ratelimit";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 
@@ -425,6 +426,20 @@ export const postsRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const rate_limiter = new Ratelimit({
+        redis: ctx.redis,
+        limiter: Ratelimit.fixedWindow(1, "60 s"),
+      });
+
+      const { success } = await rate_limiter.limit(ctx.auth.user.id);
+
+      if (!success) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "You are posting too fast. Please try again in a minute.",
+        });
+      }
+
       const { data: post, error: post_error } = await ctx.supabase
         .from("posts")
         .insert({

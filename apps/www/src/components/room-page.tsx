@@ -148,7 +148,7 @@ export default function RoomPageClient(
         { event: "new" },
         ({ payload }: { payload: (typeof chats)[number] }) => {
           if (props.current_user.id === payload.user_id) return;
-          setChats((prev) => [...prev, payload]);
+          setChats((prev) => [...prev, { ...payload, status: "success" }]);
           messagesEndRef.current?.scrollIntoView(false);
         },
       )

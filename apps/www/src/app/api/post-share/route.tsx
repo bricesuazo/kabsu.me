@@ -81,12 +81,6 @@ export async function GET(request: Request) {
           backgroundColor: getColors(data.theme).primary,
         }}
       >
-        {/* <img
-          width={720}
-          height={720}
-          src={`https://github.com/bricesuazo.png`}
-          style={{ position: "absolute", top: 0, right: 0 }}
-        /> */}
         <img
           width={data.ratio === "portrait" ? 120 : 100}
           height={data.ratio === "portrait" ? 120 : 100}
@@ -144,7 +138,7 @@ export async function GET(request: Request) {
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
-                    fill={getColors(data.theme).primary}
+                    fill={COLORS.primary}
                     width={32}
                     height={32}
                   >
@@ -190,7 +184,7 @@ export async function GET(request: Request) {
                     paddingLeft: 16,
                     paddingRight: 16,
                     fontSize: "1.25rem",
-                    backgroundColor: getColors(data.theme).primary,
+                    backgroundColor: COLORS.primary,
                     borderRadius: "2rem",
                     color: data.theme === "light" ? "white" : "black",
                     margin: 0,
@@ -221,7 +215,12 @@ export async function GET(request: Request) {
             <p
               style={{
                 flex: 1,
-                fontSize: data.ratio === "portrait" ? "2.5rem" : "2rem",
+                fontSize:
+                  data.ratio === "portrait" || data.content.length < 60
+                    ? "2.5rem"
+                    : data.content.length < 120
+                      ? "2.25rem"
+                      : "2rem",
                 margin: 0,
               }}
             >
@@ -313,7 +312,7 @@ export async function GET(request: Request) {
       width: data.ratio === "square" || data.ratio === "portrait" ? 1080 : 1920,
       height:
         data.ratio === "square" || data.ratio === "landscape" ? 1080 : 1920,
-      debug: true,
+      // debug: true,
       fonts: [
         {
           name: "Open Sans",
@@ -330,16 +329,6 @@ export async function GET(request: Request) {
           data: openSansSemiBold,
           style: "normal",
         },
-        // {
-        //   name: "Poppins-Regular",
-        //   data: poppinsRegular,
-        //   style: "normal",
-        // },
-        // {
-        //   name: "Poppins-SemiBold",
-        //   data: poppinsSemiBold,
-        //   style: "normal",
-        // },
       ],
     },
   );

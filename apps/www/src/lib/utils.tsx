@@ -3,6 +3,7 @@ import type { ClassValue } from "clsx";
 import { Fragment } from "react";
 import Link from "next/link";
 import { clsx } from "clsx";
+import reactStringReplace from "react-string-replace";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -92,7 +93,9 @@ export function formatBytes(
   if (bytes === 0) return "0 Byte";
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return `${(bytes / Math.pow(1024, i)).toFixed(decimals)} ${
-    sizeType === "accurate" ? accurateSizes[i] ?? "Bytest" : sizes[i] ?? "Bytes"
+    sizeType === "accurate"
+      ? (accurateSizes[i] ?? "Bytest")
+      : (sizes[i] ?? "Bytes")
   }`;
 }
 
@@ -125,3 +128,61 @@ export function extractAllMentions(text: string): string[] {
 export function replaceMentions(text: string) {
   return text.replace(REGEX, "@$1");
 }
+
+export const FormattedContent = ({
+  text,
+  textOnly,
+  mentioned_users,
+}: {
+  text: string;
+  textOnly?: boolean;
+  mentioned_users: {
+    id: string;
+    username: string;
+    name: string;
+  }[];
+}) => {
+  if (textOnly) {
+    let updatedContent = text;
+
+    mentioned_users.forEach((user) => {
+      const mentionId = `@${user.id}`;
+      const mentionUsername = `@${user.username}`;
+      updatedContent = updatedContent.replace(mentionId, mentionUsername);
+    });
+
+    return updatedContent;
+  } else {
+    const matchLinks = reactStringReplace(
+      text,
+      /(https?:\/\/\S+)/g,
+      (match, i) => (
+        <Link
+          key={match + i}
+          href={match}
+          target="_blank"
+          onClick={(e) => e.stopPropagation()}
+          className={"break-all text-primary hover:underline"}
+        >
+          {match}
+        </Link>
+      ),
+    );
+
+    const matchMentions = reactStringReplace(matchLinks, REGEX, (match, i) => {
+      const user = mentioned_users.find((user) => user.id === match);
+
+      return (
+        <Link
+          key={match + i}
+          href={`/${user ? user.username : match}`}
+          className="font-medium text-primary"
+        >
+          {`@${user ? user.username : match}`}
+        </Link>
+      );
+    });
+
+    return matchMentions;
+  }
+};

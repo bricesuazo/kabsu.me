@@ -1,31 +1,45 @@
 "use client";
 
+import type { z } from "zod";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { format, formatDistanceToNow } from "date-fns";
 // import UpdatePost from "./update-post";
-import { Album, Briefcase, GraduationCap, Heart, MessageCircle } from "lucide-react";
-import reactStringReplace from "react-string-replace";
+import {
+  Album,
+  Briefcase,
+  Download,
+  GraduationCap,
+  Heart,
+  ImageDown,
+  MessageCircle,
+  Moon,
+  RectangleHorizontal,
+  RectangleVertical,
+  Square,
+  Sun,
+} from "lucide-react";
+import { useTheme } from "next-themes";
 import { v4 as uuid } from "uuid";
-
-
 
 import type { RouterOutputs } from "@kabsu.me/api";
 
-
-
 import { api } from "~/lib/trpc/client";
-import { cn } from "~/lib/utils";
+import { cn, FormattedContent } from "~/lib/utils";
+import { PostShareSchema } from "~/schema";
+import { DialogAndDrawer } from "./dialog-and-drawer";
 import { ImagesViewer } from "./images-viewer";
 import PostDropdown from "./post-dropdown";
 import { PostSkeletonNoRandom } from "./post-skeleton";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Label } from "./ui/label";
+import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { Toggle } from "./ui/toggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import VerifiedBadge from "./verified-badge";
-
 
 export default function Post({
   post,
@@ -36,10 +50,18 @@ export default function Post({
   const [scrollTo, setScrollTo] = useState(0);
   const getPostQuery = api.posts.getPost.useQuery({ post_id: post.id });
   const router = useRouter();
+  const { theme } = useTheme();
   const searchParams = useSearchParams();
   const [likes, setLikes] = useState<
     RouterOutputs["posts"]["getPost"]["post"]["likes"]
   >(getPostQuery.data?.post.likes ?? []);
+  const [imageSettings, setImageSettings] = useState<{
+    theme: z.infer<typeof PostShareSchema>["theme"];
+    ratio: z.infer<typeof PostShareSchema>["ratio"];
+  }>({
+    theme: (theme as "dark" | "light" | undefined) ?? "light",
+    ratio: "square",
+  });
   const unlikeMutation = api.posts.unlike.useMutation({
     onMutate: ({ userId }) => {
       setLikes((prev) =>
@@ -76,46 +98,6 @@ export default function Post({
     },
   });
 
-  const FormattedContent = () => {
-    const text = getPostQuery.data?.post.content;
-
-    const matchLinks = reactStringReplace(
-      text,
-      /(https?:\/\/\S+)/g,
-      (match, i) => (
-        <Link
-          key={match + i}
-          href={match}
-          target="_blank"
-          onClick={(e) => e.stopPropagation()}
-          className={"break-all text-primary hover:underline"}
-        >
-          {match}
-        </Link>
-      ),
-    );
-
-    const matchMentions = reactStringReplace(
-      matchLinks,
-      /@([\w-]+)/g,
-      (match, i) => {
-        const user = getPostQuery.data?.mentioned_users.find((user) => user.id === match);
-        return (
-          <Link
-            href={`/${user ? user.username : match}`}
-            className="font-medium text-primary"
-            key={match + i}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {`@${user ? user.username : match}`}
-          </Link>
-        );
-      },
-    );
-
-    return matchMentions;
-  };
-
   useEffect(() => {
     if (getPostQuery.data) {
       setLikes(getPostQuery.data.post.likes);
@@ -123,6 +105,43 @@ export default function Post({
   }, [getPostQuery.data]);
 
   if (!getPostQuery.data) return <PostSkeletonNoRandom />;
+
+  const obj = PostShareSchema.parse({
+    ratio: imageSettings.ratio,
+    theme: imageSettings.theme,
+    image: getPostQuery.data.post.user.image_name
+      ? getPostQuery.data.post.user.image_url
+      : "",
+    username: getPostQuery.data.post.user.username,
+    name: getPostQuery.data.post.user.name,
+    content: FormattedContent({
+      textOnly: true,
+      text: getPostQuery.data.post.content,
+      mentioned_users: getPostQuery.data.mentioned_users,
+    }),
+    created_at: formatDistanceToNow(getPostQuery.data.post.created_at, {
+      includeSeconds: true,
+      addSuffix: true,
+    }),
+    likes: likes.length.toString(),
+    comments: getPostQuery.data.post.comments.length.toString(),
+    privacy: getPostQuery.data.post.type,
+    campus:
+      getPostQuery.data.post.user.programs?.colleges?.campuses?.slug ?? "",
+    program: getPostQuery.data.post.user.programs?.slug ?? "",
+    verified: (!!getPostQuery.data.post.user.verified_at).toString(),
+  });
+
+  const post_image_url =
+    "/api/post-share?" +
+    new URLSearchParams(
+      Object.fromEntries(
+        Object.entries(obj).map(([key, value]) => [
+          key,
+          typeof value === "string" ? value : JSON.stringify(value),
+        ]),
+      ),
+    ).toString();
 
   return (
     <>
@@ -265,7 +284,10 @@ export default function Post({
         </div>
 
         <div className="whitespace-pre-wrap break-words">
-          <FormattedContent />
+          <FormattedContent
+            text={getPostQuery.data.post.content}
+            mentioned_users={getPostQuery.data.mentioned_users}
+          />
 
           {/* {formatText(
             getPostQuery.data.post.content.length > 512
@@ -353,6 +375,92 @@ export default function Post({
                 <MessageCircle className="h-4 w-4" />
               </Link>
             </Toggle>
+
+            <div onClick={(e) => e.stopPropagation()}>
+              <DialogAndDrawer
+                title="Share post"
+                trigger={
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="size-9"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <ImageDown className="size-4" />
+                  </Button>
+                }
+                dialogClassName={cn(
+                  imageSettings.ratio === "portrait"
+                    ? "max-w-[400px]"
+                    : "max-w-screen-sm",
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <Tabs
+                    value={imageSettings.theme}
+                    onValueChange={(value) => {
+                      const theme = PostShareSchema.shape.theme.parse(value);
+
+                      setImageSettings((prev) => ({
+                        ...prev,
+                        theme,
+                      }));
+                    }}
+                    className="flex flex-col gap-1"
+                  >
+                    <Label>Theme</Label>
+                    <TabsList>
+                      <TabsTrigger value="light">
+                        <Sun className="size-4" />
+                      </TabsTrigger>
+                      <TabsTrigger value="dark">
+                        <Moon className="size-4" />
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                  <Tabs
+                    value={imageSettings.ratio}
+                    onValueChange={(value) => {
+                      const ratio = PostShareSchema.shape.ratio.parse(value);
+
+                      setImageSettings((prev) => ({
+                        ...prev,
+                        ratio,
+                      }));
+                    }}
+                    className="flex flex-col gap-1"
+                  >
+                    <Label>Size</Label>
+                    <TabsList>
+                      <TabsTrigger value="square">
+                        <Square className="size-4" />
+                      </TabsTrigger>
+                      <TabsTrigger value="portrait">
+                        <RectangleVertical className="size-4" />
+                      </TabsTrigger>
+                      <TabsTrigger value="landscape">
+                        <RectangleHorizontal className="size-4" />
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </div>
+                <div className="w-full">
+                  <Image src={post_image_url} alt="" width={720} height={720} />
+                </div>
+                <Button
+                  onClick={() => {
+                    const link = document.createElement("a");
+                    link.href = post_image_url;
+                    link.download = `Kabsu.me - ${getPostQuery.data.post.id}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                >
+                  Download <Download className="ml-2 size-4" />
+                </Button>
+              </DialogAndDrawer>
+            </div>
           </div>
 
           <div className="flex items-center gap-x-4">
