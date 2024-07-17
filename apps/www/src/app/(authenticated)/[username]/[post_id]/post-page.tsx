@@ -61,6 +61,7 @@ import {
 import VerifiedBadge from "~/components/verified-badge";
 import { api } from "~/lib/trpc/client";
 import { cn, formatText, REGEX } from "~/lib/utils";
+import { PostShareSchema } from "~/schema";
 import CommentDropdown from "./comment-dropdown";
 
 export default function PostPageComponent({
@@ -99,8 +100,11 @@ export default function PostPageComponent({
   const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
   const createCommentMutation = api.comments.create.useMutation();
 
-  const [imageSettings, setImageSettings] = useState({
-    theme: theme ?? "light",
+  const [imageSettings, setImageSettings] = useState<{
+    theme: z.infer<typeof PostShareSchema>["theme"];
+    ratio: z.infer<typeof PostShareSchema>["ratio"];
+  }>({
+    theme: (theme as "dark" | "light" | undefined) ?? "light",
     ratio: "square",
   });
 
@@ -156,42 +160,58 @@ export default function PostPageComponent({
     if (searchParams.has("comment")) router.push(`/${username}/${post_id}`);
   });
 
-  const FormattedContent = () => {
+  const FormattedContent = ({ textOnly }: { textOnly?: boolean }) => {
     const text = postQuery.data?.post.content;
 
-    const matchLinks = reactStringReplace(
-      text,
-      /(https?:\/\/\S+)/g,
-      (match, i) => (
-        <Link
-          key={match + i}
-          href={match}
-          target="_blank"
-          onClick={(e) => e.stopPropagation()}
-          className={"break-all text-primary hover:underline"}
-        >
-          {match}
-        </Link>
-      ),
-    );
+    if (textOnly) {
+      let updatedContent = text ?? "";
 
-    const matchMentions = reactStringReplace(matchLinks, REGEX, (match, i) => {
-      const user = postQuery.data?.mentioned_users.find(
-        (user) => user.id === match,
+      postQuery.data?.mentioned_users.forEach((user) => {
+        const mentionId = `@${user.id}`;
+        const mentionUsername = `@${user.username}`;
+        updatedContent = updatedContent.replace(mentionId, mentionUsername);
+      });
+
+      return updatedContent;
+    } else {
+      const matchLinks = reactStringReplace(
+        text,
+        /(https?:\/\/\S+)/g,
+        (match, i) => (
+          <Link
+            key={match + i}
+            href={match}
+            target="_blank"
+            onClick={(e) => e.stopPropagation()}
+            className={"break-all text-primary hover:underline"}
+          >
+            {match}
+          </Link>
+        ),
       );
 
-      return (
-        <Link
-          key={match + i}
-          href={`/${user ? user.username : match}`}
-          className="font-medium text-primary"
-        >
-          {`@${user ? user.username : match}`}
-        </Link>
-      );
-    });
+      const matchMentions = reactStringReplace(
+        matchLinks,
+        REGEX,
+        (match, i) => {
+          const user = postQuery.data?.mentioned_users.find(
+            (user) => user.id === match,
+          );
 
-    return matchMentions;
+          return (
+            <Link
+              key={match + i}
+              href={`/${user ? user.username : match}`}
+              className="font-medium text-primary"
+            >
+              {`@${user ? user.username : match}`}
+            </Link>
+          );
+        },
+      );
+
+      return matchMentions;
+    }
   };
 
   if (postQuery.error?.data?.code === "NOT_FOUND") notFound();
@@ -271,598 +291,636 @@ export default function PostPageComponent({
           {postQuery.error?.message ?? "Something went wrong."}
         </p>
       ) : (
-        <>
-          <div
-          // className={cn(
-          //   "sticky top-0 bg-card",
-          //   `mt-[-${HEADER_HEIGHT.toString()}px] pt-[${HEADER_HEIGHT.toString()}px]`,
-          // )}
-          >
-            <div className="flex flex-col gap-y-4 p-4">
-              <div className="flex justify-between">
-                <Link
-                  href={`/${postQuery.data.post.user.username}`}
-                  className="flex gap-x-2"
-                >
-                  <div className="w-max">
-                    {postQuery.data.post.user.image_name ? (
-                      <Image
-                        src={postQuery.data.post.user.image_url}
-                        alt={`${postQuery.data.post.user.name} profile picture`}
-                        width={56}
-                        height={56}
-                        className="aspect-square rounded-full object-cover"
-                      />
-                    ) : (
-                      <Image
-                        src="/default-avatar.jpg"
-                        alt={`${postQuery.data.post.user.name} profile picture`}
-                        width={56}
-                        height={56}
-                        className="aspect-square rounded-full object-cover"
-                      />
-                    )}
-                  </div>
-                  <div className="flex flex-1 flex-col">
-                    <div className="flex items-center gap-x-2">
-                      <div className="flex gap-x-1">
-                        {(() => {
-                          switch (postQuery.data.post.user.type) {
-                            case "student":
-                              return <Album />;
-                            case "alumni":
-                              return <GraduationCap />;
-                            case "faculty":
-                              return <Briefcase />;
-                            default:
-                              return null;
-                          }
-                        })()}
-                        <p className="line-clamp-1 font-semibold hover:underline">
-                          {postQuery.data.post.user.name}
-                        </p>
-                      </div>
+        (() => {
+          const obj = PostShareSchema.parse({
+            ratio: imageSettings.ratio,
+            theme: imageSettings.theme,
+            image: postQuery.data.post.user.image_name
+              ? postQuery.data.post.user.image_url
+              : "",
+            username: postQuery.data.post.user.username,
+            name: postQuery.data.post.user.name,
+            content: FormattedContent({ textOnly: true }),
+            created_at: formatDistanceToNow(postQuery.data.post.created_at, {
+              includeSeconds: true,
+              addSuffix: true,
+            }),
+            likes: likes.length.toString(),
+            comments: postQuery.data.post.comments.length.toString(),
+            privacy: postQuery.data.post.type,
+            campus:
+              postQuery.data.post.user.programs?.colleges?.campuses?.slug ?? "",
+            program: postQuery.data.post.user.programs?.slug ?? "",
+            verified: (!!postQuery.data.post.user.verified_at).toString(),
+          });
 
-                      {postQuery.data.post.user.verified_at && (
-                        <VerifiedBadge />
-                      )}
+          const post_image_url =
+            "/api/post-share?" +
+            new URLSearchParams(
+              Object.fromEntries(
+                Object.entries(obj).map(([key, value]) => [
+                  key,
+                  typeof value === "string" ? value : JSON.stringify(value),
+                ]),
+              ),
+            ).toString();
 
-                      <p className="pointer-events-none select-none">·</p>
-                      <Tooltip delayDuration={250}>
-                        <TooltipTrigger>
-                          <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
-                            {formatDistanceToNow(
-                              postQuery.data.post.created_at,
-                              {
-                                includeSeconds: true,
-                                addSuffix: true,
-                              },
-                            )}
-                          </p>
-                          <p className="text-xs text-muted-foreground hover:underline xs:hidden">
-                            {formatDistanceToNow(
-                              postQuery.data.post.created_at,
-                              {
-                                includeSeconds: true,
-                                addSuffix: true,
-                              },
-                            )}
-                          </p>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          {format(postQuery.data.post.created_at, "PPpp")}
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <div className="flex items-center gap-x-2">
-                      <p className="line-clamp-1 break-all text-sm text-foreground/70 hover:underline">
-                        @{postQuery.data.post.user.username}{" "}
-                      </p>
-                      <div className="flex items-center gap-x-1">
-                        <Tooltip delayDuration={250}>
-                          <TooltipTrigger>
-                            <Badge>
-                              {postQuery.data.post.user.programs?.colleges?.campuses?.slug.toUpperCase()}
-                            </Badge>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-[12rem]">
-                            {
-                              postQuery.data.post.user.programs?.colleges
-                                ?.campuses?.name
-                            }
-                          </TooltipContent>
-                        </Tooltip>
-
-                        <Tooltip delayDuration={250}>
-                          <TooltipTrigger>
-                            <Badge variant="outline">
-                              {postQuery.data.post.user.programs?.slug.toUpperCase()}
-                            </Badge>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-[12rem]">
-                            {postQuery.data.post.user.programs?.name}
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-
-                <PostDropdown
-                  post_id={postQuery.data.post.id}
-                  successUrl={`/${postQuery.data.post.user.username}`}
-                  isMyPost={
-                    postQuery.data.userId === postQuery.data.post.user_id
-                  }
-                />
-              </div>
-
-              <div className="whitespace-pre-wrap break-words">
-                <FormattedContent />
-              </div>
-
-              {postQuery.data.post.posts_images.length > 0 && (
-                <div
-                  className={cn(
-                    "grid grid-cols-3 gap-2",
-                    postQuery.data.post.posts_images.length === 1 &&
-                      "grid-cols-1",
-                    postQuery.data.post.posts_images.length === 2 &&
-                      "grid-cols-2",
-                    postQuery.data.post.posts_images.length > 3 &&
-                      "grid-cols-3",
-                  )}
-                >
-                  {postQuery.data.post.posts_images.map((image, index) => (
-                    <button
-                      key={image.id}
-                      onClick={() => {
-                        setOpenImagesViewer(true);
-                        setScrollTo(index);
-                      }}
+          return (
+            <>
+              <div
+              // className={cn(
+              //   "sticky top-0 bg-card",
+              //   `mt-[-${HEADER_HEIGHT.toString()}px] pt-[${HEADER_HEIGHT.toString()}px]`,
+              // )}
+              >
+                <div className="flex flex-col gap-y-4 p-4">
+                  <div className="flex justify-between">
+                    <Link
+                      href={`/${postQuery.data.post.user.username}`}
+                      className="flex gap-x-2"
                     >
-                      <Image
-                        src={image.signed_url}
-                        alt={image.name}
-                        width={400}
-                        height={400}
-                        priority
-                        className="aspect-square rounded-lg object-cover"
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
+                      <div className="w-max">
+                        <Image
+                          src={
+                            postQuery.data.post.user.image_name
+                              ? postQuery.data.post.user.image_url
+                              : "/default-avatar.jpg"
+                          }
+                          alt={`${postQuery.data.post.user.name} profile picture`}
+                          width={56}
+                          height={56}
+                          className="aspect-square rounded-full object-cover"
+                        />
+                      </div>
+                      <div className="flex flex-1 flex-col">
+                        <div className="flex items-center gap-x-2">
+                          <div className="flex gap-x-1">
+                            {(() => {
+                              switch (postQuery.data.post.user.type) {
+                                case "student":
+                                  return <Album />;
+                                case "alumni":
+                                  return <GraduationCap />;
+                                case "faculty":
+                                  return <Briefcase />;
+                                default:
+                                  return null;
+                              }
+                            })()}
+                            <p className="line-clamp-1 font-semibold hover:underline">
+                              {postQuery.data.post.user.name}
+                            </p>
+                          </div>
 
-              <div className="space-y-2">
-                <div className="flex gap-x-1">
-                  <Toggle
-                    size="sm"
-                    pressed={likes.some(
-                      (like) => like.user_id === postQuery.data.userId,
-                    )}
-                    onClick={(e) => e.stopPropagation()}
-                    onPressedChange={async (pressed) => {
-                      if (pressed) {
-                        setLikes([
-                          ...likes,
-                          {
-                            post_id,
-                            user_id: postQuery.data.userId,
-                          },
-                        ]);
+                          {postQuery.data.post.user.verified_at && (
+                            <VerifiedBadge />
+                          )}
 
-                        await likePostMutation.mutateAsync({
-                          post_id,
-                          userId: postQuery.data.userId,
-                        });
-                      } else {
-                        setLikes(
-                          likes.filter(
-                            (like) => like.user_id !== postQuery.data.userId,
-                          ),
-                        );
+                          <p className="pointer-events-none select-none">·</p>
+                          <Tooltip delayDuration={250}>
+                            <TooltipTrigger>
+                              <p className="hidden text-xs text-muted-foreground hover:underline xs:block">
+                                {formatDistanceToNow(
+                                  postQuery.data.post.created_at,
+                                  {
+                                    includeSeconds: true,
+                                    addSuffix: true,
+                                  },
+                                )}
+                              </p>
+                              <p className="text-xs text-muted-foreground hover:underline xs:hidden">
+                                {formatDistanceToNow(
+                                  postQuery.data.post.created_at,
+                                  {
+                                    includeSeconds: true,
+                                    addSuffix: true,
+                                  },
+                                )}
+                              </p>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              {format(postQuery.data.post.created_at, "PPpp")}
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                        <div className="flex items-center gap-x-2">
+                          <p className="line-clamp-1 break-all text-sm text-foreground/70 hover:underline">
+                            @{postQuery.data.post.user.username}{" "}
+                          </p>
+                          <div className="flex items-center gap-x-1">
+                            <Tooltip delayDuration={250}>
+                              <TooltipTrigger>
+                                <Badge>
+                                  {postQuery.data.post.user.programs?.colleges?.campuses?.slug.toUpperCase()}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-[12rem]">
+                                {
+                                  postQuery.data.post.user.programs?.colleges
+                                    ?.campuses?.name
+                                }
+                              </TooltipContent>
+                            </Tooltip>
 
-                        await unlikePostMutation.mutateAsync({
-                          post_id,
-                          userId: postQuery.data.userId,
-                        });
+                            <Tooltip delayDuration={250}>
+                              <TooltipTrigger>
+                                <Badge variant="outline">
+                                  {postQuery.data.post.user.programs?.slug.toUpperCase()}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-[12rem]">
+                                {postQuery.data.post.user.programs?.name}
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+
+                    <PostDropdown
+                      post_id={postQuery.data.post.id}
+                      successUrl={`/${postQuery.data.post.user.username}`}
+                      isMyPost={
+                        postQuery.data.userId === postQuery.data.post.user_id
                       }
-                      await getLikesInPostQuery.refetch();
-                    }}
-                  >
-                    <Heart
+                    />
+                  </div>
+
+                  <div className="whitespace-pre-wrap break-words">
+                    <FormattedContent />
+                  </div>
+
+                  {postQuery.data.post.posts_images.length > 0 && (
+                    <div
                       className={cn(
-                        "h-4 w-4",
-                        likes.some(
+                        "grid grid-cols-3 gap-2",
+                        postQuery.data.post.posts_images.length === 1 &&
+                          "grid-cols-1",
+                        postQuery.data.post.posts_images.length === 2 &&
+                          "grid-cols-2",
+                        postQuery.data.post.posts_images.length > 3 &&
+                          "grid-cols-3",
+                      )}
+                    >
+                      {postQuery.data.post.posts_images.map((image, index) => (
+                        <button
+                          key={image.id}
+                          onClick={() => {
+                            setOpenImagesViewer(true);
+                            setScrollTo(index);
+                          }}
+                        >
+                          <Image
+                            src={image.signed_url}
+                            alt={image.name}
+                            width={400}
+                            height={400}
+                            priority
+                            className="aspect-square rounded-lg object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <div className="flex gap-x-1">
+                      <Toggle
+                        size="sm"
+                        pressed={likes.some(
                           (like) => like.user_id === postQuery.data.userId,
-                        ) && "fill-primary text-primary",
+                        )}
+                        onClick={(e) => e.stopPropagation()}
+                        onPressedChange={async (pressed) => {
+                          if (pressed) {
+                            setLikes([
+                              ...likes,
+                              {
+                                post_id,
+                                user_id: postQuery.data.userId,
+                              },
+                            ]);
+
+                            await likePostMutation.mutateAsync({
+                              post_id,
+                              userId: postQuery.data.userId,
+                            });
+                          } else {
+                            setLikes(
+                              likes.filter(
+                                (like) =>
+                                  like.user_id !== postQuery.data.userId,
+                              ),
+                            );
+
+                            await unlikePostMutation.mutateAsync({
+                              post_id,
+                              userId: postQuery.data.userId,
+                            });
+                          }
+                          await getLikesInPostQuery.refetch();
+                        }}
+                      >
+                        <Heart
+                          className={cn(
+                            "h-4 w-4",
+                            likes.some(
+                              (like) => like.user_id === postQuery.data.userId,
+                            ) && "fill-primary text-primary",
+                          )}
+                        />
+                      </Toggle>
+
+                      <Toggle
+                        size="sm"
+                        pressed={isFocused}
+                        onPressedChange={(pressed) => {
+                          setIsFocused(pressed);
+                          if (pressed) {
+                            router.push(`/${username}/${post_id}?comment`);
+                          } else {
+                            router.push(`/${username}/${post_id}`);
+                          }
+                        }}
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                      </Toggle>
+
+                      <DialogAndDrawer
+                        title="Share post"
+                        trigger={
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="size-9"
+                          >
+                            <ImageDown className="size-4" />
+                          </Button>
+                        }
+                        dialogClassName={cn(
+                          imageSettings.ratio === "portrait"
+                            ? "max-w-[400px]"
+                            : "max-w-screen-sm",
+                        )}
+                      >
+                        <div className="flex items-center justify-between">
+                          <Tabs
+                            value={imageSettings.theme}
+                            onValueChange={(value) => {
+                              const theme =
+                                PostShareSchema.shape.theme.parse(value);
+
+                              setImageSettings((prev) => ({
+                                ...prev,
+                                theme,
+                              }));
+                            }}
+                            className="flex flex-col gap-1"
+                          >
+                            <Label>Theme</Label>
+                            <TabsList>
+                              <TabsTrigger value="light">
+                                <Sun className="size-4" />
+                              </TabsTrigger>
+                              <TabsTrigger value="dark">
+                                <Moon className="size-4" />
+                              </TabsTrigger>
+                            </TabsList>
+                          </Tabs>
+                          <Tabs
+                            value={imageSettings.ratio}
+                            onValueChange={(value) => {
+                              const ratio =
+                                PostShareSchema.shape.ratio.parse(value);
+
+                              setImageSettings((prev) => ({
+                                ...prev,
+                                ratio,
+                              }));
+                            }}
+                            className="flex flex-col gap-1"
+                          >
+                            <Label>Size</Label>
+                            <TabsList>
+                              <TabsTrigger value="square">
+                                <Square className="size-4" />
+                              </TabsTrigger>
+                              <TabsTrigger value="portrait">
+                                <RectangleVertical className="size-4" />
+                              </TabsTrigger>
+                              <TabsTrigger value="landscape">
+                                <RectangleHorizontal className="size-4" />
+                              </TabsTrigger>
+                            </TabsList>
+                          </Tabs>
+                        </div>
+                        <div className="w-full">
+                          <Image
+                            src={post_image_url}
+                            alt=""
+                            width={720}
+                            height={720}
+                          />
+                        </div>
+                        <Button
+                          onClick={() => {
+                            const link = document.createElement("a");
+                            link.href = post_image_url;
+                            link.download = `Kabsu.me - ${postQuery.data.post.id}.png`;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }}
+                        >
+                          Download
+                        </Button>
+                      </DialogAndDrawer>
+                    </div>
+
+                    <div className="flex items-center gap-x-2">
+                      <Dialog open={openLikes} onOpenChange={setOpenLikes}>
+                        <DialogTrigger asChild>
+                          <button className="text-sm text-muted-foreground hover:underline">
+                            {`${likes.length} like${likes.length > 1 ? "s" : ""}`}
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-x-2">
+                              <p>Likes</p>
+                              <Badge>{likes.length}</Badge>
+                            </DialogTitle>
+                          </DialogHeader>
+                          {postQuery.data.post.likes.length === 0 ||
+                          getLikesInPostQuery.data?.length === 0 ? (
+                            <p>No likes yet.</p>
+                          ) : getLikesInPostQuery.isLoading ||
+                            getLikesInPostQuery.isFetching ? (
+                            <ScrollArea className="max-h-96">
+                              {[
+                                ...(Array(
+                                  postQuery.data.post.likes.length,
+                                ) as number[]),
+                              ].map((_, i) => (
+                                <div
+                                  key={i}
+                                  className="flex items-center gap-x-2 rounded p-2"
+                                >
+                                  <div className="min-w-max">
+                                    <Skeleton className="h-10 w-10 rounded-full" />
+                                  </div>
+                                  <div className="mb-1 space-y-2">
+                                    <Skeleton className="h-5 w-40" />
+                                    <Skeleton className="h-3 w-16" />
+                                  </div>
+                                </div>
+                              ))}
+                            </ScrollArea>
+                          ) : (
+                            <ScrollArea className="max-h-96">
+                              {getLikesInPostQuery.data?.map((like) => (
+                                <Link
+                                  href={`/${like.user.username}`}
+                                  key={like.id}
+                                  className="flex items-center gap-x-2 rounded p-2 hover:bg-muted"
+                                >
+                                  <div className="min-w-max">
+                                    <Image
+                                      src={
+                                        like.user.image_name
+                                          ? like.user.image_url
+                                          : "/default-avatar.jpg"
+                                      }
+                                      alt={`${like.user.name} profile picture`}
+                                      width={40}
+                                      height={40}
+                                      className="aspect-square rounded-full object-cover object-center"
+                                    />
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <div className="flex items-center">
+                                      <div className="flex gap-x-1">
+                                        <p className="line-clamp-1">
+                                          {like.user.name}
+                                        </p>
+
+                                        {like.user.verified_at && (
+                                          <VerifiedBadge size="md" />
+                                        )}
+
+                                        <Tooltip delayDuration={250}>
+                                          {(() => {
+                                            switch (like.user.type) {
+                                              case "student":
+                                                return (
+                                                  <>
+                                                    <TooltipTrigger>
+                                                      <Album />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className="z-50">
+                                                      Student
+                                                    </TooltipContent>
+                                                  </>
+                                                );
+                                              case "alumni":
+                                                return (
+                                                  <>
+                                                    <TooltipTrigger>
+                                                      <GraduationCap />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className="z-50">
+                                                      Alumni
+                                                    </TooltipContent>
+                                                  </>
+                                                );
+                                              case "faculty":
+                                                return (
+                                                  <>
+                                                    <TooltipTrigger>
+                                                      <Briefcase />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className="z-50">
+                                                      Faculty
+                                                    </TooltipContent>
+                                                  </>
+                                                );
+                                              default:
+                                                return null;
+                                            }
+                                          })()}
+                                        </Tooltip>
+                                      </div>
+                                      <div className="ml-2 hidden gap-x-2 group-hover:underline md:flex">
+                                        <Tooltip delayDuration={250}>
+                                          <TooltipTrigger>
+                                            <Badge>
+                                              {like.user.programs?.colleges?.campuses?.slug.toUpperCase()}
+                                            </Badge>
+                                            <TooltipContent className="max-w-[12rem]">
+                                              {
+                                                like.user.programs?.colleges
+                                                  ?.campuses?.name
+                                              }
+                                            </TooltipContent>
+                                          </TooltipTrigger>
+                                        </Tooltip>
+                                        <Tooltip delayDuration={250}>
+                                          <TooltipTrigger>
+                                            <Badge variant="outline">
+                                              {like.user.programs?.slug.toUpperCase()}
+                                            </Badge>
+                                            <TooltipContent className="max-w-[12rem]">
+                                              {like.user.programs?.name}
+                                            </TooltipContent>
+                                          </TooltipTrigger>
+                                        </Tooltip>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center">
+                                      <p className="line-clamp-1 break-all text-sm">
+                                        @{like.user.username}
+                                      </p>
+                                      <div className="ml-2 flex gap-x-2 group-hover:underline md:hidden">
+                                        <Tooltip delayDuration={250}>
+                                          <TooltipTrigger>
+                                            <Badge className="hidden xs:block">
+                                              {like.user.programs?.colleges?.campuses?.slug.toUpperCase()}
+                                            </Badge>
+                                            <TooltipContent className="max-w-[12rem]">
+                                              {
+                                                like.user.programs?.colleges
+                                                  ?.campuses?.name
+                                              }
+                                            </TooltipContent>
+                                          </TooltipTrigger>
+                                        </Tooltip>
+                                        <Tooltip delayDuration={250}>
+                                          <TooltipTrigger>
+                                            <Badge variant="outline">
+                                              {like.user.programs?.slug.toUpperCase()}
+                                            </Badge>
+                                            <TooltipContent className="max-w-[12rem]">
+                                              {like.user.programs?.name}
+                                            </TooltipContent>
+                                          </TooltipTrigger>
+                                        </Tooltip>
+                                      </div>
+                                    </div>
+                                    <div className="flex-1 space-x-2"></div>
+                                  </div>
+                                </Link>
+                              ))}
+                            </ScrollArea>
+                          )}
+                        </DialogContent>
+                      </Dialog>
+                      <p className="pointer-events-none select-none text-sm text-muted-foreground">
+                        —
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {`${postQuery.data.post.comments.length} comment${
+                          postQuery.data.post.comments.length > 1 ? "s" : ""
+                        }`}
+                      </p>
+                      <Badge
+                        variant="outline"
+                        className="flex items-center gap-x-1"
+                      >
+                        <p className="hidden xs:block">Privacy:</p>
+                        {postQuery.data.post.type === "following"
+                          ? "Follower"
+                          : postQuery.data.post.type.charAt(0).toUpperCase() +
+                            postQuery.data.post.type.slice(1)}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator orientation="horizontal" />
+              </div>
+
+              <div className="space-y-4 p-4 pb-40">
+                {postQuery.data.post.comments.length === 0 ? (
+                  <div className="flex justify-center">
+                    <p className="text-muted-foreground">No comments yet.</p>
+                  </div>
+                ) : (
+                  postQuery.data.post.comments.map((comment) => (
+                    <CommentComponent
+                      key={comment.id}
+                      comment={comment}
+                      userId={postQuery.data.userId}
+                      post_id={postQuery.data.post.id}
+                    />
+                  ))
+                )}
+              </div>
+
+              <div className="container fixed bottom-0 flex items-center gap-x-2 bg-card p-4">
+                <div className="min-w-max">
+                  {getCurrentUserQuery.data ? (
+                    <Image
+                      src={
+                        getCurrentUserQuery.data.image_name
+                          ? getCurrentUserQuery.data.image_url
+                          : "/default-avatar.jpg"
+                      }
+                      alt="Image"
+                      width={36}
+                      height={36}
+                      className="aspect-square rounded-full object-cover object-center"
+                    />
+                  ) : (
+                    <Skeleton className="size-9 rounded-full object-cover object-center" />
+                  )}
+                </div>
+
+                <Form {...form}>
+                  <form onSubmit={handleSubmit} className="flex w-full gap-x-2">
+                    <FormField
+                      control={form.control}
+                      name="comment"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-1 items-center gap-2 space-y-0">
+                          <FormControl>
+                            <TextareaAutosize
+                              {...field}
+                              placeholder="Write a comment..."
+                              autoFocus
+                              disabled={form.formState.isSubmitting}
+                              onKeyDown={async (e) => {
+                                if (e.key === "Enter" && e.ctrlKey) {
+                                  e.preventDefault();
+                                  await handleSubmit();
+                                }
+                              }}
+                              rows={1}
+                              maxRows={3}
+                              className="flex w-full flex-1 resize-none rounded-md border border-input bg-background px-3 py-1.5 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                          </FormControl>
+                          <Button
+                            type="submit"
+                            size="sm"
+                            disabled={
+                              form.formState.isSubmitting ||
+                              !form.formState.isValid
+                            }
+                          >
+                            {form.formState.isSubmitting && (
+                              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                            )}
+                            Comment
+                          </Button>
+                        </FormItem>
                       )}
                     />
-                  </Toggle>
-
-                  <Toggle
-                    size="sm"
-                    pressed={isFocused}
-                    onPressedChange={(pressed) => {
-                      setIsFocused(pressed);
-                      if (pressed) {
-                        router.push(`/${username}/${post_id}?comment`);
-                      } else {
-                        router.push(`/${username}/${post_id}`);
-                      }
-                    }}
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                  </Toggle>
-
-                  <DialogAndDrawer
-                    title="Share post"
-                    trigger={
-                      <Button size="icon" variant="ghost" className="size-9">
-                        <ImageDown className="size-4" />
-                      </Button>
-                    }
-                    dialogClassName={cn(
-                      imageSettings.ratio === "portrait"
-                        ? "max-w-[400px]"
-                        : "max-w-screen-sm",
-                    )}
-                  >
-                    <div className="flex items-center justify-between">
-                      <Tabs
-                        value={imageSettings.theme}
-                        onValueChange={(value) =>
-                          setImageSettings((prev) => ({
-                            ...prev,
-                            theme: value,
-                          }))
-                        }
-                        className="flex flex-col"
-                      >
-                        <Label>Theme</Label>
-                        <TabsList>
-                          <TabsTrigger value="light">
-                            <Sun className="size-4" />
-                          </TabsTrigger>
-                          <TabsTrigger value="dark">
-                            <Moon className="size-4" />
-                          </TabsTrigger>
-                        </TabsList>
-                      </Tabs>
-                      <Tabs
-                        value={imageSettings.ratio}
-                        onValueChange={(value) =>
-                          setImageSettings((prev) => ({
-                            ...prev,
-                            ratio: value,
-                          }))
-                        }
-                        className="flex flex-col"
-                      >
-                        <Label>Size</Label>
-                        <TabsList>
-                          <TabsTrigger value="square">
-                            <Square className="size-4" />
-                          </TabsTrigger>
-                          <TabsTrigger value="portrait">
-                            <RectangleVertical className="size-4" />
-                          </TabsTrigger>
-                          <TabsTrigger value="landscape">
-                            <RectangleHorizontal className="size-4" />
-                          </TabsTrigger>
-                        </TabsList>
-                      </Tabs>
-                    </div>
-                    <div className="w-full">
-                      <Image
-                        src={
-                          "/api/post-share?" +
-                          new URLSearchParams(imageSettings).toString()
-                        }
-                        alt=""
-                        width={720}
-                        height={720}
-                      />
-                    </div>
-                    <Button
-                      onClick={() => {
-                        const link = document.createElement("a");
-                        link.href =
-                          "/api/post-share?" +
-                          new URLSearchParams(imageSettings).toString();
-                        link.download = `Kabsu.me - ${postQuery.data.post.id}.png`;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      }}
-                    >
-                      Download
-                    </Button>
-                  </DialogAndDrawer>
-                </div>
-
-                <div className="flex items-center gap-x-2">
-                  <Dialog open={openLikes} onOpenChange={setOpenLikes}>
-                    <DialogTrigger asChild>
-                      <button className="text-sm text-muted-foreground hover:underline">
-                        {`${likes.length} like${likes.length > 1 ? "s" : ""}`}
-                      </button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle className="flex items-center gap-x-2">
-                          <p>Likes</p>
-                          <Badge>{likes.length}</Badge>
-                        </DialogTitle>
-                      </DialogHeader>
-                      {postQuery.data.post.likes.length === 0 ||
-                      getLikesInPostQuery.data?.length === 0 ? (
-                        <p>No likes yet.</p>
-                      ) : getLikesInPostQuery.isLoading ||
-                        getLikesInPostQuery.isFetching ? (
-                        <ScrollArea className="max-h-96">
-                          {[
-                            ...(Array(
-                              postQuery.data.post.likes.length,
-                            ) as number[]),
-                          ].map((_, i) => (
-                            <div
-                              key={i}
-                              className="flex items-center gap-x-2 rounded p-2"
-                            >
-                              <div className="min-w-max">
-                                <Skeleton className="h-10 w-10 rounded-full" />
-                              </div>
-                              <div className="mb-1 space-y-2">
-                                <Skeleton className="h-5 w-40" />
-                                <Skeleton className="h-3 w-16" />
-                              </div>
-                            </div>
-                          ))}
-                        </ScrollArea>
-                      ) : (
-                        <ScrollArea className="max-h-96">
-                          {getLikesInPostQuery.data?.map((like) => (
-                            <Link
-                              href={`/${like.user.username}`}
-                              key={like.id}
-                              className="flex items-center gap-x-2 rounded p-2 hover:bg-muted"
-                            >
-                              <div className="min-w-max">
-                                <Image
-                                  src={
-                                    like.user.image_name
-                                      ? like.user.image_url
-                                      : "/default-avatar.jpg"
-                                  }
-                                  alt={`${like.user.name} profile picture`}
-                                  width={40}
-                                  height={40}
-                                  className="aspect-square rounded-full object-cover object-center"
-                                />
-                              </div>
-                              <div className="flex flex-col">
-                                <div className="flex items-center">
-                                  <div className="flex gap-x-1">
-                                    <p className="line-clamp-1">
-                                      {like.user.name}
-                                    </p>
-
-                                    {like.user.verified_at && (
-                                      <VerifiedBadge size="md" />
-                                    )}
-
-                                    <Tooltip delayDuration={250}>
-                                      {(() => {
-                                        switch (like.user.type) {
-                                          case "student":
-                                            return (
-                                              <>
-                                                <TooltipTrigger>
-                                                  <Album />
-                                                </TooltipTrigger>
-                                                <TooltipContent className="z-50">
-                                                  Student
-                                                </TooltipContent>
-                                              </>
-                                            );
-                                          case "alumni":
-                                            return (
-                                              <>
-                                                <TooltipTrigger>
-                                                  <GraduationCap />
-                                                </TooltipTrigger>
-                                                <TooltipContent className="z-50">
-                                                  Alumni
-                                                </TooltipContent>
-                                              </>
-                                            );
-                                          case "faculty":
-                                            return (
-                                              <>
-                                                <TooltipTrigger>
-                                                  <Briefcase />
-                                                </TooltipTrigger>
-                                                <TooltipContent className="z-50">
-                                                  Faculty
-                                                </TooltipContent>
-                                              </>
-                                            );
-                                          default:
-                                            return null;
-                                        }
-                                      })()}
-                                    </Tooltip>
-                                  </div>
-                                  <div className="ml-2 hidden gap-x-2 group-hover:underline md:flex">
-                                    <Tooltip delayDuration={250}>
-                                      <TooltipTrigger>
-                                        <Badge>
-                                          {like.user.programs?.colleges?.campuses?.slug.toUpperCase()}
-                                        </Badge>
-                                        <TooltipContent className="max-w-[12rem]">
-                                          {
-                                            like.user.programs?.colleges
-                                              ?.campuses?.name
-                                          }
-                                        </TooltipContent>
-                                      </TooltipTrigger>
-                                    </Tooltip>
-                                    <Tooltip delayDuration={250}>
-                                      <TooltipTrigger>
-                                        <Badge variant="outline">
-                                          {like.user.programs?.slug.toUpperCase()}
-                                        </Badge>
-                                        <TooltipContent className="max-w-[12rem]">
-                                          {like.user.programs?.name}
-                                        </TooltipContent>
-                                      </TooltipTrigger>
-                                    </Tooltip>
-                                  </div>
-                                </div>
-                                <div className="flex items-center">
-                                  <p className="line-clamp-1 break-all text-sm">
-                                    @{like.user.username}
-                                  </p>
-                                  <div className="ml-2 flex gap-x-2 group-hover:underline md:hidden">
-                                    <Tooltip delayDuration={250}>
-                                      <TooltipTrigger>
-                                        <Badge className="hidden xs:block">
-                                          {like.user.programs?.colleges?.campuses?.slug.toUpperCase()}
-                                        </Badge>
-                                        <TooltipContent className="max-w-[12rem]">
-                                          {
-                                            like.user.programs?.colleges
-                                              ?.campuses?.name
-                                          }
-                                        </TooltipContent>
-                                      </TooltipTrigger>
-                                    </Tooltip>
-                                    <Tooltip delayDuration={250}>
-                                      <TooltipTrigger>
-                                        <Badge variant="outline">
-                                          {like.user.programs?.slug.toUpperCase()}
-                                        </Badge>
-                                        <TooltipContent className="max-w-[12rem]">
-                                          {like.user.programs?.name}
-                                        </TooltipContent>
-                                      </TooltipTrigger>
-                                    </Tooltip>
-                                  </div>
-                                </div>
-                                <div className="flex-1 space-x-2"></div>
-                              </div>
-                            </Link>
-                          ))}
-                        </ScrollArea>
-                      )}
-                    </DialogContent>
-                  </Dialog>
-                  <p className="pointer-events-none select-none text-sm text-muted-foreground">
-                    —
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {`${postQuery.data.post.comments.length} comment${
-                      postQuery.data.post.comments.length > 1 ? "s" : ""
-                    }`}
-                  </p>
-                  <Badge
-                    variant="outline"
-                    className="flex items-center gap-x-1"
-                  >
-                    <p className="hidden xs:block">Privacy:</p>
-                    {postQuery.data.post.type === "following"
-                      ? "Follower"
-                      : postQuery.data.post.type.charAt(0).toUpperCase() +
-                        postQuery.data.post.type.slice(1)}
-                  </Badge>
-                </div>
+                  </form>
+                </Form>
               </div>
-            </div>
-
-            <Separator orientation="horizontal" />
-          </div>
-
-          <div className="space-y-4 p-4 pb-40">
-            {postQuery.data.post.comments.length === 0 ? (
-              <div className="flex justify-center">
-                <p className="text-muted-foreground">No comments yet.</p>
-              </div>
-            ) : (
-              postQuery.data.post.comments.map((comment) => (
-                <CommentComponent
-                  key={comment.id}
-                  comment={comment}
-                  userId={postQuery.data.userId}
-                  post_id={postQuery.data.post.id}
-                />
-              ))
-            )}
-          </div>
-
-          <div className="container fixed bottom-0 flex items-center gap-x-2 bg-card p-4">
-            <div className="min-w-max">
-              {getCurrentUserQuery.data ? (
-                <Image
-                  src={
-                    getCurrentUserQuery.data.image_name
-                      ? getCurrentUserQuery.data.image_url
-                      : "/default-avatar.jpg"
-                  }
-                  alt="Image"
-                  width={36}
-                  height={36}
-                  className="aspect-square rounded-full object-cover object-center"
-                />
-              ) : (
-                <Skeleton className="size-9 rounded-full object-cover object-center" />
-              )}
-            </div>
-
-            <Form {...form}>
-              <form onSubmit={handleSubmit} className="flex w-full gap-x-2">
-                <FormField
-                  control={form.control}
-                  name="comment"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-1 items-center gap-2 space-y-0">
-                      <FormControl>
-                        <TextareaAutosize
-                          {...field}
-                          placeholder="Write a comment..."
-                          autoFocus
-                          disabled={form.formState.isSubmitting}
-                          onKeyDown={async (e) => {
-                            if (e.key === "Enter" && e.ctrlKey) {
-                              e.preventDefault();
-                              await handleSubmit();
-                            }
-                          }}
-                          rows={1}
-                          maxRows={3}
-                          className="flex w-full flex-1 resize-none rounded-md border border-input bg-background px-3 py-1.5 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        />
-                      </FormControl>
-                      <Button
-                        type="submit"
-                        size="sm"
-                        disabled={
-                          form.formState.isSubmitting || !form.formState.isValid
-                        }
-                      >
-                        {form.formState.isSubmitting && (
-                          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        Comment
-                      </Button>
-                    </FormItem>
-                  )}
-                />
-              </form>
-            </Form>
-          </div>
-        </>
+            </>
+          );
+        })()
       )}
     </>
   );

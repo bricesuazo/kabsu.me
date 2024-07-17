@@ -1,5 +1,6 @@
 {
   "name": "kabsu.me",
+  "type": "module",
   "packageManager": "pnpm@9.5.0",
   "scripts": {
     "build": "turbo run build --parallel --no-daemon",
