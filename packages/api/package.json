@@ -17,8 +17,8 @@
   "dependencies": {
     "@kabsu.me/constants": "workspace:*",
     "@supabase/supabase-js": "^2.44.2",
-    "@trpc/client": "11.0.0-next-beta.208",
-    "@trpc/server": "11.0.0-next-beta.208",
+    "@trpc/client": "11.0.0-rc.446",
+    "@trpc/server": "11.0.0-rc.446",
     "@upstash/ratelimit": "^2.0.0",
     "@upstash/redis": "^1.33.0",
     "date-fns": "^3.6.0",

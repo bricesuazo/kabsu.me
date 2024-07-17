@@ -138,7 +138,6 @@ export default function Post({
 
   useEffect(() => {
     const mentioned = extractAllMentions(getPostQuery.data?.post.content ?? "");
-    console.log("🚀 ~ useEffect ~ mentioned:", mentioned);
 
     void (async () => {
       try {

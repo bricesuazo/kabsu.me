@@ -2,14 +2,12 @@ import "~/globals.css";
 
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import { headers } from "next/headers";
 import { Analytics } from "@vercel/analytics/react";
 
-import QueryProvider from "~/components/query-provider";
 import { ThemeProvider } from "~/components/theme-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { TooltipProvider } from "~/components/ui/tooltip";
-import TRPCProvider from "~/lib/trpc/Provider";
+import { TRPCReactProvider } from "~/lib/trpc/client";
 import { cn } from "~/lib/utils";
 
 const font = Poppins({
@@ -37,21 +35,19 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(font.className)}>
-        <QueryProvider>
-          <ThemeProvider attribute="class" defaultTheme="light">
-            <TooltipProvider>
-              <TRPCProvider headers={headers()}>
-                {children}
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <TooltipProvider>
+            <TRPCReactProvider>
+              {children}
 
-                <Analytics />
-                {/* TODO: */}
-                {/* {session && <FooterMenu />} */}
-              </TRPCProvider>
-            </TooltipProvider>
+              <Analytics />
+              {/* TODO: */}
+              {/* {session && <FooterMenu />} */}
+            </TRPCReactProvider>
+          </TooltipProvider>
 
-            <Toaster />
-          </ThemeProvider>
-        </QueryProvider>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

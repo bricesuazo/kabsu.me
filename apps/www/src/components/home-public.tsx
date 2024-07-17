@@ -196,7 +196,7 @@ export default function HomePublic({ error }: { error?: string }) {
 }
 
 async function UsersLength() {
-  const getTotalUsersQuery = await api.users.getTotalUsers.query();
+  const getTotalUsersQuery = await api.users.getTotalUsers();
   return (
     <p className="text-center text-sm text-muted-foreground">
       {getTotalUsersQuery} Kabsuhenyos registered

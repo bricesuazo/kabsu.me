@@ -27,7 +27,7 @@ export default async function FollowersPage({
 
   if (!user) notFound();
 
-  const data = await api.users.getAllFollowers.query({ username });
+  const data = await api.users.getAllFollowers({ username });
 
   return <Followers input={{ username }} output={data} user_id={user.id} />;
 }

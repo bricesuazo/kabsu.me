@@ -1,16 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 
 import type { Database } from "../../../../supabase/types";
 import { protectedProcedure, router } from "../trpc";
-
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
 
 export const postsRouter = router({
   getPost: protectedProcedure
@@ -410,7 +404,7 @@ export const postsRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const rate_limiter = new Ratelimit({
-        redis,
+        redis: ctx.redis,
         limiter: Ratelimit.fixedWindow(1, "60 s"),
       });
 

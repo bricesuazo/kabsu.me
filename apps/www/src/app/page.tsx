@@ -30,8 +30,8 @@ export default async function Home({
   };
 }) {
   const [getCurrentUserPublic, getCurrentSession] = await Promise.all([
-    api.auth.getCurrentUserPublic.query(),
-    api.auth.getCurrentSession.query(),
+    api.auth.getCurrentUserPublic(),
+    api.auth.getCurrentSession(),
   ]);
 
   return (

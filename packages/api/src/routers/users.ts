@@ -737,11 +737,9 @@ export const usersRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      console.log("🚀 ~ .mutation ~ input:", input);
       const { data, error } = await ctx.supabase.rpc("get_mention", {
         user_ids: input.users,
       });
-      console.log("🚀 ~ .mutation ~ data:", data);
 
       if (error) {
         throw new TRPCError({

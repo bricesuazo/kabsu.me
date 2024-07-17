@@ -4,8 +4,7 @@ import { api } from "~/lib/trpc/server";
 import TypePrograms from "./_components/type-programs";
 
 export default async function AccountSettingsPage() {
-  const currentUserTypeProgram =
-    await api.users.getCurrentUserTypeProgram.query();
+  const currentUserTypeProgram = await api.users.getCurrentUserTypeProgram();
 
   return (
     <div className="p-4">
