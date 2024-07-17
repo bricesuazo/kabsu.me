@@ -28,6 +28,8 @@
     "ENV",
     "STAGING_TEST_EMAILS",
     "NEXT_PUBLIC_SUPERADMIN_EMAIL",
+    "UPSTASH_REDIS_REST_URL",
+    "UPSTASH_REDIS_REST_TOKEN",
     "npm_lifecycle_event"
   ]
 }
