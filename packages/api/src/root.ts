@@ -1,6 +1,5 @@
 import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
-import { adminRouter } from "./routers/admin";
 import { authRouter } from "./routers/auth";
 import { chatsRouter } from "./routers/chats";
 import { commentsRouter } from "./routers/comments";
@@ -15,7 +14,6 @@ export const appRouter = router({
   comments: commentsRouter,
   notifications: notificationsRouter,
   auth: authRouter,
-  admin: adminRouter,
   chats: chatsRouter,
 });
 

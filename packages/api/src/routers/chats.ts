@@ -417,7 +417,7 @@ export const chatsRouter = router({
 
         if (!room?.rooms_users[0]?.users) return null;
 
-        const { data: replies, error } = await ctx.supabase
+        const { data: replies } = await ctx.supabase
           .from("chats")
           .select("id, content")
           .in(

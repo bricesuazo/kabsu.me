@@ -14,7 +14,6 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import reactStringReplace from "react-string-replace";
 import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
 
@@ -23,6 +22,7 @@ import type { RouterOutputs } from "@kabsu.me/api";
 import { Icons } from "~/components/icons";
 import { ImagesViewer } from "~/components/images-viewer";
 import PostDropdown from "~/components/post-dropdown";
+import PostShare from "~/components/post-share";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
@@ -50,7 +50,12 @@ import {
 } from "~/components/ui/tooltip";
 import VerifiedBadge from "~/components/verified-badge";
 import { api } from "~/lib/trpc/client";
-import { cn, formatText, REGEX } from "~/lib/utils";
+import {
+  cn,
+  FormattedContent,
+  FormattedContentTextOnly,
+  formatText,
+} from "~/lib/utils";
 import CommentDropdown from "./comment-dropdown";
 
 export default function PostPageComponent({
@@ -140,44 +145,6 @@ export default function PostPageComponent({
     if (searchParams.has("comment")) router.push(`/${username}/${post_id}`);
   });
 
-  const FormattedContent = () => {
-    const text = postQuery.data?.post.content;
-
-    const matchLinks = reactStringReplace(
-      text,
-      /(https?:\/\/\S+)/g,
-      (match, i) => (
-        <Link
-          key={match + i}
-          href={match}
-          target="_blank"
-          onClick={(e) => e.stopPropagation()}
-          className={"break-all text-primary hover:underline"}
-        >
-          {match}
-        </Link>
-      ),
-    );
-
-    const matchMentions = reactStringReplace(matchLinks, REGEX, (match, i) => {
-      const user = postQuery.data?.mentioned_users.find(
-        (user) => user.id === match,
-      );
-
-      return (
-        <Link
-          key={match + i}
-          href={`/${user ? user.username : match}`}
-          className="font-medium text-primary"
-        >
-          {`@${user ? user.username : match}`}
-        </Link>
-      );
-    });
-
-    return matchMentions;
-  };
-
   if (postQuery.error?.data?.code === "NOT_FOUND") notFound();
 
   return (
@@ -256,12 +223,7 @@ export default function PostPageComponent({
         </p>
       ) : (
         <>
-          <div
-          // className={cn(
-          //   "sticky top-0 bg-card",
-          //   `mt-[-${HEADER_HEIGHT.toString()}px] pt-[${HEADER_HEIGHT.toString()}px]`,
-          // )}
-          >
+          <div>
             <div className="flex flex-col gap-y-4 p-4">
               <div className="flex justify-between">
                 <Link
@@ -269,23 +231,17 @@ export default function PostPageComponent({
                   className="flex gap-x-2"
                 >
                   <div className="w-max">
-                    {postQuery.data.post.user.image_name ? (
-                      <Image
-                        src={postQuery.data.post.user.image_url}
-                        alt={`${postQuery.data.post.user.name} profile picture`}
-                        width={56}
-                        height={56}
-                        className="aspect-square rounded-full object-cover"
-                      />
-                    ) : (
-                      <Image
-                        src="/default-avatar.jpg"
-                        alt={`${postQuery.data.post.user.name} profile picture`}
-                        width={56}
-                        height={56}
-                        className="aspect-square rounded-full object-cover"
-                      />
-                    )}
+                    <Image
+                      src={
+                        postQuery.data.post.user.image_name
+                          ? postQuery.data.post.user.image_url
+                          : "/default-avatar.jpg"
+                      }
+                      alt={`${postQuery.data.post.user.name} profile picture`}
+                      width={56}
+                      height={56}
+                      className="aspect-square rounded-full object-cover"
+                    />
                   </div>
                   <div className="flex flex-1 flex-col">
                     <div className="flex items-center gap-x-2">
@@ -382,7 +338,10 @@ export default function PostPageComponent({
               </div>
 
               <div className="whitespace-pre-wrap break-words">
-                <FormattedContent />
+                <FormattedContent
+                  text={postQuery.data.post.content}
+                  mentioned_users={postQuery.data.mentioned_users}
+                />
               </div>
 
               {postQuery.data.post.posts_images.length > 0 && (
@@ -479,6 +438,31 @@ export default function PostPageComponent({
                   >
                     <MessageCircle className="h-4 w-4" />
                   </Toggle>
+
+                  <PostShare
+                    data={{
+                      image: postQuery.data.post.user.image_name
+                        ? postQuery.data.post.user.image_url
+                        : "",
+                      username: postQuery.data.post.user.username,
+                      name: postQuery.data.post.user.name,
+                      content: FormattedContentTextOnly({
+                        text: postQuery.data.post.content,
+                        mentioned_users: postQuery.data.mentioned_users,
+                      }),
+                      likes: likes.length.toString(),
+                      comments: postQuery.data.post.comments.length.toString(),
+                      privacy: postQuery.data.post.type,
+                      campus:
+                        postQuery.data.post.user.programs?.colleges?.campuses
+                          ?.slug ?? "",
+                      program: postQuery.data.post.user.programs?.slug ?? "",
+                      verified: !!postQuery.data.post.user.verified_at,
+                      images: postQuery.data.post.posts_images.map(
+                        (image) => image.signed_url,
+                      ),
+                    }}
+                  />
                 </div>
 
                 <div className="flex items-center gap-x-2">

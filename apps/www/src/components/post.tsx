@@ -13,15 +13,15 @@ import {
   Heart,
   MessageCircle,
 } from "lucide-react";
-import reactStringReplace from "react-string-replace";
 import { v4 as uuid } from "uuid";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 
 import { api } from "~/lib/trpc/client";
-import { cn } from "~/lib/utils";
+import { cn, FormattedContent, FormattedContentTextOnly } from "~/lib/utils";
 import { ImagesViewer } from "./images-viewer";
 import PostDropdown from "./post-dropdown";
+import PostShare from "./post-share";
 import { PostSkeletonNoRandom } from "./post-skeleton";
 import { Badge } from "./ui/badge";
 import { Toggle } from "./ui/toggle";
@@ -41,6 +41,7 @@ export default function Post({
   const [likes, setLikes] = useState<
     RouterOutputs["posts"]["getPost"]["post"]["likes"]
   >(getPostQuery.data?.post.likes ?? []);
+
   const unlikeMutation = api.posts.unlike.useMutation({
     onMutate: ({ userId }) => {
       setLikes((prev) =>
@@ -76,48 +77,6 @@ export default function Post({
       ]);
     },
   });
-
-  const FormattedContent = () => {
-    const text = getPostQuery.data?.post.content;
-
-    const matchLinks = reactStringReplace(
-      text,
-      /(https?:\/\/\S+)/g,
-      (match, i) => (
-        <Link
-          key={match + i}
-          href={match}
-          target="_blank"
-          onClick={(e) => e.stopPropagation()}
-          className={"break-all text-primary hover:underline"}
-        >
-          {match}
-        </Link>
-      ),
-    );
-
-    const matchMentions = reactStringReplace(
-      matchLinks,
-      /@([\w-]+)/g,
-      (match, i) => {
-        const user = getPostQuery.data?.mentioned_users.find(
-          (user) => user.id === match,
-        );
-        return (
-          <Link
-            href={`/${user ? user.username : match}`}
-            className="font-medium text-primary"
-            key={match + i}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {`@${user ? user.username : match}`}
-          </Link>
-        );
-      },
-    );
-
-    return matchMentions;
-  };
 
   useEffect(() => {
     if (getPostQuery.data) {
@@ -268,7 +227,10 @@ export default function Post({
         </div>
 
         <div className="whitespace-pre-wrap break-words">
-          <FormattedContent />
+          <FormattedContent
+            text={getPostQuery.data.post.content}
+            mentioned_users={getPostQuery.data.mentioned_users}
+          />
 
           {/* {formatText(
             getPostQuery.data.post.content.length > 512
@@ -356,6 +318,33 @@ export default function Post({
                 <MessageCircle className="h-4 w-4" />
               </Link>
             </Toggle>
+
+            <div onClick={(e) => e.stopPropagation()}>
+              <PostShare
+                data={{
+                  image: getPostQuery.data.post.user.image_name
+                    ? getPostQuery.data.post.user.image_url
+                    : "",
+                  username: getPostQuery.data.post.user.username,
+                  name: getPostQuery.data.post.user.name,
+                  content: FormattedContentTextOnly({
+                    text: getPostQuery.data.post.content,
+                    mentioned_users: getPostQuery.data.mentioned_users,
+                  }),
+                  likes: likes.length.toString(),
+                  comments: getPostQuery.data.post.comments.length.toString(),
+                  privacy: getPostQuery.data.post.type,
+                  campus:
+                    getPostQuery.data.post.user.programs?.colleges?.campuses
+                      ?.slug ?? "",
+                  program: getPostQuery.data.post.user.programs?.slug ?? "",
+                  verified: !!getPostQuery.data.post.user.verified_at,
+                  images: getPostQuery.data.post.posts_images.map(
+                    (image) => image.signed_url,
+                  ),
+                }}
+              />
+            </div>
           </div>
 
           <div className="flex items-center gap-x-4">
