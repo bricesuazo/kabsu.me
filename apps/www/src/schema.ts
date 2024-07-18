@@ -16,7 +16,6 @@ export const PostShareSchema = z.object({
     .string()
     .default("true")
     .transform((value) => value === "true"),
-  created_at: z.string().default("5 days ago"),
   campus: z.string().default("MAIN"),
   program: z.string().default("BSCS"),
   content: z

@@ -331,13 +331,6 @@ export default function Post({
                     text: getPostQuery.data.post.content,
                     mentioned_users: getPostQuery.data.mentioned_users,
                   }),
-                  created_at: formatDistanceToNow(
-                    getPostQuery.data.post.created_at,
-                    {
-                      includeSeconds: true,
-                      addSuffix: true,
-                    },
-                  ),
                   likes: likes.length.toString(),
                   comments: getPostQuery.data.post.comments.length.toString(),
                   privacy: getPostQuery.data.post.type,

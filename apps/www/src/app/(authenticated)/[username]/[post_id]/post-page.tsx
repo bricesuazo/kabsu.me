@@ -450,13 +450,6 @@ export default function PostPageComponent({
                         text: postQuery.data.post.content,
                         mentioned_users: postQuery.data.mentioned_users,
                       }),
-                      created_at: formatDistanceToNow(
-                        postQuery.data.post.created_at,
-                        {
-                          includeSeconds: true,
-                          addSuffix: true,
-                        },
-                      ),
                       likes: likes.length.toString(),
                       comments: postQuery.data.post.comments.length.toString(),
                       privacy: postQuery.data.post.type,
