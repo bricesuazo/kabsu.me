@@ -5,7 +5,11 @@ import type { Database } from "../../../supabase/types";
 export const PostShareSchema = z.object({
   theme: z.enum(["light", "dark"]).default("light"),
   ratio: z.enum(["square", "landscape", "portrait"]).default("square"),
-  image: z.string().default("https://github.com/bricesuazo.png"),
+  image: z
+    .string()
+    .transform((value) =>
+      value.length > 0 ? value : "https://kabsu.me/default-avatar.jpg",
+    ),
   name: z.string().default("Brice Suazo"),
   username: z.string().default("bricesuazo"),
   verified: z
