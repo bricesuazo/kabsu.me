@@ -1,6 +1,5 @@
 "use client";
 
-import type { z } from "zod";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,33 +9,21 @@ import { format, formatDistanceToNow } from "date-fns";
 import {
   Album,
   Briefcase,
-  Download,
   GraduationCap,
   Heart,
-  ImageDown,
   MessageCircle,
-  Moon,
-  RectangleHorizontal,
-  RectangleVertical,
-  Square,
-  Sun,
 } from "lucide-react";
-import { useTheme } from "next-themes";
 import { v4 as uuid } from "uuid";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 
 import { api } from "~/lib/trpc/client";
-import { cn, FormattedContent } from "~/lib/utils";
-import { PostShareSchema } from "~/schema";
-import { DialogAndDrawer } from "./dialog-and-drawer";
+import { cn, FormattedContent, FormattedContentTextOnly } from "~/lib/utils";
 import { ImagesViewer } from "./images-viewer";
 import PostDropdown from "./post-dropdown";
+import PostShare from "./post-share";
 import { PostSkeletonNoRandom } from "./post-skeleton";
 import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { Label } from "./ui/label";
-import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { Toggle } from "./ui/toggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import VerifiedBadge from "./verified-badge";
@@ -50,18 +37,11 @@ export default function Post({
   const [scrollTo, setScrollTo] = useState(0);
   const getPostQuery = api.posts.getPost.useQuery({ post_id: post.id });
   const router = useRouter();
-  const { theme } = useTheme();
   const searchParams = useSearchParams();
   const [likes, setLikes] = useState<
     RouterOutputs["posts"]["getPost"]["post"]["likes"]
   >(getPostQuery.data?.post.likes ?? []);
-  const [imageSettings, setImageSettings] = useState<{
-    theme: z.infer<typeof PostShareSchema>["theme"];
-    ratio: z.infer<typeof PostShareSchema>["ratio"];
-  }>({
-    theme: (theme as "dark" | "light" | undefined) ?? "light",
-    ratio: "square",
-  });
+
   const unlikeMutation = api.posts.unlike.useMutation({
     onMutate: ({ userId }) => {
       setLikes((prev) =>
@@ -105,43 +85,6 @@ export default function Post({
   }, [getPostQuery.data]);
 
   if (!getPostQuery.data) return <PostSkeletonNoRandom />;
-
-  const obj = PostShareSchema.parse({
-    ratio: imageSettings.ratio,
-    theme: imageSettings.theme,
-    image: getPostQuery.data.post.user.image_name
-      ? getPostQuery.data.post.user.image_url
-      : "",
-    username: getPostQuery.data.post.user.username,
-    name: getPostQuery.data.post.user.name,
-    content: FormattedContent({
-      textOnly: true,
-      text: getPostQuery.data.post.content,
-      mentioned_users: getPostQuery.data.mentioned_users,
-    }),
-    created_at: formatDistanceToNow(getPostQuery.data.post.created_at, {
-      includeSeconds: true,
-      addSuffix: true,
-    }),
-    likes: likes.length.toString(),
-    comments: getPostQuery.data.post.comments.length.toString(),
-    privacy: getPostQuery.data.post.type,
-    campus:
-      getPostQuery.data.post.user.programs?.colleges?.campuses?.slug ?? "",
-    program: getPostQuery.data.post.user.programs?.slug ?? "",
-    verified: (!!getPostQuery.data.post.user.verified_at).toString(),
-  });
-
-  const post_image_url =
-    "/api/post-share?" +
-    new URLSearchParams(
-      Object.fromEntries(
-        Object.entries(obj).map(([key, value]) => [
-          key,
-          typeof value === "string" ? value : JSON.stringify(value),
-        ]),
-      ),
-    ).toString();
 
   return (
     <>
@@ -377,89 +320,37 @@ export default function Post({
             </Toggle>
 
             <div onClick={(e) => e.stopPropagation()}>
-              <DialogAndDrawer
-                title="Share post"
-                trigger={
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="size-9"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <ImageDown className="size-4" />
-                  </Button>
-                }
-                dialogClassName={cn(
-                  imageSettings.ratio === "portrait"
-                    ? "max-w-[400px]"
-                    : "max-w-screen-sm",
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <Tabs
-                    value={imageSettings.theme}
-                    onValueChange={(value) => {
-                      const theme = PostShareSchema.shape.theme.parse(value);
-
-                      setImageSettings((prev) => ({
-                        ...prev,
-                        theme,
-                      }));
-                    }}
-                    className="flex flex-col gap-1"
-                  >
-                    <Label>Theme</Label>
-                    <TabsList>
-                      <TabsTrigger value="light">
-                        <Sun className="size-4" />
-                      </TabsTrigger>
-                      <TabsTrigger value="dark">
-                        <Moon className="size-4" />
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                  <Tabs
-                    value={imageSettings.ratio}
-                    onValueChange={(value) => {
-                      const ratio = PostShareSchema.shape.ratio.parse(value);
-
-                      setImageSettings((prev) => ({
-                        ...prev,
-                        ratio,
-                      }));
-                    }}
-                    className="flex flex-col gap-1"
-                  >
-                    <Label>Size</Label>
-                    <TabsList>
-                      <TabsTrigger value="square">
-                        <Square className="size-4" />
-                      </TabsTrigger>
-                      <TabsTrigger value="portrait">
-                        <RectangleVertical className="size-4" />
-                      </TabsTrigger>
-                      <TabsTrigger value="landscape">
-                        <RectangleHorizontal className="size-4" />
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                </div>
-                <div className="w-full">
-                  <Image src={post_image_url} alt="" width={720} height={720} />
-                </div>
-                <Button
-                  onClick={() => {
-                    const link = document.createElement("a");
-                    link.href = post_image_url;
-                    link.download = `Kabsu.me - ${getPostQuery.data.post.id}.png`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                  }}
-                >
-                  Download <Download className="ml-2 size-4" />
-                </Button>
-              </DialogAndDrawer>
+              <PostShare
+                data={{
+                  image: getPostQuery.data.post.user.image_name
+                    ? getPostQuery.data.post.user.image_url
+                    : "",
+                  username: getPostQuery.data.post.user.username,
+                  name: getPostQuery.data.post.user.name,
+                  content: FormattedContentTextOnly({
+                    text: getPostQuery.data.post.content,
+                    mentioned_users: getPostQuery.data.mentioned_users,
+                  }),
+                  created_at: formatDistanceToNow(
+                    getPostQuery.data.post.created_at,
+                    {
+                      includeSeconds: true,
+                      addSuffix: true,
+                    },
+                  ),
+                  likes: likes.length.toString(),
+                  comments: getPostQuery.data.post.comments.length.toString(),
+                  privacy: getPostQuery.data.post.type,
+                  campus:
+                    getPostQuery.data.post.user.programs?.colleges?.campuses
+                      ?.slug ?? "",
+                  program: getPostQuery.data.post.user.programs?.slug ?? "",
+                  verified: !!getPostQuery.data.post.user.verified_at,
+                  images: getPostQuery.data.post.posts_images.map(
+                    (image) => image.signed_url,
+                  ),
+                }}
+              />
             </div>
           </div>
 

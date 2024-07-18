@@ -25,4 +25,9 @@ export const PostShareSchema = z.object({
     .default("following"),
   likes: z.string().default("12"),
   comments: z.string().default("0"),
+  images: z
+    .string()
+    // .default('["https://github.com/bricesuazo.png"]')
+    .default("[]")
+    .transform((value) => z.string().array().parse(JSON.parse(value))),
 });

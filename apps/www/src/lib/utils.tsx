@@ -129,60 +129,67 @@ export function replaceMentions(text: string) {
   return text.replace(REGEX, "@$1");
 }
 
-export const FormattedContent = ({
+export function FormattedContentTextOnly({
   text,
-  textOnly,
   mentioned_users,
 }: {
   text: string;
-  textOnly?: boolean;
+  mentioned_users: {
+    id: string;
+    username: string;
+    name: string;
+  }[];
+}) {
+  let updatedContent = text;
+
+  mentioned_users.forEach((user) => {
+    const mentionId = `@${user.id}`;
+    const mentionUsername = `@${user.username}`;
+    updatedContent = updatedContent.replace(mentionId, mentionUsername);
+  });
+
+  return updatedContent;
+}
+export const FormattedContent = ({
+  text,
+  mentioned_users,
+}: {
+  text: string;
   mentioned_users: {
     id: string;
     username: string;
     name: string;
   }[];
 }) => {
-  if (textOnly) {
-    let updatedContent = text;
+  const matchLinks = reactStringReplace(
+    text,
+    /(https?:\/\/\S+)/g,
+    (match, i) => (
+      <Link
+        key={match + i}
+        href={match}
+        target="_blank"
+        onClick={(e) => e.stopPropagation()}
+        className={"break-all text-primary hover:underline"}
+      >
+        {match}
+      </Link>
+    ),
+  );
 
-    mentioned_users.forEach((user) => {
-      const mentionId = `@${user.id}`;
-      const mentionUsername = `@${user.username}`;
-      updatedContent = updatedContent.replace(mentionId, mentionUsername);
-    });
+  const matchMentions = reactStringReplace(matchLinks, REGEX, (match, i) => {
+    const user = mentioned_users.find((user) => user.id === match);
 
-    return updatedContent;
-  } else {
-    const matchLinks = reactStringReplace(
-      text,
-      /(https?:\/\/\S+)/g,
-      (match, i) => (
-        <Link
-          key={match + i}
-          href={match}
-          target="_blank"
-          onClick={(e) => e.stopPropagation()}
-          className={"break-all text-primary hover:underline"}
-        >
-          {match}
-        </Link>
-      ),
+    return (
+      <Link
+        key={match + i}
+        href={`/${user ? user.username : match}`}
+        className="font-medium text-primary"
+      >
+        {`@${user ? user.username : match}`}
+      </Link>
     );
+  });
 
-    const matchMentions = reactStringReplace(matchLinks, REGEX, (match, i) => {
-      const user = mentioned_users.find((user) => user.id === match);
-
-      return (
-        <Link
-          key={match + i}
-          href={`/${user ? user.username : match}`}
-          className="font-medium text-primary"
-        >
-          {`@${user ? user.username : match}`}
-        </Link>
-      );
-    });
-
-    return matchMentions;
-  }
+  return matchMentions;
 };

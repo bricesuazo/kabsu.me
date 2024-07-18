@@ -67,26 +67,14 @@ export async function GET(request: Request) {
         style={{
           position: "relative",
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          paddingTop: 40,
-          paddingBottom: 40,
-          paddingLeft: 80,
-          paddingRight: 80,
-          gap: 40,
+          padding: 80,
           width: "100%",
           height: "100%",
-          flex: 1,
           backgroundColor: getColors(data.theme).primary,
         }}
       >
-        <img
-          width={data.ratio === "portrait" ? 120 : 100}
-          height={data.ratio === "portrait" ? 120 : 100}
-          src="https://kabsu.me/logo.svg"
-        />
-
         <div
           style={{
             padding: 40,
@@ -96,8 +84,10 @@ export async function GET(request: Request) {
             backgroundColor: data.theme === "light" ? "white" : "#121212",
             color: data.theme === "light" ? "black" : "white",
             borderRadius: 20,
-            maxWidth: 1080,
+            maxWidth:
+              data.ratio !== "portrait" && data.images.length > 0 ? 720 : 1080,
             gap: 20,
+            boxShadow: "0px 0px 40px 0px rgba(0,0,0,0.25)",
           }}
         >
           <div style={{ display: "flex", gap: 16 }}>
@@ -129,6 +119,9 @@ export async function GET(request: Request) {
                     fontWeight: "bold",
                     margin: 0,
                     lineHeight: 1,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   {data.name}
@@ -160,6 +153,9 @@ export async function GET(request: Request) {
                     fontWeight: "bold",
                     margin: 0,
                     color: getColors(data.theme).mutedForeground,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   {data.created_at}
@@ -171,6 +167,9 @@ export async function GET(request: Request) {
                     fontSize: "1.5rem",
                     color: getColors(data.theme).mutedForeground,
                     margin: 0,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   @{data.username}
@@ -211,101 +210,140 @@ export async function GET(request: Request) {
               </div>
             </div>
           </div>
-          <div style={{ display: "flex" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: 8,
+              flexDirection: "column",
+            }}
+          >
             <p
               style={{
-                flex: 1,
                 fontSize:
-                  data.ratio === "portrait" || data.content.length < 60
-                    ? "2.5rem"
+                  data.images.length < 0 &&
+                  (data.ratio === "portrait" || data.content.length < 60)
+                    ? "3rem"
                     : data.content.length < 120
-                      ? "2.25rem"
-                      : "2rem",
+                      ? "2.5rem"
+                      : "2.25rem",
                 margin: 0,
+                wordBreak: "break-word",
+                ...(data.images.length > 0
+                  ? {
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }
+                  : {}),
               }}
             >
               {data.content}
             </p>
+
+            {data.images[0] && (
+              <img
+                src={data.images[0]}
+                style={{
+                  width: "100%",
+                  maxHeight: data.ratio === "portrait" ? 800 : 640,
+                  borderRadius: 20,
+                  objectFit: "cover",
+                  objectPosition: "center",
+                  margin: "auto",
+                }}
+              />
+            )}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                padding: 16,
-              }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={40}
-                height={40}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke={getColors(data.theme).mutedForeground}
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: 16,
+                }}
               >
-                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-              </svg>
-              <p style={{ fontSize: "1.5rem", margin: 0 }}>{data.likes}</p>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                padding: 16,
-              }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={40}
-                height={40}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke={getColors(data.theme).mutedForeground}
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={40}
+                  height={40}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke={getColors(data.theme).mutedForeground}
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                </svg>
+                <p style={{ fontSize: "1.5rem", margin: 0 }}>{data.likes}</p>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: 16,
+                }}
               >
-                <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-              </svg>
-              <p style={{ fontSize: "1.5rem", margin: 0 }}>{data.comments}</p>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={40}
+                  height={40}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke={getColors(data.theme).mutedForeground}
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                </svg>
+                <p style={{ fontSize: "1.5rem", margin: 0 }}>{data.comments}</p>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  paddingLeft: 16,
+                  paddingRight: 16,
+                  borderRadius: "2rem",
+                  borderWidth: 2,
+                  borderColor: getColors(data.theme).border,
+                }}
+              >
+                <p style={{ fontSize: "1.5rem", margin: 0 }}>
+                  Privacy:{" "}
+                  {data.privacy === "following"
+                    ? "Follower"
+                    : data.privacy.charAt(0).toUpperCase() +
+                      data.privacy.slice(1)}
+                </p>
+              </div>
             </div>
-            <div
-              style={{
-                display: "flex",
-                paddingTop: 4,
-                paddingBottom: 4,
-                paddingLeft: 16,
-                paddingRight: 16,
-                borderRadius: "2rem",
-                borderWidth: 2,
-                borderColor: getColors(data.theme).border,
-              }}
-            >
-              <p style={{ fontSize: "1.5rem", margin: 0 }}>
-                Privacy:{" "}
-                {data.privacy === "following"
-                  ? "Follower"
-                  : data.privacy.charAt(0).toUpperCase() +
-                    data.privacy.slice(1)}
-              </p>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <h2
+                style={{
+                  fontFamily: '"Open Sans - Semi Bold',
+                  fontSize: "1.5rem",
+                  margin: 0,
+                }}
+              >
+                Kabsu.me
+              </h2>
+              <img width={60} height={60} src="https://kabsu.me/logo.svg" />
             </div>
           </div>
         </div>
-        <h2
-          style={{
-            fontFamily: '"Open Sans - Bold',
-            fontSize: data.ratio === "portrait" ? "2.5rem" : "2rem",
-            color: "white",
-            margin: 0,
-          }}
-        >
-          Kabsu.me
-        </h2>
       </div>
     ),
     {
