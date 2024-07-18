@@ -170,7 +170,7 @@ export async function GET(request: Request) {
                     maxWidth: 320,
                   }}
                 >
-                  @{data.username}adasdasdasdasdasdaads
+                  @{data.username}
                 </p>
 
                 <p
@@ -225,7 +225,6 @@ export async function GET(request: Request) {
                       ? "2.5rem"
                       : "2.25rem",
                 margin: 0,
-                wordBreak: "break-word",
                 ...(data.images.length > 0
                   ? {
                       overflow: "hidden",

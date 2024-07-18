@@ -184,6 +184,7 @@ export const FormattedContent = ({
       <Link
         key={match + i}
         href={`/${user ? user.username : match}`}
+        onClick={(e) => e.stopPropagation()}
         className="font-medium text-primary"
       >
         {`@${user ? user.username : match}`}

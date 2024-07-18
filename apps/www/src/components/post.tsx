@@ -231,12 +231,6 @@ export default function Post({
             text={getPostQuery.data.post.content}
             mentioned_users={getPostQuery.data.mentioned_users}
           />
-
-          {/* {formatText(
-            getPostQuery.data.post.content.length > 512
-              ? getPostQuery.data.post.content.slice(0, 512) + "..."
-              : getPostQuery.data.post.content,
-          )} */}
         </div>
 
         {getPostQuery.data.post.posts_images.length > 0 && (
