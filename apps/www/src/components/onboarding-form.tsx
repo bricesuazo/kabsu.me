@@ -337,8 +337,8 @@ function Page1({
                     {(
                       [
                         { type: "student", Icon: Album },
-                        { type: "faculty", Icon: Briefcase },
                         { type: "alumni", Icon: GraduationCap },
+                        { type: "faculty", Icon: Briefcase },
                       ] as {
                         Icon: LucideIcon;
                         type: Database["public"]["Enums"]["user_type"];

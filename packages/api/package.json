@@ -19,7 +19,7 @@
     "@supabase/supabase-js": "^2.44.2",
     "@trpc/client": "11.0.0-rc.446",
     "@trpc/server": "11.0.0-rc.446",
-    "@upstash/ratelimit": "^2.0.0",
+    "@upstash/ratelimit": "^2.0.1",
     "@upstash/redis": "^1.33.0",
     "date-fns": "^3.6.0",
     "superjson": "^2.2.1",
@@ -31,7 +31,7 @@
     "@kabsu.me/tsconfig": "workspace:*",
     "@types/uuid": "^10.0.0",
     "eslint": "^9.7.0",
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.4"
   },
   "eslintConfig": {
     "root": true,

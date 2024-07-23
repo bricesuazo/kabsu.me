@@ -42,6 +42,7 @@ export function useMediaQuery(
     handleChange();
 
     // Use deprecated `addListener` and `removeListener` to support Safari < 14 (#135)
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (matchMedia.addListener) {
       matchMedia.addListener(handleChange);
     } else {
@@ -49,6 +50,7 @@ export function useMediaQuery(
     }
 
     return () => {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (matchMedia.removeListener) {
         matchMedia.removeListener(handleChange);
       } else {

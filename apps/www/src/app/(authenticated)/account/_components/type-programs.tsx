@@ -149,8 +149,8 @@ export default function TypePrograms({
                   {(
                     [
                       { type: "student" },
-                      { type: "faculty" },
                       { type: "alumni" },
+                      { type: "faculty" },
                     ] as {
                       Icon: LucideIcon;
                       type: Database["public"]["Enums"]["user_type"];

@@ -7,7 +7,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "lucide-react": "^0.408.0",
+    "lucide-react": "^0.414.0",
     "uuid": "^10.0.0"
   },
   "devDependencies": {

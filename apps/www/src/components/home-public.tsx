@@ -395,7 +395,11 @@ async function UsersLength() {
   const getTotalUsersQuery = await api.users.getTotalUsers();
   return (
     <p className="flex items-center justify-center gap-x-1 text-center text-sm text-muted-foreground">
-      <NumberTicker value={getTotalUsersQuery} />
+      {getTotalUsersQuery === 0 ? (
+        <span>0</span>
+      ) : (
+        <NumberTicker value={getTotalUsersQuery} />
+      )}
       Kabsuhenyos registered
     </p>
   );

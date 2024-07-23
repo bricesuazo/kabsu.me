@@ -4,6 +4,7 @@ import { v4 as uuid } from "uuid";
 import { z } from "zod";
 
 import type { Database } from "../../../../supabase/types";
+import { env } from "../../../../apps/www/src/env";
 import { protectedProcedure, router } from "../trpc";
 
 export const postsRouter = router({
@@ -431,13 +432,15 @@ export const postsRouter = router({
         limiter: Ratelimit.fixedWindow(1, "60 s"),
       });
 
-      const { success } = await rate_limiter.limit(ctx.auth.user.id);
+      if (env.NODE_ENV !== "development") {
+        const { success } = await rate_limiter.limit(ctx.auth.user.id);
 
-      if (!success) {
-        throw new TRPCError({
-          code: "TOO_MANY_REQUESTS",
-          message: "You are posting too fast. Please try again in a minute.",
-        });
+        if (!success) {
+          throw new TRPCError({
+            code: "TOO_MANY_REQUESTS",
+            message: "You are posting too fast. Please try again in a minute.",
+          });
+        }
       }
 
       const { data: post, error: post_error } = await ctx.supabase
