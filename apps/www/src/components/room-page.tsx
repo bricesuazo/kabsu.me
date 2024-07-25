@@ -20,7 +20,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import { v4 } from "uuid";
 import { z } from "zod";
 
-import type { RouterOutput } from "@kabsu.me/api/root";
+import type { RouterOutputs } from "@kabsu.me/api";
 
 import type { Database } from "../../../../supabase/types";
 import { Icons } from "~/components/icons";
@@ -49,14 +49,14 @@ export default function RoomPageClient(
   props: (
     | {
         type: Database["public"]["Enums"]["global_chat_type"];
-        getMyUniversityStatus: RouterOutput["auth"]["getMyUniversityStatus"];
+        getMyUniversityStatus: RouterOutputs["auth"]["getMyUniversityStatus"];
       }
     | {
         type: "room";
       }
   ) & {
-    current_user: RouterOutput["auth"]["getCurrentUser"];
-    getRoomChats: NonNullable<RouterOutput["chats"]["getRoomChats"]>;
+    current_user: RouterOutputs["auth"]["getCurrentUser"];
+    getRoomChats: NonNullable<RouterOutputs["chats"]["getRoomChats"]>;
   },
 ) {
   const supabase = createClient();

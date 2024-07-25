@@ -748,4 +748,13 @@ export const usersRouter = router({
 
     return suggested_features ?? [];
   }),
+  getMyStrikes: protectedProcedure.query(async ({ ctx }) => {
+    const { data: strikes } = await ctx.supabase
+      .from("strikes")
+      .select("id, reason, created_at")
+      .eq("user_id", ctx.auth.user.id)
+      .order("created_at", { ascending: true });
+
+    return strikes ?? [];
+  }),
 });

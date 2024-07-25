@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
 
-import type { RouterOutput } from "@kabsu.me/api/root";
+import type { RouterOutputs } from "@kabsu.me/api";
 
 import { api } from "~/lib/trpc/client";
 import { Icons } from "./icons";
@@ -22,7 +22,7 @@ import { Separator } from "./ui/separator";
 export default function NewChat({
   user,
 }: {
-  user: NonNullable<RouterOutput["chats"]["getOrCreateRoom"]["user"]>;
+  user: NonNullable<RouterOutputs["chats"]["getOrCreateRoom"]["user"]>;
 }) {
   const router = useRouter();
   const sendNewMessageMutation = api.chats.sendNewMessage.useMutation({

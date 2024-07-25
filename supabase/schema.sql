@@ -330,6 +330,15 @@ CREATE TABLE IF NOT EXISTS "public"."rooms_users" (
 
 ALTER TABLE "public"."rooms_users" OWNER TO "postgres";
 
+CREATE TABLE IF NOT EXISTS "public"."strikes" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "reason" "text" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+ALTER TABLE "public"."strikes" OWNER TO "postgres";
+
 CREATE TABLE IF NOT EXISTS "public"."suggested_features" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "feature" "text" NOT NULL,
@@ -352,7 +361,8 @@ CREATE TABLE IF NOT EXISTS "public"."users" (
     "type" "public"."user_type" NOT NULL,
     "program_id" "uuid" NOT NULL,
     "verified_at" timestamp with time zone,
-    "program_changed_at" timestamp with time zone
+    "program_changed_at" timestamp with time zone,
+    "banned_at" timestamp with time zone
 );
 
 ALTER TABLE "public"."users" OWNER TO "postgres";
@@ -413,6 +423,9 @@ ALTER TABLE ONLY "public"."rooms"
 
 ALTER TABLE ONLY "public"."rooms_users"
     ADD CONSTRAINT "rooms_users_pkey" PRIMARY KEY ("room_id", "user_id");
+
+ALTER TABLE ONLY "public"."strikes"
+    ADD CONSTRAINT "strikes_pkey" PRIMARY KEY ("id");
 
 ALTER TABLE ONLY "public"."suggested_features"
     ADD CONSTRAINT "suggested_features_pkey" PRIMARY KEY ("id");
@@ -603,6 +616,9 @@ ALTER TABLE ONLY "public"."users"
 ALTER TABLE ONLY "public"."users"
     ADD CONSTRAINT "public_users_program_id_fkey" FOREIGN KEY ("program_id") REFERENCES "public"."programs"("id");
 
+ALTER TABLE ONLY "public"."strikes"
+    ADD CONSTRAINT "strikes_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
+
 ALTER TABLE "public"."campuses" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."chats" ENABLE ROW LEVEL SECURITY;
@@ -640,6 +656,8 @@ ALTER TABLE "public"."reported_users" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."rooms" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."rooms_users" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "public"."strikes" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."suggested_features" ENABLE ROW LEVEL SECURITY;
 
@@ -735,6 +753,10 @@ GRANT ALL ON TABLE "public"."rooms" TO "service_role";
 GRANT ALL ON TABLE "public"."rooms_users" TO "anon";
 GRANT ALL ON TABLE "public"."rooms_users" TO "authenticated";
 GRANT ALL ON TABLE "public"."rooms_users" TO "service_role";
+
+GRANT ALL ON TABLE "public"."strikes" TO "anon";
+GRANT ALL ON TABLE "public"."strikes" TO "authenticated";
+GRANT ALL ON TABLE "public"."strikes" TO "service_role";
 
 GRANT ALL ON TABLE "public"."suggested_features" TO "anon";
 GRANT ALL ON TABLE "public"."suggested_features" TO "authenticated";
