@@ -361,10 +361,7 @@ export const postsRouter = router({
             "id, type, users!inner(program_id, programs(*, colleges(campus_id)))",
           )
           .in("user_id", [
-            ...new Set([
-              ...(following ?? []).map((u) => u.followee_id),
-              user.id,
-            ]),
+            ...new Set([...(following ?? []).map((u) => u.followee_id)]),
           ])
           .is("deleted_at", null)
           .order("created_at", { ascending: false })
