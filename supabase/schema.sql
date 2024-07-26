@@ -619,6 +619,8 @@ ALTER TABLE ONLY "public"."users"
 ALTER TABLE ONLY "public"."strikes"
     ADD CONSTRAINT "strikes_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
 
+CREATE POLICY "Enable select for my data" ON "public"."users" FOR SELECT USING (("auth"."uid"() = "id"));
+
 ALTER TABLE "public"."campuses" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."chats" ENABLE ROW LEVEL SECURITY;

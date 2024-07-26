@@ -42,9 +42,38 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user && !request.nextUrl.pathname.startsWith("/")) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/";
+  const url = request.nextUrl.clone();
+  url.pathname = "/";
+
+  if (!user && !request.nextUrl.pathname.startsWith("/"))
+    return NextResponse.redirect(url);
+
+  if (!user) return supabaseResponse;
+
+  const { data } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (!data) {
+    await supabase.auth.signOut();
+    url.searchParams.set("error", "auth-code-error");
+    return NextResponse.redirect(url);
+  }
+
+  if (data.banned_at) {
+    await supabase.auth.signOut();
+    url.searchParams.set("error", "banned");
+    return NextResponse.redirect(url);
+  }
+
+  if (
+    data.deactivated_at &&
+    !request.nextUrl.pathname.startsWith("/reactivate") &&
+    !request.nextUrl.pathname.startsWith("/api/trpc/users.reactivate")
+  ) {
+    url.pathname = "/reactivate";
     return NextResponse.redirect(url);
   }
 

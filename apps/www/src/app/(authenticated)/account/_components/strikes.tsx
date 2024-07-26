@@ -12,7 +12,6 @@ import {
   CardHeader,
 } from "~/components/ui/card";
 import { api } from "~/lib/trpc/client";
-import { cn } from "~/lib/utils";
 
 export default function Strikes({
   getMyStrikes,
