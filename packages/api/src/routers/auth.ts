@@ -4,6 +4,21 @@ import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const authRouter = router({
   getCurrentSession: publicProcedure.query(({ ctx }) => ctx.auth),
+  getMyUsername: protectedProcedure.query(async ({ ctx }) => {
+    const { data: user } = await ctx.supabase
+      .from("users")
+      .select("username")
+      .eq("id", ctx.auth.user.id)
+      .single();
+
+    if (!user)
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "User not found",
+      });
+
+    return user.username;
+  }),
   getCurrentUser: protectedProcedure.query(async ({ ctx }) => {
     const { data: user } = await ctx.supabase
       .from("users")

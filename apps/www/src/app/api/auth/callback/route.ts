@@ -22,7 +22,10 @@ export async function GET(request: Request) {
 
     if (!user) return NextResponse.redirect(`${origin}?error=auth-code-error`);
 
-    if (user.banned_at) return NextResponse.redirect(`${origin}?error=banned`);
+    if (user.banned_at) {
+      await supabase.auth.signOut();
+      return NextResponse.redirect(`${origin}?error=banned`);
+    }
 
     if (
       !user.email.endsWith("@cvsu.edu.ph") &&

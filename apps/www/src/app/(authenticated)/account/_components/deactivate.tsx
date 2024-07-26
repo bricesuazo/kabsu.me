@@ -27,7 +27,7 @@ const FormSchema = z.object({
     message: "Username must be at least 1 character.",
   }),
 });
-export default function Deactivate() {
+export default function Deactivate({ username }: { username: string }) {
   const router = useRouter();
   const supabase = createClient();
   const deactivateMutation = api.users.deactivate.useMutation({
@@ -66,7 +66,7 @@ export default function Deactivate() {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="bricesuazo" {...field} />
+                    <Input placeholder={username} {...field} />
                   </FormControl>
                   <FormDescription>
                     Enter your username to confirm deactivation

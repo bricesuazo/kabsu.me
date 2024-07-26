@@ -1,15 +1,17 @@
 import { UserCog2 } from "lucide-react";
 
 import { api } from "~/lib/trpc/server";
+import Deactivate from "./_components/deactivate";
 import Strikes from "./_components/strikes";
 import TypePrograms from "./_components/type-programs";
-import Deactivate from "./_components/deactivate";
 
 export default async function AccountSettingsPage() {
-  const [currentUserTypeProgram, getMyStrikes] = await Promise.all([
-    api.users.getCurrentUserTypeProgram(),
-    api.users.getMyStrikes(),
-  ]);
+  const [currentUserTypeProgram, getMyStrikes, getMyUsername] =
+    await Promise.all([
+      api.users.getCurrentUserTypeProgram(),
+      api.users.getMyStrikes(),
+      api.auth.getMyUsername(),
+    ]);
 
   return (
     <>
@@ -21,7 +23,7 @@ export default async function AccountSettingsPage() {
       <div className="space-y-10 p-4">
         <Strikes getMyStrikes={getMyStrikes} />
         <TypePrograms currentUserTypeProgram={currentUserTypeProgram} />
-        <Deactivate/>
+        <Deactivate username={getMyUsername} />
       </div>
     </>
   );
