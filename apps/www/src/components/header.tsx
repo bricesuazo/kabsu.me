@@ -40,6 +40,7 @@ import FeedbackForm from "./feedback-form";
 import { Icons } from "./icons";
 import Notifications from "./notifications";
 import Search from "./search";
+import { ScrollArea } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
 import {
   Sheet,
@@ -94,37 +95,40 @@ export default function Header() {
                 <SheetTitle>Kabsu.me</SheetTitle>
                 <SheetDescription>Navigate to different pages</SheetDescription>
               </SheetHeader>
+              <div className="flex h-full pb-14">
+                <ScrollArea className="flex-grow">
+                  {NAVBAR_LINKS.map((link, index) => (
+                    <Fragment key={link.url}>
+                      {index === NAVBAR_LINKS.length - 6 && (
+                        <Label htmlFor="name" className="mb-4 text-right">
+                          Partnership
+                        </Label>
+                      )}
 
-              {NAVBAR_LINKS.map((link, index) => (
-                <Fragment key={link.url}>
-                  {index === NAVBAR_LINKS.length - 6 && (
-                    <Label htmlFor="name" className="mb-4 text-right">
-                      Partnership
-                    </Label>
-                  )}
-
-                  <Button
-                    asChild
-                    className="w-full justify-start"
-                    variant={pathname === link.url ? "secondary" : "ghost"}
-                  >
-                    <SheetClose asChild>
-                      <Link
-                        className="flex gap-x-2"
-                        href={link.url}
-                        target={
-                          link.url.startsWith("http") ? "_blank" : undefined
-                        }
+                      <Button
+                        asChild
+                        className="w-full justify-start"
+                        variant={pathname === link.url ? "secondary" : "ghost"}
                       >
-                        <link.icon size="1.25rem" />
-                        <p className="truncate">{link.name}</p>
-                      </Link>
-                    </SheetClose>
-                  </Button>
+                        <SheetClose asChild>
+                          <Link
+                            className="flex gap-x-2"
+                            href={link.url}
+                            target={
+                              link.url.startsWith("http") ? "_blank" : undefined
+                            }
+                          >
+                            <link.icon size="1.25rem" />
+                            <p className="truncate">{link.name}</p>
+                          </Link>
+                        </SheetClose>
+                      </Button>
 
-                  {link.hasSeparator && <Separator className="my-2" />}
-                </Fragment>
-              ))}
+                      {link.hasSeparator && <Separator className="my-2" />}
+                    </Fragment>
+                  ))}
+                </ScrollArea>
+              </div>
             </SheetContent>
           </Sheet>
 
