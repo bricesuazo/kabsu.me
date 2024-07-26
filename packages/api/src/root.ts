@@ -1,5 +1,3 @@
-import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
-
 import { authRouter } from "./routers/auth";
 import { chatsRouter } from "./routers/chats";
 import { commentsRouter } from "./routers/comments";
@@ -18,7 +16,5 @@ export const appRouter = router({
 });
 
 export type AppRouter = typeof appRouter;
-export type RouterInput = inferRouterInputs<AppRouter>;
-export type RouterOutput = inferRouterOutputs<AppRouter>;
 
 export const createCaller = createCallerFactory(appRouter);

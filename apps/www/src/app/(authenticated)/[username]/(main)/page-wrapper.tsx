@@ -14,7 +14,7 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { RouterOutput } from "@kabsu.me/api/root";
+import type { RouterOutputs } from "@kabsu.me/api";
 
 import EditProfile from "~/components/edit-profile";
 import FollowButton from "~/components/follow-button";
@@ -57,7 +57,7 @@ export default function UserPageWrapper({
   profile,
   username,
 }: {
-  profile: RouterOutput["users"]["getUserProfile"];
+  profile: RouterOutputs["users"]["getUserProfile"];
   username: string;
 }) {
   const profileQuery = api.users.getUserProfile.useQuery(

@@ -750,6 +750,35 @@ export type Database = {
           },
         ]
       }
+      strikes: {
+        Row: {
+          created_at: string
+          id: string
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reason: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reason?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "strikes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suggested_features: {
         Row: {
           created_at: string
@@ -781,6 +810,7 @@ export type Database = {
       }
       users: {
         Row: {
+          banned_at: string | null
           bio: string | null
           created_at: string
           deactivated_at: string | null
@@ -796,6 +826,7 @@ export type Database = {
           verified_at: string | null
         }
         Insert: {
+          banned_at?: string | null
           bio?: string | null
           created_at?: string
           deactivated_at?: string | null
@@ -811,6 +842,7 @@ export type Database = {
           verified_at?: string | null
         }
         Update: {
+          banned_at?: string | null
           bio?: string | null
           created_at?: string
           deactivated_at?: string | null

@@ -20,12 +20,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home({
-  searchParams: { tab, error },
+  searchParams: { tab, error, status },
 }: {
   searchParams: {
     tab?: "all" | "campus" | "program" | "college";
     callback_url?: string;
     error?: string;
+    status?: string;
     [key: string]: string | string[] | undefined;
   };
 }) {
@@ -45,7 +46,7 @@ export default async function Home({
           <HomeProtected tab={tab} />
         </main>
       ) : (
-        <HomePublic error={error} />
+        <HomePublic error={error} status={status} />
       )}
     </>
   );

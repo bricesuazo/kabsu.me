@@ -169,7 +169,13 @@ const THESIS_INFO = [
   },
 ];
 
-export default function HomePublic({ error }: { error?: string }) {
+export default function HomePublic({
+  error,
+  status,
+}: {
+  error?: string;
+  status?: string;
+}) {
   return (
     <div className="bg-background">
       {/* NAV BAR */}
@@ -245,7 +251,21 @@ export default function HomePublic({ error }: { error?: string }) {
                     ? "Please use your CvSU email address. You must be a CvSU student, faculty, or alumni to access this site."
                     : error === "StagingAccessDenied"
                       ? "You are not authorized to access this site. Please contact the developer for more information."
-                      : "An error occured."}
+                      : error === "banned"
+                        ? "You are banned from accessing this platform. Please contact the developer for more information."
+                        : "An error occured."}
+                </AlertDescription>
+              </Alert>
+            )}
+            {status && (
+              <Alert className="mx-auto max-w-xs">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>
+                  {status === "deactivated" && "Account Deactivated"}
+                </AlertTitle>
+                <AlertDescription>
+                  {status === "deactivated" &&
+                    "Your account has been successfully deactivated. You can reactivate your account by signing in."}
                 </AlertDescription>
               </Alert>
             )}

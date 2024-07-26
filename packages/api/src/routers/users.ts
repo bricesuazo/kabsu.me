@@ -748,4 +748,55 @@ export const usersRouter = router({
 
     return suggested_features ?? [];
   }),
+  getMyStrikes: protectedProcedure.query(async ({ ctx }) => {
+    const { data: strikes } = await ctx.supabase
+      .from("strikes")
+      .select("id, reason, created_at")
+      .eq("user_id", ctx.auth.user.id)
+      .order("created_at", { ascending: true });
+
+    return strikes ?? [];
+  }),
+  deactivate: protectedProcedure
+    .input(
+      z.object({
+        username: z.string().min(1, {
+          message: "Username must be at least 1 character.",
+        }),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { data: user } = await ctx.supabase
+        .from("users")
+        .select("username, deactivated_at")
+        .eq("id", ctx.auth.user.id)
+        .single();
+
+      if (user?.deactivated_at) throw new TRPCError({ code: "BAD_REQUEST" });
+
+      if (user?.username !== input.username)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Username does not match",
+        });
+
+      await ctx.supabase
+        .from("users")
+        .update({ deactivated_at: new Date().toISOString() })
+        .eq("id", ctx.auth.user.id);
+    }),
+  reactivate: protectedProcedure.mutation(async ({ ctx }) => {
+    const { data: user } = await ctx.supabase
+      .from("users")
+      .select("deactivated_at")
+      .eq("id", ctx.auth.user.id)
+      .single();
+
+    if (!user?.deactivated_at) throw new TRPCError({ code: "NOT_FOUND" });
+
+    await ctx.supabase
+      .from("users")
+      .update({ deactivated_at: null })
+      .eq("id", ctx.auth.user.id);
+  }),
 });

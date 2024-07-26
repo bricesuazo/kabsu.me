@@ -558,6 +558,7 @@ export const BLOCKED_USERNAMES = new Set([
   "message",
   "chat",
   "chats",
+  "reactivate",
 ]);
 
 export const NEW_FEATURES = [

@@ -8,7 +8,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { RouterOutput } from "@kabsu.me/api/root";
+import type { RouterOutputs } from "@kabsu.me/api";
 
 import type { Database } from "../../../../../../../supabase/types";
 import { Button } from "~/components/ui/button";
@@ -64,7 +64,7 @@ const formSchema = z.object({
 export default function TypePrograms({
   currentUserTypeProgram,
 }: {
-  currentUserTypeProgram: RouterOutput["users"]["getCurrentUserTypeProgram"];
+  currentUserTypeProgram: RouterOutputs["users"]["getCurrentUserTypeProgram"];
 }) {
   const currentUserTypeProgramQuery =
     api.users.getCurrentUserTypeProgram.useQuery(undefined, {

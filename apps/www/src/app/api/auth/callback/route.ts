@@ -14,16 +14,29 @@ export async function GET(request: Request) {
 
     if (error) return NextResponse.json({ error }, { status: 500 });
 
+    const { data: user } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", data.user.id)
+      .single();
+
+    if (!user) return NextResponse.redirect(`${origin}?error=auth-code-error`);
+
+    if (user.banned_at) {
+      await supabase.auth.signOut();
+      return NextResponse.redirect(`${origin}?error=banned`);
+    }
+
     if (
-      !data.user.email?.endsWith("@cvsu.edu.ph") &&
-      data.user.email !== env.NEXT_PUBLIC_SUPERADMIN_EMAIL
+      !user.email.endsWith("@cvsu.edu.ph") &&
+      user.email !== env.NEXT_PUBLIC_SUPERADMIN_EMAIL
     ) {
       await supabase.auth.signOut();
       return NextResponse.redirect(`${origin}?error=AccessDenied`);
     } else if (
       env.ENV === "staging" &&
-      !env.STAGING_TEST_EMAILS?.split(", ").includes(data.user.email) &&
-      data.user.email !== env.NEXT_PUBLIC_SUPERADMIN_EMAIL
+      !env.STAGING_TEST_EMAILS?.split(", ").includes(user.email) &&
+      user.email !== env.NEXT_PUBLIC_SUPERADMIN_EMAIL
     ) {
       await supabase.auth.signOut();
       return NextResponse.redirect(`${origin}?error=StagingAccessDenied`);
@@ -33,5 +46,5 @@ export async function GET(request: Request) {
   }
 
   // return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/api/auth/auth-code-error`);
+  return NextResponse.redirect(`${origin}?error=auth-code-error`);
 }
