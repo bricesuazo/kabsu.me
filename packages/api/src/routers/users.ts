@@ -221,7 +221,7 @@ export const usersRouter = router({
       const { data: user_from_db } = await ctx.supabase
         .from("users")
         .select(
-          "id, name, username, image_name, type, bio, link, verified_at, programs(name, slug, colleges(name, slug, campuses(name, slug)))",
+          "id, name, username, image_name, type, bio, link, verified_at, deactivated_at, banned_at, programs(name, slug, colleges(name, slug, campuses(name, slug)))",
         )
         .eq("username", input.username)
         .single();
@@ -258,20 +258,25 @@ export const usersRouter = router({
         followersLength: followers?.length ?? 0,
         followeesLength: followees?.length ?? 0,
         user_id: ctx.auth.user.id,
-        user: user_from_db.image_name?.startsWith("https://")
-          ? {
-              ...user_from_db,
-              image_url: user_from_db.image_name,
-            }
-          : user_from_db.image_name && image_url
+
+        user: {
+          is_deactivated: !!user_from_db.deactivated_at,
+          is_banned: !!user_from_db.banned_at,
+          ...(user_from_db.image_name?.startsWith("https://")
             ? {
                 ...user_from_db,
-                image_url,
+                image_url: user_from_db.image_name,
               }
-            : {
-                ...user_from_db,
-                image_name: null,
-              },
+            : user_from_db.image_name && image_url
+              ? {
+                  ...user_from_db,
+                  image_url,
+                }
+              : {
+                  ...user_from_db,
+                  image_name: null,
+                }),
+        },
         is_follower: !!followers?.some(
           (follower) => follower.follower_id === ctx.auth.user.id,
         ),
@@ -308,6 +313,8 @@ export const usersRouter = router({
         .from("users")
         .select("*, programs(colleges(campuses(*)))")
         .not("id", "eq", ctx.auth.user.id)
+        .is("banned_at", null)
+        .is("deactivated_at", null)
         .ilike("username", `%${input.query}%`);
 
       if (users === null) return [];

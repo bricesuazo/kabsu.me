@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import DeactivatedBanned from "~/components/deactivated-banned";
+import { api } from "~/lib/trpc/server";
 import { extractAllMentions, REGEX } from "~/lib/utils";
 import { createClient as createClientAdmin } from "~/supabase/admin";
 import { createClient as createClientServer } from "~/supabase/server";
@@ -108,17 +110,28 @@ export async function generateMetadata({
   };
 }
 
-export default function PostPage({
+export default async function PostPage({
   params: { username, post_id },
 }: {
   params: { username: string; post_id: string };
 }) {
+  const getPost = await api.posts.getPost({ username, post_id });
+
+  if (getPost.post.user.banned_at) return <DeactivatedBanned type="banned" />;
+
+  if (getPost.post.user.deactivated_at)
+    return <DeactivatedBanned type="deactivated" />;
+
   return (
     <>
       {/* <UpdatePost open={openUpdate} setOpen={setOpenUpdate} post={post} /> */}
       {/* <DeletePost open={openDelete} setOpen={setOpenDelete} post_id={post.id} /> */}
 
-      <PostPageComponent username={username} post_id={post_id} />
+      <PostPageComponent
+        getPost={getPost}
+        username={username}
+        post_id={post_id}
+      />
     </>
   );
 }

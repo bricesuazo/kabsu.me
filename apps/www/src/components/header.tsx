@@ -229,16 +229,6 @@ export default function Header() {
 
                   <DropdownMenuSeparator />
 
-                  <DropdownMenuItem
-                    asChild
-                    className="line-clamp-1 w-full cursor-pointer truncate"
-                  >
-                    <Link href="/chat" className="flex w-full items-center">
-                      <MessageCircle className="mr-2" size="1rem" />
-                      Messages
-                    </Link>
-                  </DropdownMenuItem>
-
                   <DropdownMenuSeparator />
 
                   <DropdownMenuSub>

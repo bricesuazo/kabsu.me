@@ -16,7 +16,7 @@ export const postsRouter = router({
       const query = ctx.supabase
         .from("posts")
         .select(
-          "id, content, type, user_id, created_at, posts_images(*), likes(post_id, user_id), comments(id, thread_id, deleted_at), user:users!inner(name, username, image_name, type, verified_at, programs(name, slug, college_id, colleges(name, slug, campus_id, campuses(name, slug))))",
+          "id, content, type, user_id, created_at, posts_images(*), likes(post_id, user_id), comments(id, thread_id, deleted_at), user:users!inner(name, username, image_name, type, verified_at, deactivated_at, banned_at, programs(name, slug, college_id, colleges(name, slug, campus_id, campuses(name, slug))))",
         )
         .eq("id", input.post_id)
         .is("deleted_at", null)
@@ -228,11 +228,13 @@ export const postsRouter = router({
       if (input.type === "all") {
         await ctx.supabase
           .from("posts")
-          .select("id")
+          .select("id, users!inner(banned_at, deactivated_at)")
           .eq("type", "all")
           .is("deleted_at", null)
           .order("created_at", { ascending: false })
           .limit(limit)
+          .is("users.banned_at", null)
+          .is("users.deactivated_at", null)
           .range((input.cursor - 1) * limit, input.cursor * limit)
           .then((res) => {
             if (res.error)
@@ -255,7 +257,9 @@ export const postsRouter = router({
 
         posts = await ctx.supabase
           .from("posts")
-          .select("id, users!inner(programs!inner(colleges(campus_id)))")
+          .select(
+            "id, users!inner(banned_at, deactivated_at, programs!inner(colleges(campus_id)))",
+          )
           .eq("type", "campus")
           .eq(
             "users.programs.colleges.campus_id",
@@ -265,6 +269,8 @@ export const postsRouter = router({
           .order("created_at", { ascending: false })
           .limit(limit)
           .range((input.cursor - 1) * limit, input.cursor * limit)
+          .is("users.banned_at", null)
+          .is("users.deactivated_at", null)
           .then((res) => {
             if (res.error)
               throw new TRPCError({
@@ -290,11 +296,15 @@ export const postsRouter = router({
 
         posts = await ctx.supabase
           .from("posts")
-          .select("id, users!inner(programs(college_id))")
+          .select(
+            "id, users!inner(banned_at, deactivated_at, programs(college_id))",
+          )
           .eq("type", "college")
           .eq("users.programs.college_id", user.programs?.college_id ?? "")
           .is("deleted_at", null)
           .order("created_at", { ascending: false })
+          .is("users.banned_at", null)
+          .is("users.deactivated_at", null)
           .limit(limit)
           .range((input.cursor - 1) * 10, input.cursor * limit)
           .then((res) => {
@@ -322,10 +332,12 @@ export const postsRouter = router({
 
         posts = await ctx.supabase
           .from("posts")
-          .select("id, users!inner(program_id)")
+          .select("id, users!inner(banned_at, deactivated_at, program_id)")
           .eq("type", "program")
           .eq("users.program_id", user.program_id)
           .is("deleted_at", null)
+          .is("users.banned_at", null)
+          .is("users.deactivated_at", null)
           .order("created_at", { ascending: false })
           .limit(limit)
           .range((input.cursor - 1) * limit, input.cursor * limit)
@@ -366,6 +378,8 @@ export const postsRouter = router({
           .is("deleted_at", null)
           .order("created_at", { ascending: false })
           .limit(limit)
+          .is("users.banned_at", null)
+          .is("users.deactivated_at", null)
           .range((input.cursor - 1) * limit, input.cursor * limit)
           .then((res) => {
             if (res.error)
