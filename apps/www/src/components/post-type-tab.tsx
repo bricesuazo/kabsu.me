@@ -35,6 +35,13 @@ export default function PostTypeTab() {
               key={select.id}
               className="flex w-full gap-x-2 rounded-none border-b-4 border-transparent py-4 hover:text-foreground data-[state=active]:rounded-none data-[state=active]:border-b-primary data-[state=active]:bg-transparent data-[state=active]:text-primary md:data-[state=active]:border-b-4"
               value={select.id}
+              onClick={() => {
+                if (
+                  select.id === searchParams.get("tab") ||
+                  (select.id === "following" && !searchParams.has("tab"))
+                )
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
             >
               <div className="block sm:hidden md:block">
                 <select.icon size="20" />
