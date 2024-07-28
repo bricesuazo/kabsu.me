@@ -59,35 +59,41 @@ export const chatsRouter = router({
       image_urls.push(...data);
     }
 
-    return (rooms ?? []).map((room) => ({
-      ...room,
-      rooms_users: room.rooms_users.map((user) => {
-        const signed_url = image_urls.find(
-          (url) =>
-            url.path === user.users?.id + "/avatar/" + user.users?.image_name,
-        );
-        return {
-          ...user,
-          users: {
-            id: user.users?.id,
-            username: user.users?.username,
-            ...(user.users?.image_name?.startsWith("https:")
-              ? {
-                  image_name: user.users.image_name,
-                  image_url: user.users.image_name,
-                }
-              : user.users?.image_name && signed_url
+    return (rooms ?? [])
+      .map((room) => ({
+        ...room,
+        rooms_users: room.rooms_users.map((user) => {
+          const signed_url = image_urls.find(
+            (url) =>
+              url.path === user.users?.id + "/avatar/" + user.users?.image_name,
+          );
+          return {
+            ...user,
+            users: {
+              id: user.users?.id,
+              username: user.users?.username,
+              ...(user.users?.image_name?.startsWith("https:")
                 ? {
                     image_name: user.users.image_name,
-                    image_url: signed_url.signedUrl,
+                    image_url: user.users.image_name,
                   }
-                : {
-                    image_name: null,
-                  }),
-          },
-        };
-      }),
-    }));
+                : user.users?.image_name && signed_url
+                  ? {
+                      image_name: user.users.image_name,
+                      image_url: signed_url.signedUrl,
+                    }
+                  : {
+                      image_name: null,
+                    }),
+            },
+          };
+        }),
+      }))
+      .sort(
+        (a, b) =>
+          new Date(b.chats[0]?.created_at ?? "").getTime() -
+          new Date(a.chats[0]?.created_at ?? "").getTime(),
+      );
   }),
   sendMessage: protectedProcedure
     .input(

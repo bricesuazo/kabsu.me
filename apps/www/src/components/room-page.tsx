@@ -61,6 +61,7 @@ export default function RoomPageClient(
 ) {
   const supabase = createClient();
   const searchParams = useSearchParams();
+  const utils = api.useUtils();
 
   // const getRoomChatsQuery = api.chats.getRoomChats.useQuery(
   //   {
@@ -70,7 +71,9 @@ export default function RoomPageClient(
   //   },
   //   { initialData: props.getRoomChats },
   // );
-  const sendMessageMutation = api.chats.sendMessage.useMutation();
+  const sendMessageMutation = api.chats.sendMessage.useMutation({
+    onSuccess: async () => await utils.chats.getAllRooms.invalidate(),
+  });
   const [chats, setChats] = useState(
     // getRoomChatsQuery.data?.room.chats ?? []
     props.getRoomChats.room.chats.map((chat) => ({
