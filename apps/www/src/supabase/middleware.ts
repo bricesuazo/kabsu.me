@@ -58,7 +58,7 @@ export async function updateSession(request: NextRequest) {
 
   if (!data) {
     await supabase.auth.signOut();
-    url.searchParams.set("error", "auth-code-error");
+    url.searchParams.set("error", "AuthCodeError");
     return NextResponse.redirect(url);
   }
 

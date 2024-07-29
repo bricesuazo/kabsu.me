@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@kabsu.me/constants": "workspace:*",
-    "@supabase/supabase-js": "^2.44.2",
+    "@supabase/supabase-js": "^2.45.0",
     "@trpc/client": "11.0.0-rc.446",
     "@trpc/server": "11.0.0-rc.446",
     "@upstash/ratelimit": "^2.0.1",
@@ -30,7 +30,7 @@
     "@kabsu.me/eslint-config": "workspace:*",
     "@kabsu.me/tsconfig": "workspace:*",
     "@types/uuid": "^10.0.0",
-    "eslint": "^9.7.0",
+    "eslint": "^9.8.0",
     "typescript": "^5.5.4"
   },
   "eslintConfig": {

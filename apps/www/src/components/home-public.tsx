@@ -194,7 +194,7 @@ export default function HomePublic({
               Kabsu.me
             </h1>
           </Link>
-          <div className="flex items-center gap-x-0 sm:gap-x-2">
+          <div className="flex items-center gap-x-1 sm:gap-x-2">
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
                 <Button
@@ -279,7 +279,7 @@ export default function HomePublic({
             </Suspense>
           </div>
         </div>
-        <p className="absolute bottom-0 mx-auto w-full text-balance py-8 text-center text-sm text-muted-foreground">
+        <p className="absolute bottom-0 mx-auto w-full text-balance px-4 py-8 text-center text-sm text-muted-foreground">
           This website is not affiliated with Cavite State University.
         </p>
       </div>
@@ -287,7 +287,7 @@ export default function HomePublic({
       {/* FEATURES SECTION */}
       <div className="space-y-10 py-10">
         <h1 className="text-center text-4xl font-bold text-primary">
-          New Features
+          Features
         </h1>
 
         <div className="relative flex flex-col gap-y-1">

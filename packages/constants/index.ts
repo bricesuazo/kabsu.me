@@ -17,6 +17,7 @@ import {
   Instagram,
   Lock,
   Mail,
+  MapPin,
   MessageSquareText,
   RefreshCw,
   School,
@@ -564,37 +565,44 @@ export const BLOCKED_USERNAMES = new Set([
 export const NEW_FEATURES = [
   {
     index: 0,
+    icon: MapPin,
+    title: "Exclusive",
+    description:
+      "You can see posts and chats exclusive to your campus, college, and program.",
+  },
+  {
+    index: 1,
     icon: BadgeCheck,
     title: "Be Authentic",
     description:
       "Kabsu.me verification can be applied to individuals and organizations.",
   },
   {
-    index: 1,
+    index: 2,
     icon: Image,
     title: "Picture Perfect",
-    description: "Upload up to 9 images",
+    description: "You can now upload a picture.",
   },
   {
-    index: 2,
+    index: 3,
     icon: Clock,
     title: "Improved loading speed",
     description: "Kabsu.me prioritizes your time on our website.",
   },
   {
-    index: 3,
+    index: 4,
     icon: Lock,
     title: "Secured",
     description: "Your information is always secured to us",
   },
   {
-    index: 4,
+    index: 5,
     icon: MessageSquareText,
     title: "Replies",
     description: "You can now reply driectly to a comment.",
   },
   {
-    index: 5,
+    index: 6,
     icon: RefreshCw,
     title: "Repost.me",
     description: "Share another content to other users.",

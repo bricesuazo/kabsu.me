@@ -229,8 +229,6 @@ export default function Header() {
 
                   <DropdownMenuSeparator />
 
-                  <DropdownMenuSeparator />
-
                   <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
                       <div className="flex flex-1 items-center justify-between">

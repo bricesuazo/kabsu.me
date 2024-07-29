@@ -6,14 +6,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import {
-  ChevronLeft,
-  EllipsisVertical,
-  ExternalLink,
-  Reply,
-  Send,
-  X,
-} from "lucide-react";
+import { ChevronLeft, ExternalLink, Reply, Send, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useInView } from "react-intersection-observer";
 import TextareaAutosize from "react-textarea-autosize";
@@ -234,7 +227,7 @@ export default function RoomPageClient(
             </p>
           )}
         </div>
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="icon" variant="ghost">
               <EllipsisVertical size="1rem" />
@@ -243,7 +236,7 @@ export default function RoomPageClient(
           <DropdownMenuContent>
             <DropdownMenuItem>Test</DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
       </div>
 
       <Separator />

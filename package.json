@@ -26,7 +26,7 @@
     "@kabsu.me/tsconfig": "workspace:*",
     "@turbo/gen": "^2.0.9",
     "dotenv-cli": "^7.4.2",
-    "eslint": "^9.7.0",
+    "eslint": "^9.8.0",
     "prettier": "^3.3.3",
     "turbo": "^2.0.9"
   },
