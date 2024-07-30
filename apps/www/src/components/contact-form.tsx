@@ -57,7 +57,7 @@ export default function ContactForm() {
       <h1 className="text-center text-4xl font-semibold tracking-[-0.03em] text-secondary-foreground duration-300 motion-reduce:transition-none md:text-5xl">
         Contact Us
       </h1>
-      <p className="text-center text-muted-foreground">
+      <p className="text-balance text-center text-muted-foreground">
         Have any questions or concerns? Feel free to reach out to us!
       </p>
       <div className="flex w-full flex-col md:flex-row">
@@ -68,13 +68,14 @@ export default function ContactForm() {
                 onSubmit={form.handleSubmit((values) =>
                   contactMutation.mutate(values),
                 )}
+                className="space-y-4"
               >
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col items-center gap-4 sm:flex-row">
                   <FormField
                     control={form.control}
                     name="name"
                     render={({ field }) => (
-                      <FormItem className="flex-1">
+                      <FormItem className="w-full">
                         <FormLabel>Full name</FormLabel>
                         <FormControl>
                           <Input placeholder="Your full name" {...field} />
@@ -87,7 +88,7 @@ export default function ContactForm() {
                     control={form.control}
                     name="email"
                     render={({ field }) => (
-                      <FormItem className="flex-1">
+                      <FormItem className="w-full">
                         <FormLabel>Email address</FormLabel>
                         <FormControl>
                           <Input placeholder="Your email address" {...field} />
