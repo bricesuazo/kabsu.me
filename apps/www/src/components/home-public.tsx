@@ -10,6 +10,7 @@ import Marquee from "~/components/magicui/marquee";
 import Ripple from "~/components/magicui/ripple";
 import ShineBorder from "~/components/magicui/shine-border";
 import { api } from "~/lib/trpc/server";
+import Contacts from "./contacts";
 import Footer from "./footer";
 import NumberTicker from "./magicui/number-ticker";
 import SigninButton from "./signin-button";
@@ -401,6 +402,9 @@ export default function HomePublic({
               );
             })}
           </div>
+        </div>
+        <div>
+          <Contacts />
         </div>
         <div>
           <Separator className="mx-auto w-8" />
