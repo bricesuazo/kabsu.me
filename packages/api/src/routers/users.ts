@@ -5,9 +5,48 @@ import { z } from "zod";
 import { BLOCKED_USERNAMES } from "@kabsu.me/constants";
 
 import type { Database } from "../../../../supabase/types";
+import { env } from "../../../../apps/www/src/env";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const usersRouter = router({
+  contact: publicProcedure
+    .input(
+      z.object({
+        name: z.string().min(1, { message: "Name is required" }),
+        email: z
+          .string()
+          .min(1, { message: "Email is required" })
+          .email("Enter a valid email"),
+        message: z
+          .string()
+          .min(1, { message: "Message is required" })
+          .max(500, "Message cannot be more than 500 characters"),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      await fetch(env.DISCORD_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "Kabsu.me",
+          avatar_url: "https://example.com/avatar.png",
+          embeds: [
+            {
+              title: `Contact form submission - ${env.ENV.toUpperCase()}`,
+              description: `You have received a new message from the contact form.`,
+              color: 0x007205,
+              fields: [
+                { name: "👤  Name:", value: input.name, inline: true },
+                { name: "📧  Email:", value: input.email, inline: true },
+                { name: "📝  Message", value: `"${input.message}"` },
+              ],
+              footer: { text: "Received" },
+              timestamp: new Date().toISOString(),
+            },
+          ],
+        }),
+      });
+    }),
   signUp: protectedProcedure
     .input(
       z.object({
