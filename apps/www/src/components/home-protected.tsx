@@ -21,6 +21,7 @@ export default function HomeProtected({
 }: {
   tab?: "all" | "campus" | "program" | "college";
 }) {
+  const getMyUniversityStatusQuery = api.auth.getMyUniversityStatus.useQuery();
   const TABS_TITLE = {
     all: "See posts of all campuses.",
     campus: "See posts of your campus.",
@@ -38,6 +39,21 @@ export default function HomeProtected({
       <div className="border-b p-3 text-center sm:hidden">
         <p className="text-sm capitalize text-primary">
           {tab ? tab : "following"} tab
+          {getMyUniversityStatusQuery.data &&
+            ` (${(() => {
+              switch (tab) {
+                case "all":
+                  return "Global";
+                case "campus":
+                  return getMyUniversityStatusQuery.data.programs?.colleges?.campuses?.slug.toUpperCase();
+                case "college":
+                  return getMyUniversityStatusQuery.data.programs?.colleges?.slug.toUpperCase();
+                case "program":
+                  return getMyUniversityStatusQuery.data.programs?.slug.toUpperCase();
+                default:
+                  return "Following";
+              }
+            })()})`}
         </p>
         <p className="text-xs text-muted-foreground">
           {tab ? TABS_TITLE[tab] : "See posts of who you are following."}
