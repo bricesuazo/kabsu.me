@@ -74,4 +74,13 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 
+export const adminProcedure = t.procedure
+  .use(enforceUserIsAuthed)
+  .use(({ ctx, next }) => {
+    if (ctx.auth.user.email !== env.NEXT_PUBLIC_SUPERADMIN_EMAIL) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    return next({ ctx });
+  });
 export const createCallerFactory = t.createCallerFactory;

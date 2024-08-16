@@ -5,12 +5,7 @@ import { Check, X } from "lucide-react";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "~/components/ui/card";
+import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { api } from "~/lib/trpc/client";
 
 export default function Strikes({
@@ -66,10 +61,10 @@ function Strike({
                 ? strike.reason
                 : "No reason provided by the admin."}
             </h4>
+            <p className="text-xs text-muted-foreground">
+              {format(strike.created_at, "PPpp")}
+            </p>
           </CardContent>
-          <CardFooter className="flex justify-between text-xs text-muted-foreground">
-            {format(strike.created_at, "PPpp")}
-          </CardFooter>
         </>
       ) : (
         <CardContent className="flex h-full flex-col items-center justify-center gap-4 p-6 text-center">

@@ -9,6 +9,7 @@ import { z } from "zod";
 
 import { REPORT_POST_REASONS } from "@kabsu.me/constants";
 
+import { env } from "~/env";
 import { api } from "~/lib/trpc/client";
 import { Icons } from "./icons";
 import {
@@ -60,6 +61,7 @@ export default function PostDropdown({
   const context = api.useUtils();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
   const deletePostMutation = api.posts.delete.useMutation({
     onSuccess: async () => {
       if (successUrl) {
@@ -82,6 +84,26 @@ export default function PostDropdown({
       });
     },
   });
+  const strikePostMutation = api.posts.strike.useMutation({
+    onSuccess: async () => {
+      setOpenStrike(false);
+      toast({
+        title: "Post striked",
+        description: "The post has been striked",
+      });
+      await Promise.all([
+        context.posts.getUserPosts.invalidate(),
+        context.posts.getPosts.invalidate({
+          type:
+            (searchParams.get("tab") as
+              | "all"
+              | "program"
+              | "college"
+              | undefined) ?? "following",
+        }),
+      ]);
+    },
+  });
   const reportForm = useForm<{
     id: string;
     reason: string;
@@ -100,6 +122,7 @@ export default function PostDropdown({
   const [openDelete, setOpenDelete] = useState(false);
   const [openReport, setOpenReport] = useState(false);
   // const [openUpdate, setOpenUpdate] = useState(false);
+  const [openStrike, setOpenStrike] = useState(false);
 
   useEffect(() => {
     if (openReport) reportForm.reset();
@@ -252,6 +275,39 @@ export default function PostDropdown({
           </AlertDialogContent>
         </AlertDialog>
       )}
+      {getCurrentUserQuery.data?.email === env.NEXT_PUBLIC_SUPERADMIN_EMAIL && (
+        <AlertDialog open={openStrike} onOpenChange={setOpenStrike}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Strike Post</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. Are you sure you want to strike
+                this post?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={strikePostMutation.isPending}>
+                Cancel
+              </AlertDialogCancel>
+
+              <Button
+                variant="destructive"
+                onClick={async () =>
+                  strikePostMutation.mutateAsync({ post_id })
+                }
+                disabled={strikePostMutation.isPending}
+              >
+                {strikePostMutation.isPending && (
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Strike
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div className="">
@@ -289,6 +345,16 @@ export default function PostDropdown({
               Report post
             </DropdownMenuItem>
           )}
+          {!isMyPost &&
+            getCurrentUserQuery.data?.email ===
+              env.NEXT_PUBLIC_SUPERADMIN_EMAIL && (
+              <DropdownMenuItem
+                className="!text-red-500"
+                onClick={() => setOpenStrike(true)}
+              >
+                Strike post
+              </DropdownMenuItem>
+            )}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
