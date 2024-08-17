@@ -17,13 +17,13 @@
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "rc",
-    "eslint-plugin-turbo": "^2.0.9",
-    "typescript-eslint": "rc-v8"
+    "eslint-plugin-turbo": "^2.0.14",
+    "typescript-eslint": "^8.1.0"
   },
   "devDependencies": {
     "@kabsu.me/prettier-config": "workspace:*",
     "@kabsu.me/tsconfig": "workspace:*",
-    "eslint": "^9.8.0",
+    "eslint": "^9.9.0",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4"
   },
