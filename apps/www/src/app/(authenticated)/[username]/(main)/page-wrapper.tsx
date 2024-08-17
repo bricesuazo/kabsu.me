@@ -241,7 +241,7 @@ export default function UserPageWrapper({
                   user_id={profileQuery.data.user.id}
                 />
                 <Button size="sm" variant="outline" asChild>
-                  <Link href={`/chat?user_id=${profileQuery.data.user.id}`}>
+                  <Link href={`/chat/user/${profileQuery.data.user.id}`}>
                     <MessageCircle className="mr-2 size-4" /> Message
                   </Link>
                 </Button>
