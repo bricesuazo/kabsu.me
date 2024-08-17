@@ -35,9 +35,7 @@ export async function GET(request: Request) {
       .eq("id", data.user.id)
       .single();
 
-    if (!user) return NextResponse.redirect(`${origin}?error=AuthCodeError`);
-
-    if (user.banned_at) {
+    if (user?.banned_at) {
       await supabase.auth.signOut();
       return NextResponse.redirect(`${origin}?error=banned`);
     }
@@ -45,6 +43,6 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}${next}`);
   }
 
-  // return the user to an error page with instructions
+  console.log("second");
   return NextResponse.redirect(`${origin}?error=AuthCodeError`);
 }
