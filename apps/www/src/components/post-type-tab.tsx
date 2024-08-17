@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { POST_TYPE_TABS } from "@kabsu.me/constants";
 
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { api } from "~/lib/trpc/client";
+import { Skeleton } from "./ui/skeleton";
 
 export default function PostTypeTab() {
   const searchParams = useSearchParams();
@@ -13,6 +15,7 @@ export default function PostTypeTab() {
   const [tab, setTab] = useState(
     searchParams.get("tab") ?? POST_TYPE_TABS[4]?.id,
   );
+  const getMyUniversityStatusQuery = api.auth.getMyUniversityStatus.useQuery();
 
   useEffect(() => {
     setTab(searchParams.get("tab") ?? POST_TYPE_TABS[4]?.id);
@@ -33,7 +36,7 @@ export default function PostTypeTab() {
           {POST_TYPE_TABS.map((select) => (
             <TabsTrigger
               key={select.id}
-              className="flex w-full gap-x-2 rounded-none border-b-4 border-transparent py-4 hover:text-foreground data-[state=active]:rounded-none data-[state=active]:border-b-primary data-[state=active]:bg-transparent data-[state=active]:text-primary md:data-[state=active]:border-b-4"
+              className="flex w-full flex-col rounded-none border-b-4 border-transparent py-4 hover:text-foreground data-[state=active]:rounded-none data-[state=active]:border-b-primary data-[state=active]:bg-transparent data-[state=active]:text-primary md:data-[state=active]:border-b-4"
               value={select.id}
               onClick={() => {
                 if (
@@ -43,10 +46,34 @@ export default function PostTypeTab() {
                   window.scrollTo({ top: 0, behavior: "smooth" });
               }}
             >
-              <div className="block sm:hidden md:block">
-                <select.icon size="20" />
+              <div className="flex gap-x-2">
+                <div className="block sm:hidden md:block">
+                  <select.icon size="20" />
+                </div>
+                <p className="hidden sm:block">{select.name}</p>
               </div>
-              <p className="hidden sm:block">{select.name}</p>
+              {getMyUniversityStatusQuery.isLoading ? (
+                <Skeleton className="h-4 w-10" />
+              ) : (
+                getMyUniversityStatusQuery.data && (
+                  <p className="text-xs text-muted-foreground">
+                    {(() => {
+                      switch (select.id) {
+                        case "all":
+                          return "GLOBAL";
+                        case "campus":
+                          return getMyUniversityStatusQuery.data.programs?.colleges?.campuses?.slug.toUpperCase();
+                        case "college":
+                          return getMyUniversityStatusQuery.data.programs?.colleges?.slug.toUpperCase();
+                        case "program":
+                          return getMyUniversityStatusQuery.data.programs?.slug.toUpperCase();
+                        default:
+                          return "FOLLOWING";
+                      }
+                    })()}
+                  </p>
+                )
+              )}
             </TabsTrigger>
           ))}
         </TabsList>

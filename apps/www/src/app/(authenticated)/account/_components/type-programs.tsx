@@ -66,13 +66,16 @@ export default function TypePrograms({
 }: {
   currentUserTypeProgram: RouterOutputs["users"]["getCurrentUserTypeProgram"];
 }) {
+  const utils = api.useUtils();
   const currentUserTypeProgramQuery =
     api.users.getCurrentUserTypeProgram.useQuery(undefined, {
       initialData: currentUserTypeProgram,
       refetchOnWindowFocus: true,
     });
   const changeCurrentUserTypeProgramMutation =
-    api.users.changeCurrentUserTypeProgram.useMutation();
+    api.users.changeCurrentUserTypeProgram.useMutation({
+      onSuccess: () => utils.auth.getMyUniversityStatus.invalidate(),
+    });
   const { data } = api.users.getProgramForAuth.useQuery(undefined, {
     refetchInterval: false,
     refetchOnMount: false,
