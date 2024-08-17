@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import type { Database } from "../../../../supabase/types";
 import { env } from "../../../../apps/www/src/env";
-import { protectedProcedure, router } from "../trpc";
+import { adminProcedure, protectedProcedure, router } from "../trpc";
 
 export const postsRouter = router({
   getPost: protectedProcedure
@@ -533,7 +533,6 @@ export const postsRouter = router({
         .eq("id", input.post_id)
         .eq("user_id", ctx.auth.user.id);
     }),
-
   delete: protectedProcedure
     .input(z.object({ post_id: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
@@ -589,6 +588,47 @@ export const postsRouter = router({
         reported_by_id: ctx.auth.user.id,
         post_id: input.post_id,
       });
+    }),
+  strike: adminProcedure
+    .input(z.object({ post_id: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const { data: post } = await ctx.supabase
+        .from("posts")
+        .select()
+        .eq("id", input.post_id)
+        .single();
+
+      if (!post || post.deleted_at)
+        throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
+
+      await Promise.all([
+        ctx.supabase
+          .from("posts")
+          .update({ deleted_at: new Date().toISOString() })
+          .eq("id", input.post_id),
+        (async () => {
+          const { data: strikes } = await ctx.supabase
+            .from("strikes")
+            .select("id")
+            .eq("user_id", post.user_id);
+
+          if (strikes !== null && strikes.length >= 2) {
+            await ctx.supabase
+              .from("users")
+              .update({ banned_at: new Date().toISOString() })
+              .eq("id", post.user_id);
+          }
+          await ctx.supabase.from("strikes").insert({
+            user_id: post.user_id,
+            reason: "Posting inappropriate content",
+          });
+        })(),
+        ctx.supabase.from("notifications").insert({
+          from_id: ctx.auth.user.id,
+          to_id: post.user_id,
+          type: "strike_post",
+        }),
+      ]);
     }),
   like: protectedProcedure
     .input(

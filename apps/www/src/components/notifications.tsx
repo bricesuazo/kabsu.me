@@ -108,6 +108,58 @@ export default function Notifications() {
             </div>
           ) : (
             getAllNotificationsQuery.data.map((notification) => {
+              if (
+                notification.type === "strike_account" ||
+                notification.type === "strike_post"
+              )
+                return (
+                  <Link
+                    href="/account"
+                    onClick={() => {
+                      if (notification.read) return;
+                      markNotificationAsReadMutation.mutate({
+                        id: notification.id,
+                      });
+
+                      setOpen(false);
+                    }}
+                    className="flex items-center justify-between gap-x-2 rounded p-2 hover:bg-muted"
+                  >
+                    <div className="flex gap-x-2">
+                      <Image
+                        src="/logo.svg"
+                        alt="System"
+                        width={32}
+                        height={32}
+                        className="aspect-square object-contain object-center"
+                      />
+                      <div className="flex flex-col gap-1">
+                        <p className="line-clamp-2 text-xs font-medium">
+                          {(() => {
+                            switch (notification.type) {
+                              case "strike_account":
+                                return "Your account has been striked";
+                              case "strike_post":
+                                return "Your post has been striked";
+                              default:
+                                return "";
+                            }
+                          })()}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatDistanceToNow(notification.created_at, {
+                            includeSeconds: true,
+                            addSuffix: true,
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                    {!notification.read && (
+                      <div className="aspect-square size-2 rounded-full bg-primary" />
+                    )}
+                  </Link>
+                );
+
               return (
                 <Link
                   key={notification.id}
@@ -120,6 +172,8 @@ export default function Notifications() {
                   })()}
                   onClick={(e) => {
                     e.stopPropagation();
+                    if (notification.read) return;
+
                     markNotificationAsReadMutation.mutate({
                       id: notification.id,
                     });
@@ -129,23 +183,21 @@ export default function Notifications() {
                 >
                   <div className="flex gap-x-2">
                     <Link href={`/${notification.from.username}`}>
-                      <div className="relative h-8 w-8">
-                        <Image
-                          src={
-                            notification.from.image_name
-                              ? notification.from.image_url
-                              : "/default-avatar.jpg"
-                          }
-                          alt={`${notification.from.username} profile picture`}
-                          fill
-                          sizes="100%"
-                          className="aspect-square rounded-full object-cover object-center"
-                        />
-                      </div>
+                      <Image
+                        src={
+                          notification.from.image_name
+                            ? notification.from.image_url
+                            : "/default-avatar.jpg"
+                        }
+                        alt={`${notification.from.username} profile picture`}
+                        width={32}
+                        height={32}
+                        className="aspect-square rounded-full object-cover object-center"
+                      />
                     </Link>
                     <div className="flex flex-col gap-1">
                       <p className="line-clamp-2 text-xs font-medium">
-                        @{notification.from.username}{" "}
+                        @${notification.from.username}{" "}
                         {(() => {
                           switch (notification.type) {
                             case "follow":
@@ -154,6 +206,10 @@ export default function Notifications() {
                               return "liked your post";
                             case "comment":
                               return "commented on your post";
+                            case "mention_comment":
+                              return "mentioned you in a comment";
+                            case "mention_post":
+                              return "mentioned you in a post";
                             default:
                               return "";
                           }

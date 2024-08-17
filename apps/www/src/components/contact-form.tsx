@@ -54,22 +54,22 @@ export default function ContactForm() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-center text-4xl font-semibold tracking-[-0.03em] text-secondary-foreground duration-300 motion-reduce:transition-none md:text-5xl">
+      <h1 className="text-center text-4xl font-bold tracking-[-0.03em] text-primary duration-300 motion-reduce:transition-none">
         Contact Us
       </h1>
-      <p className="text-balance text-center text-muted-foreground">
+      <p className="mx-auto text-balance text-center">
         Have any questions or concerns? Feel free to reach out to us!
       </p>
       <div className="flex w-full flex-col md:flex-row">
-        <Card className="z-10 grid w-full bg-background p-4">
-          <CardContent className="p-0">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit((values) =>
-                  contactMutation.mutate(values),
-                )}
-                className="space-y-4"
-              >
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit((values) =>
+              contactMutation.mutate(values),
+            )}
+            className="w-full"
+          >
+            <Card className="z-10 grid w-full bg-background">
+              <CardContent className="space-y-4 pt-6">
                 <div className="flex flex-col items-center gap-4 sm:flex-row">
                   <FormField
                     control={form.control}
@@ -118,28 +118,27 @@ export default function ContactForm() {
                     </FormItem>
                   )}
                 />
-
-                <CardFooter className="mt-4 flex justify-end">
-                  <Button
-                    type="submit"
-                    disabled={
-                      !form.formState.isValid || contactMutation.isPending
-                    }
-                  >
-                    {contactMutation.isPending ? (
-                      <>
-                        <Loader2 className="mr-1.5 size-4 animate-spin" />{" "}
-                        Sending...
-                      </>
-                    ) : (
-                      "Send"
-                    )}
-                  </Button>
-                </CardFooter>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+              </CardContent>
+              <CardFooter className="flex justify-end">
+                <Button
+                  type="submit"
+                  disabled={
+                    !form.formState.isValid || contactMutation.isPending
+                  }
+                >
+                  {contactMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-1.5 size-4 animate-spin" />{" "}
+                      Sending...
+                    </>
+                  ) : (
+                    "Send"
+                  )}
+                </Button>
+              </CardFooter>
+            </Card>
+          </form>
+        </Form>
 
         <div className="flex w-full flex-col p-6">
           <h4 className="flex w-full justify-center py-4 text-center text-xl font-medium">

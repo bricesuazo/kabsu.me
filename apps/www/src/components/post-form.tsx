@@ -526,7 +526,7 @@ function ImageUpload({
               }}
               maxSize={1024 * 1024 * 5} // 5MB
               disabled={form.formState.isSubmitting}
-              maxFiles={9}
+              maxFiles={1}
               itemType="image/*"
               multiple
             />
@@ -578,7 +578,7 @@ const MentionSuggestion = (suggestion: SuggestionDataItem) => {
           <Image
             src={
               suggestion.image_name
-                ? suggestion.image_url ?? "/default-avatar.jpg"
+                ? (suggestion.image_url ?? "/default-avatar.jpg")
                 : "/default-avatar.jpg"
             }
             alt=""
