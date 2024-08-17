@@ -56,20 +56,14 @@ export async function updateSession(request: NextRequest) {
     .eq("id", user.id)
     .single();
 
-  if (!data) {
-    await supabase.auth.signOut();
-    url.searchParams.set("error", "AuthCodeError");
-    return NextResponse.redirect(url);
-  }
-
-  if (data.banned_at) {
+  if (data?.banned_at) {
     await supabase.auth.signOut();
     url.searchParams.set("error", "banned");
     return NextResponse.redirect(url);
   }
 
   if (
-    data.deactivated_at &&
+    data?.deactivated_at &&
     !request.nextUrl.pathname.startsWith("/reactivate") &&
     !request.nextUrl.pathname.startsWith("/api/trpc/users.reactivate")
   ) {
