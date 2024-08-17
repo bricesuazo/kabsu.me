@@ -550,7 +550,7 @@ export const usersRouter = router({
                   .createSignedUrls(
                     res.data
                       .filter((user) => !user.image_name?.startsWith("https"))
-                      .map((user) => user.id + "/" + user.image_name),
+                      .map((user) => user.id + "/avatar/" + user.image_name),
                     60 * 60 * 24,
                   );
                 if (data) {
@@ -559,7 +559,8 @@ export const usersRouter = router({
 
                 return res.data.map((user) => {
                   const image_url = image_urls.find(
-                    (image) => image.path === user.id + "/" + user.image_name,
+                    (image) =>
+                      image.path === user.id + "/avatar/" + user.image_name,
                   )?.signedUrl;
                   return user.image_name?.startsWith("https://")
                     ? {
@@ -585,6 +586,7 @@ export const usersRouter = router({
         .from("users")
         .select("id")
         .eq("username", input.username)
+
         .single();
 
       if (!user) throw new TRPCError({ code: "NOT_FOUND" });
@@ -632,16 +634,18 @@ export const usersRouter = router({
                       .filter(
                         (user) => !user.image_name?.startsWith("https://"),
                       )
-                      .map((user) => user.id + "/" + user.image_name),
+                      .map((user) => user.id + "/avatar/" + user.image_name),
                     60 * 60 * 24,
                   );
+
                 if (data) {
                   image_urls.push(...data);
                 }
 
                 return res.data.map((user) => {
                   const image_url = image_urls.find(
-                    (image) => image.path === user.id + "/" + user.image_name,
+                    (image) =>
+                      image.path === user.id + "/avatar/" + user.image_name,
                   )?.signedUrl;
                   return user.image_name?.startsWith("https://")
                     ? {
