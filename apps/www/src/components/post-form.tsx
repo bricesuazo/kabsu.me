@@ -109,9 +109,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
         image_url: user.image_name ? user.image_url : undefined,
       })) as SuggestionDataItem[];
 
-      if (transformedDataArray.length === 0) {
-        return;
-      }
+      if (transformedDataArray.length === 0) return;
 
       callback(transformedDataArray);
     },
@@ -236,7 +234,8 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
       await context.posts.getPosts.invalidate({
         type: form.getValues("type"),
       });
-      form.reset();
+      form.resetField("content");
+      form.resetField("images");
     } catch (error) {
       return error;
     }

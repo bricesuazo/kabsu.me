@@ -42,7 +42,6 @@ export default function RoomPageClient(
   props: (
     | {
         type: Database["public"]["Enums"]["global_chat_type"];
-        getMyUniversityStatus: RouterOutputs["auth"]["getMyUniversityStatus"];
       }
     | {
         type: "room";
@@ -106,6 +105,7 @@ export default function RoomPageClient(
       ]);
     },
   });
+  const getMyUniversityStatusQuery = api.auth.getMyUniversityStatus.useQuery();
 
   const form = useForm<{
     message: string;
@@ -135,7 +135,7 @@ export default function RoomPageClient(
     messagesEndRef.current?.scrollIntoView(false);
 
     const channel = supabase.channel(
-      `chat_${props.type}_${props.type === "room" ? props.getRoomChats.room.id : props.type === "all" ? "all" : props.type === "campus" ? props.getMyUniversityStatus?.programs?.colleges?.campuses?.id : props.type === "college" ? props.getMyUniversityStatus?.programs?.colleges?.id : props.getMyUniversityStatus?.programs?.id}`,
+      `chat_${props.type}_${props.type === "room" ? props.getRoomChats.room.id : props.type === "all" ? "all" : props.type === "campus" ? getMyUniversityStatusQuery.data?.programs?.colleges?.campuses?.id : props.type === "college" ? getMyUniversityStatusQuery.data?.programs?.colleges?.id : getMyUniversityStatusQuery.data?.programs?.id}`,
     );
 
     channel
@@ -201,10 +201,10 @@ export default function RoomPageClient(
                   <span>{props.getRoomChats.room.to?.username}</span>
                   <ExternalLink className="ml-2 size-4 -translate-x-4 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
                 </Link>
-                <div className="flex items-center gap-2">
+                {/* <div className="flex items-center gap-2">
                   <div className="size-2 rounded-full bg-green-500 text-lg" />
                   <p className="text-xs text-muted-foreground">Online</p>
-                </div>
+                </div> */}
               </div>
             </>
           ) : (
@@ -214,13 +214,13 @@ export default function RoomPageClient(
                 : props.type.charAt(0).toUpperCase() +
                   props.type.slice(1) +
                   `${
-                    props.getMyUniversityStatus
+                    getMyUniversityStatusQuery.data
                       ? `(${
                           props.type === "campus"
-                            ? props.getMyUniversityStatus.programs?.colleges?.campuses?.slug.toUpperCase()
+                            ? getMyUniversityStatusQuery.data.programs?.colleges?.campuses?.slug.toUpperCase()
                             : props.type === "college"
-                              ? props.getMyUniversityStatus.programs?.colleges?.slug.toUpperCase()
-                              : props.getMyUniversityStatus.programs?.slug.toUpperCase()
+                              ? getMyUniversityStatusQuery.data.programs?.colleges?.slug.toUpperCase()
+                              : getMyUniversityStatusQuery.data.programs?.slug.toUpperCase()
                         })`
                       : ""
                   }`}

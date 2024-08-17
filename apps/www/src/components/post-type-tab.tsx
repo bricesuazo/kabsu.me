@@ -52,28 +52,24 @@ export default function PostTypeTab() {
                 </div>
                 <p className="hidden sm:block">{select.name}</p>
               </div>
-              {getMyUniversityStatusQuery.isLoading ? (
-                <Skeleton className="h-4 w-10" />
-              ) : (
-                getMyUniversityStatusQuery.data && (
-                  <p className="text-xs text-muted-foreground">
-                    {(() => {
-                      switch (select.id) {
-                        case "all":
-                          return "GLOBAL";
-                        case "campus":
-                          return getMyUniversityStatusQuery.data.programs?.colleges?.campuses?.slug.toUpperCase();
-                        case "college":
-                          return getMyUniversityStatusQuery.data.programs?.colleges?.slug.toUpperCase();
-                        case "program":
-                          return getMyUniversityStatusQuery.data.programs?.slug.toUpperCase();
-                        default:
-                          return "FOLLOWING";
-                      }
-                    })()}
-                  </p>
-                )
-              )}
+              {getMyUniversityStatusQuery.isLoading
+                ? !(select.id == "all" || select.id === "following") && (
+                    <Skeleton className="h-4 w-10" />
+                  )
+                : getMyUniversityStatusQuery.data && (
+                    <p className="text-xs text-muted-foreground">
+                      {(() => {
+                        switch (select.id) {
+                          case "campus":
+                            return getMyUniversityStatusQuery.data.programs?.colleges?.campuses?.slug.toUpperCase();
+                          case "college":
+                            return getMyUniversityStatusQuery.data.programs?.colleges?.slug.toUpperCase();
+                          case "program":
+                            return getMyUniversityStatusQuery.data.programs?.slug.toUpperCase();
+                        }
+                      })()}
+                    </p>
+                  )}
             </TabsTrigger>
           ))}
         </TabsList>

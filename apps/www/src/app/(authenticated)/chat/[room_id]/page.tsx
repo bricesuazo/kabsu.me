@@ -14,14 +14,12 @@ export default async function RoomPage({
     room_id === "college" ||
     room_id === "program"
   ) {
-    const [getRoomChats, getCurrentUser, getMyUniversityStatus] =
-      await Promise.all([
-        api.chats.getRoomChats({
-          type: room_id,
-        }),
-        api.auth.getCurrentUser(),
-        api.auth.getMyUniversityStatus(),
-      ]);
+    const [getRoomChats, getCurrentUser] = await Promise.all([
+      api.chats.getRoomChats({
+        type: room_id,
+      }),
+      api.auth.getCurrentUser(),
+    ]);
 
     if (!getRoomChats) redirect("/chat");
 
@@ -30,7 +28,6 @@ export default async function RoomPage({
         type={room_id}
         getRoomChats={getRoomChats}
         current_user={getCurrentUser}
-        getMyUniversityStatus={getMyUniversityStatus}
       />
     );
   } else {

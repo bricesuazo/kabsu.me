@@ -67,10 +67,10 @@ export default function NewChat({
           </div>
           <div>
             <p className="text-sm">{user.username}</p>
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <div className="size-2 rounded-full bg-green-500 text-lg" />
               <p className="text-xs text-muted-foreground">Online</p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
