@@ -39,6 +39,28 @@ export default function NotificationProvider() {
           });
         })
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        .on("broadcast", { event: "like_post" }, async ({ payload }) => {
+          const data = z
+            .object({ from: z.string(), to: z.string(), post_id: z.string() })
+            .parse(payload);
+
+          await Promise.all([
+            utils.notifications.getAll.invalidate(),
+            utils.posts.getPost.invalidate({
+              post_id: data.post_id,
+              username: data.to,
+            }),
+          ]);
+
+          toast(`@${data.from} liked your post!`, {
+            description: "Click to view the post",
+            action: {
+              label: "Visit",
+              onClick: () => router.push(`/${data.to}/${data.post_id}`),
+            },
+          });
+        })
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         .on("broadcast", { event: "unfollow" }, () =>
           utils.notifications.getAll.invalidate(),
         )

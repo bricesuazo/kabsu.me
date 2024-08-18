@@ -137,22 +137,14 @@ export const postsRouter = router({
     .query(async ({ ctx, input }) => {
       const limit = 10;
 
-      const { data: current_user_from_db } = await ctx.supabase
-        .from("users")
-        .select("*, programs(college_id, colleges(campus_id))")
-        .eq("id", ctx.auth.user.id)
+      const { data: follower } = await ctx.supabase
+        .from("followers")
+        .select()
+        .eq("follower_id", ctx.auth.user.id)
+        .eq("followee_id", input.user_id)
         .single();
 
-      const { data: user_of_post } = await ctx.supabase
-        .from("users")
-        .select("*, programs(college_id, colleges(campus_id))")
-        .eq("id", input.user_id)
-        .single();
-
-      if (!current_user_from_db || !user_of_post)
-        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
-
-      const { data: posts } = await ctx.supabase
+      const post_query = ctx.supabase
         .from("posts")
         .select(
           "id, type, user_id, user:users(image_name, program_id, programs(college_id, colleges(campus_id)))",
@@ -162,6 +154,27 @@ export const postsRouter = router({
         .order("created_at", { ascending: false })
         .limit(limit)
         .range((input.cursor - 1) * limit, input.cursor * limit);
+
+      const [
+        { data: current_user_from_db },
+        { data: user_of_post },
+        { data: posts },
+      ] = await Promise.all([
+        ctx.supabase
+          .from("users")
+          .select("*, programs(college_id, colleges(campus_id))")
+          .eq("id", ctx.auth.user.id)
+          .single(),
+        ctx.supabase
+          .from("users")
+          .select("*, programs(college_id, colleges(campus_id))")
+          .eq("id", input.user_id)
+          .single(),
+        follower ? post_query : post_query.neq("type", "following"),
+      ]);
+
+      if (!current_user_from_db || !user_of_post)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
       if (posts === null)
         return {
@@ -669,12 +682,32 @@ export const postsRouter = router({
       });
 
       if (post.user_id !== ctx.auth.user.id) {
-        await ctx.supabase.from("notifications").insert({
-          to_id: post.user_id,
-          type: "like",
-          from_id: ctx.auth.user.id,
-          content_id: post.id,
-        });
+        const { data: new_notification } = await ctx.supabase
+          .from("notifications")
+          .insert({
+            to_id: post.user_id,
+            type: "like",
+            from_id: ctx.auth.user.id,
+            content_id: post.id,
+          })
+          .select(
+            "from:users!public_notifications_from_id_fkey(username), to:users!public_notifications_to_id_fkey(username)",
+          )
+          .single();
+
+        if (new_notification?.from?.username && new_notification.to?.username) {
+          const channel = ctx.supabase.channel("notifications." + post.user_id);
+          await channel.send({
+            type: "broadcast",
+            event: "like_post",
+            payload: {
+              from: new_notification.from.username,
+              to: new_notification.to.username,
+              post_id: input.post_id,
+            },
+          });
+          await ctx.supabase.removeChannel(channel);
+        }
       }
 
       const { data: return_like } = await ctx.supabase
