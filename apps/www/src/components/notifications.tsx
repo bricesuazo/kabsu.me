@@ -197,7 +197,7 @@ export default function Notifications() {
                     </Link>
                     <div className="flex flex-col gap-1">
                       <p className="line-clamp-2 text-xs font-medium">
-                        @${notification.from.username}{" "}
+                        @{notification.from.username}{" "}
                         {(() => {
                           switch (notification.type) {
                             case "follow":
