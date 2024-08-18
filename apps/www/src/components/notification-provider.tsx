@@ -163,6 +163,22 @@ export default function NotificationProvider() {
             },
           });
         })
+        .on("broadcast", { event: "message_new" }, ({ payload }) => {
+          const data = z
+            .object({
+              room_id: z.string(),
+              from_username: z.string(),
+            })
+            .parse(payload);
+
+          toast(`@${data.from_username} messaged you!`, {
+            description: "Click to view the message",
+            action: {
+              label: "View",
+              onClick: () => router.push(`/chat/${data.room_id}`),
+            },
+          });
+        })
         .subscribe();
     }
 

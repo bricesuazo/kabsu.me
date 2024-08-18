@@ -116,12 +116,12 @@ export const chatsRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       let channel: RealtimeChannel | undefined = undefined;
+      let channel_notification: RealtimeChannel | undefined = undefined;
       if (input.type === "room") {
         const { data: room } = await ctx.supabase
           .from("rooms")
-          .select("*, rooms_users(user_id)")
+          .select("*, rooms_users(user_id, user:users(username))")
           .eq("id", input.room_id)
-          .eq("rooms_users.user_id", ctx.auth.user.id)
           .is("deleted_at", null)
           .single();
 
@@ -170,34 +170,53 @@ export const chatsRouter = router({
 
         channel = ctx.supabase.channel(`chat_${input.type}_${input.room_id}`);
 
-        await channel.send({
-          type: "broadcast",
-          event: "new",
-          payload: {
-            id: chat.id,
-            content: chat.content,
-            created_at: chat.created_at,
-            user_id: chat.user_id,
-            reply: chat.reply,
-            user: {
-              name: chat.users?.name ?? "",
-              username: chat.users?.username ?? "",
-              ...(chat.users?.image_name?.startsWith("https://")
-                ? {
-                    image_name: chat.users.image_name,
-                    image_url: chat.users.image_name,
-                  }
-                : chat.users?.image_name && signed_url
+        channel_notification = ctx.supabase.channel(
+          `notifications.${
+            room.rooms_users.find((user) => user.user_id !== ctx.auth.user.id)
+              ?.user_id
+          }`,
+        );
+
+        await Promise.all([
+          channel.send({
+            type: "broadcast",
+            event: "new",
+            payload: {
+              id: chat.id,
+              content: chat.content,
+              created_at: chat.created_at,
+              user_id: chat.user_id,
+              reply: chat.reply,
+              user: {
+                name: chat.users?.name ?? "",
+                username: chat.users?.username ?? "",
+                ...(chat.users?.image_name?.startsWith("https://")
                   ? {
                       image_name: chat.users.image_name,
-                      image_url: signed_url,
+                      image_url: chat.users.image_name,
                     }
-                  : {
-                      image_name: null,
-                    }),
+                  : chat.users?.image_name && signed_url
+                    ? {
+                        image_name: chat.users.image_name,
+                        image_url: signed_url,
+                      }
+                    : {
+                        image_name: null,
+                      }),
+              },
             },
-          },
-        });
+          }),
+          channel_notification.send({
+            type: "broadcast",
+            event: "message_new",
+            payload: {
+              room_id: input.room_id,
+              from_username: room.rooms_users.find(
+                (user) => user.user_id === ctx.auth.user.id,
+              )?.user?.username,
+            },
+          }),
+        ]);
       } else {
         const { data: user } = await ctx.supabase
           .from("users")
@@ -296,7 +315,11 @@ export const chatsRouter = router({
         });
       }
 
-      await ctx.supabase.removeChannel(channel);
+      await Promise.all([
+        ctx.supabase.removeChannel(channel),
+        channel_notification &&
+          ctx.supabase.removeChannel(channel_notification),
+      ]);
 
       return { id: input.id };
     }),
