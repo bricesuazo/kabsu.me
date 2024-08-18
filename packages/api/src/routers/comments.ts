@@ -94,7 +94,7 @@ export const commentsRouter = router({
             content_id: input.post_id,
           })
           .select(
-            "from:users!public_notifications_from_id_fkey(username), to:users!public_notifications_to_id_fkey(username)",
+            "id, from:users!public_notifications_from_id_fkey(username), to:users!public_notifications_to_id_fkey(username)",
           )
           .single();
 
@@ -104,6 +104,7 @@ export const commentsRouter = router({
             type: "broadcast",
             event: "comment",
             payload: {
+              notification_id: new_notification.id,
               from: new_notification.from.username,
               to: new_notification.to.username,
               post_id: input.post_id,
@@ -255,10 +256,10 @@ export const commentsRouter = router({
             to_id: comment.user_id,
             type: "reply",
             from_id: ctx.auth.user.id,
-            content_id: input.comment_id,
+            content_id: input.post_id,
           })
           .select(
-            "from:users!public_notifications_from_id_fkey(username), to:users!public_notifications_to_id_fkey(username)",
+            "id, from:users!public_notifications_from_id_fkey(username), to:users!public_notifications_to_id_fkey(username)",
           )
           .single();
 
@@ -270,6 +271,7 @@ export const commentsRouter = router({
             type: "broadcast",
             event: "reply",
             payload: {
+              notification_id: new_notification.id,
               from: new_notification.from.username,
               to: new_notification.to.username,
               post_id: input.post_id,

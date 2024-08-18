@@ -454,6 +454,7 @@ export const postsRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const content = input.content.replaceAll("  ", " ").trim();
       const rate_limiter = new Ratelimit({
         redis: ctx.redis,
         limiter: Ratelimit.fixedWindow(1, "60 s"),
@@ -473,7 +474,7 @@ export const postsRouter = router({
       const { data: post, error: post_error } = await ctx.supabase
         .from("posts")
         .insert({
-          content: input.content.replaceAll("  ", " ").trim(),
+          content,
           user_id: ctx.auth.user.id,
           type: input.type,
         })
@@ -516,6 +517,51 @@ export const postsRouter = router({
 
         signed_urls.push(...data);
       }
+
+      const uuidPattern =
+        /([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/g;
+      const mentioned_users = content.match(uuidPattern) ?? [];
+
+      const { data: new_notifications, error: error_new_notifications } =
+        await ctx.supabase
+          .from("notifications")
+          .insert(
+            mentioned_users.map((user_id) => ({
+              to_id: user_id,
+              type: "mention_post" as const,
+              from_id: ctx.auth.user.id,
+              content_id: post.id,
+            })),
+          )
+          .select(
+            "id, from:users!public_notifications_from_id_fkey(username), to:users!public_notifications_to_id_fkey(id)",
+          );
+
+      if (error_new_notifications)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: error_new_notifications.message,
+        });
+
+      // TODO: don't send notifications to the user who is not same in program, college, campus
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      new_notifications.forEach(async (new_notification) => {
+        if (!new_notification.from || !new_notification.to) return;
+
+        const channel = ctx.supabase.channel(
+          "notifications." + new_notification.to.id,
+        );
+        await channel.send({
+          type: "broadcast",
+          event: "mention_post",
+          payload: {
+            notification_id: new_notification.id,
+            from: new_notification.from.username,
+            post_id: post.id,
+          },
+        });
+        await ctx.supabase.removeChannel(channel);
+      });
 
       return { signed_urls };
     }),
@@ -691,7 +737,7 @@ export const postsRouter = router({
             content_id: post.id,
           })
           .select(
-            "from:users!public_notifications_from_id_fkey(username), to:users!public_notifications_to_id_fkey(username)",
+            "id, from:users!public_notifications_from_id_fkey(username), to:users!public_notifications_to_id_fkey(username)",
           )
           .single();
 
@@ -701,6 +747,7 @@ export const postsRouter = router({
             type: "broadcast",
             event: "like_post",
             payload: {
+              notification_id: new_notification.id,
               from: new_notification.from.username,
               to: new_notification.to.username,
               post_id: input.post_id,

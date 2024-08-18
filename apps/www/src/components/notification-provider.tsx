@@ -13,6 +13,9 @@ export default function NotificationProvider() {
   const router = useRouter();
   const utils = api.useUtils();
   const getCurrentSessionQuery = api.auth.getCurrentSession.useQuery();
+  const markAsReadMutation = api.notifications.markAsRead.useMutation({
+    onSuccess: () => utils.notifications.getAll.invalidate(),
+  });
 
   useEffect(() => {
     const supabase = createClient();
@@ -26,7 +29,9 @@ export default function NotificationProvider() {
       channel
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         .on("broadcast", { event: "follow" }, async ({ payload }) => {
-          const data = z.object({ from: z.string() }).parse(payload);
+          const data = z
+            .object({ notification_id: z.string(), from: z.string() })
+            .parse(payload);
 
           await utils.notifications.getAll.invalidate();
 
@@ -34,14 +39,22 @@ export default function NotificationProvider() {
             description: "Click to visit their profile",
             action: {
               label: "Visit",
-              onClick: () => router.push(`/${data.from}`),
+              onClick: () => {
+                router.push(`/${data.from}`);
+                markAsReadMutation.mutate({ id: data.notification_id });
+              },
             },
           });
         })
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         .on("broadcast", { event: "like_post" }, async ({ payload }) => {
           const data = z
-            .object({ from: z.string(), to: z.string(), post_id: z.string() })
+            .object({
+              notification_id: z.string(),
+              from: z.string(),
+              to: z.string(),
+              post_id: z.string(),
+            })
             .parse(payload);
 
           await Promise.all([
@@ -56,7 +69,10 @@ export default function NotificationProvider() {
             description: "Click to view the post",
             action: {
               label: "Visit",
-              onClick: () => router.push(`/${data.to}/${data.post_id}`),
+              onClick: () => {
+                router.push(`/${data.to}/${data.post_id}`);
+                markAsReadMutation.mutate({ id: data.notification_id });
+              },
             },
           });
         })
@@ -67,7 +83,12 @@ export default function NotificationProvider() {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         .on("broadcast", { event: "comment" }, async ({ payload }) => {
           const data = z
-            .object({ from: z.string(), to: z.string(), post_id: z.string() })
+            .object({
+              notification_id: z.string(),
+              from: z.string(),
+              to: z.string(),
+              post_id: z.string(),
+            })
             .parse(payload);
 
           await Promise.all([
@@ -82,7 +103,10 @@ export default function NotificationProvider() {
             description: "Click to view the comment",
             action: {
               label: "Visit",
-              onClick: () => router.push(`/${data.to}/${data.post_id}`),
+              onClick: () => {
+                router.push(`/${data.to}/${data.post_id}`);
+                markAsReadMutation.mutate({ id: data.notification_id });
+              },
             },
           });
         })
@@ -90,6 +114,7 @@ export default function NotificationProvider() {
         .on("broadcast", { event: "reply" }, async ({ payload }) => {
           const data = z
             .object({
+              notification_id: z.string(),
               from: z.string(),
               to: z.string(),
               post_id: z.string(),
@@ -108,7 +133,33 @@ export default function NotificationProvider() {
             description: "Click to view the reply",
             action: {
               label: "Visit",
-              onClick: () => router.push(`/${data.to}/${data.post_id}`),
+              onClick: () => {
+                router.push(`/${data.to}/${data.post_id}`);
+                markAsReadMutation.mutate({ id: data.notification_id });
+              },
+            },
+          });
+        })
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        .on("broadcast", { event: "mention_post" }, async ({ payload }) => {
+          const data = z
+            .object({
+              notification_id: z.string(),
+              from: z.string(),
+              post_id: z.string(),
+            })
+            .parse(payload);
+
+          await utils.notifications.getAll.invalidate();
+
+          toast(`@${data.from} mentioned you in a post!`, {
+            description: "Click to view the post",
+            action: {
+              label: "Visit",
+              onClick: () => {
+                router.push(`/${data.from}/${data.post_id}`);
+                markAsReadMutation.mutate({ id: data.notification_id });
+              },
             },
           });
         })

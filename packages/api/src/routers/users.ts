@@ -174,7 +174,7 @@ export const usersRouter = router({
             to_id: input.user_id,
             type: "follow",
           })
-          .select("from:users!public_notifications_from_id_fkey(username)")
+          .select("id, from:users!public_notifications_from_id_fkey(username)")
           .single();
 
         if (new_notification?.from?.username) {
@@ -184,7 +184,10 @@ export const usersRouter = router({
           await channel.send({
             type: "broadcast",
             event: "follow",
-            payload: { from: new_notification.from.username },
+            payload: {
+              notification_id: new_notification.id,
+              from: new_notification.from.username,
+            },
           });
           await ctx.supabase.removeChannel(channel);
         }
