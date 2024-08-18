@@ -44,7 +44,8 @@ CREATE TYPE "public"."notification_type" AS ENUM (
     'mention_post',
     'mention_comment',
     'strike_account',
-    'strike_post'
+    'strike_post',
+    'reply'
 );
 
 ALTER TYPE "public"."notification_type" OWNER TO "postgres";

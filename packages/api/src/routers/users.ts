@@ -184,7 +184,7 @@ export const usersRouter = router({
           await channel.send({
             type: "broadcast",
             event: "follow",
-            payload: { type: "follow", from: new_notification.from.username },
+            payload: { from: new_notification.from.username },
           });
           await ctx.supabase.removeChannel(channel);
         }

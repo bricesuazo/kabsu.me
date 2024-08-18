@@ -85,12 +85,32 @@ export const commentsRouter = router({
         });
 
       if (post.user_id !== ctx.auth.user.id) {
-        await ctx.supabase.from("notifications").insert({
-          to_id: post.user_id,
-          type: "comment",
-          from_id: ctx.auth.user.id,
-          content_id: input.post_id,
-        });
+        const { data: new_notification } = await ctx.supabase
+          .from("notifications")
+          .insert({
+            to_id: post.user_id,
+            type: "comment",
+            from_id: ctx.auth.user.id,
+            content_id: input.post_id,
+          })
+          .select(
+            "from:users!public_notifications_from_id_fkey(username), to:users!public_notifications_to_id_fkey(username)",
+          )
+          .single();
+
+        if (new_notification?.from?.username && new_notification.to?.username) {
+          const channel = ctx.supabase.channel("notifications." + post.user_id);
+          await channel.send({
+            type: "broadcast",
+            event: "comment",
+            payload: {
+              from: new_notification.from.username,
+              to: new_notification.to.username,
+              post_id: input.post_id,
+            },
+          });
+          await ctx.supabase.removeChannel(channel);
+        }
       }
     }),
   delete: protectedProcedure
@@ -228,13 +248,36 @@ export const commentsRouter = router({
           message: error.message,
         });
 
-      // if (comment.user_id !== ctx.auth.user.id) {
-      //   await ctx.supabase.from("notifications").insert({
-      //     to_id: comment.user_id,
-      //     type: "reply",
-      //     from_id: ctx.auth.user.id,
-      //     content_id: input.comment_id,
-      //   });
-      // }
+      if (comment.user_id !== ctx.auth.user.id) {
+        const { data: new_notification } = await ctx.supabase
+          .from("notifications")
+          .insert({
+            to_id: comment.user_id,
+            type: "reply",
+            from_id: ctx.auth.user.id,
+            content_id: input.comment_id,
+          })
+          .select(
+            "from:users!public_notifications_from_id_fkey(username), to:users!public_notifications_to_id_fkey(username)",
+          )
+          .single();
+
+        if (new_notification?.from?.username && new_notification.to?.username) {
+          const channel = ctx.supabase.channel(
+            "notifications." + comment.user_id,
+          );
+          await channel.send({
+            type: "broadcast",
+            event: "reply",
+            payload: {
+              from: new_notification.from.username,
+              to: new_notification.to.username,
+              post_id: input.post_id,
+              comment_id: input.comment_id,
+            },
+          });
+          await ctx.supabase.removeChannel(channel);
+        }
+      }
     }),
 });
