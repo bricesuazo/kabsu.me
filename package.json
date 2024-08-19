@@ -5,6 +5,7 @@
   "scripts": {
     "build": "turbo run build --parallel --no-daemon",
     "dev": "pnpm with-env turbo run dev --no-daemon",
+    "dev:ngl": "pnpm with-env turbo run dev --no-daemon --filter=ngl",
     "start": "pnpm with-env turbo run start --no-daemon",
     "lint": "turbo run lint",
     "clean": "git clean -xdf node_modules dist .next",
