@@ -166,10 +166,8 @@ export default function Notifications() {
                   href={(() => {
                     if (notification.type === "follow") {
                       return `/${notification.from.username}`;
-                    } else if (notification.type === "mention_post") {
-                      return `/${notification.from.username}/${notification.content_id}`;
                     } else {
-                      return `/${notification.to?.username}/${notification.content_id}`;
+                      return `/${notification.content?.user?.username}/${notification.content_id}`;
                     }
                   })()}
                   onClick={(e) => {

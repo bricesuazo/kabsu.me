@@ -236,12 +236,16 @@ export const commentsRouter = router({
           message: "Comment not found",
         });
 
-      const { error } = await ctx.supabase.from("comments").insert({
-        user_id: ctx.auth.user.id,
-        thread_id: input.level === 0 ? input.comment_id : comment.thread_id,
-        content: input.content,
-        post_id: input.post_id,
-      });
+      const { data, error } = await ctx.supabase
+        .from("comments")
+        .insert({
+          user_id: ctx.auth.user.id,
+          thread_id: input.level === 0 ? input.comment_id : comment.thread_id,
+          content: input.content,
+          post_id: input.post_id,
+        })
+        .select("post:posts(user:users(username))")
+        .single();
 
       if (error)
         throw new TRPCError({
@@ -274,6 +278,7 @@ export const commentsRouter = router({
               notification_id: new_notification.id,
               from: new_notification.from.username,
               to: new_notification.to.username,
+              post_user_username: data.post?.user?.username,
               post_id: input.post_id,
               comment_id: input.comment_id,
             },

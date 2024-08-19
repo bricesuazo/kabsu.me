@@ -29,7 +29,7 @@ export const notificationsRouter = router({
 
       const { data: posts } = await ctx.supabase
         .from("posts")
-        .select("*")
+        .select("*, user:users(username)")
         .in("id", posts_to_fetch);
 
       if (posts === null)
