@@ -908,6 +908,7 @@ export type Database = {
         | "mention_comment"
         | "strike_account"
         | "strike_post"
+        | "reply"
       post_type: "following" | "program" | "college" | "campus" | "all"
       user_type: "student" | "faculty" | "alumni"
     }

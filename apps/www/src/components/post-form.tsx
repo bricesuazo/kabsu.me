@@ -89,6 +89,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
   const [imageUploaderOpen, setImageUploaderOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const getMyUniversityStatusQuery = api.auth.getMyUniversityStatus.useQuery();
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -443,6 +444,25 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                                   {type.id === "following"
                                     ? "Follower"
                                     : type.name}
+                                  {!(
+                                    type.id === "all" || type.id === "following"
+                                  ) && (
+                                    <span>
+                                      {" "}
+                                      (
+                                      {(() => {
+                                        switch (type.id) {
+                                          case "program":
+                                            return getMyUniversityStatusQuery.data?.programs?.slug.toUpperCase();
+                                          case "college":
+                                            return getMyUniversityStatusQuery.data?.programs?.colleges?.slug.toUpperCase();
+                                          case "campus":
+                                            return getMyUniversityStatusQuery.data?.programs?.colleges?.campuses?.slug.toUpperCase();
+                                        }
+                                      })()}
+                                      )
+                                    </span>
+                                  )}
                                 </SelectItem>
                               ))}
                             </SelectGroup>

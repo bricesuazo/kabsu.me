@@ -5,6 +5,7 @@ import { Poppins } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
+import NotificationProvider from "~/components/notification-provider";
 import { ThemeProvider } from "~/components/theme-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { TooltipProvider } from "~/components/ui/tooltip";
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
             <TRPCReactProvider>
               {children}
 
+              <NotificationProvider />
               <Analytics />
               <SpeedInsights />
               {/* TODO: */}

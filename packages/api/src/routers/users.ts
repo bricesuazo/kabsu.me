@@ -155,39 +155,59 @@ export const usersRouter = router({
           message: "Already following user",
         });
 
-      await ctx.supabase.from("followers").insert({
-        follower_id: ctx.auth.user.id,
-        followee_id: input.user_id,
-      });
-
-      await ctx.supabase.from("followees").insert({
-        follower_id: input.user_id,
-        followee_id: ctx.auth.user.id,
-      });
+      await Promise.all([
+        ctx.supabase.from("followers").insert({
+          follower_id: ctx.auth.user.id,
+          followee_id: input.user_id,
+        }),
+        ctx.supabase.from("followees").insert({
+          follower_id: input.user_id,
+          followee_id: ctx.auth.user.id,
+        }),
+      ]);
 
       if (ctx.auth.user.id !== input.user_id) {
-        await ctx.supabase.from("notifications").insert({
-          from_id: ctx.auth.user.id,
-          to_id: input.user_id,
-          type: "follow",
-        });
+        const { data: new_notification } = await ctx.supabase
+          .from("notifications")
+          .insert({
+            from_id: ctx.auth.user.id,
+            to_id: input.user_id,
+            type: "follow",
+          })
+          .select("id, from:users!public_notifications_from_id_fkey(username)")
+          .single();
+
+        if (new_notification?.from?.username) {
+          const channel = ctx.supabase.channel(
+            "notifications." + input.user_id,
+          );
+          await channel.send({
+            type: "broadcast",
+            event: "follow",
+            payload: {
+              notification_id: new_notification.id,
+              from: new_notification.from.username,
+            },
+          });
+          await ctx.supabase.removeChannel(channel);
+        }
       }
     }),
-
   unfollow: protectedProcedure
     .input(z.object({ user_id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.supabase
-        .from("followers")
-        .delete()
-        .eq("follower_id", ctx.auth.user.id)
-        .eq("followee_id", input.user_id);
-
-      await ctx.supabase
-        .from("followees")
-        .delete()
-        .eq("follower_id", input.user_id)
-        .eq("followee_id", ctx.auth.user.id);
+      await Promise.all([
+        ctx.supabase
+          .from("followers")
+          .delete()
+          .eq("follower_id", ctx.auth.user.id)
+          .eq("followee_id", input.user_id),
+        ctx.supabase
+          .from("followees")
+          .delete()
+          .eq("follower_id", input.user_id)
+          .eq("followee_id", ctx.auth.user.id),
+      ]);
 
       if (ctx.auth.user.id !== input.user_id) {
         await ctx.supabase
@@ -196,6 +216,14 @@ export const usersRouter = router({
           .eq("to_id", input.user_id)
           .eq("from_id", ctx.auth.user.id)
           .eq("type", "follow");
+
+        const channel = ctx.supabase.channel("notifications." + input.user_id);
+        await channel.send({
+          type: "broadcast",
+          event: "unfollow",
+          payload: {},
+        });
+        await ctx.supabase.removeChannel(channel);
       }
     }),
 

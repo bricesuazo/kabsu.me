@@ -102,7 +102,7 @@ export default function ChatsPage() {
                   href={`/chat/${type.id}`}
                   className="group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md px-2 py-4 hover:bg-muted"
                 >
-                  <div className="rounded-full bg-accent p-2 transition-colors group-hover:bg-primary">
+                  <div className="rounded-full bg-accent p-2 transition-colors group-hover:bg-primary group-hover:text-white">
                     <type.Icon className="size-5" />
                   </div>
                   <div>

@@ -44,7 +44,8 @@ CREATE TYPE "public"."notification_type" AS ENUM (
     'mention_post',
     'mention_comment',
     'strike_account',
-    'strike_post'
+    'strike_post',
+    'reply'
 );
 
 ALTER TYPE "public"."notification_type" OWNER TO "postgres";
@@ -235,7 +236,7 @@ CREATE TABLE IF NOT EXISTS "public"."notifications" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "from_id" "uuid" NOT NULL,
     "to_id" "uuid" NOT NULL,
-    "content_id" "uuid" DEFAULT "gen_random_uuid"(),
+    "content_id" "uuid",
     "read" boolean DEFAULT false NOT NULL,
     "type" "public"."notification_type" NOT NULL,
     "trash" boolean DEFAULT false NOT NULL,

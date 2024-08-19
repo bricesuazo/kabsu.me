@@ -166,6 +166,8 @@ export default function Notifications() {
                   href={(() => {
                     if (notification.type === "follow") {
                       return `/${notification.from.username}`;
+                    } else if (notification.type === "mention_post") {
+                      return `/${notification.from.username}/${notification.content_id}`;
                     } else {
                       return `/${notification.to?.username}/${notification.content_id}`;
                     }
@@ -197,7 +199,7 @@ export default function Notifications() {
                     </Link>
                     <div className="flex flex-col gap-1">
                       <p className="line-clamp-2 text-xs font-medium">
-                        @${notification.from.username}{" "}
+                        @{notification.from.username}{" "}
                         {(() => {
                           switch (notification.type) {
                             case "follow":
@@ -210,6 +212,8 @@ export default function Notifications() {
                               return "mentioned you in a comment";
                             case "mention_post":
                               return "mentioned you in a post";
+                            case "reply":
+                              return "replied to your comment";
                             default:
                               return "";
                           }
