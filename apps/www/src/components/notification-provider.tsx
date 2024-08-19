@@ -119,6 +119,7 @@ export default function NotificationProvider() {
               to: z.string(),
               post_id: z.string(),
               comment_id: z.string(),
+              post_user_username: z.string(),
             })
             .parse(payload);
 
@@ -134,7 +135,7 @@ export default function NotificationProvider() {
             action: {
               label: "Visit",
               onClick: () => {
-                router.push(`/${data.to}/${data.post_id}`);
+                router.push(`/${data.post_user_username}/${data.post_id}`);
                 markAsReadMutation.mutate({ id: data.notification_id });
               },
             },
