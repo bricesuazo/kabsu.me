@@ -232,6 +232,27 @@ CREATE TABLE IF NOT EXISTS "public"."likes" (
 
 ALTER TABLE "public"."likes" OWNER TO "postgres";
 
+CREATE TABLE IF NOT EXISTS "public"."ngl_answers" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "content" "text" NOT NULL,
+    "question_id" "uuid" NOT NULL,
+    "deleted_at" timestamp with time zone
+);
+
+ALTER TABLE "public"."ngl_answers" OWNER TO "postgres";
+
+CREATE TABLE IF NOT EXISTS "public"."ngl_questions" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "content" "text" NOT NULL,
+    "code_name" "text" DEFAULT ''::"text",
+    "deleted_at" timestamp with time zone
+);
+
+ALTER TABLE "public"."ngl_questions" OWNER TO "postgres";
+
 CREATE TABLE IF NOT EXISTS "public"."notifications" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "from_id" "uuid" NOT NULL,
@@ -365,7 +386,8 @@ CREATE TABLE IF NOT EXISTS "public"."users" (
     "program_id" "uuid" NOT NULL,
     "verified_at" timestamp with time zone,
     "program_changed_at" timestamp with time zone,
-    "banned_at" timestamp with time zone
+    "banned_at" timestamp with time zone,
+    "is_ngl_displayed" boolean DEFAULT true NOT NULL
 );
 
 ALTER TABLE "public"."users" OWNER TO "postgres";
@@ -396,6 +418,12 @@ ALTER TABLE ONLY "public"."global_chats"
 
 ALTER TABLE ONLY "public"."likes"
     ADD CONSTRAINT "likes_pkey" PRIMARY KEY ("id");
+
+ALTER TABLE ONLY "public"."ngl_answers"
+    ADD CONSTRAINT "ngl_answers_pkey" PRIMARY KEY ("id");
+
+ALTER TABLE ONLY "public"."ngl_questions"
+    ADD CONSTRAINT "ngl_questions_pkey" PRIMARY KEY ("id");
 
 ALTER TABLE ONLY "public"."notifications"
     ADD CONSTRAINT "notifications_pkey" PRIMARY KEY ("id");
@@ -507,6 +535,12 @@ CREATE INDEX "posts_user_id_idx" ON "public"."posts" USING "btree" ("user_id");
 CREATE INDEX "programs_college_id_idx" ON "public"."programs" USING "btree" ("college_id");
 
 CREATE INDEX "programs_slug_idx" ON "public"."programs" USING "btree" ("slug");
+
+ALTER TABLE ONLY "public"."ngl_answers"
+    ADD CONSTRAINT "ngl_answers_question_id_fkey" FOREIGN KEY ("question_id") REFERENCES "public"."ngl_questions"("id");
+
+ALTER TABLE ONLY "public"."ngl_questions"
+    ADD CONSTRAINT "ngl_questions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
 
 ALTER TABLE ONLY "public"."chats"
     ADD CONSTRAINT "public_chats_reply_id_fkey" FOREIGN KEY ("reply_id") REFERENCES "public"."chats"("id");
@@ -642,6 +676,10 @@ ALTER TABLE "public"."global_chats" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."likes" ENABLE ROW LEVEL SECURITY;
 
+ALTER TABLE "public"."ngl_answers" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "public"."ngl_questions" ENABLE ROW LEVEL SECURITY;
+
 ALTER TABLE "public"."notifications" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."posts" ENABLE ROW LEVEL SECURITY;
@@ -718,6 +756,14 @@ GRANT ALL ON TABLE "public"."global_chats" TO "service_role";
 GRANT ALL ON TABLE "public"."likes" TO "anon";
 GRANT ALL ON TABLE "public"."likes" TO "authenticated";
 GRANT ALL ON TABLE "public"."likes" TO "service_role";
+
+GRANT ALL ON TABLE "public"."ngl_answers" TO "anon";
+GRANT ALL ON TABLE "public"."ngl_answers" TO "authenticated";
+GRANT ALL ON TABLE "public"."ngl_answers" TO "service_role";
+
+GRANT ALL ON TABLE "public"."ngl_questions" TO "anon";
+GRANT ALL ON TABLE "public"."ngl_questions" TO "authenticated";
+GRANT ALL ON TABLE "public"."ngl_questions" TO "service_role";
 
 GRANT ALL ON TABLE "public"."notifications" TO "anon";
 GRANT ALL ON TABLE "public"."notifications" TO "authenticated";
