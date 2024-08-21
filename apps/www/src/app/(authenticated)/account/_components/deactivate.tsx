@@ -79,6 +79,7 @@ export default function Deactivate({ username }: { username: string }) {
               type="submit"
               variant="destructive"
               className="w-full md:w-auto"
+              size="sm"
               disabled={deactivateMutation.isPending}
             >
               {deactivateMutation.isPending ? (

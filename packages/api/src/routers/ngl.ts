@@ -125,9 +125,11 @@ export const nglRouter = router({
           message: "Failed to get messages",
         });
 
-      return input.tab === "messages"
-        ? messages.filter((message) => message.answers.length === 0)
-        : messages.filter((message) => message.answers.length !== 0);
+      return messages.filter((message) =>
+        input.tab === "messages"
+          ? message.answers.length === 0
+          : message.answers.length !== 0,
+      );
     }),
   answerMessage: protectedProcedure
     .input(
@@ -137,17 +139,29 @@ export const nglRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { error: error_answer } = await ctx.supabase
+      const { data: answer, error: error_answer } = await ctx.supabase
         .from("ngl_answers")
         .insert({
           question_id: input.question_id,
           content: input.content,
-        });
+        })
+        .select("question:ngl_questions(user:users(username))")
+        .single();
 
-      if (error_answer)
+      if (error_answer || !answer.question?.user)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to answer message",
         });
+
+      const channel = ctx.supabase.channel(
+        "ngl." + answer.question.user.username,
+      );
+      await channel.send({
+        type: "broadcast",
+        event: "reply",
+        payload: {},
+      });
+      await ctx.supabase.removeChannel(channel);
     }),
 });

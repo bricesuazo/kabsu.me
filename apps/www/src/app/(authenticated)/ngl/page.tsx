@@ -11,7 +11,6 @@ import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 
-import ClientOnly from "~/components/client-only";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -24,6 +23,7 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Textarea } from "~/components/ui/textarea";
 import { api } from "~/lib/trpc/client";
+import { cn } from "~/lib/utils";
 
 const TabSchema = z.enum(["messages", "replied"]);
 
@@ -45,24 +45,26 @@ export default function NGLPage() {
       </div>
 
       <>
-        <Tabs
-          value={tab}
-          onValueChange={(value) => {
-            const data = TabSchema.safeParse(value).data ?? "messages";
+        <div className="flex justify-center p-4">
+          <Tabs
+            value={tab}
+            onValueChange={(value) => {
+              const data = TabSchema.safeParse(value).data ?? "messages";
 
-            setTab(data);
+              setTab(data);
 
-            const search = new URLSearchParams(searchParams);
-            search.set("tab", data);
+              const search = new URLSearchParams(searchParams);
+              search.set("tab", data);
 
-            router.push(`./ngl?${search.toString()}`);
-          }}
-        >
-          <TabsList>
-            <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="replied">Replied</TabsTrigger>
-          </TabsList>
-        </Tabs>
+              router.push(`./ngl?${search.toString()}`);
+            }}
+          >
+            <TabsList>
+              <TabsTrigger value="messages">Messages</TabsTrigger>
+              <TabsTrigger value="replied">Replied</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
 
         {getAllMyMessagesQuery.isLoading ||
         getAllMyMessagesQuery.data === undefined ? (
@@ -72,19 +74,17 @@ export default function NGLPage() {
             ))}
           </div>
         ) : getAllMyMessagesQuery.data.length === 0 ? (
-          <div className="text-center text-muted-foreground sm:col-span-2">
+          <div className="p-4 text-center text-muted-foreground sm:col-span-2">
             No messages yet.
           </div>
         ) : (
-          <ClientOnly>
-            <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 640: 2 }}>
-              <Masonry gutter="16px" className="p-4">
-                {getAllMyMessagesQuery.data.map((message) => (
-                  <Question key={message.id} message={message} />
-                ))}
-              </Masonry>
-            </ResponsiveMasonry>
-          </ClientOnly>
+          <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 640: 2 }}>
+            <Masonry gutter="16px" className="p-4">
+              {getAllMyMessagesQuery.data.map((message) => (
+                <Question key={message.id} message={message} />
+              ))}
+            </Masonry>
+          </ResponsiveMasonry>
         )}
       </>
     </div>
@@ -113,8 +113,11 @@ function Question({
 }: {
   message: RouterOutputs["ngl"]["getAllMyMessages"][number];
 }) {
+  const searchParams = useSearchParams();
+  const utils = api.useUtils();
   const answerMessageQuery = api.ngl.answerMessage.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      await utils.ngl.getAllMyMessages.invalidate();
       form.reset();
     },
   });
@@ -128,78 +131,90 @@ function Question({
   });
 
   return (
-    <p>
-      <div className="space-y-2 rounded-lg border p-4">
-        <p>{message.content}</p>
-        <p className="text-xs text-muted-foreground">
-          {message.code_name ? <span>{message.code_name} • </span> : null}
-          {formatDistanceToNow(message.created_at)}
-        </p>
+    <div
+      className={cn(
+        "space-y-2 rounded-lg border p-4",
+        searchParams.has("question_id", message.id) && "border-primary",
+      )}
+    >
+      <p>{message.content}</p>
+      <p className="text-xs text-muted-foreground">
+        {message.code_name ? <span>{message.code_name} • </span> : null}
+        {formatDistanceToNow(message.created_at)}
+      </p>
 
-        {form.watch("is_reply_enabled") ? (
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit((values) =>
-                answerMessageQuery.mutate({
-                  content: values.content,
-                  question_id: message.id,
-                }),
-              )}
-              className="flex flex-col gap-2"
-            >
-              <FormField
-                control={form.control}
-                name="content"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Reply..."
-                        className="w-full"
-                        rows={3}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button
-                type="submit"
-                size="sm"
-                disabled={answerMessageQuery.isPending}
-              >
-                {answerMessageQuery.isPending ? (
-                  <Loader2 className="mr-1.5 size-4 animate-spin" />
-                ) : (
-                  <Reply className="mr-1.5 size-4" />
-                )}
-                Reply
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-8 px-2 text-xs"
-                onClick={() => form.setValue("is_reply_enabled", false)}
-              >
-                <XCircle className="mr-1.5 size-4" />
-                Cancel
-              </Button>
-            </form>
-          </Form>
-        ) : (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 px-2 text-xs"
-            onClick={() => form.setValue("is_reply_enabled", true)}
+      {message.answers.length > 0 ? (
+        message.answers.map((answer) => (
+          <div key={answer.id} className="rounded-lg bg-muted p-4">
+            <p>{answer.content}</p>
+            <p className="text-xs text-muted-foreground">
+              You • {formatDistanceToNow(answer.created_at)}
+            </p>
+          </div>
+        ))
+      ) : form.watch("is_reply_enabled") ? (
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit((values) =>
+              answerMessageQuery.mutate({
+                content: values.content,
+                question_id: message.id,
+              }),
+            )}
+            className="flex flex-col gap-2"
           >
-            <Reply className="mr-1.5 size-4" />
-            Reply
-          </Button>
-        )}
-      </div>
-    </p>
+            <FormField
+              control={form.control}
+              name="content"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Reply..."
+                      className="w-full"
+                      rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              size="sm"
+              disabled={answerMessageQuery.isPending}
+            >
+              {answerMessageQuery.isPending ? (
+                <Loader2 className="mr-1.5 size-4 animate-spin" />
+              ) : (
+                <Reply className="mr-1.5 size-4" />
+              )}
+              Reply
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2 text-xs"
+              onClick={() => form.setValue("is_reply_enabled", false)}
+            >
+              <XCircle className="mr-1.5 size-4" />
+              Cancel
+            </Button>
+          </form>
+        </Form>
+      ) : (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 px-2 text-xs"
+          onClick={() => form.setValue("is_reply_enabled", true)}
+        >
+          <Reply className="mr-1.5 size-4" />
+          Reply
+        </Button>
+      )}
+    </div>
   );
 }

@@ -15,6 +15,7 @@ import {
   SquareMousePointer,
   Sun,
   UserCircle,
+  VenetianMask,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -217,6 +218,17 @@ export default function Header() {
                         : "My Profile"}
                     </Link>
                   </DropdownMenuItem>
+                  {getCurrentUserQuery.data.is_ngl_displayed && (
+                    <DropdownMenuItem
+                      asChild
+                      className="line-clamp-1 w-full cursor-pointer truncate"
+                    >
+                      <Link href="/ngl" className="flex w-full items-center">
+                        <VenetianMask className="mr-2" size="1rem" />
+                        NGL
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem
                     asChild
                     className="line-clamp-1 w-full cursor-pointer truncate"

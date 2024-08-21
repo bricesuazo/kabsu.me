@@ -499,6 +499,7 @@ export default function TypePrograms({
           </div>
           <Button
             type="submit"
+            size="sm"
             disabled={
               !form.formState.isValid ||
               form.formState.isSubmitting ||

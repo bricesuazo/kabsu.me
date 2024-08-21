@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,6 +29,7 @@ import { Input } from "~/components/ui/input";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Textarea } from "~/components/ui/textarea";
 import { api } from "~/lib/trpc/client";
+import { createClient } from "~/supabase/client";
 
 const FormSchema = z
   .object({
@@ -81,6 +83,24 @@ export default function UserPageClient({
       is_codename_enabled: false,
     },
   });
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    const channel = supabase.channel(`ngl.${user.username}`);
+    channel
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      .on("broadcast", { event: "reply" }, async () => {
+        await getAllMessagesQuery.refetch();
+      })
+      .subscribe();
+
+    return () => {
+      void channel.unsubscribe();
+      void supabase.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.username]);
 
   if (!getUserQuery.data) return null;
 
@@ -229,6 +249,18 @@ export default function UserPageClient({
                         ) : null}
                         {formatDistanceToNow(message.created_at)}
                       </p>
+
+                      {message.answers.map((answer) => (
+                        <div
+                          key={answer.id}
+                          className="rounded-lg bg-muted p-4"
+                        >
+                          <p>{answer.content}</p>
+                          <p className="text-xs text-muted-foreground">
+                            You • {formatDistanceToNow(answer.created_at)}
+                          </p>
+                        </div>
+                      ))}
                     </div>
                   ))}
                 </Masonry>
