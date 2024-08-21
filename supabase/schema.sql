@@ -45,7 +45,8 @@ CREATE TYPE "public"."notification_type" AS ENUM (
     'mention_comment',
     'strike_account',
     'strike_post',
-    'reply'
+    'reply',
+    'ngl'
 );
 
 ALTER TYPE "public"."notification_type" OWNER TO "postgres";
@@ -261,7 +262,8 @@ CREATE TABLE IF NOT EXISTS "public"."notifications" (
     "read" boolean DEFAULT false NOT NULL,
     "type" "public"."notification_type" NOT NULL,
     "trash" boolean DEFAULT false NOT NULL,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "ngl_question_id" "uuid"
 );
 
 ALTER TABLE "public"."notifications" OWNER TO "postgres";
@@ -541,6 +543,9 @@ ALTER TABLE ONLY "public"."ngl_answers"
 
 ALTER TABLE ONLY "public"."ngl_questions"
     ADD CONSTRAINT "ngl_questions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
+
+ALTER TABLE ONLY "public"."notifications"
+    ADD CONSTRAINT "notifications_ngl_question_id_fkey" FOREIGN KEY ("ngl_question_id") REFERENCES "public"."ngl_questions"("id");
 
 ALTER TABLE ONLY "public"."chats"
     ADD CONSTRAINT "public_chats_reply_id_fkey" FOREIGN KEY ("reply_id") REFERENCES "public"."chats"("id");

@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
-import { Bell, BookOpenCheckIcon } from "lucide-react";
+import { Bell, BookOpenCheckIcon, VenetianMask } from "lucide-react";
 
 import { api } from "~/lib/trpc/client";
 import { Icons } from "./icons";
@@ -16,6 +17,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export default function Notifications() {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
   const getAllNotificationsQuery = api.notifications.getAll.useQuery({
     all: false,
   });
@@ -114,6 +116,7 @@ export default function Notifications() {
               )
                 return (
                   <Link
+                    key={notification.id}
                     href="/account"
                     onClick={() => {
                       if (notification.read) return;
@@ -160,6 +163,48 @@ export default function Notifications() {
                   </Link>
                 );
 
+              if (notification.type === "ngl")
+                return (
+                  <button
+                    key={notification.id}
+                    onClick={() => {
+                      if (!notification.read)
+                        markNotificationAsReadMutation.mutate({
+                          id: notification.id,
+                        });
+
+                      router.push(
+                        `/ngl?question_id=${notification.ngl_question_id}`,
+                      );
+                      setOpen(false);
+                    }}
+                    className="flex items-center justify-between gap-x-2 rounded p-2 text-start hover:bg-muted"
+                  >
+                    <div className="flex gap-x-2">
+                      <div>
+                        <div className="rounded-full bg-muted p-2">
+                          <VenetianMask className="size-6" />
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <p className="line-clamp-2 text-xs font-medium">
+                          You have received a new anonymous message
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatDistanceToNow(notification.created_at, {
+                            includeSeconds: true,
+                            addSuffix: true,
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                    <div>
+                      {!notification.read && (
+                        <div className="aspect-square size-2 rounded-full bg-primary" />
+                      )}
+                    </div>
+                  </button>
+                );
               return (
                 <Link
                   key={notification.id}

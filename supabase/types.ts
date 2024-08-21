@@ -473,6 +473,7 @@ export type Database = {
           created_at: string
           from_id: string
           id: string
+          ngl_question_id: string | null
           read: boolean
           to_id: string
           trash: boolean
@@ -483,6 +484,7 @@ export type Database = {
           created_at?: string
           from_id: string
           id?: string
+          ngl_question_id?: string | null
           read?: boolean
           to_id: string
           trash?: boolean
@@ -493,12 +495,20 @@ export type Database = {
           created_at?: string
           from_id?: string
           id?: string
+          ngl_question_id?: string | null
           read?: boolean
           to_id?: string
           trash?: boolean
           type?: Database["public"]["Enums"]["notification_type"]
         }
         Relationships: [
+          {
+            foreignKeyName: "notifications_ngl_question_id_fkey"
+            columns: ["ngl_question_id"]
+            isOneToOne: false
+            referencedRelation: "ngl_questions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "public_notifications_from_id_fkey"
             columns: ["from_id"]
@@ -979,6 +989,7 @@ export type Database = {
         | "strike_account"
         | "strike_post"
         | "reply"
+        | "ngl"
       post_type: "following" | "program" | "college" | "campus" | "all"
       user_type: "student" | "faculty" | "alumni"
     }

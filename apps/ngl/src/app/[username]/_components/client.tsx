@@ -4,13 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDistanceToNow } from "date-fns";
-import { AlertCircle, Loader2, Send } from "lucide-react";
+import { AlertCircle, Loader2, Send, VenetianMask } from "lucide-react";
 import { useForm } from "react-hook-form";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 
+import ClientOnly from "~/components/client-only";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -87,6 +89,7 @@ export default function UserPageClient({
       <header className="border-b">
         <div className="container grid place-items-center py-4">
           <Link href="/" className="flex flex-col items-center">
+            <VenetianMask className="size-5" />
             <p className="font-bold leading-none">NGL</p>
             <p className="text-xs leading-none text-muted-foreground">
               Kabsu.me
@@ -211,22 +214,26 @@ export default function UserPageClient({
               No messages yet.
             </div>
           ) : (
-            <div className="columns-1 gap-3 space-y-3 pb-10 sm:columns-2">
-              {getAllMessagesQuery.data.map((message) => (
-                <div
-                  key={message.id}
-                  className="space-y-2 rounded-lg border p-4"
-                >
-                  <p>{message.content}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {message.code_name ? (
-                      <span>{message.code_name} • </span>
-                    ) : null}
-                    {formatDistanceToNow(message.created_at)}
-                  </p>
-                </div>
-              ))}
-            </div>
+            <ClientOnly>
+              <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 640: 2 }}>
+                <Masonry gutter="16px">
+                  {getAllMessagesQuery.data.map((message) => (
+                    <div
+                      key={message.id}
+                      className="space-y-2 rounded-lg border p-4"
+                    >
+                      <p>{message.content}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {message.code_name ? (
+                          <span>{message.code_name} • </span>
+                        ) : null}
+                        {formatDistanceToNow(message.created_at)}
+                      </p>
+                    </div>
+                  ))}
+                </Masonry>
+              </ResponsiveMasonry>
+            </ClientOnly>
           )}
         </div>
       </div>

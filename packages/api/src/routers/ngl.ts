@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { publicProcedure, router } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const nglRouter = router({
   getUser: publicProcedure
@@ -49,19 +49,41 @@ export const nglRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { error: error_message } = await ctx.supabase
+      const { data: message, error: error_message } = await ctx.supabase
         .from("ngl_questions")
         .insert({
           user_id: input.user_id,
           content: input.content,
           code_name: input.code_name,
-        });
+        })
+        .select("id, user_id")
+        .single();
 
       if (error_message)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to send message",
         });
+
+      await Promise.all([
+        (async () => {
+          const channel = ctx.supabase.channel(
+            "notifications." + message.user_id,
+          );
+          await channel.send({
+            type: "broadcast",
+            event: "ngl",
+            payload: { ngl_question_id: message.id },
+          });
+          await ctx.supabase.removeChannel(channel);
+        })(),
+        ctx.supabase.from("notifications").insert({
+          type: "ngl",
+          to_id: message.user_id,
+          from_id: message.user_id,
+          ngl_question_id: message.id,
+        }),
+      ]);
     }),
   getAllMessages: publicProcedure
     .input(
@@ -85,5 +107,47 @@ export const nglRouter = router({
         });
 
       return messages.filter((message) => message.answers.length !== 0);
+    }),
+  getAllMyMessages: protectedProcedure
+    .input(z.object({ tab: z.enum(["messages", "replied"]) }))
+    .query(async ({ ctx, input }) => {
+      const { data: messages, error: error_messages } = await ctx.supabase
+        .from("ngl_questions")
+        .select(
+          "id, content, code_name, created_at, answers:ngl_answers(id, content, created_at)",
+        )
+        .eq("user_id", ctx.auth.user.id)
+        .order("created_at", { ascending: false });
+
+      if (error_messages)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get messages",
+        });
+
+      return input.tab === "messages"
+        ? messages.filter((message) => message.answers.length === 0)
+        : messages.filter((message) => message.answers.length !== 0);
+    }),
+  answerMessage: protectedProcedure
+    .input(
+      z.object({
+        content: z.string(),
+        question_id: z.string().uuid(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { error: error_answer } = await ctx.supabase
+        .from("ngl_answers")
+        .insert({
+          question_id: input.question_id,
+          content: input.content,
+        });
+
+      if (error_answer)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to answer message",
+        });
     }),
 });

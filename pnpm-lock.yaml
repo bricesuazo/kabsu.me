@@ -197,6 +197,9 @@ importers:
       react-resizable-panels:
         specifier: ^2.0.23
         version: 2.0.23(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522)
+      react-responsive-masonry:
+        specifier: ^2.3.0
+        version: 2.3.0
       sonner:
         specifier: ^1.5.0
         version: 1.5.0(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522)
@@ -234,6 +237,9 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.0
         version: 18.3.0
+      '@types/react-responsive-masonry':
+        specifier: ^2.1.3
+        version: 2.1.3
       eslint:
         specifier: ^9.9.0
         version: 9.9.0(jiti@1.21.6)
@@ -450,6 +456,9 @@ importers:
       react-resizable-panels:
         specifier: ^2.0.23
         version: 2.0.23(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522)
+      react-responsive-masonry:
+        specifier: ^2.3.0
+        version: 2.3.0
       react-string-replace:
         specifier: ^1.1.1
         version: 1.1.1
@@ -505,6 +514,9 @@ importers:
       '@types/react-mentions':
         specifier: ^4.1.13
         version: 4.1.13
+      '@types/react-responsive-masonry':
+        specifier: ^2.1.3
+        version: 2.1.3
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
@@ -623,7 +635,7 @@ importers:
         version: 7.35.0(eslint@9.9.0(jiti@1.21.6))
       eslint-plugin-react-hooks:
         specifier: rc
-        version: 5.1.0-rc-6ebfd5b0-20240818(eslint@9.9.0(jiti@1.21.6))
+        version: 5.1.0-rc-a960b92c-20240819(eslint@9.9.0(jiti@1.21.6))
       eslint-plugin-turbo:
         specifier: ^2.0.14
         version: 2.0.14(eslint@9.9.0(jiti@1.21.6))
@@ -2217,6 +2229,9 @@ packages:
   '@types/react-mentions@4.1.13':
     resolution: {integrity: sha512-kRulAAjlmhCtsJ9bapO0foocknaE/rEuFKpmFEU81fBfnXZmZNBaJ9J/DBjwigT3WDHjQVUmYoi5sxEXrcdzAw==}
 
+  '@types/react-responsive-masonry@2.1.3':
+    resolution: {integrity: sha512-aOFUtv3QwNMmy0BgpQpvivQ/+vivMTB6ARrzf9eTSXsLzXpVnfEtjpHpSknYDnr8KaQmlgeauAj8E7wo/qMOTg==}
+
   '@types/react@18.3.3':
     resolution: {integrity: sha512-hti/R0pS0q1/xx+TsI73XIqk26eBsISZ2R0wUijXIngRK9R/e7Xw/cXVxQK7R5JjW+SV4zGcn5hXjudkN/pLIw==}
 
@@ -2962,8 +2977,8 @@ packages:
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
 
-  eslint-plugin-react-hooks@5.1.0-rc-6ebfd5b0-20240818:
-    resolution: {integrity: sha512-6eErqy/1hus0qhGvPSVOYqHTB63lntNMcYmx4q2p//Zg6ExF3kYftlG2Heh5FEMPGQ/UqxERmZeqBx8kBW26ow==}
+  eslint-plugin-react-hooks@5.1.0-rc-a960b92c-20240819:
+    resolution: {integrity: sha512-18xsW8xcNX40F3O9Z66URXZjRQ7Vjjb1sOG3164D9nArpkzqxmagY3E9D0B+lbldpMQlROpQ4YJk7DLjSR2JhA==}
     engines: {node: '>=10'}
     peerDependencies:
       eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
@@ -4184,6 +4199,9 @@ packages:
     peerDependencies:
       react: ^16.14.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
+
+  react-responsive-masonry@2.3.0:
+    resolution: {integrity: sha512-ttb71B75qAfZ5q2CRLKRnCRO9V6p1Vkgw1C9wIeNaD2JpAxwCb1hUBI4Drqea9hNlvxxLpUkO0TRE5CLxqLY0A==}
 
   react-string-replace@1.1.1:
     resolution: {integrity: sha512-26TUbLzLfHQ5jO5N7y3Mx88eeKo0Ml0UjCQuX4BMfOd/JX+enQqlKpL1CZnmjeBRvQE8TR+ds9j1rqx9CxhKHQ==}
@@ -6410,6 +6428,10 @@ snapshots:
     dependencies:
       '@types/react': 18.3.3
 
+  '@types/react-responsive-masonry@2.1.3':
+    dependencies:
+      '@types/react': 18.3.3
+
   '@types/react@18.3.3':
     dependencies:
       '@types/prop-types': 15.7.12
@@ -7325,7 +7347,7 @@ snapshots:
       safe-regex-test: 1.0.3
       string.prototype.includes: 2.0.0
 
-  eslint-plugin-react-hooks@5.1.0-rc-6ebfd5b0-20240818(eslint@9.9.0(jiti@1.21.6)):
+  eslint-plugin-react-hooks@5.1.0-rc-a960b92c-20240819(eslint@9.9.0(jiti@1.21.6)):
     dependencies:
       eslint: 9.9.0(jiti@1.21.6)
 
@@ -8567,6 +8589,8 @@ snapshots:
     dependencies:
       react: 19.0.0-rc-f994737d14-20240522
       react-dom: 19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522)
+
+  react-responsive-masonry@2.3.0: {}
 
   react-string-replace@1.1.1: {}
 

@@ -10,6 +10,7 @@ import {
   Flag,
   GraduationCap,
   MessageCircle,
+  VenetianMask,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -50,6 +51,7 @@ import {
 } from "~/components/ui/tooltip";
 import { toast } from "~/components/ui/use-toast";
 import VerifiedBadge from "~/components/verified-badge";
+import { env } from "~/env";
 import { api } from "~/lib/trpc/client";
 import PostsWrapper from "./posts-wrapper";
 
@@ -232,7 +234,7 @@ export default function UserPageWrapper({
           </Dialog>
         </div>
 
-        <div className="flex flex-col items-start gap-x-4 gap-y-2 border-b px-4 pb-4 sm:flex-row sm:items-center">
+        <div className="flex flex-col items-start gap-x-4 gap-y-2 border-b px-4 pb-4">
           <div className="flex items-center gap-x-2">
             {profileQuery.data.user.id !== profileQuery.data.user_id ? (
               <div className="flex items-center gap-x-2">
@@ -240,9 +242,31 @@ export default function UserPageWrapper({
                   isFollower={profileQuery.data.is_follower}
                   user_id={profileQuery.data.user.id}
                 />
-                <Button size="sm" variant="outline" asChild>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="hidden xs:inline-flex"
+                  asChild
+                >
                   <Link href={`/chat/user/${profileQuery.data.user.id}`}>
                     <MessageCircle className="mr-2 size-4" /> Message
+                  </Link>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="hidden xs:inline-flex"
+                  asChild
+                >
+                  <Link
+                    href={
+                      env.NEXT_PUBLIC_NGL_URL +
+                      "/" +
+                      profileQuery.data.user.username
+                    }
+                    target="_blank"
+                  >
+                    <VenetianMask className="mr-2 size-4" /> NGL
                   </Link>
                 </Button>
                 <AlertDialog open={openReport} onOpenChange={setOpenReport}>
@@ -317,6 +341,26 @@ export default function UserPageWrapper({
             ) : (
               <EditProfile user={profileQuery.data.user} />
             )}
+          </div>
+
+          <div className="flex items-center gap-x-2">
+            <Button size="sm" variant="outline" className="xs:hidden" asChild>
+              <Link href={`/chat/user/${profileQuery.data.user.id}`}>
+                <MessageCircle className="mr-2 size-4" /> Message
+              </Link>
+            </Button>
+            <Button size="sm" variant="outline" className="xs:hidden" asChild>
+              <Link
+                href={
+                  env.NEXT_PUBLIC_NGL_URL +
+                  "/" +
+                  profileQuery.data.user.username
+                }
+                target="_blank"
+              >
+                <VenetianMask className="mr-2 size-4" /> NGL
+              </Link>
+            </Button>
           </div>
 
           <div className="flex items-center gap-x-4">
