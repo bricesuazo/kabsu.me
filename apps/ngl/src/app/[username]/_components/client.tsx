@@ -247,7 +247,10 @@ export default function UserPageClient({
                         {message.code_name ? (
                           <span>{message.code_name} • </span>
                         ) : null}
-                        {formatDistanceToNow(message.created_at)}
+                        {formatDistanceToNow(message.created_at, {
+                          includeSeconds: true,
+                          addSuffix: true,
+                        })}
                       </p>
 
                       {message.answers.map((answer) => (
@@ -257,7 +260,11 @@ export default function UserPageClient({
                         >
                           <p>{answer.content}</p>
                           <p className="text-xs text-muted-foreground">
-                            You • {formatDistanceToNow(answer.created_at)}
+                            You •{" "}
+                            {formatDistanceToNow(answer.created_at, {
+                              includeSeconds: true,
+                              addSuffix: true,
+                            })}
                           </p>
                         </div>
                       ))}

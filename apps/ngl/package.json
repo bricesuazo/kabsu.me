@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "pnpm with-env next dev --turbo --port=3001",
     "build": "pnpm with-env next build",
-    "start": "pnpm with-env next start",
+    "start": "pnpm with-env next start --port=3001",
     "lint": "eslint",
     "clean": "git clean -xdf .next .turbo node_modules",
     "with-env": "dotenv -e ../../.env --"
