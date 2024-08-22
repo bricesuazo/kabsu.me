@@ -4,13 +4,23 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDistanceToNow } from "date-fns";
-import { Loader2, Reply, VenetianMask, XCircle } from "lucide-react";
+import { Loader2, Reply, Trash2, VenetianMask, XCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -113,9 +123,13 @@ function Question({
 }: {
   message: RouterOutputs["ngl"]["getAllMyMessages"][number];
 }) {
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const searchParams = useSearchParams();
   const utils = api.useUtils();
-  const answerMessageQuery = api.ngl.answerMessage.useMutation({
+  const deleteMessageMutation = api.ngl.deleteMessage.useMutation({
+    onSuccess: () => utils.ngl.getAllMyMessages.invalidate(),
+  });
+  const answerMessageMutation = api.ngl.answerMessage.useMutation({
     onSuccess: async () => {
       await utils.ngl.getAllMyMessages.invalidate();
       form.reset();
@@ -132,6 +146,7 @@ function Question({
 
   return (
     <div
+      id={message.id}
       className={cn(
         "space-y-2 rounded-lg border p-4",
         searchParams.has("question_id", message.id) && "border-primary",
@@ -156,7 +171,7 @@ function Question({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit((values) =>
-              answerMessageQuery.mutate({
+              answerMessageMutation.mutate({
                 content: values.content,
                 question_id: message.id,
               }),
@@ -183,9 +198,9 @@ function Question({
             <Button
               type="submit"
               size="sm"
-              disabled={answerMessageQuery.isPending}
+              disabled={answerMessageMutation.isPending}
             >
-              {answerMessageQuery.isPending ? (
+              {answerMessageMutation.isPending ? (
                 <Loader2 className="mr-1.5 size-4 animate-spin" />
               ) : (
                 <Reply className="mr-1.5 size-4" />
@@ -215,6 +230,49 @@ function Question({
           Reply
         </Button>
       )}
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 px-2 text-xs !text-destructive"
+          >
+            <Trash2 className="mr-1.5 size-4" />
+            Delete
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Are you sure you want to delete this message?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action is irreversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <Button
+              variant="destructive"
+              disabled={deleteMessageMutation.isPending}
+              onClick={async () => {
+                await deleteMessageMutation.mutateAsync({
+                  question_id: message.id,
+                });
+                setDeleteOpen(false);
+              }}
+            >
+              {deleteMessageMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-1.5 size-4 animate-spin" /> Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

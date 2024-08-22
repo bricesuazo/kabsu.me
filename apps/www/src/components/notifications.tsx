@@ -1,5 +1,7 @@
 "use client";
 
+import type { TRPCClientErrorLike } from "@trpc/client";
+import type { UseTRPCQueryResult } from "@trpc/react-query/shared";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,6 +9,9 @@ import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { Bell, BookOpenCheckIcon, VenetianMask } from "lucide-react";
 
+import type { AppRouter } from "@kabsu.me/api";
+
+import type { RouterOutputs } from "~/lib/trpc/client";
 import { api } from "~/lib/trpc/client";
 import { Icons } from "./icons";
 import { Button } from "./ui/button";
@@ -17,16 +22,13 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export default function Notifications() {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
+
   const getAllNotificationsQuery = api.notifications.getAll.useQuery({
     all: false,
   });
+
   const markAllNotificationAsReadMutation =
     api.notifications.markAllAsRead.useMutation({
-      onSettled: () => getAllNotificationsQuery.refetch(),
-    });
-  const markNotificationAsReadMutation =
-    api.notifications.markAsRead.useMutation({
       onSettled: () => getAllNotificationsQuery.refetch(),
     });
 
@@ -92,193 +94,14 @@ export default function Notifications() {
             <TooltipContent side="bottom">Mark all as read</TooltipContent>
           </Tooltip>
         </div>
+
         <ScrollArea className="h-80">
-          {getAllNotificationsQuery.isLoading ||
-          !getAllNotificationsQuery.data ? (
-            [...(Array(10) as number[])].map((_, i) => (
-              <div key={i} className="flex items-center gap-x-2 p-2">
-                <Skeleton className="h-8 w-8 rounded-full" />
-                <div className="flex flex-col gap-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-3 w-16" />
-                </div>
-              </div>
-            ))
-          ) : getAllNotificationsQuery.data.length === 0 ? (
-            <div className="flex items-center justify-center">
-              <div className="text-sm text-gray-400">No notifications</div>
-            </div>
-          ) : (
-            getAllNotificationsQuery.data.map((notification) => {
-              if (
-                notification.type === "strike_account" ||
-                notification.type === "strike_post"
-              )
-                return (
-                  <Link
-                    key={notification.id}
-                    href="/account"
-                    onClick={() => {
-                      if (notification.read) return;
-                      markNotificationAsReadMutation.mutate({
-                        id: notification.id,
-                      });
-
-                      setOpen(false);
-                    }}
-                    className="flex items-center justify-between gap-x-2 rounded p-2 hover:bg-muted"
-                  >
-                    <div className="flex gap-x-2">
-                      <Image
-                        src="/logo.svg"
-                        alt="System"
-                        width={32}
-                        height={32}
-                        className="aspect-square object-contain object-center"
-                      />
-                      <div className="flex flex-col gap-1">
-                        <p className="line-clamp-2 text-xs font-medium">
-                          {(() => {
-                            switch (notification.type) {
-                              case "strike_account":
-                                return "Your account has been striked";
-                              case "strike_post":
-                                return "Your post has been striked";
-                              default:
-                                return "";
-                            }
-                          })()}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDistanceToNow(notification.created_at, {
-                            includeSeconds: true,
-                            addSuffix: true,
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                    {!notification.read && (
-                      <div className="aspect-square size-2 rounded-full bg-primary" />
-                    )}
-                  </Link>
-                );
-
-              if (notification.type === "ngl")
-                return (
-                  <button
-                    key={notification.id}
-                    onClick={() => {
-                      if (!notification.read)
-                        markNotificationAsReadMutation.mutate({
-                          id: notification.id,
-                        });
-
-                      router.push(
-                        `/ngl?question_id=${notification.ngl_question_id}`,
-                      );
-                      setOpen(false);
-                    }}
-                    className="flex items-center justify-between gap-x-2 rounded p-2 text-start hover:bg-muted"
-                  >
-                    <div className="flex gap-x-2">
-                      <div>
-                        <div className="rounded-full bg-muted p-2">
-                          <VenetianMask className="size-6" />
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <p className="line-clamp-2 text-xs font-medium">
-                          You have received a new anonymous message
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDistanceToNow(notification.created_at, {
-                            includeSeconds: true,
-                            addSuffix: true,
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                    <div>
-                      {!notification.read && (
-                        <div className="aspect-square size-2 rounded-full bg-primary" />
-                      )}
-                    </div>
-                  </button>
-                );
-              return (
-                <Link
-                  key={notification.id}
-                  href={(() => {
-                    if (notification.type === "follow") {
-                      return `/${notification.from.username}`;
-                    } else {
-                      return `/${notification.content?.user?.username}/${notification.content_id}`;
-                    }
-                  })()}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (notification.read) return;
-
-                    markNotificationAsReadMutation.mutate({
-                      id: notification.id,
-                    });
-                    setOpen(false);
-                  }}
-                  className="flex items-center justify-between gap-x-2 rounded p-2 hover:bg-muted"
-                >
-                  <div className="flex gap-x-2">
-                    <Link href={`/${notification.from.username}`}>
-                      <Image
-                        src={
-                          notification.from.image_name
-                            ? notification.from.image_url
-                            : "/default-avatar.jpg"
-                        }
-                        alt={`${notification.from.username} profile picture`}
-                        width={32}
-                        height={32}
-                        className="aspect-square rounded-full object-cover object-center"
-                      />
-                    </Link>
-                    <div className="flex flex-col gap-1">
-                      <p className="line-clamp-2 text-xs font-medium">
-                        @{notification.from.username}{" "}
-                        {(() => {
-                          switch (notification.type) {
-                            case "follow":
-                              return "started following you";
-                            case "like":
-                              return "liked your post";
-                            case "comment":
-                              return "commented on your post";
-                            case "mention_comment":
-                              return "mentioned you in a comment";
-                            case "mention_post":
-                              return "mentioned you in a post";
-                            case "reply":
-                              return "replied to your comment";
-                            default:
-                              return "";
-                          }
-                        })()}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(notification.created_at, {
-                          includeSeconds: true,
-                          addSuffix: true,
-                        })}
-                      </p>
-                    </div>
-                  </div>
-
-                  {!notification.read && (
-                    <div className="aspect-square size-2 rounded-full bg-primary" />
-                  )}
-                </Link>
-              );
-            })
-          )}
+          <NotificationItems
+            getAllNotificationsQuery={getAllNotificationsQuery}
+            setOpen={setOpen}
+          />
         </ScrollArea>
+
         <Button asChild variant="link" className="w-full" size="sm">
           <Link
             href="/notifications"
@@ -290,5 +113,211 @@ export default function Notifications() {
         </Button>
       </PopoverContent>
     </Popover>
+  );
+}
+
+export function NotificationItems({
+  getAllNotificationsQuery,
+  setOpen,
+}: {
+  getAllNotificationsQuery: UseTRPCQueryResult<
+    RouterOutputs["notifications"]["getAll"],
+    TRPCClientErrorLike<AppRouter>
+  >;
+  setOpen?: (open: boolean) => void;
+}) {
+  const utils = api.useUtils();
+  const router = useRouter();
+  const markNotificationAsReadMutation =
+    api.notifications.markAsRead.useMutation({
+      onSettled: () => utils.notifications.getAll.invalidate(),
+    });
+  return (
+    <div className="flex flex-col">
+      {getAllNotificationsQuery.isLoading || !getAllNotificationsQuery.data ? (
+        [...(Array(10) as number[])].map((_, i) => (
+          <div key={i} className="flex items-center gap-x-2 p-2">
+            <Skeleton className="h-8 w-8 rounded-full" />
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-3 w-16" />
+            </div>
+          </div>
+        ))
+      ) : getAllNotificationsQuery.data.length === 0 ? (
+        <div className="flex items-center justify-center">
+          <div className="text-sm text-gray-400">No notifications</div>
+        </div>
+      ) : (
+        getAllNotificationsQuery.data.map((notification) => {
+          if (
+            notification.type === "strike_account" ||
+            notification.type === "strike_post"
+          )
+            return (
+              <Link
+                key={notification.id}
+                href="/account"
+                onClick={() => {
+                  if (notification.read) return;
+                  markNotificationAsReadMutation.mutate({
+                    id: notification.id,
+                  });
+
+                  if (setOpen) setOpen(false);
+                }}
+                className="flex items-center justify-between gap-x-2 rounded p-2 hover:bg-muted"
+              >
+                <div className="flex gap-x-2">
+                  <Image
+                    src="/logo.svg"
+                    alt="System"
+                    width={32}
+                    height={32}
+                    className="aspect-square object-contain object-center"
+                  />
+                  <div className="flex flex-col gap-1">
+                    <p className="line-clamp-2 text-xs font-medium">
+                      {(() => {
+                        switch (notification.type) {
+                          case "strike_account":
+                            return "Your account has been striked";
+                          case "strike_post":
+                            return "Your post has been striked";
+                          default:
+                            return "";
+                        }
+                      })()}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDistanceToNow(notification.created_at, {
+                        includeSeconds: true,
+                        addSuffix: true,
+                      })}
+                    </p>
+                  </div>
+                </div>
+                {!notification.read && (
+                  <div className="aspect-square size-2 rounded-full bg-primary" />
+                )}
+              </Link>
+            );
+
+          if (notification.type === "ngl")
+            return (
+              <button
+                key={notification.id}
+                onClick={() => {
+                  if (!notification.read)
+                    markNotificationAsReadMutation.mutate({
+                      id: notification.id,
+                    });
+
+                  router.push(
+                    `/ngl?question_id=${notification.ngl_question_id}`,
+                  );
+                  if (setOpen) setOpen(false);
+                }}
+                className="flex items-center justify-between gap-x-2 rounded p-2 text-start hover:bg-muted"
+              >
+                <div className="flex gap-x-2">
+                  <div>
+                    <div className="rounded-full bg-muted p-2">
+                      <VenetianMask className="size-6" />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <p className="line-clamp-2 text-xs font-medium">
+                      You have received a new anonymous message
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDistanceToNow(notification.created_at, {
+                        includeSeconds: true,
+                        addSuffix: true,
+                      })}
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  {!notification.read && (
+                    <div className="aspect-square size-2 rounded-full bg-primary" />
+                  )}
+                </div>
+              </button>
+            );
+          return (
+            <Link
+              key={notification.id}
+              href={(() => {
+                if (notification.type === "follow") {
+                  return `/${notification.from.username}`;
+                } else {
+                  return `/${notification.content?.user?.username}/${notification.content_id}`;
+                }
+              })()}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (notification.read) return;
+
+                markNotificationAsReadMutation.mutate({
+                  id: notification.id,
+                });
+                if (setOpen) setOpen(false);
+              }}
+              className="flex items-center justify-between gap-x-2 rounded p-2 hover:bg-muted"
+            >
+              <div className="flex gap-x-2">
+                <Link href={`/${notification.from.username}`}>
+                  <Image
+                    src={
+                      notification.from.image_name
+                        ? notification.from.image_url
+                        : "/default-avatar.jpg"
+                    }
+                    alt={`${notification.from.username} profile picture`}
+                    width={32}
+                    height={32}
+                    className="aspect-square rounded-full object-cover object-center"
+                  />
+                </Link>
+                <div className="flex flex-col gap-1">
+                  <p className="line-clamp-2 text-xs font-medium">
+                    @{notification.from.username}{" "}
+                    {(() => {
+                      switch (notification.type) {
+                        case "follow":
+                          return "started following you";
+                        case "like":
+                          return "liked your post";
+                        case "comment":
+                          return "commented on your post";
+                        case "mention_comment":
+                          return "mentioned you in a comment";
+                        case "mention_post":
+                          return "mentioned you in a post";
+                        case "reply":
+                          return "replied to your comment";
+                        default:
+                          return "";
+                      }
+                    })()}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatDistanceToNow(notification.created_at, {
+                      includeSeconds: true,
+                      addSuffix: true,
+                    })}
+                  </p>
+                </div>
+              </div>
+
+              {!notification.read && (
+                <div className="aspect-square size-2 rounded-full bg-primary" />
+              )}
+            </Link>
+          );
+        })
+      )}
+    </div>
   );
 }

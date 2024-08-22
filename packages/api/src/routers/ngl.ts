@@ -98,6 +98,7 @@ export const nglRouter = router({
           "id, content, code_name, created_at, answers:ngl_answers(id, content, created_at)",
         )
         .eq("user_id", input.user_id)
+        .is("deleted_at", null)
         .order("created_at", { ascending: false });
 
       if (error_messages)
@@ -117,7 +118,8 @@ export const nglRouter = router({
           "id, content, code_name, created_at, answers:ngl_answers(id, content, created_at)",
         )
         .eq("user_id", ctx.auth.user.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .is("deleted_at", null);
 
       if (error_messages)
         throw new TRPCError({
@@ -163,5 +165,23 @@ export const nglRouter = router({
         payload: {},
       });
       await ctx.supabase.removeChannel(channel);
+    }),
+  deleteMessage: protectedProcedure
+    .input(
+      z.object({
+        question_id: z.string().uuid(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { error: error_question } = await ctx.supabase
+        .from("ngl_questions")
+        .update({ deleted_at: new Date().toISOString() })
+        .eq("id", input.question_id);
+
+      if (error_question)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to archive message",
+        });
     }),
 });
