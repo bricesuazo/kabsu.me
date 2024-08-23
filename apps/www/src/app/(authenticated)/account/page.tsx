@@ -21,7 +21,7 @@ export default async function AccountSettingsPage() {
 
   return (
     <>
-      <div className="flex h-40 flex-col items-center justify-center gap-2 bg-primary">
+      <div className="flex h-40 flex-col items-center justify-center gap-2 bg-primary text-white">
         <UserCog2 size="2rem" />
         <h2 className="text-center text-xl font-semibold">Account Settings</h2>
       </div>

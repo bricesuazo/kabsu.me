@@ -100,6 +100,11 @@ export default function Header() {
                 <ScrollArea className="flex-grow">
                   {NAVBAR_LINKS.map((link, index) => (
                     <Fragment key={link.url}>
+                      {index === NAVBAR_LINKS.length - 9 && (
+                        <Label htmlFor="name" className="mb-4 text-right">
+                          Quick Links
+                        </Label>
+                      )}
                       {index === NAVBAR_LINKS.length - 6 && (
                         <Label htmlFor="name" className="mb-4 text-right">
                           Partnership
@@ -135,7 +140,26 @@ export default function Header() {
 
           <Search />
 
-          <div className="size-9" />
+          <div className="size-9">
+            {getCurrentUserQuery.data?.is_ngl_displayed && (
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-9 w-9 rounded-full"
+                    asChild
+                  >
+                    <Link href="/ngl" className="flex w-full items-center">
+                      <VenetianMask size="1rem" />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+
+                <TooltipContent>NGL</TooltipContent>
+              </Tooltip>
+            )}
+          </div>
         </div>
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>

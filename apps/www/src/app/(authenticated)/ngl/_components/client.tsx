@@ -199,8 +199,8 @@ function Question({
         searchParams.has("question_id", message.id) && "border-primary",
       )}
     >
-      <p>{message.content}</p>
-      <p className="text-xs text-muted-foreground">
+      <p className="break-words">{message.content}</p>
+      <p className="break-words text-xs text-muted-foreground">
         {message.code_name ? <span>{message.code_name} • </span> : null}
         {formatDistanceToNow(message.created_at, {
           includeSeconds: true,
@@ -211,8 +211,8 @@ function Question({
       {message.answers.length > 0 ? (
         message.answers.map((answer) => (
           <div key={answer.id} className="rounded-lg bg-muted p-4">
-            <p>{answer.content}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="break-words">{answer.content}</p>
+            <p className="break-words text-xs text-muted-foreground">
               You •{" "}
               {formatDistanceToNow(answer.created_at, {
                 includeSeconds: true,

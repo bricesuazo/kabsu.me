@@ -242,8 +242,8 @@ export default function UserPageClient({
                       key={message.id}
                       className="space-y-2 rounded-lg border p-4"
                     >
-                      <p>{message.content}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="break-words">{message.content}</p>
+                      <p className="break-words text-xs text-muted-foreground">
                         {message.code_name ? (
                           <span>{message.code_name} • </span>
                         ) : null}
@@ -258,8 +258,8 @@ export default function UserPageClient({
                           key={answer.id}
                           className="rounded-lg bg-muted p-4"
                         >
-                          <p>{answer.content}</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="break-words">{answer.content}</p>
+                          <p className="break-words text-xs text-muted-foreground">
                             You •{" "}
                             {formatDistanceToNow(answer.created_at, {
                               includeSeconds: true,
