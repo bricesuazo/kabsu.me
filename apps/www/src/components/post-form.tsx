@@ -17,23 +17,13 @@ import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 import { POST_TYPE_TABS } from "@kabsu.me/constants";
-
-import type { Database } from "../../../../supabase/types";
-import { Button } from "~/components/ui/button";
+import { Button } from "@kabsu.me/ui/button";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "~/components/ui/form";
-import { useMediaQuery } from "~/hooks/use-media-query";
-import defaultMentionStyle from "~/lib/MentionDefaultStyle";
-import { api } from "~/lib/trpc/client";
-import { createClient } from "~/supabase/client";
-import { FileUploader } from "./file-uploader";
-import { Icons } from "./icons";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@kabsu.me/ui/dialog";
 import {
   Drawer,
   DrawerClose,
@@ -41,8 +31,15 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from "./ui/drawer";
-import { ScrollArea, ScrollBar } from "./ui/scroll-area";
+} from "@kabsu.me/ui/drawer";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@kabsu.me/ui/form";
+import { ScrollArea, ScrollBar } from "@kabsu.me/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -51,9 +48,17 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { Skeleton } from "./ui/skeleton";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+} from "@kabsu.me/ui/select";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
+
+import type { Database } from "../../../../supabase/types";
+import { useMediaQuery } from "~/hooks/use-media-query";
+import defaultMentionStyle from "~/lib/MentionDefaultStyle";
+import { api } from "~/lib/trpc/client";
+import { createClient } from "~/supabase/client";
+import { FileUploader } from "./file-uploader";
+import { Icons } from "./icons";
 import VerifiedBadge from "./verified-badge";
 
 const typeSchema = z

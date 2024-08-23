@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 
+import { Button } from "@kabsu.me/ui/button";
+
 import { env } from "~/env";
 import { createClient } from "~/supabase/client";
 import { Icons } from "./icons";
-import { Button } from "./ui/button";
 
 export default function SigninButton() {
   const [loading, setLoading] = useState(false);

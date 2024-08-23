@@ -1,11 +1,11 @@
 import { EllipsisVertical, Send } from "lucide-react";
 
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { ScrollArea } from "~/components/ui/scroll-area";
-import { Separator } from "~/components/ui/separator";
-import { Skeleton } from "~/components/ui/skeleton";
-import { cn } from "~/lib/utils";
+import { cn } from "@kabsu.me/ui";
+import { Button } from "@kabsu.me/ui/button";
+import { Input } from "@kabsu.me/ui/input";
+import { ScrollArea } from "@kabsu.me/ui/scroll-area";
+import { Separator } from "@kabsu.me/ui/separator";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
 
 export default function ChatSkeleton() {
   return (

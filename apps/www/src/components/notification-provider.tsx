@@ -180,6 +180,23 @@ export default function NotificationProvider() {
             },
           });
         })
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        .on("broadcast", { event: "ngl" }, async ({ payload }) => {
+          const data = z
+            .object({ ngl_question_id: z.string().uuid() })
+            .parse(payload);
+
+          await utils.ngl.getAllMyMessages.invalidate();
+
+          toast("You have a new anonymous message!", {
+            description: "Click to view the message",
+            action: {
+              label: "View",
+              onClick: () =>
+                router.push(`/ngl?question_id=${data.ngl_question_id}`),
+            },
+          });
+        })
         .subscribe();
     }
 

@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 
-import { Separator } from "~/components/ui/separator";
+import { Separator } from "@kabsu.me/ui/separator";
 
 export default function DonatePage() {
   return (

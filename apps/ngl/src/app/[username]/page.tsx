@@ -1,10 +1,16 @@
-import { api } from "~/lib/trpc/server";
+import { notFound } from "next/navigation";
 
-export default async function UserPaqe({
+import { api } from "~/lib/trpc/server";
+import UserPageClient from "./_components/client";
+
+export default async function UserPage({
   params: { username },
 }: {
   params: { username: string };
 }) {
-  const getUser = await api.ngl.getUser({ username });
-  return <div>{JSON.stringify(getUser)}</div>;
+  const user = await api.ngl.getUser({ username });
+
+  if (!user?.is_ngl_displayed) notFound();
+
+  return <UserPageClient user={user} />;
 }

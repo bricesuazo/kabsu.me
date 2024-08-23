@@ -28,7 +28,7 @@ const config = {
       },
     ],
   },
-  transpilePackages: ["@kabsu.me/api"],
+  transpilePackages: ["@kabsu.me/api", "@kabsu.me/ui"],
 };
 
 export default config;

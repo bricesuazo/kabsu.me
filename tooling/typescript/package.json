@@ -1,6 +1,6 @@
 {
   "name": "@kabsu.me/tsconfig",
   "files": [
-    "base.json"
+    "*.json"
   ]
 }

@@ -5,10 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { Database } from "../../../../supabase/types";
-import { api } from "~/lib/trpc/client";
-import { Icons } from "./icons";
-import { Button } from "./ui/button";
+import { Button } from "@kabsu.me/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +13,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "./ui/dialog";
+} from "@kabsu.me/ui/dialog";
 import {
   Form,
   FormControl,
@@ -25,8 +22,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Textarea } from "./ui/textarea";
+} from "@kabsu.me/ui/form";
+import { Textarea } from "@kabsu.me/ui/textarea";
+
+import type { Database } from "../../../../supabase/types";
+import { api } from "~/lib/trpc/client";
+import { Icons } from "./icons";
 
 const Schema = z.object({
   post_id: z.string().min(1),

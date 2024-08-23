@@ -1,5 +1,6 @@
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+
 import { PostSkeletonNoRandom } from "~/components/post-skeleton";
-import { Skeleton } from "~/components/ui/skeleton";
 
 export default function UserLoading() {
   return (

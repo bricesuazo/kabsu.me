@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
@@ -19,6 +20,41 @@ export const authRouter = router({
 
     return user.username;
   }),
+  isMyNGLDisplayed: protectedProcedure.query(async ({ ctx }) => {
+    const { data: user } = await ctx.supabase
+      .from("users")
+      .select("is_ngl_displayed")
+      .eq("id", ctx.auth.user.id)
+      .single();
+
+    if (!user)
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "User not found",
+      });
+
+    return user.is_ngl_displayed;
+  }),
+  toggleIsMyNGLDisplayed: protectedProcedure
+    .input(
+      z.object({
+        is_ngl_displayed: z.boolean(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { error } = await ctx.supabase
+        .from("users")
+        .update({ is_ngl_displayed: input.is_ngl_displayed })
+        .eq("id", ctx.auth.user.id);
+
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+
+      return input.is_ngl_displayed;
+    }),
   getCurrentUser: protectedProcedure.query(async ({ ctx }) => {
     const { data: user } = await ctx.supabase
       .from("users")

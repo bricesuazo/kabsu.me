@@ -17,14 +17,9 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import type { Database } from "../../../../supabase/types";
-import { Button } from "~/components/ui/button";
-import { api } from "~/lib/trpc/client";
-import { cn } from "~/lib/utils";
-import { createClient } from "~/supabase/client";
-import { Icons } from "./icons";
-import { ToggleTheme } from "./toggle-theme";
-import { Card, CardFooter, CardHeader } from "./ui/card";
+import { cn } from "@kabsu.me/ui";
+import { Button } from "@kabsu.me/ui/button";
+import { Card, CardFooter, CardHeader } from "@kabsu.me/ui/card";
 import {
   Command,
   CommandEmpty,
@@ -32,7 +27,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "./ui/command";
+} from "@kabsu.me/ui/command";
 import {
   Form,
   FormControl,
@@ -41,11 +36,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { ScrollArea } from "./ui/scroll-area";
+} from "@kabsu.me/ui/form";
+import { Input } from "@kabsu.me/ui/input";
+import { Label } from "@kabsu.me/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@kabsu.me/ui/popover";
+import { ScrollArea } from "@kabsu.me/ui/scroll-area";
+
+import type { Database } from "../../../../supabase/types";
+import { api } from "~/lib/trpc/client";
+import { createClient } from "~/supabase/client";
+import { Icons } from "./icons";
+import { ToggleTheme } from "./toggle-theme";
 
 const formSchema = z.object({
   page: z.number(),

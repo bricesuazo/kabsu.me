@@ -325,7 +325,6 @@ export const usersRouter = router({
         followersLength: followers?.length ?? 0,
         followeesLength: followees?.length ?? 0,
         user_id: ctx.auth.user.id,
-
         user: {
           is_deactivated: !!user_from_db.deactivated_at,
           is_banned: !!user_from_db.banned_at,

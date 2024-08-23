@@ -2,9 +2,12 @@ import "./globals.css";
 
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import { ThemeProvider } from "next-themes";
+
+import { cn } from "@kabsu.me/ui";
+import { Toaster } from "@kabsu.me/ui/sonner";
 
 import { TRPCReactProvider } from "~/lib/trpc/client";
-import { cn } from "~/lib/utils";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -18,9 +21,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: React.PropsWithChildren) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={cn(font.className)}>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>
+          <ThemeProvider attribute="class" defaultTheme="light">
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </TRPCReactProvider>
       </body>
     </html>
   );

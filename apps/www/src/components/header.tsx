@@ -15,12 +15,13 @@ import {
   SquareMousePointer,
   Sun,
   UserCircle,
+  VenetianMask,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { HEADER_HEIGHT, NAVBAR_LINKS } from "@kabsu.me/constants";
-
-import { Button } from "~/components/ui/button";
+import { cn } from "@kabsu.me/ui";
+import { Button } from "@kabsu.me/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,17 +32,10 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import { Label } from "~/components/ui/label";
-import { api } from "~/lib/trpc/client";
-import { cn } from "~/lib/utils";
-import { createClient } from "~/supabase/client";
-import FeedbackForm from "./feedback-form";
-import { Icons } from "./icons";
-import Notifications from "./notifications";
-import Search from "./search";
-import { ScrollArea } from "./ui/scroll-area";
-import { Separator } from "./ui/separator";
+} from "@kabsu.me/ui/dropdown-menu";
+import { Label } from "@kabsu.me/ui/label";
+import { ScrollArea } from "@kabsu.me/ui/scroll-area";
+import { Separator } from "@kabsu.me/ui/separator";
 import {
   Sheet,
   SheetClose,
@@ -50,9 +44,16 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "./ui/sheet";
-import { Skeleton } from "./ui/skeleton";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+} from "@kabsu.me/ui/sheet";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
+
+import { api } from "~/lib/trpc/client";
+import { createClient } from "~/supabase/client";
+import FeedbackForm from "./feedback-form";
+import { Icons } from "./icons";
+import Notifications from "./notifications";
+import Search from "./search";
 
 export default function Header() {
   const pathname = usePathname();
@@ -99,6 +100,11 @@ export default function Header() {
                 <ScrollArea className="flex-grow">
                   {NAVBAR_LINKS.map((link, index) => (
                     <Fragment key={link.url}>
+                      {index === NAVBAR_LINKS.length - 9 && (
+                        <Label htmlFor="name" className="mb-4 text-right">
+                          Quick Links
+                        </Label>
+                      )}
                       {index === NAVBAR_LINKS.length - 6 && (
                         <Label htmlFor="name" className="mb-4 text-right">
                           Partnership
@@ -134,7 +140,26 @@ export default function Header() {
 
           <Search />
 
-          <div className="size-9" />
+          <div className="size-9">
+            {getCurrentUserQuery.data?.is_ngl_displayed && (
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-9 w-9 rounded-full"
+                    asChild
+                  >
+                    <Link href="/ngl" className="flex w-full items-center">
+                      <VenetianMask size="1rem" />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+
+                <TooltipContent>NGL</TooltipContent>
+              </Tooltip>
+            )}
+          </div>
         </div>
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
@@ -217,6 +242,26 @@ export default function Header() {
                         : "My Profile"}
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem
+                    asChild
+                    className="line-clamp-1 w-full cursor-pointer truncate"
+                  >
+                    <Link href="/chat" className="flex w-full items-center">
+                      <MessageCircle className="mr-2" size="1rem" />
+                      Messages
+                    </Link>
+                  </DropdownMenuItem>
+                  {getCurrentUserQuery.data.is_ngl_displayed && (
+                    <DropdownMenuItem
+                      asChild
+                      className="line-clamp-1 w-full cursor-pointer truncate"
+                    >
+                      <Link href="/ngl" className="flex w-full items-center">
+                        <VenetianMask className="mr-2" size="1rem" />
+                        NGL
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem
                     asChild
                     className="line-clamp-1 w-full cursor-pointer truncate"

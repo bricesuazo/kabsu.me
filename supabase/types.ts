@@ -400,12 +400,80 @@ export type Database = {
           },
         ]
       }
+      ngl_answers: {
+        Row: {
+          content: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          question_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          question_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          question_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ngl_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "ngl_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ngl_questions: {
+        Row: {
+          code_name: string | null
+          content: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          code_name?: string | null
+          content: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          code_name?: string | null
+          content?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ngl_questions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           content_id: string | null
           created_at: string
           from_id: string
           id: string
+          ngl_question_id: string | null
           read: boolean
           to_id: string
           trash: boolean
@@ -416,6 +484,7 @@ export type Database = {
           created_at?: string
           from_id: string
           id?: string
+          ngl_question_id?: string | null
           read?: boolean
           to_id: string
           trash?: boolean
@@ -426,12 +495,20 @@ export type Database = {
           created_at?: string
           from_id?: string
           id?: string
+          ngl_question_id?: string | null
           read?: boolean
           to_id?: string
           trash?: boolean
           type?: Database["public"]["Enums"]["notification_type"]
         }
         Relationships: [
+          {
+            foreignKeyName: "notifications_ngl_question_id_fkey"
+            columns: ["ngl_question_id"]
+            isOneToOne: false
+            referencedRelation: "ngl_questions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "public_notifications_from_id_fkey"
             columns: ["from_id"]
@@ -817,6 +894,7 @@ export type Database = {
           email: string
           id: string
           image_name: string | null
+          is_ngl_displayed: boolean
           link: string | null
           name: string
           program_changed_at: string | null
@@ -833,6 +911,7 @@ export type Database = {
           email: string
           id?: string
           image_name?: string | null
+          is_ngl_displayed?: boolean
           link?: string | null
           name: string
           program_changed_at?: string | null
@@ -849,6 +928,7 @@ export type Database = {
           email?: string
           id?: string
           image_name?: string | null
+          is_ngl_displayed?: boolean
           link?: string | null
           name?: string
           program_changed_at?: string | null
@@ -909,6 +989,7 @@ export type Database = {
         | "strike_account"
         | "strike_post"
         | "reply"
+        | "ngl"
       post_type: "following" | "program" | "college" | "campus" | "all"
       user_type: "student" | "faculty" | "alumni"
     }

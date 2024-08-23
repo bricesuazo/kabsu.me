@@ -6,6 +6,8 @@ import { MessageCircle } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 
 import type { POST_TYPE_TABS } from "@kabsu.me/constants";
+import { Button } from "@kabsu.me/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 
 import { api } from "~/lib/trpc/client";
 import Header from "./header";
@@ -13,8 +15,6 @@ import { Icons } from "./icons";
 import Post from "./post";
 import PostForm from "./post-form";
 import PostTypeTab from "./post-type-tab";
-import { Button } from "./ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export default function HomeProtected({
   tab,

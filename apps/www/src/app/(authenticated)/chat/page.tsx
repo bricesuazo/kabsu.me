@@ -7,22 +7,15 @@ import { formatDistanceToNow } from "date-fns";
 import debounce from "lodash.debounce";
 import { Book, Globe2, School, School2 } from "lucide-react";
 
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
-import { ScrollArea } from "~/components/ui/scroll-area";
-import { Separator } from "~/components/ui/separator";
-import { Skeleton } from "~/components/ui/skeleton";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
+import { Button } from "@kabsu.me/ui/button";
+import { Input } from "@kabsu.me/ui/input";
+import { Label } from "@kabsu.me/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@kabsu.me/ui/popover";
+import { ScrollArea } from "@kabsu.me/ui/scroll-area";
+import { Separator } from "@kabsu.me/ui/separator";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
+
 import VerifiedBadge from "~/components/verified-badge";
 import { api } from "~/lib/trpc/client";
 

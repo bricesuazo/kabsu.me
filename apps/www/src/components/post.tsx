@@ -16,16 +16,17 @@ import {
 import { v4 as uuid } from "uuid";
 
 import type { RouterOutputs } from "@kabsu.me/api";
+import { cn } from "@kabsu.me/ui";
+import { Badge } from "@kabsu.me/ui/badge";
+import { Toggle } from "@kabsu.me/ui/toggle";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 
 import { api } from "~/lib/trpc/client";
-import { cn, FormattedContent, FormattedContentTextOnly } from "~/lib/utils";
+import { FormattedContent, FormattedContentTextOnly } from "~/lib/utils";
 import { ImagesViewer } from "./images-viewer";
 import PostDropdown from "./post-dropdown";
 import PostShare from "./post-share";
 import { PostSkeletonNoRandom } from "./post-skeleton";
-import { Badge } from "./ui/badge";
-import { Toggle } from "./ui/toggle";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import VerifiedBadge from "./verified-badge";
 
 export default function Post({

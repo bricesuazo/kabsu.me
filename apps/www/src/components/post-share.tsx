@@ -14,12 +14,13 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
-import { cn } from "~/lib/utils";
+import { cn } from "@kabsu.me/ui";
+import { Button } from "@kabsu.me/ui/button";
+import { Label } from "@kabsu.me/ui/label";
+import { Tabs, TabsList, TabsTrigger } from "@kabsu.me/ui/tabs";
+
 import { PostShareSchema } from "~/schema";
 import { DialogAndDrawer } from "./dialog-and-drawer";
-import { Button } from "./ui/button";
-import { Label } from "./ui/label";
-import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 
 export default function PostShare({
   data,

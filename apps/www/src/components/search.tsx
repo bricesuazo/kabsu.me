@@ -6,13 +6,14 @@ import Link from "next/link";
 import debounce from "lodash.debounce";
 import { Search as SearchIcon } from "lucide-react";
 
+import { Button } from "@kabsu.me/ui/button";
+import { Input } from "@kabsu.me/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@kabsu.me/ui/popover";
+import { ScrollArea } from "@kabsu.me/ui/scroll-area";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
+
 import { api } from "~/lib/trpc/client";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { ScrollArea } from "./ui/scroll-area";
-import { Skeleton } from "./ui/skeleton";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import VerifiedBadge from "./verified-badge";
 
 export default function Search() {

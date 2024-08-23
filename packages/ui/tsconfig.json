@@ -1,0 +1,11 @@
+{
+  "extends": "@kabsu.me/tsconfig/internal-package.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "dom", "dom.iterable"],
+    "jsx": "preserve",
+    "rootDir": "."
+  },
+  "moduleResolution": "node",
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

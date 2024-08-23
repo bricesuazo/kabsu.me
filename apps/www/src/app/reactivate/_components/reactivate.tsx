@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "~/components/ui/button";
+import { Button } from "@kabsu.me/ui/button";
+
 import { api } from "~/lib/trpc/client";
 import { createClient } from "~/supabase/client";
 

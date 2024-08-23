@@ -12,16 +12,10 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
-
-import { useMediaQuery } from "~/hooks/use-media-query";
-import { api } from "~/lib/trpc/client";
-import { cn } from "~/lib/utils";
-import { createClient } from "~/supabase/client";
-import { FileUploader } from "./file-uploader";
-import { Icons } from "./icons";
-import { AlertDialogHeader } from "./ui/alert-dialog";
-import { Button } from "./ui/button";
-import CustomProgress from "./ui/custom-progress";
+import { cn } from "@kabsu.me/ui";
+import { AlertDialogHeader } from "@kabsu.me/ui/alert-dialog";
+import { Button } from "@kabsu.me/ui/button";
+import CustomProgress from "@kabsu.me/ui/custom-progress";
 import {
   Dialog,
   DialogClose,
@@ -30,7 +24,7 @@ import {
   DialogFooter,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
+} from "@kabsu.me/ui/dialog";
 import {
   Drawer,
   DrawerClose,
@@ -40,7 +34,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "./ui/drawer";
+} from "@kabsu.me/ui/drawer";
 import {
   Form,
   FormControl,
@@ -48,10 +42,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Input } from "./ui/input";
-import { ScrollArea } from "./ui/scroll-area";
-import { Textarea } from "./ui/textarea";
+} from "@kabsu.me/ui/form";
+import { Input } from "@kabsu.me/ui/input";
+import { ScrollArea } from "@kabsu.me/ui/scroll-area";
+import { Textarea } from "@kabsu.me/ui/textarea";
+
+import { useMediaQuery } from "~/hooks/use-media-query";
+import { api } from "~/lib/trpc/client";
+import { createClient } from "~/supabase/client";
+import { FileUploader } from "./file-uploader";
+import { Icons } from "./icons";
 
 const formSchema = z.object({
   bio: z

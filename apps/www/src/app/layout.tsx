@@ -5,12 +5,13 @@ import { Poppins } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
+import { cn } from "@kabsu.me/ui";
+import { Toaster } from "@kabsu.me/ui/sonner";
+import { TooltipProvider } from "@kabsu.me/ui/tooltip";
+
 import NotificationProvider from "~/components/notification-provider";
 import { ThemeProvider } from "~/components/theme-provider";
-import { Toaster } from "~/components/ui/sonner";
-import { TooltipProvider } from "~/components/ui/tooltip";
 import { TRPCReactProvider } from "~/lib/trpc/client";
-import { cn } from "~/lib/utils";
 
 const font = Poppins({
   subsets: ["latin"],

@@ -9,10 +9,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
-
-import type { Database } from "../../../../../../../supabase/types";
-import { Button } from "~/components/ui/button";
-import { Card, CardHeader } from "~/components/ui/card";
+import { cn } from "@kabsu.me/ui";
+import { Button } from "@kabsu.me/ui/button";
+import { Card, CardHeader } from "@kabsu.me/ui/card";
 import {
   Command,
   CommandEmpty,
@@ -20,7 +19,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "~/components/ui/command";
+} from "@kabsu.me/ui/command";
 import {
   Form,
   FormControl,
@@ -29,16 +28,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/components/ui/form";
-import { Label } from "~/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
-import { ScrollArea } from "~/components/ui/scroll-area";
+} from "@kabsu.me/ui/form";
+import { Label } from "@kabsu.me/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@kabsu.me/ui/popover";
+import { ScrollArea } from "@kabsu.me/ui/scroll-area";
+
+import type { Database } from "../../../../../../../supabase/types";
 import { api } from "~/lib/trpc/client";
-import { cn } from "~/lib/utils";
 
 const formSchema = z.object({
   type: z.custom<Database["public"]["Enums"]["user_type"]>(),
@@ -499,6 +495,7 @@ export default function TypePrograms({
           </div>
           <Button
             type="submit"
+            size="sm"
             disabled={
               !form.formState.isValid ||
               form.formState.isSubmitting ||

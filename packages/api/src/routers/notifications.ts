@@ -10,7 +10,7 @@ export const notificationsRouter = router({
       const { data: notifications } = await ctx.supabase
         .from("notifications")
         .select(
-          "id, read, type, content_id, created_at, from_id, from:users!public_notifications_from_id_fkey(username, image_name), to:users!public_notifications_to_id_fkey(username, image_name)",
+          "id, read, type, content_id, ngl_question_id, created_at, from_id, from:users!public_notifications_from_id_fkey(username, image_name), to:users!public_notifications_to_id_fkey(username, image_name)",
         )
         .eq("to_id", ctx.auth.user.id)
         .eq("trash", false)
@@ -24,7 +24,10 @@ export const notificationsRouter = router({
         });
 
       const posts_to_fetch = notifications
-        .filter((notification) => notification.type !== "follow")
+        .filter(
+          (notification) =>
+            !(notification.type === "follow" || notification.type === "ngl"),
+        )
         .map((notification) => notification.content_id);
 
       const { data: posts } = await ctx.supabase

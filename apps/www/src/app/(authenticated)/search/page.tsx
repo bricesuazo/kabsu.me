@@ -5,8 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import debounce from "lodash.debounce";
 
-import { Input } from "~/components/ui/input";
-import { Skeleton } from "~/components/ui/skeleton";
+import { Input } from "@kabsu.me/ui/input";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+
 import VerifiedBadge from "~/components/verified-badge";
 import { api } from "~/lib/trpc/client";
 

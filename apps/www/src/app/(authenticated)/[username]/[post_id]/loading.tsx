@@ -1,5 +1,5 @@
-import { Separator } from "~/components/ui/separator";
-import { Skeleton } from "~/components/ui/skeleton";
+import { Separator } from "@kabsu.me/ui/separator";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
 
 export default function PostLoading() {
   return (

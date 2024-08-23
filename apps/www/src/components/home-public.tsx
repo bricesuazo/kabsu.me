@@ -4,22 +4,22 @@ import Link from "next/link";
 import { AlertCircle, Github } from "lucide-react";
 
 import { DEVS_INFO, NEW_FEATURES } from "@kabsu.me/constants";
+import { Alert, AlertDescription, AlertTitle } from "@kabsu.me/ui/alert";
+import { Button } from "@kabsu.me/ui/button";
+import { BentoCard, BentoGrid } from "@kabsu.me/ui/magicui/bento-grid";
+import Marquee from "@kabsu.me/ui/magicui/marquee";
+import NumberTicker from "@kabsu.me/ui/magicui/number-ticker";
+import Ripple from "@kabsu.me/ui/magicui/ripple";
+import ShineBorder from "@kabsu.me/ui/magicui/shine-border";
+import { Separator } from "@kabsu.me/ui/separator";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 
-import { BentoCard, BentoGrid } from "~/components/magicui/bento-grid";
-import Marquee from "~/components/magicui/marquee";
-import Ripple from "~/components/magicui/ripple";
-import ShineBorder from "~/components/magicui/shine-border";
 import { api } from "~/lib/trpc/server";
 import ContactForm from "./contact-form";
 import Footer from "./footer";
-import NumberTicker from "./magicui/number-ticker";
 import SigninButton from "./signin-button";
 import { ToggleTheme } from "./toggle-theme";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
-import { Skeleton } from "./ui/skeleton";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 const THESIS_INFO = [
   {

@@ -14,10 +14,14 @@ export const env = createEnv({
       .default("development"),
     STAGING_TEST_EMAILS: z.string().optional(),
     NEXT_PUBLIC_SUPERADMIN_EMAIL: z.string().email(),
+    NEXT_PUBLIC_WWW_URL: z.string().url(),
+    NEXT_PUBLIC_NGL_URL: z.string().url(),
   },
   server: {
     SUPABASE_SERVICE_ROLE_KEY: z.string(),
     DISCORD_WEBHOOK_URL: z.string().url(),
+    UPSTASH_REDIS_REST_URL: z.string().url(),
+    UPSTASH_REDIS_REST_TOKEN: z.string(),
   },
   client: {
     NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
@@ -30,6 +34,8 @@ export const env = createEnv({
     ENV: process.env.ENV,
     STAGING_TEST_EMAILS: process.env.STAGING_TEST_EMAILS,
     NEXT_PUBLIC_SUPERADMIN_EMAIL: process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL,
+    NEXT_PUBLIC_WWW_URL: process.env.NEXT_PUBLIC_WWW_URL,
+    NEXT_PUBLIC_NGL_URL: process.env.NEXT_PUBLIC_NGL_URL,
   },
   skipValidation:
     !!process.env.CI ||

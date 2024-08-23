@@ -4,8 +4,8 @@ import { format } from "date-fns";
 import { Check, X } from "lucide-react";
 
 import type { RouterOutputs } from "@kabsu.me/api";
+import { Card, CardContent, CardHeader } from "@kabsu.me/ui/card";
 
-import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { api } from "~/lib/trpc/client";
 
 export default function Strikes({
