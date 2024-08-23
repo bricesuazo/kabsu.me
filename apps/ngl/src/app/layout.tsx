@@ -4,9 +4,10 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 
-import { Toaster } from "~/components/ui/sonner";
+import { cn } from "@kabsu.me/ui";
+import { Toaster } from "@kabsu.me/ui/sonner";
+
 import { TRPCReactProvider } from "~/lib/trpc/client";
-import { cn } from "~/lib/utils";
 
 const font = Poppins({
   subsets: ["latin"],

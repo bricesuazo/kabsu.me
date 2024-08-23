@@ -8,10 +8,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { REPORT_POST_REASONS } from "@kabsu.me/constants";
-
-import { env } from "~/env";
-import { api } from "~/lib/trpc/client";
-import { Icons } from "./icons";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -20,8 +16,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "./ui/alert-dialog";
-import { Button } from "./ui/button";
+} from "@kabsu.me/ui/alert-dialog";
+import { Button } from "@kabsu.me/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,7 +25,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "@kabsu.me/ui/dropdown-menu";
 import {
   Form,
   FormControl,
@@ -38,16 +34,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Input } from "./ui/input";
+} from "@kabsu.me/ui/form";
+import { Input } from "@kabsu.me/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { toast } from "./ui/use-toast";
+} from "@kabsu.me/ui/select";
+import { toast } from "@kabsu.me/ui/use-toast";
+
+import { env } from "~/env";
+import { api } from "~/lib/trpc/client";
+import { Icons } from "./icons";
 
 export default function PostDropdown({
   post_id,

@@ -1,17 +1,22 @@
 {
   "name": "kabsu.me",
   "type": "module",
+  "private": true,
   "packageManager": "pnpm@9.7.1",
   "scripts": {
-    "build": "turbo run build --parallel --no-daemon",
-    "dev": "pnpm with-env turbo run dev --no-daemon",
-    "dev:ngl": "pnpm with-env turbo run dev --no-daemon --filter=ngl",
-    "start": "pnpm with-env turbo run start --no-daemon",
-    "lint": "turbo run lint",
-    "clean": "git clean -xdf node_modules dist .next",
-    "clean:workspaces": "turbo clean",
-    "postinstall": "manypkg check",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "build": "turbo run build",
+    "dev": "turbo watch dev",
+    "dev:www": "turbo watch dev --filter=www",
+    "dev:ngl": "turbo watch dev --filter=ngl",
+    "start": "pnpm turbo run start",
+    "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",
+    "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
+    "lint:ws": "pnpm dlx sherif@latest",
+    "clean": "git clean -xdf node_modules",
+    "clean:workspaces": "turbo run clean",
+    "postinstall": "pnpm lint:ws",
+    "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
+    "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
     "db:cli": "pnpm db:dump && pnpm db:gen && pnpm db:diff",
     "db:push": "supabase db push --include-all",
     "db:diff": "supabase db diff --local -f",
@@ -19,19 +24,20 @@
     "db:reset": "supabase db reset --local",
     "db:dump": "supabase db dump -f supabase/schema.sql --local",
     "migration:up": "supabase migration up",
-    "email:dev": "pnpm with-env turbo --filter=@kabsu.me/email email:dev --no-daemon",
-    "with-env": "dotenv -e .env --"
+    "email:dev": "pnpm turbo --filter=@kabsu.me/email email:dev",
+    "typecheck": "turbo run typecheck",
+    "ui-add": "turbo run ui-add"
   },
-  "dependencies": {
+  "devDependencies": {
     "@kabsu.me/eslint-config": "workspace:*",
     "@kabsu.me/prettier-config": "workspace:*",
     "@kabsu.me/tsconfig": "workspace:*",
-    "@manypkg/cli": "^0.21.4",
     "@turbo/gen": "^2.0.14",
     "dotenv-cli": "^7.4.2",
     "eslint": "^9.9.0",
     "prettier": "^3.3.3",
-    "turbo": "^2.0.14"
+    "turbo": "^2.0.14",
+    "typescript": "^5.5.4"
   },
   "prettier": "@kabsu.me/prettier-config"
 }

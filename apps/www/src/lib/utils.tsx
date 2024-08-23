@@ -1,14 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { ClassValue } from "clsx";
 import { Fragment } from "react";
 import Link from "next/link";
-import { clsx } from "clsx";
 import reactStringReplace from "react-string-replace";
-import { twMerge } from "tailwind-merge";
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
 
 export function getOrdinal(number: number) {
   const absNumber = Math.abs(number);

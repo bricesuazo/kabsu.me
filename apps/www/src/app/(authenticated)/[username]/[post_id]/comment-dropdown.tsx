@@ -8,35 +8,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { REPORT_POST_REASONS } from "@kabsu.me/constants";
-
-import { Button } from "~/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
-import { api } from "~/lib/trpc/client";
-import { Icons } from "../../../../components/icons";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -45,8 +16,37 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "../../../../components/ui/alert-dialog";
-import { toast } from "../../../../components/ui/use-toast";
+} from "@kabsu.me/ui/alert-dialog";
+import { Button } from "@kabsu.me/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@kabsu.me/ui/dropdown-menu";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@kabsu.me/ui/form";
+import { Input } from "@kabsu.me/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@kabsu.me/ui/select";
+import { toast } from "@kabsu.me/ui/use-toast";
+
+import { Icons } from "~/components/icons";
+import { api } from "~/lib/trpc/client";
 
 export default function CommentDropdown({
   comment_id,

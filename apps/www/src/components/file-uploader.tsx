@@ -6,8 +6,10 @@ import { UploadIcon } from "lucide-react";
 import Dropzone from "react-dropzone";
 import { toast } from "sonner";
 
+import { cn } from "@kabsu.me/ui";
+
 import { useControllableState } from "~/hooks/use-controllable-state";
-import { cn, formatBytes } from "~/lib/utils";
+import { formatBytes } from "~/lib/utils";
 
 interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
   /**

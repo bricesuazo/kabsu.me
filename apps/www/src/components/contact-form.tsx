@@ -7,8 +7,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardFooter } from "~/components/ui/card";
+import { Button } from "@kabsu.me/ui/button";
+import { Card, CardContent, CardFooter } from "@kabsu.me/ui/card";
 import {
   Form,
   FormControl,
@@ -17,9 +17,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
-import { Textarea } from "~/components/ui/textarea";
+} from "@kabsu.me/ui/form";
+import { Input } from "@kabsu.me/ui/input";
+import { Textarea } from "@kabsu.me/ui/textarea";
+
 import { api } from "~/lib/trpc/client";
 
 const ContactSchema = z.object({

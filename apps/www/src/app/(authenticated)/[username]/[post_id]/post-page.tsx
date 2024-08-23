@@ -18,40 +18,36 @@ import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
-
-import { Icons } from "~/components/icons";
-import { ImagesViewer } from "~/components/images-viewer";
-import PostDropdown from "~/components/post-dropdown";
-import PostShare from "~/components/post-share";
-import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
+import { cn } from "@kabsu.me/ui";
+import { Badge } from "@kabsu.me/ui/badge";
+import { Button } from "@kabsu.me/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog";
+} from "@kabsu.me/ui/dialog";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "~/components/ui/form";
-import { ScrollArea } from "~/components/ui/scroll-area";
-import { Separator } from "~/components/ui/separator";
-import { Skeleton } from "~/components/ui/skeleton";
-import { Toggle } from "~/components/ui/toggle";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
+} from "@kabsu.me/ui/form";
+import { ScrollArea } from "@kabsu.me/ui/scroll-area";
+import { Separator } from "@kabsu.me/ui/separator";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+import { Toggle } from "@kabsu.me/ui/toggle";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
+
+import { Icons } from "~/components/icons";
+import { ImagesViewer } from "~/components/images-viewer";
+import PostDropdown from "~/components/post-dropdown";
+import PostShare from "~/components/post-share";
 import VerifiedBadge from "~/components/verified-badge";
 import { api } from "~/lib/trpc/client";
 import {
-  cn,
   FormattedContent,
   FormattedContentTextOnly,
   formatText,

@@ -1,4 +1,4 @@
-import { Separator } from "~/components/ui/separator";
+import { Separator } from "@kabsu.me/ui/separator";
 
 export default function InformationCenterPage() {
   return (

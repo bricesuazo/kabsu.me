@@ -16,11 +16,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
-
-import EditProfile from "~/components/edit-profile";
-import FollowButton from "~/components/follow-button";
-import { Icons } from "~/components/icons";
-import PostForm from "~/components/post-form";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -30,10 +25,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "~/components/ui/alert-dialog";
-import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
+} from "@kabsu.me/ui/alert-dialog";
+import { Badge } from "@kabsu.me/ui/badge";
+import { Button } from "@kabsu.me/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@kabsu.me/ui/dialog";
 import {
   Form,
   FormControl,
@@ -42,14 +37,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/components/ui/form";
-import { Textarea } from "~/components/ui/textarea";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
-import { toast } from "~/components/ui/use-toast";
+} from "@kabsu.me/ui/form";
+import { Textarea } from "@kabsu.me/ui/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
+import { toast } from "@kabsu.me/ui/use-toast";
+
+import EditProfile from "~/components/edit-profile";
+import FollowButton from "~/components/follow-button";
+import { Icons } from "~/components/icons";
+import PostForm from "~/components/post-form";
 import VerifiedBadge from "~/components/verified-badge";
 import { env } from "~/env";
 import { api } from "~/lib/trpc/client";

@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { POST_TYPE_TABS } from "@kabsu.me/constants";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@kabsu.me/ui/tabs";
 
-import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { api } from "~/lib/trpc/client";
-import { Skeleton } from "./ui/skeleton";
 
 export default function PostTypeTab() {
   const searchParams = useSearchParams();

@@ -20,7 +20,7 @@ import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
-
+import { cn } from "@kabsu.me/ui";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -30,22 +30,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "~/components/ui/alert-dialog";
-import { Button } from "~/components/ui/button";
+} from "@kabsu.me/ui/alert-dialog";
+import { Button } from "@kabsu.me/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
-import { Skeleton } from "~/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { Textarea } from "~/components/ui/textarea";
+} from "@kabsu.me/ui/form";
+import { Input } from "@kabsu.me/ui/input";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@kabsu.me/ui/tabs";
+import { Textarea } from "@kabsu.me/ui/textarea";
+
 import { env } from "~/env";
 import { api } from "~/lib/trpc/client";
-import { cn } from "~/lib/utils";
 
 const TabSchema = z.enum(["messages", "replied"]);
 

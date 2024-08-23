@@ -10,15 +10,15 @@ import { formatDistanceToNow } from "date-fns";
 import { Bell, BookOpenCheckIcon, VenetianMask } from "lucide-react";
 
 import type { AppRouter } from "@kabsu.me/api";
+import { Button } from "@kabsu.me/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@kabsu.me/ui/popover";
+import { ScrollArea } from "@kabsu.me/ui/scroll-area";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 
 import type { RouterOutputs } from "~/lib/trpc/client";
 import { api } from "~/lib/trpc/client";
 import { Icons } from "./icons";
-import { Button } from "./ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { ScrollArea } from "./ui/scroll-area";
-import { Skeleton } from "./ui/skeleton";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export default function Notifications() {
   const [open, setOpen] = useState(false);

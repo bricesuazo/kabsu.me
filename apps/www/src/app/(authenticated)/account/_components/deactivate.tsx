@@ -7,8 +7,7 @@ import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { DialogAndDrawer } from "~/components/dialog-and-drawer";
-import { Button } from "~/components/ui/button";
+import { Button } from "@kabsu.me/ui/button";
 import {
   Form,
   FormControl,
@@ -17,8 +16,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
+} from "@kabsu.me/ui/form";
+import { Input } from "@kabsu.me/ui/input";
+
+import { DialogAndDrawer } from "~/components/dialog-and-drawer";
 import { api } from "~/lib/trpc/client";
 import { createClient } from "~/supabase/client";
 

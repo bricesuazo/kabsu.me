@@ -2,14 +2,11 @@
 
 import { Bell, BookOpenCheckIcon } from "lucide-react";
 
+import { Button } from "@kabsu.me/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
+
 import { Icons } from "~/components/icons";
 import { NotificationItems } from "~/components/notifications";
-import { Button } from "~/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
 import { api } from "~/lib/trpc/client";
 
 export default function NotificationPage() {

@@ -14,29 +14,29 @@ import { v4 } from "uuid";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
-
-import type { Database } from "../../../../supabase/types";
-import { Icons } from "~/components/icons";
-import { Button } from "~/components/ui/button";
+import { cn } from "@kabsu.me/ui";
+import { Button } from "@kabsu.me/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
+} from "@kabsu.me/ui/dropdown-menu";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "~/components/ui/form";
-import { ScrollArea } from "~/components/ui/scroll-area";
-import { Separator } from "~/components/ui/separator";
+} from "@kabsu.me/ui/form";
+import { ScrollArea } from "@kabsu.me/ui/scroll-area";
+import { Separator } from "@kabsu.me/ui/separator";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
+
+import type { Database } from "../../../../supabase/types";
+import { Icons } from "~/components/icons";
 import { api } from "~/lib/trpc/client";
-import { cn } from "~/lib/utils";
 import { createClient } from "~/supabase/client";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export default function RoomPageClient(
   props: (

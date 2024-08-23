@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Button } from "~/components/ui/button";
+import { Button } from "@kabsu.me/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog";
+} from "@kabsu.me/ui/dialog";
 import {
   Drawer,
   DrawerClose,
@@ -20,7 +20,8 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "~/components/ui/drawer";
+} from "@kabsu.me/ui/drawer";
+
 import { useMediaQuery } from "~/hooks/use-media-query";
 
 export function DialogAndDrawer({

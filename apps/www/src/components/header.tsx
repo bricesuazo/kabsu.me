@@ -20,8 +20,8 @@ import {
 import { useTheme } from "next-themes";
 
 import { HEADER_HEIGHT, NAVBAR_LINKS } from "@kabsu.me/constants";
-
-import { Button } from "~/components/ui/button";
+import { cn } from "@kabsu.me/ui";
+import { Button } from "@kabsu.me/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,17 +32,10 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import { Label } from "~/components/ui/label";
-import { api } from "~/lib/trpc/client";
-import { cn } from "~/lib/utils";
-import { createClient } from "~/supabase/client";
-import FeedbackForm from "./feedback-form";
-import { Icons } from "./icons";
-import Notifications from "./notifications";
-import Search from "./search";
-import { ScrollArea } from "./ui/scroll-area";
-import { Separator } from "./ui/separator";
+} from "@kabsu.me/ui/dropdown-menu";
+import { Label } from "@kabsu.me/ui/label";
+import { ScrollArea } from "@kabsu.me/ui/scroll-area";
+import { Separator } from "@kabsu.me/ui/separator";
 import {
   Sheet,
   SheetClose,
@@ -51,9 +44,16 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "./ui/sheet";
-import { Skeleton } from "./ui/skeleton";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+} from "@kabsu.me/ui/sheet";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
+
+import { api } from "~/lib/trpc/client";
+import { createClient } from "~/supabase/client";
+import FeedbackForm from "./feedback-form";
+import { Icons } from "./icons";
+import Notifications from "./notifications";
+import Search from "./search";
 
 export default function Header() {
   const pathname = usePathname();

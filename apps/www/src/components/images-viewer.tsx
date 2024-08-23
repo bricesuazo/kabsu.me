@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
-import type { CarouselApi } from "~/components/ui/carousel";
+import type { CarouselApi } from "@kabsu.me/ui/carousel";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "~/components/ui/carousel";
+} from "@kabsu.me/ui/carousel";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "~/components/ui/dialog";
+} from "@kabsu.me/ui/dialog";
 
 export function ImagesViewer({
   open,

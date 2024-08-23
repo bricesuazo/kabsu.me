@@ -6,7 +6,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "~/components/ui/button";
+import { Button } from "@kabsu.me/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -14,9 +14,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "~/components/ui/dialog";
-import { api } from "~/lib/trpc/client";
-import { Icons } from "./icons";
+} from "@kabsu.me/ui/dialog";
 import {
   Form,
   FormControl,
@@ -25,13 +23,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Label } from "./ui/label";
-import { ScrollArea } from "./ui/scroll-area";
-import { Skeleton } from "./ui/skeleton";
-import { Textarea } from "./ui/textarea";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { toast } from "./ui/use-toast";
+} from "@kabsu.me/ui/form";
+import { Label } from "@kabsu.me/ui/label";
+import { ScrollArea } from "@kabsu.me/ui/scroll-area";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+import { Textarea } from "@kabsu.me/ui/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
+import { toast } from "@kabsu.me/ui/use-toast";
+
+import { api } from "~/lib/trpc/client";
+import { Icons } from "./icons";
 
 const formSchema = z.object({
   content: z.string().min(2, {

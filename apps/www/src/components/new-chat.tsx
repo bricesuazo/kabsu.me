@@ -11,13 +11,13 @@ import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
+import { Button } from "@kabsu.me/ui/button";
+import { Form, FormControl, FormField, FormItem } from "@kabsu.me/ui/form";
+import { ScrollArea } from "@kabsu.me/ui/scroll-area";
+import { Separator } from "@kabsu.me/ui/separator";
 
 import { api } from "~/lib/trpc/client";
 import { Icons } from "./icons";
-import { Button } from "./ui/button";
-import { Form, FormControl, FormField, FormItem } from "./ui/form";
-import { ScrollArea } from "./ui/scroll-area";
-import { Separator } from "./ui/separator";
 
 export default function NewChat({
   user,

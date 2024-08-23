@@ -5,8 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "~/components/ui/button";
-import { Checkbox } from "~/components/ui/checkbox";
+import { Button } from "@kabsu.me/ui/button";
+import { Checkbox } from "@kabsu.me/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -14,7 +14,8 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from "~/components/ui/form";
+} from "@kabsu.me/ui/form";
+
 import { env } from "~/env";
 import { api } from "~/lib/trpc/client";
 

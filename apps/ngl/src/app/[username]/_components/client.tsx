@@ -12,11 +12,9 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
-
-import ClientOnly from "~/components/client-only";
-import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
-import { Button } from "~/components/ui/button";
-import { Checkbox } from "~/components/ui/checkbox";
+import { Alert, AlertDescription, AlertTitle } from "@kabsu.me/ui/alert";
+import { Button } from "@kabsu.me/ui/button";
+import { Checkbox } from "@kabsu.me/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -24,10 +22,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
-import { Skeleton } from "~/components/ui/skeleton";
-import { Textarea } from "~/components/ui/textarea";
+} from "@kabsu.me/ui/form";
+import { Input } from "@kabsu.me/ui/input";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+import { Textarea } from "@kabsu.me/ui/textarea";
+
+import ClientOnly from "~/components/client-only";
 import { api } from "~/lib/trpc/client";
 import { createClient } from "~/supabase/client";
 
@@ -36,12 +36,12 @@ const FormSchema = z
     content: z
       .string()
       .min(1, "Message is required.")
-      .max(500, "Message is too long."),
+      .max(256, "Message is too long."),
     is_codename_enabled: z.boolean().default(false),
     code_name: z
       .string()
       .min(1, "Code name is required.")
-      .max(50, "Code name is too long.")
+      .max(64, "Code name is too long.")
       .optional(),
   })
   .refine(
