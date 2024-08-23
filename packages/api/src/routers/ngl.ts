@@ -98,8 +98,7 @@ export const nglRouter = router({
           "id, content, code_name, created_at, answers:ngl_answers(id, content, created_at)",
         )
         .eq("user_id", input.user_id)
-        .is("deleted_at", null)
-        .order("created_at", { ascending: false });
+        .is("deleted_at", null);
 
       if (error_messages)
         throw new TRPCError({
@@ -107,7 +106,13 @@ export const nglRouter = router({
           message: "Failed to get messages",
         });
 
-      return messages.filter((message) => message.answers.length !== 0);
+      return messages
+        .filter((message) => message.answers.length !== 0)
+        .sort((a, b) =>
+          (b.answers[0]?.created_at ?? "").localeCompare(
+            a.answers[0]?.created_at ?? "",
+          ),
+        );
     }),
   getAllMyMessages: protectedProcedure
     .input(z.object({ tab: z.enum(["messages", "replied"]) }))
@@ -127,11 +132,17 @@ export const nglRouter = router({
           message: "Failed to get messages",
         });
 
-      return messages.filter((message) =>
-        input.tab === "messages"
-          ? message.answers.length === 0
-          : message.answers.length !== 0,
-      );
+      return messages
+        .filter((message) =>
+          input.tab === "messages"
+            ? message.answers.length === 0
+            : message.answers.length !== 0,
+        )
+        .sort((a, b) =>
+          (b.answers[0]?.created_at ?? "").localeCompare(
+            a.answers[0]?.created_at ?? "",
+          ),
+        );
     }),
   answerMessage: protectedProcedure
     .input(

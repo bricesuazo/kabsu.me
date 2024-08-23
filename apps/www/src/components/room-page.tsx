@@ -215,7 +215,7 @@ export default function RoomPageClient(
                   props.type.slice(1) +
                   `${
                     getMyUniversityStatusQuery.data
-                      ? `(${
+                      ? ` (${
                           props.type === "campus"
                             ? getMyUniversityStatusQuery.data.programs?.colleges?.campuses?.slug.toUpperCase()
                             : props.type === "college"
