@@ -47,6 +47,7 @@ import {
 } from "@kabsu.me/ui/sheet";
 import { Skeleton } from "@kabsu.me/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
+import { toast } from "@kabsu.me/ui/use-toast";
 
 import { api } from "~/lib/trpc/client";
 import { createClient } from "~/supabase/client";
@@ -65,6 +66,15 @@ export default function Header() {
 
   const [openFeedbackForm, setOpenFeedbackForm] = useState(false);
   const router = useRouter();
+
+  const handleFeedbackClick = (feedbackType: "bug" | "feature") => {
+    setType(feedbackType);
+    setOpenFeedbackForm(true);
+    toast({
+      title: `Feedback form opened`,
+      description: `You are now providing feedback for a ${feedbackType}.`,
+    });
+  };
 
   return (
     <>
@@ -303,6 +313,7 @@ export default function Header() {
                     onClick={() => {
                       setType("bug");
                       setOpenFeedbackForm(true);
+                      handleFeedbackClick("bug");
                     }}
                   >
                     <AlertTriangle className="mr-2" size="1rem" />
@@ -312,6 +323,7 @@ export default function Header() {
                     onClick={() => {
                       setType("feature");
                       setOpenFeedbackForm(true);
+                      handleFeedbackClick("feature");
                     }}
                   >
                     <SquareMousePointer className="mr-2" size="1rem" />
