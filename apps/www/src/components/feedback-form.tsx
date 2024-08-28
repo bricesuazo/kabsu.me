@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatDistanceToNow } from "date-fns";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@kabsu.me/ui/button";
@@ -29,7 +30,6 @@ import { ScrollArea } from "@kabsu.me/ui/scroll-area";
 import { Skeleton } from "@kabsu.me/ui/skeleton";
 import { Textarea } from "@kabsu.me/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
-import { toast } from "@kabsu.me/ui/use-toast";
 
 import { api } from "~/lib/trpc/client";
 import { Icons } from "./icons";
@@ -62,8 +62,7 @@ export default function FeedbackForm({
     onSuccess: async () => {
       await getAllMyReportedProblemsQuery.refetch();
       setOpen(false);
-      toast({
-        title: "Reported a problem",
+      toast("Reported a problem", {
         description: "Thanks for reporting a problem! We'll look into it",
       });
     },
@@ -72,8 +71,7 @@ export default function FeedbackForm({
     onSuccess: async () => {
       await getAllMySuggestedFeaturesQuery.refetch();
       setOpen(false);
-      toast({
-        title: "Suggested a feature",
+      toast("Suggested a feature", {
         description: "Thanks for suggesting a feature! We'll look into it",
       });
     },
