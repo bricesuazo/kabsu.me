@@ -3,9 +3,9 @@
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatDistanceToNow } from "date-fns";
-// new
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@kabsu.me/ui/button";
@@ -31,7 +31,6 @@ import { ScrollArea } from "@kabsu.me/ui/scroll-area";
 import { Skeleton } from "@kabsu.me/ui/skeleton";
 import { Textarea } from "@kabsu.me/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
-import { toast } from "@kabsu.me/ui/use-toast";
 
 import { api } from "~/lib/trpc/client";
 
@@ -63,22 +62,22 @@ export default function FeedbackForm({
     onSuccess: async () => {
       await getAllMyReportedProblemsQuery.refetch();
       setOpen(false);
-      toast({
-        title: "Reported a problem",
+      toast.success("Reported a problem successfully!", {
         description: "Thanks for reporting a problem! We'll look into it",
       });
     },
+    onError: (error) => toast.error(error.message),
   });
 
   const suggestAFeatureMutation = api.users.suggestAFeature.useMutation({
     onSuccess: async () => {
       await getAllMySuggestedFeaturesQuery.refetch();
       setOpen(false);
-      toast({
-        title: "Suggested a feature",
+      toast.success("Suggested a feature successfully!", {
         description: "Thanks for suggesting a feature! We'll look into it",
       });
     },
+    onError: (error) => toast.error(error.message),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
