@@ -260,7 +260,7 @@ export default function UserPageClient({
                         >
                           <p className="break-words">{answer.content}</p>
                           <p className="break-words text-xs text-muted-foreground">
-                            You •{" "}
+                            @{user.username} •{" "}
                             {formatDistanceToNow(answer.created_at, {
                               includeSeconds: true,
                               addSuffix: true,

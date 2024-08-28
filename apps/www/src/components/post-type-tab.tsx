@@ -32,7 +32,7 @@ export default function PostTypeTab() {
           setTab(value);
         }}
       >
-        <TabsList className="flex h-auto w-full justify-between rounded-none bg-background p-0 dark:bg-black sm:dark:bg-[#121212]">
+        <TabsList className="flex h-auto w-full items-stretch justify-between rounded-none bg-background p-0 dark:bg-black sm:dark:bg-[#121212]">
           {POST_TYPE_TABS.map((select) => (
             <TabsTrigger
               key={select.id}
@@ -50,14 +50,14 @@ export default function PostTypeTab() {
                 <div className="block sm:hidden md:block">
                   <select.icon size="20" />
                 </div>
-                <p className="hidden sm:block">{select.name}</p>
-              </div>
-              {getMyUniversityStatusQuery.isLoading
-                ? !(select.id == "all" || select.id === "following") && (
-                    <Skeleton className="h-4 w-10" />
-                  )
-                : getMyUniversityStatusQuery.data && (
-                    <p className="text-xs text-muted-foreground">
+
+                {select.id == "all" || select.id === "following" ? (
+                  <p className="hidden sm:block">{select.name}</p>
+                ) : getMyUniversityStatusQuery.isLoading ? (
+                  <Skeleton className="h-4 w-10" />
+                ) : (
+                  getMyUniversityStatusQuery.data && (
+                    <p className="hidden sm:block">
                       {(() => {
                         switch (select.id) {
                           case "campus":
@@ -69,7 +69,9 @@ export default function PostTypeTab() {
                         }
                       })()}
                     </p>
-                  )}
+                  )
+                )}
+              </div>
             </TabsTrigger>
           ))}
         </TabsList>
