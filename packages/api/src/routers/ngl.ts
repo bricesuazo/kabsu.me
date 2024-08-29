@@ -177,22 +177,26 @@ export const nglRouter = router({
       });
       await ctx.supabase.removeChannel(channel);
     }),
-  deleteMessage: protectedProcedure
+  deleteMessages: protectedProcedure
     .input(
       z.object({
-        question_id: z.string().uuid(),
+        question_id: z.string().uuid().array(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { error: error_question } = await ctx.supabase
-        .from("ngl_questions")
-        .update({ deleted_at: new Date().toISOString() })
-        .eq("id", input.question_id);
+      await Promise.all([
+        input.question_id.map(async (id) => {
+          const { error: error_question } = await ctx.supabase
+            .from("ngl_questions")
+            .update({ deleted_at: new Date().toISOString() })
+            .eq("id", id);
 
-      if (error_question)
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to archive message",
-        });
+          if (error_question)
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "Failed to archive message",
+            });
+        }),
+      ]);
     }),
 });

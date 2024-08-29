@@ -95,25 +95,21 @@ export default function UserPageWrapper({
 
   const MessageNgl = () => (
     <div className="flex items-center gap-x-2">
-    <Button size="sm" variant="outline" className="" asChild>
-      <Link href={`/chat/user/${profileQuery.data.user.id}`}>
-        <MessageCircle className="mr-2 size-4" /> Message
-      </Link>
-    </Button>
-    <Button size="sm" variant="outline" className="" asChild>
-      <Link
-        href={
-          env.NEXT_PUBLIC_NGL_URL +
-          "/" +
-          profileQuery.data.user.username
-        }
-        target="_blank"
-      >
-        <VenetianMask className="mr-2 size-4" /> NGL
-      </Link>
-    </Button>
-  </div>
-  )
+      <Button size="sm" variant="outline" className="" asChild>
+        <Link href={`/chat/user/${profileQuery.data.user.id}`}>
+          <MessageCircle className="mr-2 size-4" /> Message
+        </Link>
+      </Button>
+      <Button size="sm" variant="outline" className="" asChild>
+        <Link
+          href={env.NEXT_PUBLIC_NGL_URL + "/" + profileQuery.data.user.username}
+          target="_blank"
+        >
+          <VenetianMask className="mr-2 size-4" /> NGL
+        </Link>
+      </Button>
+    </div>
+  );
 
   return (
     <div className="relative min-h-screen space-y-4 border-b">
@@ -259,9 +255,9 @@ export default function UserPageWrapper({
                   isFollower={profileQuery.data.is_follower}
                   user_id={profileQuery.data.user.id}
                 />
-               <div className="hidden xs:inline-flex">
-                <MessageNgl/>
-               </div>
+                <div className="hidden xs:inline-flex">
+                  <MessageNgl />
+                </div>
                 <AlertDialog open={openReport} onOpenChange={setOpenReport}>
                   <AlertDialogTrigger asChild>
                     <Button variant="outline" size="icon" className="size-9">
@@ -338,7 +334,7 @@ export default function UserPageWrapper({
 
           {/* Mobile */}
           <div className="xs:hidden">
-            <MessageNgl/>
+            <MessageNgl />
           </div>
 
           <div className="flex items-center gap-x-4">
