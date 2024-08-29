@@ -1,8 +1,10 @@
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { TRPCError } from "@trpc/server";
+import { Ratelimit } from "@upstash/ratelimit";
 import { z } from "zod";
 
 import type { Database } from "../../../../supabase/types";
+import { env } from "../../../../apps/www/src/env";
 import { protectedProcedure, router } from "../trpc";
 
 export const chatsRouter = router({
@@ -115,6 +117,23 @@ export const chatsRouter = router({
         ),
     )
     .mutation(async ({ ctx, input }) => {
+      const rate_limiter = new Ratelimit({
+        redis: ctx.redis,
+        limiter: Ratelimit.fixedWindow(1, "60 s"),
+      });
+
+      if (env.NODE_ENV === "development") {
+        const { success } = await rate_limiter.limit(ctx.auth.user.id);
+
+        if (!success) {
+          throw new TRPCError({
+            code: "TOO_MANY_REQUESTS",
+            message:
+              "You are sending messages too fast. Please try again in a minute.",
+          });
+        }
+      }
+
       let channel: RealtimeChannel | undefined = undefined;
       let channel_notification: RealtimeChannel | undefined = undefined;
       if (input.type === "room") {

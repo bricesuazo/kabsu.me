@@ -10,6 +10,7 @@ import { ChevronLeft, ExternalLink, Reply, Send, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useInView } from "react-intersection-observer";
 import TextareaAutosize from "react-textarea-autosize";
+import { toast } from "sonner";
 import { v4 } from "uuid";
 import { z } from "zod";
 
@@ -65,6 +66,9 @@ export default function RoomPageClient(
   // );
   const sendMessageMutation = api.chats.sendMessage.useMutation({
     onSuccess: async () => await utils.chats.getAllRooms.invalidate(),
+    onError: (error) => {
+      toast.error(error.message);
+    },
   });
   const [chats, setChats] = useState(
     // getRoomChatsQuery.data?.room.chats ?? []
@@ -374,7 +378,13 @@ export default function RoomPageClient(
                               </div>
                             ) : (
                               <div className="rounded-full bg-muted p-2">
-                                <Icons.spinner className="size-4 animate-spin" />
+                                {sendMessageMutation.isError ? (
+                                  <p className="px-1 text-[10px] font-medium text-red-500 dark:text-red-300">
+                                    Sending failed
+                                  </p>
+                                ) : (
+                                  <Icons.spinner className="size-4 animate-spin" />
+                                )}
                               </div>
                             )}
                           </div>
@@ -445,34 +455,38 @@ export default function RoomPageClient(
                 setIsScrollToBottom(true);
                 form.reset();
 
-                const { id: new_chat_id } =
-                  await sendMessageMutation.mutateAsync(
-                    props.type === "room"
-                      ? {
-                          id,
-                          type: props.type,
-                          room_id: props.getRoomChats.room.id,
-                          content: values.message,
-                          reply_id: values.reply?.id,
-                        }
-                      : {
-                          id,
-                          type: props.type,
-                          content: values.message,
-                          reply_id: values.reply?.id,
-                        },
-                  );
+                try {
+                  const { id: new_chat_id } =
+                    await sendMessageMutation.mutateAsync(
+                      props.type === "room"
+                        ? {
+                            id,
+                            type: props.type,
+                            room_id: props.getRoomChats.room.id,
+                            content: values.message,
+                            reply_id: values.reply?.id,
+                          }
+                        : {
+                            id,
+                            type: props.type,
+                            content: values.message,
+                            reply_id: values.reply?.id,
+                          },
+                    );
 
-                setChats((prev) =>
-                  prev.map((chat) =>
-                    chat.id === new_chat_id
-                      ? {
-                          ...chat,
-                          status: "success",
-                        }
-                      : chat,
-                  ),
-                );
+                  setChats((prev) =>
+                    prev.map((chat) =>
+                      chat.id === new_chat_id
+                        ? {
+                            ...chat,
+                            status: "success",
+                          }
+                        : chat,
+                    ),
+                  );
+                } catch (error) {
+                  return error;
+                }
               })}
               className="w-full gap-x-2"
             >
