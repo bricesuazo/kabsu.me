@@ -1,5 +1,6 @@
 "use client";
 
+import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -11,6 +12,7 @@ import {
   ExternalLink,
   Loader2,
   Reply,
+  Trash,
   Trash2,
   VenetianMask,
   XCircle,
@@ -32,6 +34,7 @@ import {
   AlertDialogTrigger,
 } from "@kabsu.me/ui/alert-dialog";
 import { Button } from "@kabsu.me/ui/button";
+import { Checkbox } from "@kabsu.me/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -50,14 +53,22 @@ import { api } from "~/lib/trpc/client";
 const TabSchema = z.enum(["messages", "replied"]);
 
 export default function NGLPageClient({ username }: { username: string }) {
+  const [toDelete, setToDelete] = useState<string[]>([]);
   const searchParams = useSearchParams();
   const router = useRouter();
+  const utils = api.useUtils();
+
   const [isCopied, setIsCopied] = useState(false);
   const [tab, setTab] = useState<z.infer<typeof TabSchema>>(
     TabSchema.safeParse(searchParams.get("tab") ?? "messages").data ??
       "messages",
   );
+
   const getAllMyMessagesQuery = api.ngl.getAllMyMessages.useQuery({ tab });
+  const deleteMessageMutation = api.ngl.deleteMessages.useMutation({
+    onSuccess: () => utils.ngl.getAllMyMessages.invalidate(),
+  });
+
   const MY_NGL_URL = env.NEXT_PUBLIC_NGL_URL + "/" + username;
   return (
     <div>
@@ -102,10 +113,11 @@ export default function NGLPageClient({ username }: { username: string }) {
       </div>
 
       <>
-        <div className="flex justify-center p-4">
+        <div className="flex flex-col items-center justify-center gap-3 p-4">
           <Tabs
             value={tab}
             onValueChange={(value) => {
+              setToDelete([]);
               const data = TabSchema.safeParse(value).data ?? "messages";
 
               setTab(data);
@@ -123,26 +135,112 @@ export default function NGLPageClient({ username }: { username: string }) {
           </Tabs>
         </div>
 
-        {getAllMyMessagesQuery.isLoading ||
-        getAllMyMessagesQuery.data === undefined ? (
-          <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="h-[80px] w-full" />
-            ))}
-          </div>
-        ) : getAllMyMessagesQuery.data.length === 0 ? (
-          <div className="p-4 text-center text-muted-foreground sm:col-span-2">
-            No messages yet.
-          </div>
-        ) : (
-          <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 640: 2 }}>
-            <Masonry gutter="16px" className="p-4">
-              {getAllMyMessagesQuery.data.map((message) => (
-                <Question key={message.id} message={message} />
+        <div className="pb-20">
+          {getAllMyMessagesQuery.isLoading ||
+          getAllMyMessagesQuery.data === undefined ? (
+            <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className="h-[80px] w-full" />
               ))}
-            </Masonry>
-          </ResponsiveMasonry>
-        )}
+            </div>
+          ) : getAllMyMessagesQuery.data.length === 0 ? (
+            <div className="p-4 text-center text-muted-foreground sm:col-span-2">
+              No messages yet.
+            </div>
+          ) : (
+            <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 640: 2 }}>
+              <Masonry gutter="16px" className="p-4">
+                {getAllMyMessagesQuery.data.map((message) => (
+                  <Question
+                    key={message.id}
+                    message={message}
+                    setToDelete={setToDelete}
+                    toDelete={toDelete}
+                  />
+                ))}
+              </Masonry>
+            </ResponsiveMasonry>
+          )}
+        </div>
+
+        <div className="container fixed bottom-0 -ml-[1px] flex h-16 items-center justify-end border-l border-r border-t bg-white p-4 dark:bg-[#121212]">
+          {/* <div className="flex items-center gap-2">
+            <Checkbox
+              id="select-all"
+              checked={
+                getAllMyMessagesQuery.data?.length !== 0
+                  ? getAllMyMessagesQuery.data?.length === toDelete.length
+                  : false
+              }
+              onCheckedChange={(val) => {
+                if (val) {
+                  setToDelete(
+                    getAllMyMessagesQuery.data?.map((message) => message.id) ??
+                      [],
+                  );
+                } else {
+                  setToDelete([]);
+                }
+              }}
+            />
+            <Label htmlFor="select-all">Select All</Label>
+          </div> */}
+
+          {toDelete.length > 0 && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant={"destructive"} className="gap-1">
+                  {deleteMessageMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-1.5 size-4 animate-spin" />{" "}
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash size={15} />
+                      Delete &#40;{toDelete.length}&#41;
+                    </>
+                  )}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    {toDelete.length > 0
+                      ? "Are you sure you want to delete these messages?"
+                      : "Are you sure you want to delete this message?"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action is irreversible.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <Button
+                    variant="destructive"
+                    disabled={deleteMessageMutation.isPending}
+                    onClick={async () => {
+                      await deleteMessageMutation.mutateAsync({
+                        question_id: toDelete,
+                      });
+
+                      setToDelete([]);
+                    }}
+                  >
+                    {deleteMessageMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-1.5 size-4 animate-spin" />{" "}
+                        Deleting...
+                      </>
+                    ) : (
+                      "Delete"
+                    )}
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
       </>
     </div>
   );
@@ -167,13 +265,17 @@ const FormSchema = z
 
 function Question({
   message,
+  setToDelete,
+  toDelete,
 }: {
   message: RouterOutputs["ngl"]["getAllMyMessages"][number];
+  setToDelete: Dispatch<SetStateAction<string[]>>;
+  toDelete: string[];
 }) {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const searchParams = useSearchParams();
   const utils = api.useUtils();
-  const deleteMessageMutation = api.ngl.deleteMessage.useMutation({
+  const deleteMessageMutation = api.ngl.deleteMessages.useMutation({
     onSuccess: () => utils.ngl.getAllMyMessages.invalidate(),
   });
   const answerMessageMutation = api.ngl.answerMessage.useMutation({
@@ -195,11 +297,23 @@ function Question({
     <div
       id={message.id}
       className={cn(
-        "space-y-2 rounded-lg border p-4",
+        "shadow-effect dark:shadow-light space-y-2 rounded-lg border border-black p-4 dark:border-white/20",
         searchParams.has("question_id", message.id) && "border-primary",
       )}
     >
-      <p className="break-words">{message.content}</p>
+      <div className="flex justify-between">
+        <p className="break-words">{message.content}</p>
+        <Checkbox
+          onCheckedChange={(val) => {
+            if (val) {
+              setToDelete((curr) => [...curr, message.id]);
+            } else {
+              setToDelete((curr) => curr.filter((id) => id !== message.id));
+            }
+          }}
+          checked={toDelete.includes(message.id)}
+        />
+      </div>
       <p className="break-words text-xs text-muted-foreground">
         {message.code_name ? <span>{message.code_name} • </span> : null}
         {formatDistanceToNow(message.created_at, {
@@ -210,7 +324,7 @@ function Question({
 
       {message.answers.length > 0 ? (
         message.answers.map((answer) => (
-          <div key={answer.id} className="rounded-lg bg-muted p-4">
+          <div key={answer.id} className="rounded-lg border p-4">
             <p className="break-words">{answer.content}</p>
             <p className="break-words text-xs text-muted-foreground">
               You •{" "}
@@ -311,9 +425,10 @@ function Question({
               disabled={deleteMessageMutation.isPending}
               onClick={async () => {
                 await deleteMessageMutation.mutateAsync({
-                  question_id: message.id,
+                  question_id: [message.id],
                 });
                 setDeleteOpen(false);
+                setToDelete((curr) => curr.filter((id) => id !== message.id));
               }}
             >
               {deleteMessageMutation.isPending ? (
