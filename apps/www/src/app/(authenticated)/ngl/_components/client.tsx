@@ -297,8 +297,10 @@ function Question({
     <div
       id={message.id}
       className={cn(
-        "shadow-effect dark:shadow-light space-y-2 rounded-lg border border-black p-4 dark:border-white/20",
-        searchParams.has("question_id", message.id) && "border-primary",
+        "shadow-effect dark:shadow-light space-y-2 rounded-lg border p-4",
+        searchParams.has("question_id", message.id)
+          ? "border-primary"
+          : "border-black dark:border-white/20",
       )}
     >
       <div className="flex justify-between">
