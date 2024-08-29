@@ -119,7 +119,7 @@ export const chatsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const rate_limiter = new Ratelimit({
         redis: ctx.redis,
-        limiter: Ratelimit.fixedWindow(1, "60 s"),
+        limiter: Ratelimit.slidingWindow(5, "5 s"),
       });
 
       if (env.NODE_ENV !== "development") {
@@ -128,8 +128,7 @@ export const chatsRouter = router({
         if (!success) {
           throw new TRPCError({
             code: "TOO_MANY_REQUESTS",
-            message:
-              "You are sending messages too fast. Please try again in a minute.",
+            message: "You are sending messages too fast. Try again later.",
           });
         }
       }
