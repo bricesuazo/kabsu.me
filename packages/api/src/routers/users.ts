@@ -47,6 +47,7 @@ export const usersRouter = router({
         }),
       });
     }),
+
   signUp: protectedProcedure
     .input(
       z.object({
@@ -444,10 +445,11 @@ export const usersRouter = router({
 
     return count ?? 0;
   }),
+
   reportAProblem: protectedProcedure
     .input(
       z.object({
-        content: z.string().min(1),
+        content: z.string().min(1, { message: "Content is required" }),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -455,11 +457,31 @@ export const usersRouter = router({
         problem: input.content,
         reported_by_id: ctx.auth.user.id,
       });
+
+      await fetch(env.DISCORD_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "Kabsu.me",
+          avatar_url: "https://example.com/avatar.png",
+          embeds: [
+            {
+              title: `Problem Report - ${env.ENV.toUpperCase()}`,
+              description: `A new problem has been reported.`,
+              color: 0xff0000,
+              fields: [{ name: "📝  Problem", value: `"${input.content}"` }],
+              footer: { text: "Reported" },
+              timestamp: new Date().toISOString(),
+            },
+          ],
+        }),
+      });
     }),
+
   suggestAFeature: protectedProcedure
     .input(
       z.object({
-        content: z.string().min(1),
+        content: z.string().min(1, { message: "Content is required" }),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -467,7 +489,27 @@ export const usersRouter = router({
         feature: input.content,
         suggested_by_id: ctx.auth.user.id,
       });
+
+      await fetch(env.DISCORD_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "Kabsu.me",
+          avatar_url: "https://example.com/avatar.png",
+          embeds: [
+            {
+              title: `Feature Suggestion - ${env.ENV.toUpperCase()}`,
+              description: `A new feature has been suggested.`,
+              color: 0xff0000,
+              fields: [{ name: "📝  Feature", value: `"${input.content}"` }],
+              footer: { text: "Suggested" },
+              timestamp: new Date().toISOString(),
+            },
+          ],
+        }),
+      });
     }),
+
   updateAccountSettings: protectedProcedure
     .input(
       z.object({

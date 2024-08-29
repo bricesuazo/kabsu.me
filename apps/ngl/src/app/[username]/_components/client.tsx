@@ -321,8 +321,8 @@ export default function UserPageClient({
                           className="rounded-lg border bg-white/50 p-4 dark:bg-white/10"
                         >
                           <p className="break-words">{answer.content}</p>
-                          <p className="break-words text-xs text-muted-foreground dark:text-white">
-                            You •{" "}
+                          <p className="break-words text-xs text-muted-foreground">
+                            @{user.username} •{" "}
                             {formatDistanceToNow(answer.created_at, {
                               includeSeconds: true,
                               addSuffix: true,
