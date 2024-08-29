@@ -122,7 +122,7 @@ export const chatsRouter = router({
         limiter: Ratelimit.fixedWindow(1, "60 s"),
       });
 
-      if (env.NODE_ENV === "development") {
+      if (env.NODE_ENV !== "development") {
         const { success } = await rate_limiter.limit(ctx.auth.user.id);
 
         if (!success) {
