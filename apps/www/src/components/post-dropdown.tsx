@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MoreHorizontal } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { REPORT_POST_REASONS } from "@kabsu.me/constants";
@@ -43,7 +44,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@kabsu.me/ui/select";
-import { toast } from "@kabsu.me/ui/use-toast";
 
 import { env } from "~/env";
 import { api } from "~/lib/trpc/client";
@@ -78,8 +78,7 @@ export default function PostDropdown({
   const reportPostMutation = api.posts.report.useMutation({
     onSuccess: () => {
       setOpenReport(false);
-      toast({
-        title: "Post reported",
+      toast.success("Post reported", {
         description: "Your report has been submitted",
       });
     },
@@ -87,8 +86,7 @@ export default function PostDropdown({
   const strikePostMutation = api.posts.strike.useMutation({
     onSuccess: async () => {
       setOpenStrike(false);
-      toast({
-        title: "Post striked",
+      toast.success("Post striked", {
         description: "The post has been striked",
       });
       await Promise.all([
@@ -150,8 +148,7 @@ export default function PostDropdown({
                 onClick={async () => {
                   await deletePostMutation.mutateAsync({ post_id });
                   setOpenDelete(false);
-                  toast({
-                    title: "Post deleted",
+                  toast.success("Post deleted", {
                     description: "Your post has been deleted.",
                   });
                   await context.posts.getUserPosts.invalidate();

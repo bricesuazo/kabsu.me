@@ -13,6 +13,7 @@ import {
   VenetianMask,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
@@ -40,7 +41,6 @@ import {
 } from "@kabsu.me/ui/form";
 import { Textarea } from "@kabsu.me/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
-import { toast } from "@kabsu.me/ui/use-toast";
 
 import EditProfile from "~/components/edit-profile";
 import FollowButton from "~/components/follow-button";
@@ -82,8 +82,7 @@ export default function UserPageWrapper({
   const reportUserMutation = api.users.report.useMutation({
     onSuccess: () => {
       setOpenReport(false);
-      toast({
-        title: "User reported",
+      toast.success("User reported", {
         description: "Your report has been submitted",
       });
     },

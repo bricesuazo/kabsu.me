@@ -76,7 +76,7 @@ export default function UserPageClient({
         message: error.message,
       }),
     onSuccess: () => {
-      toast.success("Message sent!", { position: "bottom-center" });
+      toast.success("Message sent!", { position: "top-center" });
       form.resetField("content");
     },
   });
@@ -120,10 +120,10 @@ export default function UserPageClient({
           alt="Avatar"
           width={100}
           height={100}
-          className="absolute top-0 h-full w-full object-cover object-center opacity-40 blur-xl"
+          className="absolute top-0 h-full w-full object-cover object-center opacity-20 blur-xl"
         />
 
-        <div className="noise-background absolute left-0 top-0 z-10 min-h-screen w-full"></div>
+        <div className="noise-background absolute left-0 top-0 z-10 min-h-screen w-full opacity-75" />
       </div>
       <div className="relative z-10 flex min-h-screen flex-col justify-between pb-10">
         <div className="">
@@ -278,12 +278,13 @@ export default function UserPageClient({
         </div>
       </div>
       <div className="relative z-10">
-        <div>
+        <div className="space-y-10 pb-40 pt-10">
+          <h2 className="text-center text-xl font-semibold">Replies</h2>
           {getAllMessagesQuery.isLoading ||
           getAllMessagesQuery.data === undefined ? (
             <div className="columns-1 gap-3 space-y-3 pb-10 sm:columns-2">
               {Array.from({ length: 8 }).map((_, i) => (
-                <Skeleton key={i} className="h-[80px] w-full" />
+                <Skeleton key={i} className="h-40 w-full" />
               ))}
             </div>
           ) : getAllMessagesQuery.data.length === 0 ? (
@@ -320,8 +321,8 @@ export default function UserPageClient({
                           className="rounded-lg border bg-white/50 p-4 dark:bg-white/10"
                         >
                           <p className="break-words">{answer.content}</p>
-                          <p className="break-words text-xs text-muted-foreground dark:text-white">
-                            You •{" "}
+                          <p className="break-words text-xs text-muted-foreground">
+                            @{user.username} •{" "}
                             {formatDistanceToNow(answer.created_at, {
                               includeSeconds: true,
                               addSuffix: true,

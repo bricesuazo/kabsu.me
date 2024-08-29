@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MoreVertical } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { REPORT_POST_REASONS } from "@kabsu.me/constants";
@@ -43,7 +44,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@kabsu.me/ui/select";
-import { toast } from "@kabsu.me/ui/use-toast";
 
 import { Icons } from "~/components/icons";
 import { api } from "~/lib/trpc/client";
@@ -67,8 +67,7 @@ export default function CommentDropdown({
   const reportCommentMutation = api.comments.report.useMutation({
     onSuccess: () => {
       setOpenReport(false);
-      toast({
-        title: "Comment reported",
+      toast.success("Comment reported", {
         description: "Your report has been submitted",
       });
     },
@@ -115,8 +114,7 @@ export default function CommentDropdown({
                   await deleteCommentMutation.mutateAsync({ comment_id });
                   setLoading(false);
                   setOpenDelete(false);
-                  toast({
-                    title: "Comment deleted",
+                  toast("Comment deleted", {
                     description: "Your comment has been deleted.",
                   });
 

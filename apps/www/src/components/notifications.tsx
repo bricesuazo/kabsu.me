@@ -223,7 +223,7 @@ export function NotificationItems({
                 <div className="flex gap-x-2">
                   <div>
                     <div className="rounded-full bg-muted p-2">
-                      <VenetianMask className="size-6" />
+                      <VenetianMask className="size-5" />
                     </div>
                   </div>
                   <div className="flex flex-col gap-1">
