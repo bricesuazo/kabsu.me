@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatDistanceToNow } from "date-fns";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -32,7 +33,6 @@ import { Textarea } from "@kabsu.me/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 
 import { api } from "~/lib/trpc/client";
-import { Icons } from "./icons";
 
 const formSchema = z.object({
   content: z.string().min(2, {
@@ -62,20 +62,24 @@ export default function FeedbackForm({
     onSuccess: async () => {
       await getAllMyReportedProblemsQuery.refetch();
       setOpen(false);
-      toast("Reported a problem", {
+      toast.success("Reported a problem", {
         description: "Thanks for reporting a problem! We'll look into it",
       });
     },
+    onError: (error) => toast.error(error.message),
   });
+
   const suggestAFeatureMutation = api.users.suggestAFeature.useMutation({
     onSuccess: async () => {
       await getAllMySuggestedFeaturesQuery.refetch();
       setOpen(false);
-      toast("Suggested a feature", {
+      toast.success("Suggested a feature", {
         description: "Thanks for suggesting a feature! We'll look into it",
       });
     },
+    onError: (error) => toast.error(error.message),
   });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -105,9 +109,9 @@ export default function FeedbackForm({
           <form
             onSubmit={form.handleSubmit((values) => {
               if (type === "bug") {
-                reportAProblemMutation.mutate({ content: values.content });
+                reportAProblemMutation.mutate(values);
               } else {
-                suggestAFeatureMutation.mutate({ content: values.content });
+                suggestAFeatureMutation.mutate(values);
               }
             })}
             className="space-y-8"
@@ -150,7 +154,7 @@ export default function FeedbackForm({
               >
                 {(reportAProblemMutation.isPending ||
                   suggestAFeatureMutation.isPending) && (
-                  <Icons.spinner className="mr-2 animate-spin" />
+                  <Loader2 className="mr-2 animate-spin" />
                 )}
                 Submit
               </Button>
@@ -221,18 +225,20 @@ function HistoryItem({
   item: { content: string; created_at: string };
 }) {
   return (
-    <div className="space-y-1 rounded-md p-4 hover:bg-muted">
+    <div className="max-w-[375px] space-y-1 text-wrap break-words rounded-md p-4 hover:bg-muted">
       <p className="text-sm">{item.content}</p>
       <Tooltip delayDuration={250}>
         <TooltipTrigger asChild className="w-fit">
           <p className="text-xs text-muted-foreground">
-            {formatDistanceToNow(item.created_at, {
+            {formatDistanceToNow(new Date(item.created_at), {
               includeSeconds: true,
               addSuffix: true,
             })}
           </p>
         </TooltipTrigger>
-        <TooltipContent>{format(item.created_at, "PPpp")}</TooltipContent>
+        <TooltipContent>
+          {format(new Date(item.created_at), "PPpp")}
+        </TooltipContent>
       </Tooltip>
     </div>
   );

@@ -18,6 +18,7 @@ import {
   VenetianMask,
 } from "lucide-react";
 import { useTheme } from "next-themes";
+import { toast } from "sonner";
 
 import { HEADER_HEIGHT, NAVBAR_LINKS } from "@kabsu.me/constants";
 import { cn } from "@kabsu.me/ui";
@@ -65,6 +66,14 @@ export default function Header() {
 
   const [openFeedbackForm, setOpenFeedbackForm] = useState(false);
   const router = useRouter();
+
+  const handleFeedbackClick = (feedbackType: "bug" | "feature") => {
+    setType(feedbackType);
+    setOpenFeedbackForm(true);
+    toast.success("Feedback form opened", {
+      description: `You are now providing feedback for a ${feedbackType}.`,
+    });
+  };
 
   return (
     <>
@@ -303,6 +312,7 @@ export default function Header() {
                     onClick={() => {
                       setType("bug");
                       setOpenFeedbackForm(true);
+                      handleFeedbackClick("bug");
                     }}
                   >
                     <AlertTriangle className="mr-2" size="1rem" />
@@ -312,6 +322,7 @@ export default function Header() {
                     onClick={() => {
                       setType("feature");
                       setOpenFeedbackForm(true);
+                      handleFeedbackClick("feature");
                     }}
                   >
                     <SquareMousePointer className="mr-2" size="1rem" />
