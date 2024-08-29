@@ -62,7 +62,7 @@ export default function FeedbackForm({
     onSuccess: async () => {
       await getAllMyReportedProblemsQuery.refetch();
       setOpen(false);
-      toast("Reported a problem", {
+      toast.success("Reported a problem", {
         description: "Thanks for reporting a problem! We'll look into it",
       });
     },
@@ -73,7 +73,7 @@ export default function FeedbackForm({
     onSuccess: async () => {
       await getAllMySuggestedFeaturesQuery.refetch();
       setOpen(false);
-      toast("Suggested a feature", {
+      toast.success("Suggested a feature", {
         description: "Thanks for suggesting a feature! We'll look into it",
       });
     },
