@@ -18,7 +18,6 @@ import {
   VenetianMask,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { toast } from "sonner";
 
 import { HEADER_HEIGHT, NAVBAR_LINKS } from "@kabsu.me/constants";
 import { cn } from "@kabsu.me/ui";
@@ -70,9 +69,6 @@ export default function Header() {
   const handleFeedbackClick = (feedbackType: "bug" | "feature") => {
     setType(feedbackType);
     setOpenFeedbackForm(true);
-    toast.success("Feedback form opened", {
-      description: `You are now providing feedback for a ${feedbackType}.`,
-    });
   };
 
   return (
