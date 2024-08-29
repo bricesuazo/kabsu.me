@@ -43,6 +43,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
             <TRPCReactProvider>
               {children}
 
+              <Toaster />
               <NotificationProvider />
               <Analytics />
               <SpeedInsights />
@@ -50,8 +51,6 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
               {/* {session && <FooterMenu />} */}
             </TRPCReactProvider>
           </TooltipProvider>
-
-          <Toaster />
         </ThemeProvider>
       </body>
     </html>
