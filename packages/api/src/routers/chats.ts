@@ -69,11 +69,13 @@ export const chatsRouter = router({
             (url) =>
               url.path === user.users?.id + "/avatar/" + user.users?.image_name,
           );
+
           return {
             ...user,
             users: {
               id: user.users?.id,
               username: user.users?.username,
+
               ...(user.users?.image_name?.startsWith("https:")
                 ? {
                     image_name: user.users.image_name,
@@ -453,7 +455,7 @@ export const chatsRouter = router({
         const { data: room } = await ctx.supabase
           .from("rooms")
           .select(
-            "*, chats!inner(id, content, user_id, created_at, reply_id, users(name, username, image_name)), rooms_users!inner(user_id, users(id, username, image_name))",
+            "*, chats!inner(id, content, user_id, created_at, reply_id, users(name, username, image_name)), rooms_users!inner(user_id, users(id, username, image_name, name, type, followers!followee_id (*), followees!follower_id (*)))",
           )
           .eq("id", input.room_id)
           .neq("rooms_users.user_id", ctx.auth.user.id)
@@ -529,6 +531,10 @@ export const chatsRouter = router({
             to: {
               id: room.rooms_users[0].user_id,
               username: room.rooms_users[0].users.username,
+              name: room.rooms_users[0].users.name,
+              type: room.rooms_users[0].users.type,
+              followers_length: room.rooms_users[0].users.followers.length,
+              followees_length: room.rooms_users[0].users.followees.length,
               ...(room.rooms_users[0].users.image_name?.startsWith("https://")
                 ? {
                     image_name: room.rooms_users[0].users.image_name,

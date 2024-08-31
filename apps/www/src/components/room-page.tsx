@@ -191,8 +191,8 @@ export default function RoomPageClient(
                       ? props.getRoomChats.room.to.image_url
                       : "/default-avatar.jpg"
                   }
-                  width={32}
-                  height={32}
+                  width={44}
+                  height={44}
                   alt="Profile picture"
                   className="rounded-full"
                 />
@@ -202,8 +202,14 @@ export default function RoomPageClient(
                   href={`/${props.getRoomChats.room.to?.username}`}
                   className="group flex items-center text-sm"
                 >
-                  <span>{props.getRoomChats.room.to?.username}</span>
-                  <ExternalLink className="ml-2 size-4 -translate-x-4 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
+                  <div className="flex flex-col">
+                    <h1 className="text-xl font-semibold">
+                      {props.getRoomChats.room.to?.name}
+                    </h1>
+                    <h1>@{props.getRoomChats.room.to?.username}</h1>
+                  </div>
+
+                  {/* <ExternalLink className="ml-2 size-4 -translate-x-4 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" /> */}
                 </Link>
                 {/* <div className="flex items-center gap-2">
                   <div className="size-2 rounded-full bg-green-500 text-lg" />
@@ -254,11 +260,48 @@ export default function RoomPageClient(
           <ScrollArea className="flex-1 px-4">
             <div className="space-y-2 py-4">
               <div ref={ref}>
-                <p className="text-center text-sm text-muted-foreground">
-                  {loadMoreMessagesMutation.isPending && hasMore
-                    ? "Loading more messages..."
-                    : "No more messages."}
-                </p>
+                <div className="text-center text-sm text-muted-foreground">
+                  {loadMoreMessagesMutation.isPending && hasMore ? (
+                    "Loading more messages..."
+                  ) : (
+                    <div className="flex w-full flex-col items-center justify-center gap-y-2">
+                      <div className="flex w-full flex-col">
+                        <Image
+                          src={
+                            props.getRoomChats.room.to?.image_name
+                              ? props.getRoomChats.room.to.image_url
+                              : "/default-avatar.jpg"
+                          }
+                          width={96}
+                          height={96}
+                          alt="Profile picture"
+                          className="mx-auto rounded-full"
+                        />
+                        <h1 className="text-xl font-semibold text-foreground">
+                          {props.getRoomChats.room.to?.name}
+                        </h1>
+                        <h1>@{props.getRoomChats.room.to?.username}</h1>
+
+                        <h1>
+                          CvSU
+                          <span className="capitalize">
+                            {" "}
+                            {props.getRoomChats.room.to?.type}
+                          </span>
+                        </h1>
+                        <h1>
+                          {props.getRoomChats.room.to?.followers_length}{" "}
+                          followers •{" "}
+                          {props.getRoomChats.room.to?.followees_length}{" "}
+                          followees
+                        </h1>
+                      </div>
+                      <Link href={`/${props.getRoomChats.room.to?.username}`}>
+                        <Button>View Profile</Button>
+                      </Link>
+                    </div>
+                  )}
+                </div>
               </div>
               <div ref={scrollRef} />
               {chats.map((chat) => (
@@ -351,8 +394,8 @@ export default function RoomPageClient(
                                 searchParams.get("chat_id") === chat.id &&
                                   "border-primary",
                                 chat.user_id === props.current_user.id
-                                  ? "rounded-br-none"
-                                  : "rounded-bl-none",
+                                  ? "rounded-l-2xl rounded-br-none bg-primary text-white"
+                                  : "rounded-r-2xl rounded-bl-none",
                               )}
                             >
                               <p className="whitespace-pre-wrap break-words">
@@ -509,13 +552,14 @@ export default function RoomPageClient(
                           }}
                           rows={1}
                           maxRows={3}
-                          className="flex w-full flex-1 resize-none rounded-md border border-input bg-background px-3 py-1.5 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="flex w-full flex-1 resize-none rounded-md border-input bg-background px-3 py-1.5 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         />
                       </FormControl>
                       <Button
                         type="submit"
                         size="icon"
                         variant="outline"
+                        className="self-end"
                         disabled={
                           form.formState.isSubmitting ||
                           !form.formState.isValid ||
