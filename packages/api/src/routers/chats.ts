@@ -31,44 +31,23 @@ export const chatsRouter = router({
       .is("deleted_at", null)
       .neq("rooms_users.user_id", ctx.auth.user.id);
 
-    const image_urls: {
-      error: string | null;
-      path: string | null;
-      signedUrl: string;
-    }[] = [];
-
-    const { data } = await ctx.supabase.storage
-      .from("users")
-      .createSignedUrls(
-        [
-          ...new Set(
-            (rooms ?? []).flatMap((room) =>
-              room.rooms_users
-                .filter((user) => !user.users?.image_name?.startsWith("https:"))
-                .map((user) =>
-                  user.users?.image_name &&
-                  !user.users.image_name.startsWith("https:")
-                    ? user.users.id + "/avatar/" + user.users.image_name
-                    : "",
-                ),
-            ),
-          ),
-        ],
-        60 * 60 * 24,
-      );
-
-    if (data !== null) {
-      image_urls.push(...data);
-    }
-
     return (rooms ?? [])
       .map((room) => ({
         ...room,
         rooms_users: room.rooms_users.map((user) => {
-          const signed_url = image_urls.find(
-            (url) =>
-              url.path === user.users?.id + "/avatar/" + user.users?.image_name,
-          );
+          let avatar_url: string | null = null;
+
+          if (
+            user.users?.image_name &&
+            !user.users.image_name.startsWith("https:")
+          ) {
+            avatar_url = ctx.supabase.storage
+              .from("avatars")
+              .getPublicUrl(
+                "users/" + user.users.id + "/" + user.users.image_name,
+              ).data.publicUrl;
+          }
+
           return {
             ...user,
             users: {
@@ -79,10 +58,10 @@ export const chatsRouter = router({
                     image_name: user.users.image_name,
                     image_url: user.users.image_name,
                   }
-                : user.users?.image_name && signed_url
+                : user.users?.image_name && avatar_url
                   ? {
                       image_name: user.users.image_name,
-                      image_url: signed_url.signedUrl,
+                      image_url: avatar_url,
                     }
                   : {
                       image_name: null,
@@ -175,15 +154,12 @@ export const chatsRouter = router({
           chat.users?.image_name &&
           !chat.users.image_name.startsWith("https:")
         ) {
-          const { data } = await ctx.supabase.storage
-            .from("users")
-            .createSignedUrl(
-              chat.user_id + "/avatar/" + chat.users.image_name,
-              60 * 60 * 24,
+          const { data } = ctx.supabase.storage
+            .from("avatars")
+            .getPublicUrl(
+              "users/" + chat.user_id + "/" + chat.users.image_name,
             );
-          if (data !== null) {
-            signed_url = data.signedUrl;
-          }
+          signed_url = data.publicUrl;
         }
 
         channel = ctx.supabase.channel(`chat_${input.type}_${input.room_id}`);
@@ -289,15 +265,12 @@ export const chatsRouter = router({
           chat.users?.image_name &&
           !chat.users.image_name.startsWith("https:")
         ) {
-          const { data } = await ctx.supabase.storage
-            .from("users")
-            .createSignedUrl(
-              chat.user_id + "/avatar/" + chat.users.image_name,
-              60 * 60 * 24,
+          const { data } = ctx.supabase.storage
+            .from("avatars")
+            .getPublicUrl(
+              "users/" + chat.user_id + "/" + chat.users.image_name,
             );
-          if (data !== null) {
-            signed_url = data.signedUrl;
-          }
+          signed_url = data.publicUrl;
         }
 
         channel = ctx.supabase.channel(
@@ -474,53 +447,23 @@ export const chatsRouter = router({
               .map((chat) => chat.reply_id),
           );
 
-        const image_urls: {
-          error: string | null;
-          path: string | null;
-          signedUrl: string;
-        }[] = [];
+        let to_image_url: string | null = null;
 
-        const users_avatar_path = [
-          ...new Set(
-            room.chats
-              .filter(
-                (message) =>
-                  !message.users?.image_name?.startsWith("https://") &&
-                  message.user_id !== ctx.auth.user.id,
-              )
-              .map(
-                (message) =>
-                  message.user_id + "/avatar/" + message.users?.image_name,
-              ),
-          ),
-        ];
+        if (
+          room.rooms_users[0].users.image_name &&
+          !room.rooms_users[0].users.image_name.startsWith("https:")
+        ) {
+          const { data } = ctx.supabase.storage
+            .from("avatars")
+            .getPublicUrl(
+              "users/" +
+                room.rooms_users[0].user_id +
+                "/" +
+                room.rooms_users[0].users.image_name,
+            );
 
-        const { data } = await ctx.supabase.storage
-          .from("users")
-          .createSignedUrls(
-            room.rooms_users[0]?.users?.image_name &&
-              !room.rooms_users[0].users.image_name.startsWith("https:")
-              ? [
-                  ...users_avatar_path,
-                  room.rooms_users[0].user_id +
-                    "/avatar/" +
-                    room.rooms_users[0].users.image_name,
-                ]
-              : users_avatar_path,
-            60 * 60 * 24,
-          );
-
-        if (data !== null) {
-          image_urls.push(...data);
+          to_image_url = data.publicUrl;
         }
-
-        const to_signed_url = image_urls.find(
-          (url) =>
-            url.path ===
-            room.rooms_users[0]?.user_id +
-              "/avatar/" +
-              room.rooms_users[0]?.users?.image_name,
-        );
 
         return {
           type: input.type,
@@ -534,10 +477,10 @@ export const chatsRouter = router({
                     image_name: room.rooms_users[0].users.image_name,
                     image_url: room.rooms_users[0].users.image_name,
                   }
-                : room.rooms_users[0].users.image_name && to_signed_url
+                : room.rooms_users[0].users.image_name && to_image_url
                   ? {
                       image_name: room.rooms_users[0].users.image_name,
-                      image_url: to_signed_url.signedUrl,
+                      image_url: to_image_url,
                     }
                   : {
                       image_name: null,
@@ -550,11 +493,30 @@ export const chatsRouter = router({
                   new Date(b.created_at).getTime(),
               )
               .map((message) => {
-                const signed_url = image_urls.find(
-                  (url) =>
-                    url.path ===
-                    message.user_id + "/avatar/" + message.users?.image_name,
-                );
+                // const signed_url = image_urls.find(
+                //   (url) =>
+                //     url.path ===
+                //     message.user_id + "/avatar/" + message.users?.image_name,
+                // );
+
+                let image_url: string | null = null;
+
+                if (
+                  message.users?.image_name &&
+                  !message.users.image_name.startsWith("https:")
+                ) {
+                  const { data } = ctx.supabase.storage
+                    .from("avatars")
+                    .getPublicUrl(
+                      "users/" +
+                        message.user_id +
+                        "/" +
+                        message.users.image_name,
+                    );
+
+                  image_url = data.publicUrl;
+                }
+
                 return {
                   id: message.id,
                   content: message.content,
@@ -571,10 +533,10 @@ export const chatsRouter = router({
                           image_name: message.users.image_name,
                           image_url: message.users.image_name,
                         }
-                      : message.users?.image_name && signed_url
+                      : message.users?.image_name && image_url
                         ? {
                             image_name: message.users.image_name,
-                            image_url: signed_url.signedUrl,
+                            image_url: image_url,
                           }
                         : {
                             image_name: null,
@@ -635,35 +597,6 @@ export const chatsRouter = router({
               .map((chat) => chat.reply_id),
           );
 
-        const image_urls: {
-          error: string | null;
-          path: string | null;
-          signedUrl: string;
-        }[] = [];
-        const { data } = await ctx.supabase.storage
-          .from("users")
-          .createSignedUrls(
-            [
-              ...new Set(
-                messages
-                  .filter(
-                    (message) =>
-                      !message.users.image_name?.startsWith("https://") &&
-                      message.user_id !== ctx.auth.user.id,
-                  )
-                  .map(
-                    (message) =>
-                      message.user_id + "/avatar/" + message.users.image_name,
-                  ),
-              ),
-            ],
-            60 * 60 * 24,
-          );
-
-        if (data !== null) {
-          image_urls.push(...data);
-        }
-
         return {
           type: input.type,
           room: {
@@ -675,11 +608,23 @@ export const chatsRouter = router({
                   new Date(b.created_at).getTime(),
               )
               .map((message) => {
-                const signed_url = image_urls.find(
-                  (url) =>
-                    url.path ===
-                    message.user_id + "/avatar/" + message.users.image_name,
-                );
+                let image_url: string | null = null;
+
+                if (
+                  message.users.image_name &&
+                  !message.users.image_name.startsWith("https:")
+                ) {
+                  const { data } = ctx.supabase.storage
+                    .from("avatars")
+                    .getPublicUrl(
+                      "users/" +
+                        message.user_id +
+                        "/" +
+                        message.users.image_name,
+                    );
+
+                  image_url = data.publicUrl;
+                }
                 return {
                   id: message.id,
                   content: message.content,
@@ -696,10 +641,10 @@ export const chatsRouter = router({
                           image_name: message.users.image_name,
                           image_url: message.users.image_name,
                         }
-                      : message.users.image_name && signed_url
+                      : message.users.image_name && image_url
                         ? {
                             image_name: message.users.image_name,
-                            image_url: signed_url.signedUrl,
+                            image_url,
                           }
                         : {
                             image_name: null,
@@ -752,53 +697,23 @@ export const chatsRouter = router({
               .map((chat) => chat.reply_id),
           );
 
-        const image_urls: {
-          error: string | null;
-          path: string | null;
-          signedUrl: string;
-        }[] = [];
+        let to_image_url: string | null = null;
 
-        const users_avatar_path = [
-          ...new Set(
-            room.chats
-              .filter(
-                (message) =>
-                  !message.users?.image_name?.startsWith("https://") &&
-                  message.user_id !== ctx.auth.user.id,
-              )
-              .map(
-                (message) =>
-                  message.user_id + "/avatar/" + message.users?.image_name,
-              ),
-          ),
-        ];
+        if (
+          room.rooms_users[0].users.image_name &&
+          !room.rooms_users[0].users.image_name.startsWith("https:")
+        ) {
+          const { data } = ctx.supabase.storage
+            .from("avatars")
+            .getPublicUrl(
+              "users/" +
+                room.rooms_users[0].user_id +
+                "/" +
+                room.rooms_users[0].users.image_name,
+            );
 
-        const { data } = await ctx.supabase.storage
-          .from("users")
-          .createSignedUrls(
-            room.rooms_users[0]?.users?.image_name &&
-              !room.rooms_users[0].users.image_name.startsWith("https:")
-              ? [
-                  ...users_avatar_path,
-                  room.rooms_users[0].user_id +
-                    "/avatar/" +
-                    room.rooms_users[0].users.image_name,
-                ]
-              : users_avatar_path,
-            60 * 60 * 24,
-          );
-
-        if (data !== null) {
-          image_urls.push(...data);
+          to_image_url = data.publicUrl;
         }
-
-        const to_signed_url = image_urls.find(
-          (url) =>
-            url.path ===
-            room.rooms_users[0]?.user_id +
-              "/avatar/" +
-              room.rooms_users[0]?.users?.image_name,
-        );
 
         return {
           type: input.type,
@@ -812,10 +727,10 @@ export const chatsRouter = router({
                     image_name: room.rooms_users[0].users.image_name,
                     image_url: room.rooms_users[0].users.image_name,
                   }
-                : room.rooms_users[0].users.image_name && to_signed_url
+                : room.rooms_users[0].users.image_name && to_image_url
                   ? {
                       image_name: room.rooms_users[0].users.image_name,
-                      image_url: to_signed_url.signedUrl,
+                      image_url: to_image_url,
                     }
                   : {
                       image_name: null,
@@ -828,11 +743,23 @@ export const chatsRouter = router({
                   new Date(b.created_at).getTime(),
               )
               .map((message) => {
-                const signed_url = image_urls.find(
-                  (url) =>
-                    url.path ===
-                    message.user_id + "/avatar/" + message.users?.image_name,
-                );
+                let image_url: string | null = null;
+
+                if (
+                  message.users?.image_name &&
+                  !message.users.image_name.startsWith("https:")
+                ) {
+                  const { data } = ctx.supabase.storage
+                    .from("avatars")
+                    .getPublicUrl(
+                      "users/" +
+                        message.user_id +
+                        "/" +
+                        message.users.image_name,
+                    );
+
+                  image_url = data.publicUrl;
+                }
                 return {
                   id: message.id,
                   content: message.content,
@@ -849,10 +776,10 @@ export const chatsRouter = router({
                           image_name: message.users.image_name,
                           image_url: message.users.image_name,
                         }
-                      : message.users?.image_name && signed_url
+                      : message.users?.image_name && image_url
                         ? {
                             image_name: message.users.image_name,
-                            image_url: signed_url.signedUrl,
+                            image_url,
                           }
                         : {
                             image_name: null,
@@ -914,35 +841,6 @@ export const chatsRouter = router({
               .map((chat) => chat.reply_id),
           );
 
-        const image_urls: {
-          error: string | null;
-          path: string | null;
-          signedUrl: string;
-        }[] = [];
-        const { data } = await ctx.supabase.storage
-          .from("users")
-          .createSignedUrls(
-            [
-              ...new Set(
-                messages
-                  .filter(
-                    (message) =>
-                      !message.users.image_name?.startsWith("https://") &&
-                      message.user_id !== ctx.auth.user.id,
-                  )
-                  .map(
-                    (message) =>
-                      message.user_id + "/avatar/" + message.users.image_name,
-                  ),
-              ),
-            ],
-            60 * 60 * 24,
-          );
-
-        if (data !== null) {
-          image_urls.push(...data);
-        }
-
         return {
           type: input.type,
           room: {
@@ -954,11 +852,23 @@ export const chatsRouter = router({
                   new Date(b.created_at).getTime(),
               )
               .map((message) => {
-                const signed_url = image_urls.find(
-                  (url) =>
-                    url.path ===
-                    message.user_id + "/avatar/" + message.users.image_name,
-                );
+                let image_url: string | null = null;
+
+                if (
+                  message.users.image_name &&
+                  !message.users.image_name.startsWith("https:")
+                ) {
+                  const { data } = ctx.supabase.storage
+                    .from("avatars")
+                    .getPublicUrl(
+                      "users/" +
+                        message.user_id +
+                        "/" +
+                        message.users.image_name,
+                    );
+
+                  image_url = data.publicUrl;
+                }
                 return {
                   id: message.id,
                   content: message.content,
@@ -975,10 +885,10 @@ export const chatsRouter = router({
                           image_name: message.users.image_name,
                           image_url: message.users.image_name,
                         }
-                      : message.users.image_name && signed_url
+                      : message.users.image_name && image_url
                         ? {
                             image_name: message.users.image_name,
-                            image_url: signed_url.signedUrl,
+                            image_url,
                           }
                         : {
                             image_name: null,

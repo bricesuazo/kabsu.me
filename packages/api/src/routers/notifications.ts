@@ -42,38 +42,31 @@ export const notificationsRouter = router({
           message: "Posts not found",
         });
 
-      const image_urls: {
-        error: string | null;
-        path: string | null;
-        signedUrl: string;
-      }[] = [];
-      const { data } = await ctx.supabase.storage
-        .from("users")
-        .createSignedUrls(
-          notifications
-            .filter((notif) => !notif.from?.image_name?.startsWith("https://"))
-            .map(
-              (notif) => notif.from_id + "/avatar/" + notif.from?.image_name,
-            ),
-          60 * 60 * 24,
-        );
-      if (data !== null) {
-        image_urls.push(...data);
-      }
-
       return notifications.map((notification) => {
-        const signed_url = image_urls.find(
-          (url) =>
-            url.path ===
-            notification.from_id + "/avatar/" + notification.from?.image_name,
-        );
+        let image_url: string | null = null;
+
+        if (
+          notification.from?.image_name &&
+          !notification.from.image_name.startsWith("https:")
+        ) {
+          const { data } = ctx.supabase.storage
+            .from("avatars")
+            .getPublicUrl(
+              "users/" +
+                notification.from_id +
+                "/" +
+                notification.from.image_name,
+            );
+
+          image_url = data.publicUrl;
+        }
         return {
           ...notification,
           content: posts.find((post) => post.id === notification.content_id),
           from: notification.from?.image_name?.startsWith("https://")
             ? { ...notification.from, image_url: notification.from.image_name }
-            : notification.from?.image_name && signed_url
-              ? { ...notification.from, image_url: signed_url.signedUrl }
+            : notification.from?.image_name && image_url
+              ? { ...notification.from, image_url }
               : {
                   ...notification.from,
                   image_name: null,
