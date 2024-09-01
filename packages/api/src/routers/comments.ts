@@ -24,14 +24,16 @@ export const commentsRouter = router({
         full_comment.users?.image_name &&
         !full_comment.users.image_name.startsWith("https://")
       ) {
-        const { data } = await ctx.supabase.storage
-          .from("users")
-          .createSignedUrl(
-            full_comment.user_id + "/avatar/" + full_comment.users.image_name,
-            60,
+        const { data } = ctx.supabase.storage
+          .from("avatars")
+          .getPublicUrl(
+            "users/" +
+              full_comment.user_id +
+              "/" +
+              full_comment.users.image_name,
           );
 
-        if (data) image_url = data.signedUrl;
+        image_url = data.publicUrl;
       }
 
       return {

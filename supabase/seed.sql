@@ -78,12 +78,12 @@ INSERT INTO "storage"."buckets" (
   )
 VALUES 
   (
-    'users',
-    'users',
+    'avatars',
+    'avatars',
     NULL,
     '2024-01-25 01:40:30.239876+00',
     '2024-01-25 01:40:30.239876+00',
-    'f',
+    't',
     'f',
     NULL,
     NULL,

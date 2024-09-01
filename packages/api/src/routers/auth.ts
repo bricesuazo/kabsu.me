@@ -70,12 +70,10 @@ export const authRouter = router({
 
     let image_url: string | null = null;
     if (user.image_name && !user.image_name.startsWith("https://")) {
-      const { data } = await ctx.supabase.storage
-        .from("users")
-        .createSignedUrl(user.id + "/avatar/" + user.image_name, 60 * 60 * 24);
-      if (data) {
-        image_url = data.signedUrl;
-      }
+      const { data } = ctx.supabase.storage
+        .from("avatars")
+        .getPublicUrl("users/" + user.id + "/" + user.image_name);
+      image_url = data.publicUrl;
     }
     return user.image_name?.startsWith("https://")
       ? {
