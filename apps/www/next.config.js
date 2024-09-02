@@ -8,7 +8,7 @@ createJiti(fileURLToPath(import.meta.url))("./src/env");
 /** @type {import('next').NextConfig} */
 const config = {
   images: {
-    // unoptimized: true,
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "http",
