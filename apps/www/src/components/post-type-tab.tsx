@@ -54,7 +54,7 @@ export default function PostTypeTab() {
                 {select.id == "all" || select.id === "following" ? (
                   <p className="hidden sm:block">{select.name}</p>
                 ) : getMyUniversityStatusQuery.isLoading ? (
-                  <Skeleton className="h-4 w-10" />
+                  <Skeleton className="hidden h-4 w-10 sm:block" />
                 ) : (
                   getMyUniversityStatusQuery.data && (
                     <p className="hidden sm:block">
