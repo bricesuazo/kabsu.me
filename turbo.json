@@ -32,6 +32,11 @@
     "UPSTASH_REDIS_REST_TOKEN",
     "npm_lifecycle_event",
     "NEXT_PUBLIC_WWW_URL",
-    "NEXT_PUBLIC_NGL_URL"
+    "NEXT_PUBLIC_NGL_URL",
+    "NEXT_RUNTIME",
+    "NEXT_PUBLIC_SENTRY_DSN",
+    "SENTRY_AUTH_TOKEN",
+    "SENTRY_ORG",
+    "SENTRY_PROJECT"
   ]
 }
