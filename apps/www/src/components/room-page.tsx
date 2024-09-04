@@ -370,11 +370,8 @@ export default function RoomPageClient(
                               href={{
                                 query: { chat_id: chat.reply.id },
                               }}
-                              className="max-w-40 rounded-md bg-muted/50 p-2 text-start"
+                              className="max-w-40 rounded-full bg-muted/50 p-2 text-start"
                             >
-                              <p className="text-xs text-muted-foreground">
-                                Reply to:
-                              </p>
                               <p className="truncate text-sm text-muted-foreground">
                                 {chat.reply.content}
                               </p>
@@ -539,40 +536,40 @@ export default function RoomPageClient(
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormMessage />
-                    <div className="flex flex-1 items-center gap-2 space-y-0">
-                      <FormControl>
+                    <FormControl>
+                      <div className="relative flex items-center">
                         <TextareaAutosize
                           {...field}
                           placeholder="Write a message..."
                           disabled={form.formState.isSubmitting}
                           onKeyDown={(e) => {
-                            if (e.key === "Enter" && e.ctrlKey) {
+                            if (e.key === "Enter" && !e.shiftKey) {
                               e.preventDefault();
                             }
                           }}
                           rows={1}
                           maxRows={3}
-                          className="flex w-full flex-1 resize-none rounded-md border-input bg-background px-3 py-1.5 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="w-full resize-none rounded-full border-input bg-background px-4 py-2 text-base text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         />
-                      </FormControl>
-                      <Button
-                        type="submit"
-                        size="icon"
-                        variant="outline"
-                        className="self-end"
-                        disabled={
-                          form.formState.isSubmitting ||
-                          !form.formState.isValid ||
-                          form.watch("message").trim().length === 0
-                        }
-                      >
-                        {form.formState.isSubmitting ? (
-                          <Icons.spinner className="size-4 animate-spin" />
-                        ) : (
-                          <Send className="size-4" />
-                        )}
-                      </Button>
-                    </div>
+                        <Button
+                          type="submit"
+                          size="lg"
+                          variant="outline"
+                          className="hover:bg-primary-dark ml-3 rounded-full bg-primary p-3 text-white focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                          disabled={
+                            form.formState.isSubmitting ||
+                            !form.formState.isValid ||
+                            form.watch("message").trim().length === 0
+                          }
+                        >
+                          {form.formState.isSubmitting ? (
+                            <Icons.spinner className="h-5 w-5 animate-spin" />
+                          ) : (
+                            <Send className="h-5 w-5" />
+                          )}
+                        </Button>
+                      </div>
+                    </FormControl>
                   </FormItem>
                 )}
               />

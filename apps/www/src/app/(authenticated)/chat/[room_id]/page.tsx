@@ -35,7 +35,7 @@ export default async function RoomPage({
       api.chats.getRoomChats({ type: "room", room_id }),
       api.auth.getCurrentUser(),
     ]);
-    console.log(getRoomChats);
+
     if (!getRoomChats) redirect("/chat");
 
     return (
