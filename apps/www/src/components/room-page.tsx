@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { ChevronLeft, ExternalLink, Reply, Send, X } from "lucide-react";
+import { ChevronLeft, Reply, Send, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useInView } from "react-intersection-observer";
 import TextareaAutosize from "react-textarea-autosize";
@@ -38,6 +38,19 @@ import type { Database } from "../../../../supabase/types";
 import { Icons } from "~/components/icons";
 import { api } from "~/lib/trpc/client";
 import { createClient } from "~/supabase/client";
+
+const FormSchema = z.object({
+  message: z.string().max(512, {
+    message: "Message cannot be longer than 512 characters.",
+  }),
+  reply: z
+    .object({
+      id: z.string(),
+      content: z.string(),
+      username: z.string(),
+    })
+    .optional(),
+});
 
 export default function RoomPageClient(
   props: (
@@ -111,24 +124,8 @@ export default function RoomPageClient(
   });
   const getMyUniversityStatusQuery = api.auth.getMyUniversityStatus.useQuery();
 
-  const form = useForm<{
-    message: string;
-    reply?: { id: string; content: string; username: string };
-  }>({
-    resolver: zodResolver(
-      z.object({
-        message: z.string().max(512, {
-          message: "Message cannot be longer than 512 characters.",
-        }),
-        reply: z
-          .object({
-            id: z.string(),
-            content: z.string(),
-            username: z.string(),
-          })
-          .optional(),
-      }),
-    ),
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
     defaultValues: {
       message: "",
     },
@@ -167,6 +164,67 @@ export default function RoomPageClient(
       setIsScrollToBottom(false);
     }
   }, [isScrollToBottom]);
+
+  const handleSubmit = async (values: z.infer<typeof FormSchema>) => {
+    const id = v4();
+    setChats((prev) => [
+      ...prev,
+      {
+        id,
+        content: values.message,
+        created_at: new Date().toISOString(),
+        user_id: props.current_user.id,
+        user: props.current_user,
+        status: "pending",
+        reply: values.reply
+          ? {
+              id: values.reply.id,
+              content: values.reply.content,
+              user_id: props.current_user.id,
+              created_at: new Date().toISOString(),
+              users: {
+                name: values.reply.username,
+                username: values.reply.username,
+              },
+            }
+          : null,
+      },
+    ]);
+    setIsScrollToBottom(true);
+    form.reset();
+
+    try {
+      const { id: new_chat_id } = await sendMessageMutation.mutateAsync(
+        props.type === "room"
+          ? {
+              id,
+              type: props.type,
+              room_id: props.getRoomChats.room.id,
+              content: values.message,
+              reply_id: values.reply?.id,
+            }
+          : {
+              id,
+              type: props.type,
+              content: values.message,
+              reply_id: values.reply?.id,
+            },
+      );
+
+      setChats((prev) =>
+        prev.map((chat) =>
+          chat.id === new_chat_id
+            ? {
+                ...chat,
+                status: "success",
+              }
+            : chat,
+        ),
+      );
+    } catch (error) {
+      return error;
+    }
+  };
 
   return (
     <div className="flex flex-1 flex-col">
@@ -275,26 +333,22 @@ export default function RoomPageClient(
                           width={96}
                           height={96}
                           alt="Profile picture"
-                          className="mx-auto rounded-full"
+                          className="mx-auto mb-2 rounded-full"
                         />
-                        <h1 className="text-xl font-semibold text-foreground">
+                        <h4 className="text-xl font-semibold text-foreground">
                           {props.getRoomChats.room.to?.name}
-                        </h1>
-                        <h1>@{props.getRoomChats.room.to?.username}</h1>
+                        </h4>
+                        <p>@{props.getRoomChats.room.to?.username}</p>
 
-                        <h1>
-                          CvSU
-                          <span className="capitalize">
-                            {" "}
-                            {props.getRoomChats.room.to?.type}
-                          </span>
-                        </h1>
-                        <h1>
-                          {props.getRoomChats.room.to?.followers_length}{" "}
+                        <p className="capitalize">
+                          {props.getRoomChats.room.to?.type}
+                        </p>
+                        <p>
+                          {props.getRoomChats.room.to?.followers_length ?? 0}{" "}
                           followers •{" "}
-                          {props.getRoomChats.room.to?.followees_length}{" "}
-                          followees
-                        </h1>
+                          {props.getRoomChats.room.to?.followees_length ?? 0}{" "}
+                          following
+                        </p>
                       </div>
                       <Link href={`/${props.getRoomChats.room.to?.username}`}>
                         <Button>View Profile</Button>
@@ -313,32 +367,34 @@ export default function RoomPageClient(
                       "flex-row-reverse",
                   )}
                 >
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <Image
-                        src={
-                          props.current_user.id === chat.user_id
-                            ? props.current_user.image_name
-                              ? props.current_user.image_url
-                              : "/default-avatar.jpg"
-                            : chat.user.image_name
-                              ? chat.user.image_url
-                              : "/default-avatar.jpg"
-                        }
-                        width={32}
-                        height={32}
-                        alt="Profile picture"
-                        className="rounded-full"
-                      />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/${chat.user.username}`}>
-                          View Profile
-                        </Link>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {chat.user_id !== props.current_user.id && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <Image
+                          src={
+                            props.current_user.id === chat.user_id
+                              ? props.current_user.image_name
+                                ? props.current_user.image_url
+                                : "/default-avatar.jpg"
+                              : chat.user.image_name
+                                ? chat.user.image_url
+                                : "/default-avatar.jpg"
+                          }
+                          width={32}
+                          height={32}
+                          alt="Profile picture"
+                          className="rounded-full"
+                        />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/${chat.user.username}`}>
+                            View Profile
+                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
 
                   <div
                     className={cn(
@@ -467,67 +523,7 @@ export default function RoomPageClient(
         <div className="flex items-center gap-2">
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(async (values) => {
-                const id = v4();
-                setChats((prev) => [
-                  ...prev,
-                  {
-                    id,
-                    content: values.message,
-                    created_at: new Date().toISOString(),
-                    user_id: props.current_user.id,
-                    user: props.current_user,
-                    status: "pending",
-                    reply: values.reply
-                      ? {
-                          id: values.reply.id,
-                          content: values.reply.content,
-                          user_id: props.current_user.id,
-                          created_at: new Date().toISOString(),
-                          users: {
-                            name: values.reply.username,
-                            username: values.reply.username,
-                          },
-                        }
-                      : null,
-                  },
-                ]);
-                setIsScrollToBottom(true);
-                form.reset();
-
-                try {
-                  const { id: new_chat_id } =
-                    await sendMessageMutation.mutateAsync(
-                      props.type === "room"
-                        ? {
-                            id,
-                            type: props.type,
-                            room_id: props.getRoomChats.room.id,
-                            content: values.message,
-                            reply_id: values.reply?.id,
-                          }
-                        : {
-                            id,
-                            type: props.type,
-                            content: values.message,
-                            reply_id: values.reply?.id,
-                          },
-                    );
-
-                  setChats((prev) =>
-                    prev.map((chat) =>
-                      chat.id === new_chat_id
-                        ? {
-                            ...chat,
-                            status: "success",
-                          }
-                        : chat,
-                    ),
-                  );
-                } catch (error) {
-                  return error;
-                }
-              })}
+              onSubmit={form.handleSubmit(handleSubmit)}
               className="w-full gap-x-2"
             >
               <FormField
@@ -542,9 +538,11 @@ export default function RoomPageClient(
                           {...field}
                           placeholder="Write a message..."
                           disabled={form.formState.isSubmitting}
-                          onKeyDown={(e) => {
+                          onKeyDown={async (e) => {
                             if (e.key === "Enter" && !e.shiftKey) {
                               e.preventDefault();
+
+                              await handleSubmit(form.getValues());
                             }
                           }}
                           rows={1}
