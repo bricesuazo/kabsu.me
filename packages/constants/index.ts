@@ -738,7 +738,7 @@ export const DEVS_INFO = [
     index: 9,
     name: "Rey Anthony de Luna",
     role: "Social Media Manager",
-    image: "/dev-pics/rey.png",
+    image: "/dev-pics/rey.jpg",
     username: "@reydeluna",
     link: "https://kabsu.me/reydeluna",
     links: [
