@@ -272,6 +272,19 @@ export default function HomePublic({
               </Alert>
             )}
 
+            <p className="text-balance text-center text-sm text-muted-foreground">
+              <span className="">By signing in, you agree to our </span>
+              <br />
+              <Button asChild variant="link" className="h-auto p-0">
+                <Link href="/terms">Terms of Service</Link>
+              </Button>
+              <span> and </span>
+              <Button asChild variant="link" className="h-auto p-0">
+                <Link href="/privacy">Privacy Policy</Link>
+              </Button>
+              <span>.</span>
+            </p>
+
             <Suspense
               fallback={
                 <Skeleton className="mx-auto my-1 h-3 w-56 rounded-full" />

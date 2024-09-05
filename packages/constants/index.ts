@@ -555,6 +555,8 @@ export const BLOCKED_USERNAMES = new Set([
   "system",
   "donate",
   "privacy",
+  "tos",
+  "terms",
   "messages",
   "message",
   "chat",

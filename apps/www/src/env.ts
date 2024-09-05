@@ -16,12 +16,16 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPERADMIN_EMAIL: z.string().email(),
     NEXT_PUBLIC_WWW_URL: z.string().url(),
     NEXT_PUBLIC_NGL_URL: z.string().url(),
+    NEXT_PUBLIC_SENTRY_DSN: z.string().url(),
   },
   server: {
     SUPABASE_SERVICE_ROLE_KEY: z.string(),
     DISCORD_WEBHOOK_URL: z.string().url(),
     UPSTASH_REDIS_REST_URL: z.string().url(),
     UPSTASH_REDIS_REST_TOKEN: z.string(),
+    SENTRY_AUTH_TOKEN: z.string(),
+    SENTRY_ORG: z.string(),
+    SENTRY_PROJECT: z.string(),
   },
   client: {
     NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
@@ -36,6 +40,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPERADMIN_EMAIL: process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL,
     NEXT_PUBLIC_WWW_URL: process.env.NEXT_PUBLIC_WWW_URL,
     NEXT_PUBLIC_NGL_URL: process.env.NEXT_PUBLIC_NGL_URL,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
   },
   skipValidation:
     !!process.env.CI ||
