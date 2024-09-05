@@ -65,15 +65,10 @@ export const postsRouter = router({
         post.user.image_name &&
         !post.user.image_name.startsWith("https://")
       ) {
-        const { data } = await ctx.supabase.storage
-          .from("users")
-          .createSignedUrl(
-            post.user_id + "/avatar/" + post.user.image_name,
-            60 * 60 * 24,
-          );
-        if (data) {
-          image_url = data.signedUrl;
-        }
+        const { data } = ctx.supabase.storage
+          .from("avatars")
+          .getPublicUrl("users/" + post.user_id + "/" + post.user.image_name);
+        image_url = data.publicUrl;
       }
 
       const REGEX = new RegExp(/@([\w-]+)/g);
@@ -186,25 +181,6 @@ export const postsRouter = router({
       let nextCursor: typeof input.cursor | undefined = undefined;
       if (posts.length > limit - 1) {
         nextCursor = input.cursor + 1;
-      }
-
-      const image_urls: {
-        error: string | null;
-        path: string | null;
-        signedUrl: string;
-      }[] = [];
-      const { data } = await ctx.supabase.storage
-        .from("users")
-        .createSignedUrls(
-          [
-            ...new Set(
-              posts.map((post) => post.user_id + "/" + post.user?.image_name),
-            ),
-          ],
-          60 * 60 * 24,
-        );
-      if (data) {
-        image_urls.push(...data);
       }
 
       return {
@@ -839,27 +815,19 @@ export const postsRouter = router({
           return res;
         });
 
-      const image_urls: {
-        error: string | null;
-        path: string | null;
-        signedUrl: string;
-      }[] = [];
-      const { data } = await ctx.supabase.storage
-        .from("users")
-        .createSignedUrls(
-          likes
-            .filter((like) => !like.user?.image_name?.startsWith("https://"))
-            .map((like) => like.user?.id + "/" + like.user?.image_name),
-          60 * 60 * 24,
-        );
-      if (data) {
-        image_urls.push(...data);
-      }
-
       return likes.map((like) => {
-        const signed_url = image_urls.find(
-          (url) => url.path === like.user?.id + "/" + like.user?.image_name,
-        )?.signedUrl;
+        let image_url: string | null = null;
+
+        if (
+          like.user?.image_name &&
+          !like.user.image_name.startsWith("https:")
+        ) {
+          const { data } = ctx.supabase.storage
+            .from("avatars")
+            .getPublicUrl("users/" + like.user_id + "/" + like.user.image_name);
+
+          image_url = data.publicUrl;
+        }
 
         return {
           ...like,
@@ -868,10 +836,10 @@ export const postsRouter = router({
                 ...like.user,
                 image_url: like.user.image_name,
               }
-            : like.user?.image_name && signed_url
+            : like.user?.image_name && image_url
               ? {
                   ...like.user,
-                  image_url: signed_url,
+                  image_url,
                 }
               : {
                   ...like.user,

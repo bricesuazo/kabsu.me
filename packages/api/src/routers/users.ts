@@ -122,8 +122,8 @@ export const usersRouter = router({
         !user.image_name.startsWith("https")
       ) {
         await ctx.supabase.storage
-          .from("users")
-          .remove([user.id + "/avatar/" + user.image_name]);
+          .from("avatars")
+          .remove(["users/" + user.id + "/" + user.image_name]);
       }
 
       await ctx.supabase
@@ -263,9 +263,9 @@ export const usersRouter = router({
     .input(z.object({ image_name: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { data } = await ctx.supabase.storage
-        .from("users")
+        .from("avatars")
         .createSignedUploadUrl(
-          ctx.auth.user.id + "/avatar/" + input.image_name,
+          "users/" + ctx.auth.user.id + "/" + input.image_name,
         );
       if (!data) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       return data;
@@ -311,15 +311,12 @@ export const usersRouter = router({
         user_from_db.image_name &&
         !user_from_db.image_name.startsWith("https")
       ) {
-        const { data } = await ctx.supabase.storage
-          .from("users")
-          .createSignedUrl(
-            user_from_db.id + "/avatar/" + user_from_db.image_name,
-            60,
+        const { data } = ctx.supabase.storage
+          .from("avatars")
+          .getPublicUrl(
+            "users/" + user_from_db.id + "/" + user_from_db.image_name,
           );
-        if (data) {
-          image_url = data.signedUrl;
-        }
+        image_url = data.publicUrl;
       }
 
       return {
@@ -386,23 +383,6 @@ export const usersRouter = router({
 
       if (users === null) return [];
 
-      const image_urls: {
-        error: string | null;
-        path: string | null;
-        signedUrl: string;
-      }[] = [];
-      const { data } = await ctx.supabase.storage
-        .from("users")
-        .createSignedUrls(
-          users
-            .filter((user) => !user.image_name?.startsWith("https"))
-            .map((user) => user.id + "/avatar/" + user.image_name),
-          60 * 60 * 24,
-        );
-      if (data) {
-        image_urls.push(...data);
-      }
-
       return users
         .filter(
           (user) =>
@@ -416,20 +396,26 @@ export const usersRouter = router({
             name: user.name,
             is_verified: !!user.verified_at,
           };
-          const signedUrl = image_urls.find(
-            (image) => image.path === user.id + "/avatar/" + user.image_name,
-          )?.signedUrl;
+
+          let image_url: string | null = null;
+          if (user.image_name && !user.image_name.startsWith("https://")) {
+            const { data } = ctx.supabase.storage
+              .from("avatars")
+              .getPublicUrl("users/" + user.id + "/" + user.image_name);
+
+            image_url = data.publicUrl;
+          }
           return user.image_name?.startsWith("https://")
             ? {
                 ...base,
                 image_name: user.image_name,
                 image_url: user.image_name,
               }
-            : user.image_name && signedUrl
+            : user.image_name && image_url
               ? {
                   ...base,
                   image_name: user.image_name,
-                  image_url: signedUrl,
+                  image_url,
                 }
               : {
                   ...base,
@@ -602,35 +588,25 @@ export const usersRouter = router({
                 "id",
                 followees.map((f) => f.follower_id),
               )
-              .then(async (res) => {
+              .then((res) => {
                 if (res.error) {
                   console.error(res.error);
                   return [];
                 }
 
-                const image_urls: {
-                  error: string | null;
-                  path: string | null;
-                  signedUrl: string;
-                }[] = [];
-
-                const { data } = await ctx.supabase.storage
-                  .from("users")
-                  .createSignedUrls(
-                    res.data
-                      .filter((user) => !user.image_name?.startsWith("https"))
-                      .map((user) => user.id + "/avatar/" + user.image_name),
-                    60 * 60 * 24,
-                  );
-                if (data) {
-                  image_urls.push(...data);
-                }
-
                 return res.data.map((user) => {
-                  const image_url = image_urls.find(
-                    (image) =>
-                      image.path === user.id + "/avatar/" + user.image_name,
-                  )?.signedUrl;
+                  let image_url: string | null = null;
+
+                  if (
+                    user.image_name &&
+                    !user.image_name.startsWith("https://")
+                  ) {
+                    const { data } = ctx.supabase.storage
+                      .from("avatars")
+                      .getPublicUrl("users/" + user.id + "/" + user.image_name);
+                    image_url = data.publicUrl;
+                  }
+
                   return user.image_name?.startsWith("https://")
                     ? {
                         ...user,
@@ -684,38 +660,24 @@ export const usersRouter = router({
                 "id",
                 followers.map((f) => f.follower_id),
               )
-              .then(async (res) => {
+              .then((res) => {
                 if (res.error) {
                   console.error(res.error);
                   return [];
                 }
 
-                const image_urls: {
-                  error: string | null;
-                  path: string | null;
-                  signedUrl: string;
-                }[] = [];
-
-                const { data } = await ctx.supabase.storage
-                  .from("users")
-                  .createSignedUrls(
-                    res.data
-                      .filter(
-                        (user) => !user.image_name?.startsWith("https://"),
-                      )
-                      .map((user) => user.id + "/avatar/" + user.image_name),
-                    60 * 60 * 24,
-                  );
-
-                if (data) {
-                  image_urls.push(...data);
-                }
-
                 return res.data.map((user) => {
-                  const image_url = image_urls.find(
-                    (image) =>
-                      image.path === user.id + "/avatar/" + user.image_name,
-                  )?.signedUrl;
+                  let image_url: string | null = null;
+
+                  if (
+                    user.image_name &&
+                    !user.image_name.startsWith("https://")
+                  ) {
+                    const { data } = ctx.supabase.storage
+                      .from("avatars")
+                      .getPublicUrl("users/" + user.id + "/" + user.image_name);
+                    image_url = data.publicUrl;
+                  }
                   return user.image_name?.startsWith("https://")
                     ? {
                         ...user,
@@ -797,23 +759,6 @@ export const usersRouter = router({
 
       if (users === null) return [];
 
-      const image_urls: {
-        error: string | null;
-        path: string | null;
-        signedUrl: string;
-      }[] = [];
-      const { data } = await ctx.supabase.storage
-        .from("users")
-        .createSignedUrls(
-          users
-            .filter((user) => !user.image_name?.startsWith("https"))
-            .map((user) => user.id + "/avatar/" + user.image_name),
-          60 * 60 * 24,
-        );
-      if (data) {
-        image_urls.push(...data);
-      }
-
       return users
         .filter(
           (user) =>
@@ -827,20 +772,25 @@ export const usersRouter = router({
             name: user.name,
             is_verified: !!user.verified_at,
           };
-          const signedUrl = image_urls.find(
-            (image) => image.path === user.id + "/avatar/" + user.image_name,
-          )?.signedUrl;
+
+          let image_url: string | null = null;
+          if (user.image_name && !user.image_name.startsWith("https://")) {
+            const { data } = ctx.supabase.storage
+              .from("avatars")
+              .getPublicUrl("users/" + user.id + "/" + user.image_name);
+            image_url = data.publicUrl;
+          }
           return user.image_name?.startsWith("https://")
             ? {
                 ...base,
                 image_name: user.image_name,
                 image_url: user.image_name,
               }
-            : user.image_name && signedUrl
+            : user.image_name && image_url
               ? {
                   ...base,
                   image_name: user.image_name,
-                  image_url: signedUrl,
+                  image_url,
                 }
               : {
                   ...base,

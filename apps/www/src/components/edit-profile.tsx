@@ -168,7 +168,7 @@ export default function EditProfile({
       });
 
       await supabase.storage
-        .from("users")
+        .from("avatars")
         .uploadToSignedUrl(
           upload_signed_url.path,
           upload_signed_url.token,
