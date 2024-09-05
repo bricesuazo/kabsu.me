@@ -679,9 +679,9 @@ export const DEVS_INFO = [
     link: "https://kabsu.me/rodcotines",
     links: [
       { icon: Mail, url: "mailto:rodclarence.cotines@cvsu.edu.ph" },
-      { icon: Globe, url: "https://rodcotines.vercel.app/" },
+      { icon: Globe, url: "https://rodcotines.me/" },
       { icon: Github, url: "https://github.com/rodcotines" },
-      { icon: Instagram, url: "https://www.instagram.com/dururuyeye/" },
+      { icon: Instagram, url: "https://www.instagram.com/rod.cotines/" },
     ],
   },
   {

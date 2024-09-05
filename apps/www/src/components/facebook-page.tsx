@@ -10,10 +10,10 @@ import { Button } from "@kabsu.me/ui/button";
 export function FacebookPage() {
   return (
     <div>
-      <h1 className="w-full text-center text-4xl font-bold text-gray-800">
-        Follow us on <span className="text-blue-600">Facebook</span>
+      <h1 className="w-full py-4 text-center text-4xl font-bold text-primary">
+        Follow us on Facebook
       </h1>
-      <h2 className="w-full text-center text-sm text-gray-500">
+      <h2 className="w-full text-center">
         This is for news and announcements of{" "}
         <button className="italic">
           <Link
@@ -31,7 +31,7 @@ export function FacebookPage() {
               src="/facebook-page.png"
               height="1000"
               width="1000"
-              className="h-60 w-full rounded-lg object-cover group-hover/card:shadow-xl"
+              className="h-60 w-full rounded-lg object-cover transition-all duration-200 group-hover/card:shadow-xl"
               alt="thumbnail"
             />
             <Link
