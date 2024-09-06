@@ -38,5 +38,5 @@ export default withSentryConfig(config, {
 
   authToken: process.env.SENTRY_AUTH_TOKEN,
 
-  silent: false, // Can be used to suppress logs
+  silent: true, // Can be used to suppress logs
 });
