@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { ChevronLeft, ExternalLink, Reply, Send, X } from "lucide-react";
+import { ChevronLeft, Reply, Send, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useInView } from "react-intersection-observer";
 import TextareaAutosize from "react-textarea-autosize";
@@ -38,6 +38,19 @@ import type { Database } from "../../../../supabase/types";
 import { Icons } from "~/components/icons";
 import { api } from "~/lib/trpc/client";
 import { createClient } from "~/supabase/client";
+
+const FormSchema = z.object({
+  message: z.string().max(512, {
+    message: "Message cannot be longer than 512 characters.",
+  }),
+  reply: z
+    .object({
+      id: z.string(),
+      content: z.string(),
+      username: z.string(),
+    })
+    .optional(),
+});
 
 export default function RoomPageClient(
   props: (
@@ -111,24 +124,8 @@ export default function RoomPageClient(
   });
   const getMyUniversityStatusQuery = api.auth.getMyUniversityStatus.useQuery();
 
-  const form = useForm<{
-    message: string;
-    reply?: { id: string; content: string; username: string };
-  }>({
-    resolver: zodResolver(
-      z.object({
-        message: z.string().max(512, {
-          message: "Message cannot be longer than 512 characters.",
-        }),
-        reply: z
-          .object({
-            id: z.string(),
-            content: z.string(),
-            username: z.string(),
-          })
-          .optional(),
-      }),
-    ),
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
     defaultValues: {
       message: "",
     },
@@ -168,6 +165,67 @@ export default function RoomPageClient(
     }
   }, [isScrollToBottom]);
 
+  const handleSubmit = async (values: z.infer<typeof FormSchema>) => {
+    const id = v4();
+    setChats((prev) => [
+      ...prev,
+      {
+        id,
+        content: values.message,
+        created_at: new Date().toISOString(),
+        user_id: props.current_user.id,
+        user: props.current_user,
+        status: "pending",
+        reply: values.reply
+          ? {
+              id: values.reply.id,
+              content: values.reply.content,
+              user_id: props.current_user.id,
+              created_at: new Date().toISOString(),
+              users: {
+                name: values.reply.username,
+                username: values.reply.username,
+              },
+            }
+          : null,
+      },
+    ]);
+    setIsScrollToBottom(true);
+    form.reset();
+
+    try {
+      const { id: new_chat_id } = await sendMessageMutation.mutateAsync(
+        props.type === "room"
+          ? {
+              id,
+              type: props.type,
+              room_id: props.getRoomChats.room.id,
+              content: values.message,
+              reply_id: values.reply?.id,
+            }
+          : {
+              id,
+              type: props.type,
+              content: values.message,
+              reply_id: values.reply?.id,
+            },
+      );
+
+      setChats((prev) =>
+        prev.map((chat) =>
+          chat.id === new_chat_id
+            ? {
+                ...chat,
+                status: "success",
+              }
+            : chat,
+        ),
+      );
+    } catch (error) {
+      return error;
+    }
+  };
+
   return (
     <div className="flex flex-1 flex-col">
       <div className="flex justify-between p-4">
@@ -191,8 +249,8 @@ export default function RoomPageClient(
                       ? props.getRoomChats.room.to.image_url
                       : "/default-avatar.jpg"
                   }
-                  width={32}
-                  height={32}
+                  width={44}
+                  height={44}
                   alt="Profile picture"
                   className="rounded-full"
                 />
@@ -202,8 +260,14 @@ export default function RoomPageClient(
                   href={`/${props.getRoomChats.room.to?.username}`}
                   className="group flex items-center text-sm"
                 >
-                  <span>{props.getRoomChats.room.to?.username}</span>
-                  <ExternalLink className="ml-2 size-4 -translate-x-4 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
+                  <div className="flex flex-col">
+                    <h1 className="text-xl font-semibold">
+                      {props.getRoomChats.room.to?.name}
+                    </h1>
+                    <h1>@{props.getRoomChats.room.to?.username}</h1>
+                  </div>
+
+                  {/* <ExternalLink className="ml-2 size-4 -translate-x-4 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" /> */}
                 </Link>
                 {/* <div className="flex items-center gap-2">
                   <div className="size-2 rounded-full bg-green-500 text-lg" />
@@ -254,11 +318,44 @@ export default function RoomPageClient(
           <ScrollArea className="flex-1 px-4">
             <div className="space-y-2 py-4">
               <div ref={ref}>
-                <p className="text-center text-sm text-muted-foreground">
-                  {loadMoreMessagesMutation.isPending && hasMore
-                    ? "Loading more messages..."
-                    : "No more messages."}
-                </p>
+                <div className="text-center text-sm text-muted-foreground">
+                  {loadMoreMessagesMutation.isPending && hasMore ? (
+                    "Loading more messages..."
+                  ) : (
+                    <div className="flex w-full flex-col items-center justify-center gap-y-2">
+                      <div className="flex w-full flex-col">
+                        <Image
+                          src={
+                            props.getRoomChats.room.to?.image_name
+                              ? props.getRoomChats.room.to.image_url
+                              : "/default-avatar.jpg"
+                          }
+                          width={96}
+                          height={96}
+                          alt="Profile picture"
+                          className="mx-auto mb-2 rounded-full"
+                        />
+                        <h4 className="text-xl font-semibold text-foreground">
+                          {props.getRoomChats.room.to?.name}
+                        </h4>
+                        <p>@{props.getRoomChats.room.to?.username}</p>
+
+                        <p className="capitalize">
+                          {props.getRoomChats.room.to?.type}
+                        </p>
+                        <p>
+                          {props.getRoomChats.room.to?.followers_length ?? 0}{" "}
+                          followers •{" "}
+                          {props.getRoomChats.room.to?.followees_length ?? 0}{" "}
+                          following
+                        </p>
+                      </div>
+                      <Link href={`/${props.getRoomChats.room.to?.username}`}>
+                        <Button>View Profile</Button>
+                      </Link>
+                    </div>
+                  )}
+                </div>
               </div>
               <div ref={scrollRef} />
               {chats.map((chat) => (
@@ -270,32 +367,34 @@ export default function RoomPageClient(
                       "flex-row-reverse",
                   )}
                 >
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <Image
-                        src={
-                          props.current_user.id === chat.user_id
-                            ? props.current_user.image_name
-                              ? props.current_user.image_url
-                              : "/default-avatar.jpg"
-                            : chat.user.image_name
-                              ? chat.user.image_url
-                              : "/default-avatar.jpg"
-                        }
-                        width={32}
-                        height={32}
-                        alt="Profile picture"
-                        className="rounded-full"
-                      />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/${chat.user.username}`}>
-                          View Profile
-                        </Link>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {chat.user_id !== props.current_user.id && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <Image
+                          src={
+                            props.current_user.id === chat.user_id
+                              ? props.current_user.image_name
+                                ? props.current_user.image_url
+                                : "/default-avatar.jpg"
+                              : chat.user.image_name
+                                ? chat.user.image_url
+                                : "/default-avatar.jpg"
+                          }
+                          width={32}
+                          height={32}
+                          alt="Profile picture"
+                          className="rounded-full"
+                        />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/${chat.user.username}`}>
+                            View Profile
+                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
 
                   <div
                     className={cn(
@@ -327,11 +426,8 @@ export default function RoomPageClient(
                               href={{
                                 query: { chat_id: chat.reply.id },
                               }}
-                              className="max-w-40 rounded-md bg-muted/50 p-2 text-start"
+                              className="max-w-40 rounded-full bg-muted/50 p-2 text-start"
                             >
-                              <p className="text-xs text-muted-foreground">
-                                Reply to:
-                              </p>
                               <p className="truncate text-sm text-muted-foreground">
                                 {chat.reply.content}
                               </p>
@@ -351,8 +447,8 @@ export default function RoomPageClient(
                                 searchParams.get("chat_id") === chat.id &&
                                   "border-primary",
                                 chat.user_id === props.current_user.id
-                                  ? "rounded-br-none"
-                                  : "rounded-bl-none",
+                                  ? "rounded-l-2xl rounded-br-none bg-primary text-white"
+                                  : "rounded-r-2xl rounded-bl-none",
                               )}
                             >
                               <p className="whitespace-pre-wrap break-words">
@@ -427,67 +523,7 @@ export default function RoomPageClient(
         <div className="flex items-center gap-2">
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(async (values) => {
-                const id = v4();
-                setChats((prev) => [
-                  ...prev,
-                  {
-                    id,
-                    content: values.message,
-                    created_at: new Date().toISOString(),
-                    user_id: props.current_user.id,
-                    user: props.current_user,
-                    status: "pending",
-                    reply: values.reply
-                      ? {
-                          id: values.reply.id,
-                          content: values.reply.content,
-                          user_id: props.current_user.id,
-                          created_at: new Date().toISOString(),
-                          users: {
-                            name: values.reply.username,
-                            username: values.reply.username,
-                          },
-                        }
-                      : null,
-                  },
-                ]);
-                setIsScrollToBottom(true);
-                form.reset();
-
-                try {
-                  const { id: new_chat_id } =
-                    await sendMessageMutation.mutateAsync(
-                      props.type === "room"
-                        ? {
-                            id,
-                            type: props.type,
-                            room_id: props.getRoomChats.room.id,
-                            content: values.message,
-                            reply_id: values.reply?.id,
-                          }
-                        : {
-                            id,
-                            type: props.type,
-                            content: values.message,
-                            reply_id: values.reply?.id,
-                          },
-                    );
-
-                  setChats((prev) =>
-                    prev.map((chat) =>
-                      chat.id === new_chat_id
-                        ? {
-                            ...chat,
-                            status: "success",
-                          }
-                        : chat,
-                    ),
-                  );
-                } catch (error) {
-                  return error;
-                }
-              })}
+              onSubmit={form.handleSubmit(handleSubmit)}
               className="w-full gap-x-2"
             >
               <FormField
@@ -496,39 +532,42 @@ export default function RoomPageClient(
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormMessage />
-                    <div className="flex flex-1 items-center gap-2 space-y-0">
-                      <FormControl>
+                    <FormControl>
+                      <div className="relative flex items-center">
                         <TextareaAutosize
                           {...field}
                           placeholder="Write a message..."
                           disabled={form.formState.isSubmitting}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" && e.ctrlKey) {
+                          onKeyDown={async (e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
                               e.preventDefault();
+
+                              await handleSubmit(form.getValues());
                             }
                           }}
                           rows={1}
                           maxRows={3}
-                          className="flex w-full flex-1 resize-none rounded-md border border-input bg-background px-3 py-1.5 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="w-full resize-none rounded-full border-input bg-background px-4 py-2 text-base text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         />
-                      </FormControl>
-                      <Button
-                        type="submit"
-                        size="icon"
-                        variant="outline"
-                        disabled={
-                          form.formState.isSubmitting ||
-                          !form.formState.isValid ||
-                          form.watch("message").trim().length === 0
-                        }
-                      >
-                        {form.formState.isSubmitting ? (
-                          <Icons.spinner className="size-4 animate-spin" />
-                        ) : (
-                          <Send className="size-4" />
-                        )}
-                      </Button>
-                    </div>
+                        <Button
+                          type="submit"
+                          size="lg"
+                          variant="outline"
+                          className="hover:bg-primary-dark ml-3 rounded-full bg-primary p-3 text-white focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                          disabled={
+                            form.formState.isSubmitting ||
+                            !form.formState.isValid ||
+                            form.watch("message").trim().length === 0
+                          }
+                        >
+                          {form.formState.isSubmitting ? (
+                            <Icons.spinner className="h-5 w-5 animate-spin" />
+                          ) : (
+                            <Send className="h-5 w-5" />
+                          )}
+                        </Button>
+                      </div>
+                    </FormControl>
                   </FormItem>
                 )}
               />
