@@ -1,6 +1,6 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "ui": "stream",
+  "ui": "tui",
   "globalDependencies": ["**/.env.*local", "**/.env"],
   "tasks": {
     "build": {
@@ -22,7 +22,15 @@
     "db:studio": {},
     "db:seed": {},
     "db:generate": {},
-    "email:dev": {}
+    "email:dev": {},
+    "ui-add": {
+      "cache": false,
+      "interactive": true
+    },
+    "magicui-add": {
+      "cache": false,
+      "interactive": true
+    }
   },
   "globalEnv": [
     "NODE_ENV",

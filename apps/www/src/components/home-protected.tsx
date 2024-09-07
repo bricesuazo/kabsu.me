@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 import { api } from "~/lib/trpc/client";
 import Header from "./header";
 import { Icons } from "./icons";
+import OnboardingV2 from "./onboarding-v2";
 import Post from "./post";
 import PostForm from "./post-form";
 import PostTypeTab from "./post-type-tab";
@@ -28,56 +29,61 @@ export default function HomeProtected({
     college: "See posts of your college.",
     program: "See posts of your program.",
   };
+
   return (
-    <div className="border-x">
-      <div className="sticky top-0 z-50">
-        <Header />
+    <>
+      <OnboardingV2 />
+      
+      <div className="border-x">
+        <div className="sticky top-0 z-50">
+          <Header />
 
-        <PostTypeTab />
-      </div>
+          <PostTypeTab />
+        </div>
 
-      <div className="border-b p-3 text-center sm:hidden">
-        <p className="text-sm capitalize text-primary">
-          {tab ? tab : "following"} tab
-          {getMyUniversityStatusQuery.data &&
-            ` (${(() => {
-              switch (tab) {
-                case "all":
-                  return "Global";
-                case "campus":
-                  return getMyUniversityStatusQuery.data.programs?.colleges?.campuses?.slug.toUpperCase();
-                case "college":
-                  return getMyUniversityStatusQuery.data.programs?.colleges?.slug.toUpperCase();
-                case "program":
-                  return getMyUniversityStatusQuery.data.programs?.slug.toUpperCase();
-                default:
-                  return "Following";
-              }
-            })()})`}
-        </p>
-        <p className="text-xs text-muted-foreground">
-          {tab ? TABS_TITLE[tab] : "See posts of who you are following."}
-        </p>
-      </div>
+        <div className="border-b p-3 text-center sm:hidden">
+          <p className="text-sm capitalize text-primary">
+            {tab ? tab : "following"} tab
+            {getMyUniversityStatusQuery.data &&
+              ` (${(() => {
+                switch (tab) {
+                  case "all":
+                    return "Global";
+                  case "campus":
+                    return getMyUniversityStatusQuery.data.programs?.colleges?.campuses?.slug.toUpperCase();
+                  case "college":
+                    return getMyUniversityStatusQuery.data.programs?.colleges?.slug.toUpperCase();
+                  case "program":
+                    return getMyUniversityStatusQuery.data.programs?.slug.toUpperCase();
+                  default:
+                    return "Following";
+                }
+              })()})`}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {tab ? TABS_TITLE[tab] : "See posts of who you are following."}
+          </p>
+        </div>
 
-      <div className="min-h-screen">
-        <PostForm hasRedirect />
+        <div className="min-h-screen">
+          <PostForm hasRedirect />
 
-        <Posts tab={tab ? tab : "following"} />
+          <Posts tab={tab ? tab : "following"} />
+        </div>
+        <div className="fixed bottom-0 right-0 p-4">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button asChild size="icon" className="size-14 rounded-full">
+                <Link href="/chat">
+                  <MessageCircle size="1.5rem" color="white" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Messages</TooltipContent>
+          </Tooltip>
+        </div>
       </div>
-      <div className="fixed bottom-0 right-0 p-4">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button asChild size="icon" className="size-14 rounded-full">
-              <Link href="/chat">
-                <MessageCircle size="1.5rem" color="white" />
-              </Link>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Messages</TooltipContent>
-        </Tooltip>
-      </div>
-    </div>
+    </>
   );
 }
 
