@@ -5,7 +5,6 @@ import {
   Book,
   BookOpenCheck,
   Clock,
-  Facebook,
   Github,
   Globe,
   Globe2,
@@ -730,6 +729,7 @@ export const DEVS_INFO = [
     link: "https://kabsu.me/iamnards",
     links: [
       { icon: Mail, url: "mailto:johnbernard.sarroca@cvsu.edu.ph" },
+      { icon: Globe, url: "https://nardsarroca.vercel.app/" },
       { icon: Github, url: "https://github.com/iamnards" },
       { icon: Instagram, url: "https://www.instagram.com/i.am.nards/" },
     ],
@@ -743,8 +743,9 @@ export const DEVS_INFO = [
     link: "https://kabsu.me/reydeluna",
     links: [
       { icon: Mail, url: "mailto:reyanthony.deluna@cvsu.edu.ph" },
-      { icon: Facebook, url: "https://facebook.com/reyanthony.deluna/" },
-      { icon: Instagram, url: "https://www.instagram.com/rythnyln/" },
+      // Removed cause of privacy
+      // { icon: Facebook, url: "https://facebook.com/reyanthony.deluna/" },
+      { icon: Instagram, url: "https://www.instagram.com/rythnydln/" },
     ],
   },
 ];

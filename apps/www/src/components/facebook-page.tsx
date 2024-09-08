@@ -18,15 +18,7 @@ export function FacebookPage() {
         Follow us on Facebook
       </h1>
       <h2 className="w-full text-center">
-        This is for news and announcements of{" "}
-        <button className="italic">
-          <Link
-            href="https://www.facebook.com/profile.php?id=61553962288015"
-            target="_blank"
-          >
-            https://kabsu.me/
-          </Link>
-        </button>
+        This is for news and announcements of Kabsu.me
       </h2>
       <CardContainer className="inter-var">
         <CardBody className="group/card relative h-auto w-auto rounded-xl border border-black/[0.1] bg-white p-4 dark:border-white/[0.2] dark:bg-black dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1]">
@@ -38,35 +30,27 @@ export function FacebookPage() {
               className="h-60 w-full rounded-lg object-cover transition-all duration-200 group-hover/card:shadow-xl"
               alt="thumbnail"
             />
-            <Link
-              href="https://www.facebook.com/profile.php?id=61553962288015"
-              target="_blank"
-            >
-              <Image
-                src="/facebook-page-logo.jpg"
-                height="120"
-                width="100"
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-3/4 transform rounded-full border-2 border-white object-cover group-hover/card:shadow-xl dark:border-black"
-                alt="thumbnail"
-                style={{ cursor: "pointer" }}
-              />
-            </Link>
+
+            <Image
+              src="/facebook-page-logo.jpg"
+              height="120"
+              width="100"
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-3/4 transform rounded-full border-2 border-white object-cover group-hover/card:shadow-xl dark:border-black"
+              alt="thumbnail"
+            />
           </CardItem>
           <div className="mt-20 flex flex-col items-center justify-center">
             <CardItem
               translateZ={20}
-              as="button"
               className="rounded-xl px-4 py-2 text-xl font-bold text-secondary-foreground transition-all duration-200 hover:text-xl dark:text-white"
             >
-              <Link
-                href="https://www.facebook.com/profile.php?id=61553962288015"
-                target="_blank"
-              >
-                Kabsu.me
-              </Link>
+              Kabsu.me
             </CardItem>
 
-            <Button className="black font-bold text-white transition-all duration-200 hover:scale-110">
+            <Button
+              className="black font-bold text-white transition-all duration-200 hover:scale-110"
+              asChild
+            >
               <Link
                 href="https://www.facebook.com/profile.php?id=61553962288015"
                 target="_blank"

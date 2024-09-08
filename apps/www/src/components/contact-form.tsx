@@ -147,15 +147,25 @@ export default function ContactForm() {
           </h4>
 
           <div className="mx-auto flex items-start justify-start gap-4">
-            <Button asChild variant="contacts" className="w-fit">
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-12 rounded-full"
+              asChild
+            >
               <Link
                 href="mailto:kabsu.me@gmail.com?subject=Mail from your website&body=Hello there,"
                 className="group text-left"
               >
-                <MailIcon className="size-5 duration-300 group-hover:text-red-600" />
+                <MailIcon className="size-5" />
               </Link>
             </Button>
-            <Button asChild variant="contacts" className="w-fit">
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-12 rounded-full"
+              asChild
+            >
               <Link
                 target="_blank"
                 href="https://www.facebook.com/profile.php?id=61553962288015"
