@@ -12,7 +12,7 @@ const ngl = () => {
         Share and recieve anonymous messages, express freely, and connect like
         never before!
       </p>
-      <div className="flex w-full max-w-[500px] flex-col items-center rounded-lg border-2 py-8 text-primary dark:bg-black">
+      <div className="flex w-full max-w-[500px] flex-col items-center rounded-lg border py-8 text-primary dark:bg-black">
         <h1 className="mx-auto flex items-center justify-center text-4xl font-bold">
           <VenetianMaskIcon className="mr-2 size-12" /> NGL
         </h1>
