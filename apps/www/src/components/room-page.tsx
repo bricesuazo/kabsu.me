@@ -544,6 +544,13 @@ export default function RoomPageClient(
                           onKeyDown={async (e) => {
                             if (e.key === "Enter" && !e.shiftKey) {
                               e.preventDefault();
+
+                              const message =
+                                form.watch("message").trim().length === 0;
+
+                              if (message === true) {
+                                return;
+                              }
                               console.log("first");
                               await handleSubmit(form.getValues());
                             }
