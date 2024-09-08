@@ -348,9 +348,11 @@ export default function RoomPageClient(
                           following
                         </p>
                       </div>
-                      <Link href={`/${props.getRoomChats.room.to?.username}`}>
-                        <Button>View Profile</Button>
-                      </Link>
+                      <Button asChild>
+                        <Link href={`/${props.getRoomChats.room.to?.username}`}>
+                          View Profile
+                        </Link>
+                      </Button>
                     </div>
                   )}
                   {loadMoreMessagesMutation.isPending && hasMore

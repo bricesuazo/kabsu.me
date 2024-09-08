@@ -111,9 +111,9 @@ export default function NewChat({
                 appear here.
               </p>
               <div className="flex justify-center space-x-2">
-                <Link href={`/${user.username}`}>
-                  <Button className="bg-primary">View Profile</Button>
-                </Link>
+                <Button asChild>
+                  <Link href={`/${user.username}`}>View Profile</Link>
+                </Button>
               </div>
             </div>
           </div>
