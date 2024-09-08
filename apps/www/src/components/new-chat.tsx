@@ -80,24 +80,38 @@ export default function NewChat({
 
       <Separator />
 
-      <div className="flex h-0 flex-grow">
+      <div className="flex h-0 flex-1">
         {messages.length === 0 ? (
-          <div className="flex w-full flex-col items-center pt-4 text-center text-muted-foreground">
-            <Image
-              src={user.image_name ? user.image_url : "/default-avatar.jpg"}
-              width={96}
-              height={96}
-              alt="Profile picture"
-              className="rounded-full"
-            />
-            <h4 className="text-xl font-semibold text-foreground">
-              {user.name}
-            </h4>
-            <p className="text-sm">@{user.username}</p>
-            <p className="text-sm">{user.type}</p>
-            <Link href={`/${user.username}`}>
-              <Button>View Profile</Button>
-            </Link>
+          <div className="flex w-full flex-col items-center justify-center text-center">
+            <div className="max-w-md space-y-2">
+              <Image
+                src={user.image_name ? user.image_url : "/default-avatar.jpg"}
+                width={120}
+                height={120}
+                alt="Profile picture"
+                className="mx-auto rounded-full border-4 border-primary/10"
+              />
+              <div>
+                <h4 className="text-2xl font-bold text-foreground">
+                  {user.name}
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  @{user.username} •{" "}
+                  <span className="capitalize">{user.type}</span>
+                </p>
+              </div>
+              <p className="text-muted-foreground">
+                Start a new conversation with {user.name}. Your messages will
+                appear here.
+              </p>
+              <div className="flex justify-center space-x-2">
+                <Link href={`/${user.username}`}>
+                  <Button variant="outline" className="bg-primary">
+                    View Profile
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         ) : (
           <ScrollArea className="flex-1 px-4">
