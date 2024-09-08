@@ -319,9 +319,7 @@ export default function RoomPageClient(
             <div className="space-y-2 py-4">
               <div ref={ref}>
                 <div className="text-center text-sm text-muted-foreground">
-                  {loadMoreMessagesMutation.isPending && hasMore ? (
-                    "Loading more messages..."
-                  ) : (
+                  {props.type === "room" && (
                     <div className="flex w-full flex-col items-center justify-center gap-y-2">
                       <div className="flex w-full flex-col">
                         <Image
@@ -355,6 +353,9 @@ export default function RoomPageClient(
                       </Link>
                     </div>
                   )}
+                  {loadMoreMessagesMutation.isPending && hasMore
+                    ? "Loading more messages..."
+                    : ""}
                 </div>
               </div>
               <div ref={scrollRef} />
