@@ -770,3 +770,93 @@ export const REPORT_POST_REASONS = [
     reason: "Other",
   },
 ];
+
+export const ONBOARDING_PAGES: Array<{
+  title: string;
+  content: string;
+  image: string;
+}> = [
+  {
+    title: "Welcome to Kabsu.me",
+    content: "Discover a new way to connect and share with Kabsu.me!",
+    image: "/onboarding-pics/Promotion 1.png",
+  },
+  {
+    title: "feature title",
+    content:
+      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    image: "/onboarding-pics/Promotion 2.png",
+  },
+  {
+    title: "feature title",
+    content:
+      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    image: "/onboarding-pics/Promotion 3.png",
+  },
+  {
+    title: "feature title",
+    content:
+      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    image: "/onboarding-pics/Promotion 4.png",
+  },
+  {
+    title: "feature title",
+    content:
+      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    image: "/onboarding-pics/Promotion 5.png",
+  },
+  {
+    title: "feature title",
+    content:
+      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    image: "/onboarding-pics/Promotion 13.png",
+  },
+  {
+    title: "feature title",
+    content:
+      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    image: "/onboarding-pics/Promotion 11.png",
+  },
+  {
+    title: "feature title",
+    content:
+      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    image: "/onboarding-pics/Front Page 7.png",
+  },
+  {
+    title: "feature title",
+    content:
+      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    image: "/onboarding-pics/Adventura.png",
+  },
+  {
+    title: "feature title",
+    content:
+      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    image: "/onboarding-pics/Arctec.png",
+  },
+  {
+    title: "feature title",
+    content:
+      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    image: "/onboarding-pics/Chromia.png",
+  },
+  {
+    title: "feature title",
+    content:
+      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    image: "/onboarding-pics/eBoto.png",
+  },
+  {
+    title: "feature title",
+    content:
+      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    image: "/onboarding-pics/Odyssey.png",
+  },
+  {
+    title: "feature title",
+    content:
+      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    image: "/onboarding-pics/Swardify.png",
+  },
+];
