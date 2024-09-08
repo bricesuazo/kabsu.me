@@ -13,7 +13,13 @@ import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 import { Button } from "@kabsu.me/ui/button";
-import { Form, FormControl, FormField, FormItem } from "@kabsu.me/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@kabsu.me/ui/form";
 import { ScrollArea } from "@kabsu.me/ui/scroll-area";
 import { Separator } from "@kabsu.me/ui/separator";
 
@@ -82,7 +88,7 @@ export default function NewChat({
 
       <div className="flex h-0 flex-1">
         {messages.length === 0 ? (
-          <div className="flex w-full flex-col items-center justify-center text-center">
+          <div className="flex w-full flex-col items-center justify-center p-8 text-center">
             <div className="max-w-md space-y-2">
               <Image
                 src={user.image_name ? user.image_url : "/default-avatar.jpg"}
@@ -106,9 +112,7 @@ export default function NewChat({
               </p>
               <div className="flex justify-center space-x-2">
                 <Link href={`/${user.username}`}>
-                  <Button variant="outline" className="bg-primary">
-                    View Profile
-                  </Button>
+                  <Button className="bg-primary">View Profile</Button>
                 </Link>
               </div>
             </div>
@@ -167,43 +171,63 @@ export default function NewChat({
                   content: values.message,
                 });
               })}
-              className="flex w-full gap-x-2"
+              className="w-full gap-x-2"
             >
               <FormField
                 control={form.control}
                 name="message"
                 render={({ field }) => (
-                  <FormItem className="flex flex-1 items-center gap-2 space-y-0">
+                  <FormItem className="space-y-2">
+                    <FormMessage />
                     <FormControl>
-                      <TextareaAutosize
-                        {...field}
-                        placeholder="Write a message..."
-                        autoFocus
-                        disabled={form.formState.isSubmitting}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && e.ctrlKey) {
-                            e.preventDefault();
+                      <div className="relative flex items-center">
+                        <TextareaAutosize
+                          {...field}
+                          placeholder="Write a message..."
+                          disabled={form.formState.isSubmitting}
+                          onKeyDown={async (e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                              e.preventDefault();
+                              await form.handleSubmit(async (values) => {
+                                setMessages((prev) => [
+                                  ...prev,
+                                  {
+                                    id: String(prev.length + 1),
+                                    content: values.message,
+                                    created_at: new Date().toISOString(),
+                                  },
+                                ]);
+                                form.reset();
+                                await sendNewMessageMutation.mutateAsync({
+                                  user_id: user.id,
+                                  content: values.message,
+                                });
+                              })();
+                            }
+                          }}
+                          rows={1}
+                          maxRows={3}
+                          className="w-full resize-none rounded-full border-input bg-background px-4 py-2 text-base text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                        <Button
+                          type="submit"
+                          size="lg"
+                          variant="outline"
+                          className="hover:bg-primary-dark ml-3 rounded-full bg-primary p-3 text-white focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                          disabled={
+                            form.formState.isSubmitting ||
+                            !form.formState.isValid ||
+                            form.watch("message").trim().length === 0
                           }
-                        }}
-                        rows={1}
-                        maxRows={3}
-                        className="flex w-full flex-1 resize-none rounded-md border border-input bg-background px-3 py-1.5 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      />
+                        >
+                          {form.formState.isSubmitting ? (
+                            <Icons.spinner className="h-5 w-5 animate-spin" />
+                          ) : (
+                            <Send className="h-5 w-5" />
+                          )}
+                        </Button>
+                      </div>
                     </FormControl>
-                    <Button
-                      type="submit"
-                      size="icon"
-                      variant="outline"
-                      disabled={
-                        form.formState.isSubmitting || !form.formState.isValid
-                      }
-                    >
-                      {form.formState.isSubmitting ? (
-                        <Icons.spinner className="size-4 animate-spin" />
-                      ) : (
-                        <Send className="size-4" />
-                      )}
-                    </Button>
                   </FormItem>
                 )}
               />
