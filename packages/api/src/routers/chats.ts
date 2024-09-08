@@ -339,12 +339,44 @@ export const chatsRouter = router({
 
       if (room?.id) return { room_id: room.id };
 
-      const { data: user } = await ctx.supabase
+      const { data: user, error: user_error } = await ctx.supabase
         .from("users")
-        .select("id, username")
+        .select("id, username,name,image_name, type")
         .eq("id", input.user_id)
         .single();
-      return { user };
+
+      if (user_error)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: user_error.message,
+        });
+
+      let signed_url: string | null = null;
+
+      if (user?.image_name && !user?.image_name.startsWith("https:")) {
+        const { data } = ctx.supabase.storage
+          .from("avatars")
+          .getPublicUrl("users/" + user.id + "/" + user?.image_name);
+        signed_url = data.publicUrl;
+      }
+      return {
+        user: {
+          ...user,
+          ...(user?.image_name?.startsWith("https://")
+            ? {
+                image_name: user.image_name,
+                image_url: user.image_name,
+              }
+            : user?.image_name && signed_url
+              ? {
+                  image_name: user.image_name,
+                  image_url: signed_url,
+                }
+              : {
+                  image_name: null,
+                }),
+        },
+      };
     }),
   sendNewMessage: protectedProcedure
     .input(

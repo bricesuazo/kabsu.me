@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDistanceToNow } from "date-fns";
@@ -58,15 +59,17 @@ export default function NewChat({
         <div className="flex items-center gap-2">
           <div>
             <Image
-              src="/default-avatar.jpg"
-              width={32}
-              height={32}
+              src={user.image_name ? user.image_url : "/default-avatar.jpg"}
+              width={44}
+              height={44}
               alt="Profile picture"
               className="rounded-full"
             />
           </div>
           <div>
-            <p className="text-sm">{user.username}</p>
+            <p className="text-xl font-semibold">{user.name}</p>
+            <p className="text-sm">@{user.username}</p>
+
             {/* <div className="flex items-center gap-2">
               <div className="size-2 rounded-full bg-green-500 text-lg" />
               <p className="text-xs text-muted-foreground">Online</p>
@@ -79,8 +82,22 @@ export default function NewChat({
 
       <div className="flex h-0 flex-grow">
         {messages.length === 0 ? (
-          <div className="grid flex-1 place-items-center">
-            <p className="text-muted-foreground">No messages yet.</p>
+          <div className="flex w-full flex-col items-center pt-4 text-center text-muted-foreground">
+            <Image
+              src={user.image_name ? user.image_url : "/default-avatar.jpg"}
+              width={96}
+              height={96}
+              alt="Profile picture"
+              className="rounded-full"
+            />
+            <h4 className="text-xl font-semibold text-foreground">
+              {user.name}
+            </h4>
+            <p className="text-sm">@{user.username}</p>
+            <p className="text-sm">{user.type}</p>
+            <Link href={`/${user.username}`}>
+              <Button>View Profile</Button>
+            </Link>
           </div>
         ) : (
           <ScrollArea className="flex-1 px-4">
