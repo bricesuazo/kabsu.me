@@ -4,8 +4,12 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { CardBody, CardContainer, CardItem } from "@kabsu.me/ui/3d-card";
 import { Button } from "@kabsu.me/ui/button";
+import {
+  CardBody,
+  CardContainer,
+  CardItem,
+} from "@kabsu.me/ui/magicui/3d-card";
 
 export function FacebookPage() {
   return (

@@ -142,7 +142,7 @@ export default function ContactForm() {
         </Form>
 
         <div className="flex w-full flex-col p-6">
-          <h4 className="flex w-full justify-center pb-2 text-center text-xl font-medium">
+          <h4 className="flex w-full justify-center pb-2 text-center font-medium">
             or contact us at...
           </h4>
 

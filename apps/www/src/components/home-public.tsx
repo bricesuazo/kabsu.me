@@ -19,6 +19,7 @@ import { api } from "~/lib/trpc/server";
 import ContactForm from "./contact-form";
 import { FacebookPage } from "./facebook-page";
 import Footer from "./footer";
+import Ngl from "./ngl";
 import SigninButton from "./signin-button";
 import { ToggleTheme } from "./toggle-theme";
 
@@ -417,12 +418,11 @@ export default function HomePublic({
             })}
           </div>
         </div>
-        <div>
-          <FacebookPage />
-        </div>
-        <div>
-          <ContactForm />
-        </div>
+
+        <Ngl />
+        <FacebookPage />
+        <ContactForm />
+
         <div>
           <Separator className="mx-auto w-8" />
           <Footer />
