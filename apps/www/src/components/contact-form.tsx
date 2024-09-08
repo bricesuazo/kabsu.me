@@ -54,14 +54,14 @@ export default function ContactForm() {
   });
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="mx-auto flex max-w-[750px] flex-col gap-4">
       <h1 className="text-center text-4xl font-bold tracking-[-0.03em] text-primary duration-300 motion-reduce:transition-none">
         Contact Us
       </h1>
       <p className="mx-auto text-balance text-center">
         Have any questions or concerns? Feel free to reach out to us!
       </p>
-      <div className="flex w-full flex-col md:flex-row">
+      <div className="flex w-full flex-col">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit((values) =>
@@ -142,28 +142,36 @@ export default function ContactForm() {
         </Form>
 
         <div className="flex w-full flex-col p-6">
-          <h4 className="flex w-full justify-center py-4 text-center text-xl font-medium">
+          <h4 className="flex w-full justify-center pb-2 text-center font-medium">
             or contact us at...
           </h4>
 
-          <div className="flex flex-col items-start justify-start gap-4">
-            <Button asChild variant="contacts">
+          <div className="mx-auto flex items-start justify-start gap-4">
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-12 rounded-full"
+              asChild
+            >
               <Link
                 href="mailto:kabsu.me@gmail.com?subject=Mail from your website&body=Hello there,"
                 className="group text-left"
               >
-                <MailIcon className="mr-2 size-5 duration-300 group-hover:text-red-600" />
-                Email
+                <MailIcon className="size-5" />
               </Link>
             </Button>
-            <Button asChild variant="contacts">
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-12 rounded-full"
+              asChild
+            >
               <Link
                 target="_blank"
                 href="https://www.facebook.com/profile.php?id=61553962288015"
                 className="group text-left"
               >
-                <FacebookIcon className="mr-2 size-5 duration-300 group-hover:text-blue-600" />
-                Facebook
+                <FacebookIcon className="size-5 duration-300 group-hover:text-blue-600" />
               </Link>
             </Button>
           </div>

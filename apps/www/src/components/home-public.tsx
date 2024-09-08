@@ -17,7 +17,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 
 import { api } from "~/lib/trpc/server";
 import ContactForm from "./contact-form";
+import { FacebookPage } from "./facebook-page";
 import Footer from "./footer";
+import NGLPanel from "./ngl-panel";
 import SigninButton from "./signin-button";
 import { ToggleTheme } from "./toggle-theme";
 
@@ -387,9 +389,9 @@ export default function HomePublic({
                   <Image
                     src={dev.image}
                     alt={dev.name}
-                    className="aspect-square rounded-full object-cover object-center saturate-0"
-                    width="80"
-                    height="80"
+                    className="aspect-square rounded-full object-cover object-center"
+                    width="120"
+                    height="120"
                   />
                   <div className="flex flex-col items-center text-center">
                     <p className="font-semibold">{dev.name}</p>
@@ -416,9 +418,11 @@ export default function HomePublic({
             })}
           </div>
         </div>
-        <div>
-          <ContactForm />
-        </div>
+
+        <NGLPanel />
+        <FacebookPage />
+        <ContactForm />
+
         <div>
           <Separator className="mx-auto w-8" />
           <Footer />
