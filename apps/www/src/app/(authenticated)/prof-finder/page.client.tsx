@@ -6,7 +6,18 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDistanceToNow } from "date-fns";
-import { Check, ChevronsUpDown, Loader2, ScanSearch, X } from "lucide-react";
+import {
+  Check,
+  ChevronsUpDown,
+  Clock9,
+  Loader2,
+  MessageCircle,
+  NotebookPen,
+  ScanSearch,
+  Trash2,
+  UserRoundPlus,
+  X,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { z } from "zod";
@@ -111,9 +122,9 @@ export default function ProfFinderPageClient() {
 
   return (
     <div>
-      <div className="flex h-40 flex-col items-center justify-center border-b p-4">
-        <ScanSearch />
-        <h4 className="text-center text-2xl font-bold">Prof Finder</h4>
+      <div className="flex h-40 flex-col items-center justify-center gap-1 border-b bg-gradient-to-tr from-primary/30 to-yellow-500/10 p-4">
+        <ScanSearch className="size-10" />
+        <h4 className="text-center text-3xl font-bold">Prof Finder</h4>
         <p className="text-balance text-center text-sm text-muted-foreground">
           Find professors and teaching assistants at your university.
         </p>
@@ -185,7 +196,10 @@ export default function ProfFinderPageClient() {
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Create Post</DialogTitle>
+                  <DialogTitle className="flex items-center gap-2 text-2xl">
+                    <NotebookPen />
+                    Create Post
+                  </DialogTitle>
                 </DialogHeader>
 
                 <Form {...form}>
@@ -202,7 +216,10 @@ export default function ProfFinderPageClient() {
                         <FormItem>
                           <FormLabel>Description</FormLabel>
                           <FormControl>
-                            <Textarea placeholder="Description" {...field} />
+                            <Textarea
+                              placeholder="ABCD 123 - Subject Name"
+                              {...field}
+                            />
                           </FormControl>
                           <FormDescription>
                             Describe the course you are teaching.
@@ -269,19 +286,26 @@ export default function ProfFinderPageClient() {
           <p className="p-4">No posts found</p>
         ) : (
           <ResponsiveMasonry
-            columnsCountBreakPoints={{ 350: 1, 640: 2, 900: 3 }}
+            columnsCountBreakPoints={{ 350: 1, 640: 2, 900: 2 }}
           >
             <Masonry gutter="16px">
               {getProfPostsQuery.data.map((prof_post) => (
                 <div
                   key={prof_post.id}
-                  className="flex flex-col gap-y-2 rounded-md border p-4"
+                  className="flex flex-col gap-y-4 rounded-md border p-4"
                 >
                   <div className="flex gap-2">
-                    <p className="line-clamp-2 flex-1">{prof_post.user.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(prof_post.created_at)}
-                    </p>
+                    {/* add img tag here */}
+                    <div className="h-10 w-10 rounded-full bg-white"></div>
+                    <div className="flex flex-col">
+                      <p className="line-clamp-2 flex-1">
+                        {prof_post.user.name}
+                      </p>
+                      <div className="flex gap-1 text-xs text-muted-foreground">
+                        <Clock9 className="h-4 w-fit" />
+                        <p>{formatDistanceToNow(prof_post.created_at)}</p>
+                      </div>
+                    </div>
                   </div>
                   {prof_post.description.length > 0 && (
                     <div className="flex flex-col">
@@ -291,35 +315,51 @@ export default function ProfFinderPageClient() {
                       <p>{prof_post.description}</p>
                     </div>
                   )}
-                  <ul className="list-inside list-decimal">
+                  <div className="flex flex-wrap gap-1">
                     {prof_post.prof_posts_programs.map((program) => (
-                      <li key={program.id}>
+                      <p
+                        key={program.id}
+                        className="w-fit rounded-full bg-muted px-4 py-1 text-xs font-semibold"
+                      >
                         {program.program.slug.toUpperCase()} {program.year}-
                         {program.section}
-                      </li>
+                      </p>
                     ))}
-                  </ul>
+                  </div>
+
+                  {getCurrentUserQuery.data?.id === prof_post.user_id && (
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        className="h-10 flex-1"
+                        variant="outline"
+                        asChild
+                      >
+                        <Link href="#">Edit details</Link>
+                      </Button>
+                      <Button variant="outline" size="icon" asChild>
+                        <Link href="#">
+                          <Trash2 className="size-5 text-red-500" />
+                        </Link>
+                      </Button>
+                    </div>
+                  )}
 
                   {getCurrentUserQuery.data?.id !== prof_post.user_id && (
                     <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
-                        asChild
-                      >
+                      <Button size="sm" className="h-10 flex-1" asChild>
                         <Link href={`/${prof_post.user.username}`}>
                           View profile
                         </Link>
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
-                        asChild
-                      >
+                      <Button variant="outline" size="icon" asChild>
+                        <Link href="#">
+                          <UserRoundPlus className="size-5" />
+                        </Link>
+                      </Button>
+                      <Button variant="outline" size="icon" asChild>
                         <Link href={`/chat/user/${prof_post.user.id}`}>
-                          Message
+                          <MessageCircle className="size-5" />
                         </Link>
                       </Button>
                     </div>
