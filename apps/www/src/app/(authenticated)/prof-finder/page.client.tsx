@@ -97,6 +97,7 @@ export default function ProfFinderPageClient() {
       enabled: openCreateProfPost,
     },
   );
+  const getMyUniversityStatusQuery = api.auth.getMyUniversityStatus.useQuery();
   const getProfPostsQuery = api.profFinder.getProfPosts.useQuery({ filter });
   const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
 
@@ -126,10 +127,6 @@ export default function ProfFinderPageClient() {
                 <SelectLabel>Filter</SelectLabel>
                 {[
                   {
-                    value: "all",
-                    label: "All",
-                  },
-                  {
                     value: "campus",
                     label: "Campus",
                   },
@@ -144,6 +141,19 @@ export default function ProfFinderPageClient() {
                 ].map((item) => (
                   <SelectItem key={item.value} value={item.value}>
                     {item.label}
+                    {getMyUniversityStatusQuery.data &&
+                      " (" +
+                        (() => {
+                          switch (item.value) {
+                            case "program":
+                              return getMyUniversityStatusQuery.data.programs?.slug.toUpperCase();
+                            case "college":
+                              return getMyUniversityStatusQuery.data.programs?.colleges?.slug.toUpperCase();
+                            case "campus":
+                              return getMyUniversityStatusQuery.data.programs?.colleges?.campuses?.slug.toUpperCase();
+                          }
+                        })() +
+                        ")"}
                   </SelectItem>
                 ))}
               </SelectGroup>
@@ -152,7 +162,10 @@ export default function ProfFinderPageClient() {
           {getCurrentUserQuery.data?.type === "faculty" && (
             <Dialog
               open={openCreateProfPost}
-              onOpenChange={setOpenCreateProfPost}
+              onOpenChange={(value) => {
+                if (value) form.reset();
+                setOpenCreateProfPost(value);
+              }}
             >
               <DialogTrigger asChild>
                 <Button size="sm">Create Post</Button>
