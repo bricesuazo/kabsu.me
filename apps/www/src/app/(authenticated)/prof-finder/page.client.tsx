@@ -3,6 +3,7 @@
 import type { UseFormReturn } from "react-hook-form";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDistanceToNow } from "date-fns";
 import { Check, ChevronsUpDown, Loader2, ScanSearch, X } from "lucide-react";
@@ -67,9 +68,16 @@ const FormSchema = z.object({
 });
 
 export default function ProfFinderPageClient() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [openCreateProfPost, setOpenCreateProfPost] = useState(false);
-  const [filter, setFilter] =
-    useState<Database["public"]["Enums"]["global_chat_type"]>("program");
+  const [filter, setFilter] = useState<
+    Database["public"]["Enums"]["global_chat_type"]
+  >(
+    (searchParams.get("filter") as
+      | Database["public"]["Enums"]["global_chat_type"]
+      | null) ?? "program",
+  );
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -117,7 +125,12 @@ export default function ProfFinderPageClient() {
             value={filter}
             onValueChange={(
               value: Database["public"]["Enums"]["global_chat_type"],
-            ) => setFilter(value)}
+            ) => {
+              setFilter(value);
+              const url = new URL(window.location.href);
+              url.searchParams.set("filter", value);
+              router.replace(url.toString());
+            }}
           >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Theme" />
