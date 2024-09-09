@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import DeactivatedBanned from "~/components/deactivated-banned";
 import { api } from "~/lib/trpc/server";
 import { createClient as createClientAdmin } from "~/supabase/admin";
-import PageWrapper from "./page-wrapper";
+import PageClient from "./page.client";
 
 export async function generateMetadata({
   params,
@@ -38,5 +38,5 @@ export default async function UserPage({
   if (profile.user.is_deactivated)
     return <DeactivatedBanned type="deactivated" />;
 
-  return <PageWrapper profile={profile} username={username} />;
+  return <PageClient profile={profile} username={username} />;
 }
