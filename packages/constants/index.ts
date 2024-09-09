@@ -562,6 +562,7 @@ export const BLOCKED_USERNAMES = new Set([
   "chats",
   "reactivate",
   "ngl",
+  "prof-finder",
 ]);
 
 export const NEW_FEATURES = [
