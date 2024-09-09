@@ -30,7 +30,7 @@ const PageContent = ({
       <Image src={image} alt={title} fill className="object-cover" />
     </div>
     <h2 className="my-2 text-lg font-semibold">{title}</h2>
-    <p className="text-sm text-muted-foreground">{content}</p>
+    <p className="h-[60px] text-sm text-muted-foreground">{content}</p>
   </div>
 );
 

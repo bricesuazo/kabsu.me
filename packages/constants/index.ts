@@ -778,85 +778,74 @@ export const ONBOARDING_PAGES: Array<{
 }> = [
   {
     title: "Welcome to Kabsu.me",
-    content: "Discover a new way to connect and share with Kabsu.me!",
+    content: "Connect, share, and explore new features with Kabsu.me!",
     image: "/onboarding-pics/Promotion 1.png",
   },
   {
-    title: "feature title",
-    content:
-      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    title: "Upload Photos",
+    content: "Easily upload photos up to 5MB.",
     image: "/onboarding-pics/Promotion 2.png",
   },
   {
-    title: "feature title",
-    content:
-      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    title: "Comment Replies",
+    content: "Reply directly to comments for better conversations.",
     image: "/onboarding-pics/Promotion 3.png",
   },
   {
-    title: "feature title",
-    content:
-      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    title: "Private Messaging",
+    content: "Chat privately with other users.",
     image: "/onboarding-pics/Promotion 4.png",
   },
   {
-    title: "feature title",
-    content:
-      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    title: "Global & Campus Chats",
+    content: "Join discussions across all campuses, or just your own.",
     image: "/onboarding-pics/Promotion 5.png",
   },
   {
-    title: "feature title",
-    content:
-      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    title: "User Tagging",
+    content: "Tag other users in your posts for better engagement.",
     image: "/onboarding-pics/Promotion 13.png",
   },
   {
-    title: "feature title",
-    content:
-      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    title: "NGL Feature",
+    content: "Send anonymous messages with our NGL feature.",
     image: "/onboarding-pics/Promotion 11.png",
   },
   {
-    title: "feature title",
-    content:
-      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    title: "Partners",
+    content: "Proud partnerships with leading organizations.",
     image: "/onboarding-pics/Front Page 7.png",
   },
   {
-    title: "feature title",
-    content:
-      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    title: "Adventura 360°",
+    content: "An interactive 360° virtual tour of the campus.",
     image: "/onboarding-pics/Adventura.png",
   },
   {
-    title: "feature title",
-    content:
-      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    title: "Arctec",
+    content: "Augmented Reality for CvSU Ladislao N. Diwa Memorial Library",
     image: "/onboarding-pics/Arctec.png",
   },
   {
-    title: "feature title",
+    title: "Chromia",
     content:
       "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
     image: "/onboarding-pics/Chromia.png",
   },
   {
-    title: "feature title",
-    content:
-      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    title: "eBoto",
+    content: "Your One-Stop Online Voting Solution",
     image: "/onboarding-pics/eBoto.png",
   },
   {
-    title: "feature title",
+    title: "Odyssey",
     content:
-      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+      "An Android-Based Mobile Augmented Reality Application for Interactive Experience at CvSU Historical and Cultural Museum",
     image: "/onboarding-pics/Odyssey.png",
   },
   {
-    title: "feature title",
-    content:
-      "feature content lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, quisquam.",
+    title: "Swardify",
+    content: "A Bidirectional Swardspeak and Tagalog Translator",
     image: "/onboarding-pics/Swardify.png",
   },
 ];
