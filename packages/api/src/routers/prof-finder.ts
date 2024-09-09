@@ -29,7 +29,7 @@ export const profFinderRouter = router({
         const { data: prof_posts, error: prof_posts_error } = await ctx.supabase
           .from("prof_posts")
           .select(
-            "*, user:users!inner(*), prof_posts_programs!inner(*, program:programs(*))",
+            "*, user:users!inner(*), prof_posts_programs!inner(*, program:programs!inner(*))",
           )
           .order("created_at", { ascending: false })
           .eq("users.type", "faculty")
@@ -41,7 +41,9 @@ export const profFinderRouter = router({
             message: prof_posts_error.message,
           });
 
-        return prof_posts;
+        return prof_posts.filter(
+          (prof_post) => prof_post.prof_posts_programs.length,
+        );
       } else if (input.filter === "college") {
         const { data: current_user, error: current_user_error } =
           await ctx.supabase
@@ -59,7 +61,7 @@ export const profFinderRouter = router({
         const { data: prof_posts, error: prof_posts_error } = await ctx.supabase
           .from("prof_posts")
           .select(
-            "*, user:users!inner(*), prof_posts_programs!inner(*, program:programs(*))",
+            "*, user:users!inner(*), prof_posts_programs!inner(*, program:programs!inner(*))",
           )
           .order("created_at", { ascending: false })
           .eq("users.type", "faculty")
@@ -74,7 +76,9 @@ export const profFinderRouter = router({
             message: prof_posts_error.message,
           });
 
-        return prof_posts;
+        return prof_posts.filter(
+          (prof_post) => prof_post.prof_posts_programs.length,
+        );
       } else if (input.filter === "campus") {
         const { data: current_user, error: current_user_error } =
           await ctx.supabase
@@ -107,23 +111,9 @@ export const profFinderRouter = router({
             message: prof_posts_error.message,
           });
 
-        return prof_posts;
-      } else {
-        const { data: prof_posts, error: prof_posts_error } = await ctx.supabase
-          .from("prof_posts")
-          .select(
-            "*, user:users!inner(*), prof_posts_programs!inner(*, program:programs(*))",
-          )
-          .order("created_at", { ascending: false })
-          .eq("users.type", "faculty");
-
-        if (prof_posts_error)
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: prof_posts_error.message,
-          });
-
-        return prof_posts;
+        return prof_posts.filter(
+          (prof_post) => prof_post.prof_posts_programs.length,
+        );
       }
 
       return [];

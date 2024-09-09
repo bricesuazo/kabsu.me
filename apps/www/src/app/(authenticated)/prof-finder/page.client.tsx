@@ -279,15 +279,12 @@ export default function ProfFinderPageClient() {
                     </div>
                   )}
                   <ul className="list-inside list-decimal">
-                    {prof_post.prof_posts_programs.map((program) => {
-                      if (!program.program) return null;
-                      return (
-                        <li key={program.id}>
-                          {program.program.slug.toUpperCase()} {program.year}-
-                          {program.section}
-                        </li>
-                      );
-                    })}
+                    {prof_post.prof_posts_programs.map((program) => (
+                      <li key={program.id}>
+                        {program.program.slug.toUpperCase()} {program.year}-
+                        {program.section}
+                      </li>
+                    ))}
                   </ul>
 
                   {getCurrentUserQuery.data?.id !== prof_post.user_id && (
