@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Button } from "@kabsu.me/ui/button";
 
+import { env } from "~/env";
 import { createClient } from "~/supabase/client";
 import { Icons } from "./icons";
 
@@ -16,6 +17,16 @@ export default function SigninButton() {
       className="rounded-full"
       onClick={async () => {
         setLoading(true);
+
+        if (env.NEXT_PUBLIC_SUPABASE_URL === "http://localhost:54321") {
+          await supabase.auth.signInWithOtp({
+            email: env.NEXT_PUBLIC_SUPERADMIN_EMAIL,
+            options: {
+              emailRedirectTo: `${origin}/api/auth/callback`,
+            },
+          });
+          setLoading(false);
+        }
 
         await supabase.auth.signInWithOAuth({
           provider: "google",
