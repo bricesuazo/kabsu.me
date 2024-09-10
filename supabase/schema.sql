@@ -378,7 +378,8 @@ CREATE TABLE IF NOT EXISTS "public"."prof_posts" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "user_id" "uuid" NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "description" "text" DEFAULT ''::"text" NOT NULL
+    "description" "text" DEFAULT ''::"text" NOT NULL,
+    "archived_at" timestamp with time zone
 );
 
 
@@ -391,7 +392,8 @@ CREATE TABLE IF NOT EXISTS "public"."prof_posts_programs" (
     "program_id" "uuid" NOT NULL,
     "year" smallint NOT NULL,
     "section" smallint NOT NULL,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "archived_at" timestamp with time zone
 );
 
 

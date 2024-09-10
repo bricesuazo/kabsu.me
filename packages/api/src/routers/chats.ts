@@ -53,7 +53,6 @@ export const chatsRouter = router({
             users: {
               id: user.users?.id,
               username: user.users?.username,
-
               ...(user.users?.image_name?.startsWith("https:")
                 ? {
                     image_name: user.users.image_name,
@@ -353,21 +352,21 @@ export const chatsRouter = router({
 
       let signed_url: string | null = null;
 
-      if (user?.image_name && !user?.image_name.startsWith("https:")) {
+      if (user.image_name && !user.image_name.startsWith("https:")) {
         const { data } = ctx.supabase.storage
           .from("avatars")
-          .getPublicUrl("users/" + user.id + "/" + user?.image_name);
+          .getPublicUrl("users/" + user.id + "/" + user.image_name);
         signed_url = data.publicUrl;
       }
       return {
         user: {
           ...user,
-          ...(user?.image_name?.startsWith("https://")
+          ...(user.image_name?.startsWith("https://")
             ? {
                 image_name: user.image_name,
                 image_url: user.image_name,
               }
-            : user?.image_name && signed_url
+            : user.image_name && signed_url
               ? {
                   image_name: user.image_name,
                   image_url: signed_url,

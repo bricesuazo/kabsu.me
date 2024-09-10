@@ -597,18 +597,21 @@ export type Database = {
       }
       prof_posts: {
         Row: {
+          archived_at: string | null
           created_at: string
           description: string
           id: string
           user_id: string
         }
         Insert: {
+          archived_at?: string | null
           created_at?: string
           description?: string
           id?: string
           user_id: string
         }
         Update: {
+          archived_at?: string | null
           created_at?: string
           description?: string
           id?: string
@@ -626,6 +629,7 @@ export type Database = {
       }
       prof_posts_programs: {
         Row: {
+          archived_at: string | null
           created_at: string
           id: string
           prof_post_id: string
@@ -634,6 +638,7 @@ export type Database = {
           year: number
         }
         Insert: {
+          archived_at?: string | null
           created_at?: string
           id?: string
           prof_post_id: string
@@ -642,6 +647,7 @@ export type Database = {
           year: number
         }
         Update: {
+          archived_at?: string | null
           created_at?: string
           id?: string
           prof_post_id?: string

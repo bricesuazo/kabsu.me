@@ -33,6 +33,8 @@ export const profFinderRouter = router({
           )
           .order("created_at", { ascending: false })
           .eq("users.type", "faculty")
+          .is("archived_at", null)
+          .is("prof_posts_programs.archived_at", null)
           .eq("prof_posts_programs.program_id", current_user.program_id);
 
         if (prof_posts_error)
@@ -41,9 +43,44 @@ export const profFinderRouter = router({
             message: prof_posts_error.message,
           });
 
-        return prof_posts.filter(
-          (prof_post) => prof_post.prof_posts_programs.length,
-        );
+        return prof_posts
+          .filter((prof_post) => prof_post.prof_posts_programs.length)
+          .map((prof_post) => {
+            let image_url: string | null = null;
+            if (
+              prof_post.user.image_name &&
+              !prof_post.user.image_name.startsWith("https")
+            ) {
+              const { data } = ctx.supabase.storage
+                .from("avatars")
+                .getPublicUrl(
+                  "users/" +
+                    prof_post.user.id +
+                    "/" +
+                    prof_post.user.image_name,
+                );
+              image_url = data.publicUrl;
+            }
+            return {
+              ...prof_post,
+              user: {
+                ...prof_post.user,
+                ...(prof_post.user.image_name?.startsWith("https:")
+                  ? {
+                      image_name: prof_post.user.image_name,
+                      image_url: prof_post.user.image_name,
+                    }
+                  : prof_post.user.image_name && image_url
+                    ? {
+                        image_name: prof_post.user.image_name,
+                        image_url,
+                      }
+                    : {
+                        image_name: null,
+                      }),
+              },
+            };
+          });
       } else if (input.filter === "college") {
         const { data: current_user, error: current_user_error } =
           await ctx.supabase
@@ -76,9 +113,44 @@ export const profFinderRouter = router({
             message: prof_posts_error.message,
           });
 
-        return prof_posts.filter(
-          (prof_post) => prof_post.prof_posts_programs.length,
-        );
+        return prof_posts
+          .filter((prof_post) => prof_post.prof_posts_programs.length)
+          .map((prof_post) => {
+            let image_url: string | null = null;
+            if (
+              prof_post.user.image_name &&
+              !prof_post.user.image_name.startsWith("https")
+            ) {
+              const { data } = ctx.supabase.storage
+                .from("avatars")
+                .getPublicUrl(
+                  "users/" +
+                    prof_post.user.id +
+                    "/" +
+                    prof_post.user.image_name,
+                );
+              image_url = data.publicUrl;
+            }
+            return {
+              ...prof_post,
+              user: {
+                ...prof_post.user,
+                ...(prof_post.user.image_name?.startsWith("https:")
+                  ? {
+                      image_name: prof_post.user.image_name,
+                      image_url: prof_post.user.image_name,
+                    }
+                  : prof_post.user.image_name && image_url
+                    ? {
+                        image_name: prof_post.user.image_name,
+                        image_url,
+                      }
+                    : {
+                        image_name: null,
+                      }),
+              },
+            };
+          });
       } else if (input.filter === "campus") {
         const { data: current_user, error: current_user_error } =
           await ctx.supabase
@@ -111,9 +183,44 @@ export const profFinderRouter = router({
             message: prof_posts_error.message,
           });
 
-        return prof_posts.filter(
-          (prof_post) => prof_post.prof_posts_programs.length,
-        );
+        return prof_posts
+          .filter((prof_post) => prof_post.prof_posts_programs.length)
+          .map((prof_post) => {
+            let image_url: string | null = null;
+            if (
+              prof_post.user.image_name &&
+              !prof_post.user.image_name.startsWith("https")
+            ) {
+              const { data } = ctx.supabase.storage
+                .from("avatars")
+                .getPublicUrl(
+                  "users/" +
+                    prof_post.user.id +
+                    "/" +
+                    prof_post.user.image_name,
+                );
+              image_url = data.publicUrl;
+            }
+            return {
+              ...prof_post,
+              user: {
+                ...prof_post.user,
+                ...(prof_post.user.image_name?.startsWith("https:")
+                  ? {
+                      image_name: prof_post.user.image_name,
+                      image_url: prof_post.user.image_name,
+                    }
+                  : prof_post.user.image_name && image_url
+                    ? {
+                        image_name: prof_post.user.image_name,
+                        image_url,
+                      }
+                    : {
+                        image_name: null,
+                      }),
+              },
+            };
+          });
       }
 
       return [];
@@ -196,4 +303,67 @@ export const profFinderRouter = router({
 
     return programs;
   }),
+  archiveProfPost: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { error: prof_post_error } = await ctx.supabase
+        .from("prof_posts")
+        .update({ archived_at: new Date().toISOString() })
+        .eq("id", input.id)
+        .eq("user_id", ctx.auth.user.id);
+
+      if (prof_post_error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: prof_post_error.message,
+        });
+    }),
+  editProfPost: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        description: z.string(),
+        programsToDelete: z.string().array(),
+        programs: z
+          .object({
+            id: z.string(),
+            section: z.string(),
+            year: z.string(),
+          })
+          .array(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.supabase
+        .from("prof_posts")
+        .update({ description: input.description })
+        .eq("id", input.id)
+        .eq("user_id", ctx.auth.user.id);
+
+      for (const programToDelete of input.programsToDelete) {
+        const { error } = await ctx.supabase
+          .from("prof_posts_programs")
+          .update({ archived_at: new Date().toISOString() })
+          .eq("id", programToDelete);
+
+        if (error)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: error.message,
+          });
+      }
+
+      await ctx.supabase
+        .from("prof_posts_programs")
+        .upsert(
+          input.programs.map((program) => ({
+            id: program.id,
+            prof_post_id: input.id,
+            program_id: program.id,
+            section: parseInt(program.section),
+            year: parseInt(program.year),
+          })),
+        )
+        .eq("prof_post_id", input.id);
+    }),
 });
