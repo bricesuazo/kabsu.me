@@ -6,7 +6,7 @@ import { api } from "~/lib/trpc/server";
 import { extractAllMentions, REGEX } from "~/lib/utils";
 import { createClient as createClientAdmin } from "~/supabase/admin";
 import { createClient as createClientServer } from "~/supabase/server";
-import PostPageComponent from "./post-page";
+import PageClient from "./page.client";
 
 export async function generateMetadata({
   params,
@@ -127,11 +127,7 @@ export default async function PostPage({
       {/* <UpdatePost open={openUpdate} setOpen={setOpenUpdate} post={post} /> */}
       {/* <DeletePost open={openDelete} setOpen={setOpenDelete} post_id={post.id} /> */}
 
-      <PostPageComponent
-        getPost={getPost}
-        username={username}
-        post_id={post_id}
-      />
+      <PageClient getPost={getPost} username={username} post_id={post_id} />
     </>
   );
 }

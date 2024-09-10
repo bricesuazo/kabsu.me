@@ -12,6 +12,7 @@ import {
   Menu,
   MessageCircle,
   Moon,
+  ScanSearch,
   SquareMousePointer,
   Sun,
   UserCircle,
@@ -247,6 +248,9 @@ export default function Header() {
                         : "My Profile"}
                     </Link>
                   </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+
                   <DropdownMenuItem
                     asChild
                     className="line-clamp-1 w-full cursor-pointer truncate"
@@ -267,6 +271,23 @@ export default function Header() {
                       </Link>
                     </DropdownMenuItem>
                   )}
+                  {getCurrentUserQuery.data.type !== "alumni" && (
+                    <DropdownMenuItem
+                      asChild
+                      className="line-clamp-1 w-full cursor-pointer truncate"
+                    >
+                      <Link
+                        href="/prof-finder"
+                        className="flex w-full items-center"
+                      >
+                        <ScanSearch className="mr-2" size="1rem" />
+                        Prof Finder
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+
+                  <DropdownMenuSeparator />
+
                   <DropdownMenuItem
                     asChild
                     className="line-clamp-1 w-full cursor-pointer truncate"

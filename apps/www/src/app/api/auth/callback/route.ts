@@ -43,6 +43,5 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}${next}`);
   }
 
-  console.log("second");
   return NextResponse.redirect(`${origin}?error=AuthCodeError`);
 }

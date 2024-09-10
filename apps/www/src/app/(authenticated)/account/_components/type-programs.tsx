@@ -70,7 +70,11 @@ export default function TypePrograms({
     });
   const changeCurrentUserTypeProgramMutation =
     api.users.changeCurrentUserTypeProgram.useMutation({
-      onSuccess: () => utils.auth.getMyUniversityStatus.invalidate(),
+      onSuccess: () =>
+        Promise.all([
+          utils.auth.getMyUniversityStatus.invalidate(),
+          utils.auth.getCurrentUser.invalidate(),
+        ]),
     });
   const { data } = api.users.getProgramForAuth.useQuery(undefined, {
     refetchInterval: false,

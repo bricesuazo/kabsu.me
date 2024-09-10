@@ -595,6 +595,83 @@ export type Database = {
           },
         ]
       }
+      prof_posts: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          description: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prof_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prof_posts_programs: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          id: string
+          prof_post_id: string
+          program_id: string
+          section: number
+          year: number
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          prof_post_id: string
+          program_id: string
+          section: number
+          year: number
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          prof_post_id?: string
+          program_id?: string
+          section?: number
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prof_posts_programs_prof_post_id_fkey"
+            columns: ["prof_post_id"]
+            isOneToOne: false
+            referencedRelation: "prof_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prof_posts_programs_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       programs: {
         Row: {
           college_id: string
