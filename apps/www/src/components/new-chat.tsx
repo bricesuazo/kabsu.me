@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDistanceToNow } from "date-fns";
@@ -12,7 +13,13 @@ import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
 import { Button } from "@kabsu.me/ui/button";
-import { Form, FormControl, FormField, FormItem } from "@kabsu.me/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@kabsu.me/ui/form";
 import { ScrollArea } from "@kabsu.me/ui/scroll-area";
 import { Separator } from "@kabsu.me/ui/separator";
 
@@ -58,15 +65,17 @@ export default function NewChat({
         <div className="flex items-center gap-2">
           <div>
             <Image
-              src="/default-avatar.jpg"
-              width={32}
-              height={32}
+              src={user.image_name ? user.image_url : "/default-avatar.jpg"}
+              width={44}
+              height={44}
               alt="Profile picture"
               className="rounded-full"
             />
           </div>
           <div>
-            <p className="text-sm">{user.username}</p>
+            <p className="text-xl font-semibold">{user.name}</p>
+            <p className="text-sm">@{user.username}</p>
+
             {/* <div className="flex items-center gap-2">
               <div className="size-2 rounded-full bg-green-500 text-lg" />
               <p className="text-xs text-muted-foreground">Online</p>
@@ -77,10 +86,36 @@ export default function NewChat({
 
       <Separator />
 
-      <div className="flex h-0 flex-grow">
+      <div className="flex h-0 flex-1">
         {messages.length === 0 ? (
-          <div className="grid flex-1 place-items-center">
-            <p className="text-muted-foreground">No messages yet.</p>
+          <div className="flex w-full flex-col items-center justify-center p-8 text-center">
+            <div className="max-w-md space-y-2">
+              <Image
+                src={user.image_name ? user.image_url : "/default-avatar.jpg"}
+                width={120}
+                height={120}
+                alt="Profile picture"
+                className="mx-auto rounded-full border-4 border-primary/10"
+              />
+              <div>
+                <h4 className="text-2xl font-bold text-foreground">
+                  {user.name}
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  @{user.username} •{" "}
+                  <span className="capitalize">{user.type}</span>
+                </p>
+              </div>
+              <p className="text-muted-foreground">
+                Start a new conversation with {user.name}. Your messages will
+                appear here.
+              </p>
+              <div className="flex justify-center space-x-2">
+                <Button asChild>
+                  <Link href={`/${user.username}`}>View Profile</Link>
+                </Button>
+              </div>
+            </div>
           </div>
         ) : (
           <ScrollArea className="flex-1 px-4">
@@ -136,43 +171,71 @@ export default function NewChat({
                   content: values.message,
                 });
               })}
-              className="flex w-full gap-x-2"
+              className="w-full gap-x-2"
             >
               <FormField
                 control={form.control}
                 name="message"
                 render={({ field }) => (
-                  <FormItem className="flex flex-1 items-center gap-2 space-y-0">
+                  <FormItem className="space-y-2">
+                    <FormMessage />
                     <FormControl>
-                      <TextareaAutosize
-                        {...field}
-                        placeholder="Write a message..."
-                        autoFocus
-                        disabled={form.formState.isSubmitting}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && e.ctrlKey) {
-                            e.preventDefault();
+                      <div className="relative flex items-end">
+                        <TextareaAutosize
+                          {...field}
+                          placeholder="Write a message..."
+                          disabled={form.formState.isSubmitting}
+                          onKeyDown={async (e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                              e.preventDefault();
+
+                              const message =
+                                form.watch("message").trim().length === 0;
+
+                              if (message === true) {
+                                return;
+                              }
+
+                              await form.handleSubmit(async (values) => {
+                                setMessages((prev) => [
+                                  ...prev,
+                                  {
+                                    id: String(prev.length + 1),
+                                    content: values.message,
+                                    created_at: new Date().toISOString(),
+                                  },
+                                ]);
+                                form.reset();
+                                await sendNewMessageMutation.mutateAsync({
+                                  user_id: user.id,
+                                  content: values.message,
+                                });
+                              })();
+                            }
+                          }}
+                          rows={1}
+                          maxRows={3}
+                          className="w-full resize-none rounded-md border-input bg-background px-4 py-2 text-base text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                        <Button
+                          type="submit"
+                          size="lg"
+                          variant="outline"
+                          className="hover:bg-primary-dark ml-3 rounded-full bg-primary p-3 text-white focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                          disabled={
+                            form.formState.isSubmitting ||
+                            !form.formState.isValid ||
+                            form.watch("message").trim().length === 0
                           }
-                        }}
-                        rows={1}
-                        maxRows={3}
-                        className="flex w-full flex-1 resize-none rounded-md border border-input bg-background px-3 py-1.5 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      />
+                        >
+                          {form.formState.isSubmitting ? (
+                            <Icons.spinner className="h-5 w-5 animate-spin" />
+                          ) : (
+                            <Send className="h-5 w-5" />
+                          )}
+                        </Button>
+                      </div>
                     </FormControl>
-                    <Button
-                      type="submit"
-                      size="icon"
-                      variant="outline"
-                      disabled={
-                        form.formState.isSubmitting || !form.formState.isValid
-                      }
-                    >
-                      {form.formState.isSubmitting ? (
-                        <Icons.spinner className="size-4 animate-spin" />
-                      ) : (
-                        <Send className="size-4" />
-                      )}
-                    </Button>
                   </FormItem>
                 )}
               />

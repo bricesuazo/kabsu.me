@@ -319,9 +319,7 @@ export default function RoomPageClient(
             <div className="space-y-2 py-4">
               <div ref={ref}>
                 <div className="text-center text-sm text-muted-foreground">
-                  {loadMoreMessagesMutation.isPending && hasMore ? (
-                    "Loading more messages..."
-                  ) : (
+                  {props.type === "room" && (
                     <div className="flex w-full flex-col items-center justify-center gap-y-2">
                       <div className="flex w-full flex-col">
                         <Image
@@ -350,11 +348,16 @@ export default function RoomPageClient(
                           following
                         </p>
                       </div>
-                      <Link href={`/${props.getRoomChats.room.to?.username}`}>
-                        <Button>View Profile</Button>
-                      </Link>
+                      <Button asChild>
+                        <Link href={`/${props.getRoomChats.room.to?.username}`}>
+                          View Profile
+                        </Link>
+                      </Button>
                     </div>
                   )}
+                  {loadMoreMessagesMutation.isPending && hasMore
+                    ? "Loading more messages..."
+                    : ""}
                 </div>
               </div>
               <div ref={scrollRef} />
@@ -533,7 +536,7 @@ export default function RoomPageClient(
                   <FormItem className="space-y-2">
                     <FormMessage />
                     <FormControl>
-                      <div className="relative flex items-center">
+                      <div className="relative flex items-end">
                         <TextareaAutosize
                           {...field}
                           placeholder="Write a message..."
@@ -542,12 +545,19 @@ export default function RoomPageClient(
                             if (e.key === "Enter" && !e.shiftKey) {
                               e.preventDefault();
 
+                              const message =
+                                form.watch("message").trim().length === 0;
+
+                              if (message === true) {
+                                return;
+                              }
+                              console.log("first");
                               await handleSubmit(form.getValues());
                             }
                           }}
                           rows={1}
                           maxRows={3}
-                          className="w-full resize-none rounded-full border-input bg-background px-4 py-2 text-base text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="w-full resize-none rounded-md border-input bg-background px-4 py-2 text-base text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         />
                         <Button
                           type="submit"
