@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import confetti from "canvas-confetti";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -20,19 +22,48 @@ const PageContent = ({
   title,
   content,
   image,
+  video,
 }: {
   title: string;
   content: string;
-  image: string;
-}) => (
-  <div className="text-center">
-    <div className="relative aspect-square w-full">
-      <Image src={image} alt={title} fill className="object-cover" />
+  image?: string;
+  video?: string;
+}) => {
+  useEffect(() => {
+    if (video) {
+      const script = document.createElement("script");
+      script.src =
+        "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2";
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+  }, [video]);
+
+  return (
+    <div className="text-center">
+      {image && (
+        <div className="relative aspect-square w-full">
+          <Image src={image} alt={title} fill className="object-cover" />
+        </div>
+      )}
+      {video && (
+        <div className="flex h-[375px] items-center justify-center">
+          <div
+            className="fb-video"
+            data-href={video}
+            data-height="375"
+            data-allowfullscreen="true"
+            data-autoplay="true"
+            data-show-text="false"
+          ></div>
+        </div>
+      )}
+      <h2 className="my-2 text-lg font-semibold">{title}</h2>
+      <p className="h-12 text-sm text-muted-foreground">{content}</p>
     </div>
-    <h2 className="my-2 text-lg font-semibold">{title}</h2>
-    <p className="h-12 text-sm text-muted-foreground">{content}</p>
-  </div>
-);
+  );
+};
 
 export default function OnboardingV2() {
   const [page, setPage] = useState(0);
@@ -124,7 +155,8 @@ export default function OnboardingV2() {
             {...(ONBOARDING_PAGES[page] as {
               title: string;
               content: string;
-              image: string;
+              image?: string;
+              video?: string;
             })}
           />
 

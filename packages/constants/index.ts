@@ -809,7 +809,8 @@ export const REPORT_POST_REASONS = [
 export const ONBOARDING_PAGES: Array<{
   title: string;
   content: string;
-  image: string;
+  image?: string;
+  video?: string;
 }> = [
   {
     title: "Welcome to Kabsu.me",
@@ -850,5 +851,118 @@ export const ONBOARDING_PAGES: Array<{
     title: "Partners",
     content: "Proud partnerships.",
     image: "/onboarding-pics/Promotion 16.png",
+  },
+  {
+    title: "Video Launch",
+    content: "Proud partnerships.",
+    video:
+      "https://www.facebook.com/FacebookDevelopers/videos/10152454700553553/",
+  },
+];
+
+export const THESIS_INFO = [
+  {
+    icon: {
+      src: "/thesis-pics/adventura-logo.png",
+      alt: "adventura-logo-img",
+    },
+    name: "Adventura 360°",
+    description:
+      "An Interactive Campus Tour for Cavite State University Don Severino Delas Alas Campus.",
+    className: "col-span-5 lg:col-span-2",
+    href: "https://adventura360.kabsu.me/",
+    cta: "Learn more",
+    background: {
+      src: "/thesis-pics/adventura-background.png",
+      alt: "adventura-background-img",
+      className:
+        "absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
+    },
+  },
+  {
+    icon: {
+      src: "/thesis-pics/arctec-logo.png",
+      alt: "arctec-logo-img",
+    },
+    name: "ARCTEC",
+    description: "Augmented Reality for CvSU Ladislao N. Diwa Memorial Library",
+    className: "col-span-5 lg:col-span-2",
+    href: "https://arctec.kabsu.me/",
+    cta: "Learn more",
+    background: {
+      src: "/thesis-pics/arctec-background.png",
+      alt: "arctec-background-img",
+      className:
+        "absolute top-0 h-full w-full object-cover [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
+    },
+  },
+  {
+    icon: {
+      src: "/thesis-pics/chromia-logo.png",
+      alt: "chromia-logo-img",
+    },
+    name: "CHROMIA",
+    description: "A Speech Command HCI Design for Google Chrome",
+    className: "col-span-5 lg:col-span-1",
+    href: "https://chromia.kabsu.me/",
+    cta: "Learn more",
+    background: {
+      src: "/thesis-pics/chromia-background.png",
+      alt: "chromia-background-img",
+      className:
+        "absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
+    },
+  },
+  {
+    icon: {
+      src: "/thesis-pics/eboto-logo.png",
+      alt: "eboto-logo-img",
+    },
+    name: "eBoto",
+    description: "One Stop Online Voting Solution",
+    className: "col-span-5 lg:col-span-1",
+    href: "https://eboto.app/",
+    cta: "Learn more",
+    background: {
+      src: "/thesis-pics/eboto-background.png",
+      alt: "eboto-background-img",
+      className:
+        "absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
+    },
+  },
+  {
+    icon: {
+      src: "/thesis-pics/odyssey-logo.png",
+      alt: "odyssey-logo-img",
+    },
+    name: "Odyssey",
+    description:
+      "An Android-Based Mobile Augmented Reality Application for Interactive Experience at CvSU Historical and Cultural Museum",
+    className: "col-span-5 lg:col-span-2",
+    href: "https://odyssey.kabsu.me/",
+    cta: "Learn more",
+    background: {
+      src: "/thesis-pics/odyssey-background.png",
+      alt: "odyssey-background-img",
+      className:
+        "absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
+    },
+  },
+  {
+    icon: {
+      src: "/thesis-pics/swardify-logo.png",
+      alt: "swardify-logo-img",
+    },
+    name: "SWARDify",
+    description: "A Bidirectional Swardspeak and Tagalog Translator",
+    className: "col-span-5 lg:col-span-2",
+    href: "https://swardify.kabsu.me/",
+    cta: "Learn more",
+    background: {
+      src: "/thesis-pics/swardify-background.png",
+      alt: "swardify-background-img",
+      className:
+        "absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
+    },
   },
 ];
