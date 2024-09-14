@@ -14,6 +14,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { PhotoView } from "react-photo-view";
 import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
 
@@ -42,7 +43,6 @@ import { Toggle } from "@kabsu.me/ui/toggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 
 import { Icons } from "~/components/icons";
-import { ImagesViewer } from "~/components/images-viewer";
 import PostDropdown from "~/components/post-dropdown";
 import PostShare from "~/components/post-share";
 import VerifiedBadge from "~/components/verified-badge";
@@ -65,7 +65,6 @@ export default function PostPageComponent({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [openImagesViewer, setOpenImagesViewer] = useState(false);
   const postQuery = api.posts.getPost.useQuery(
     { username, post_id },
     { retry: 1, initialData: getPost },
@@ -91,7 +90,6 @@ export default function PostPageComponent({
   const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
   const createCommentMutation = api.comments.create.useMutation();
 
-  const [scrollTo, setScrollTo] = useState(0);
   const [likes, setLikes] = useState(postQuery.data.post.likes);
 
   const form = useForm<{ comment: string }>({
@@ -147,15 +145,6 @@ export default function PostPageComponent({
 
   return (
     <>
-      <ImagesViewer
-        open={openImagesViewer}
-        setOpen={setOpenImagesViewer}
-        images={postQuery.data.post.posts_images.map((image) => ({
-          id: image.id,
-          url: image.signed_url,
-        }))}
-        scrollTo={scrollTo}
-      />
       {postQuery.error ? (
         <p className="text-center text-sm text-muted-foreground">
           {postQuery.error.message}
@@ -295,14 +284,8 @@ export default function PostPageComponent({
                       "grid-cols-3",
                   )}
                 >
-                  {postQuery.data.post.posts_images.map((image, index) => (
-                    <button
-                      key={image.id}
-                      onClick={() => {
-                        setOpenImagesViewer(true);
-                        setScrollTo(index);
-                      }}
-                    >
+                  {postQuery.data.post.posts_images.map((image) => (
+                    <PhotoView key={image.id} src={image.signed_url}>
                       <Image
                         src={image.signed_url}
                         alt={image.name}
@@ -311,7 +294,7 @@ export default function PostPageComponent({
                         priority
                         className="aspect-square rounded-lg object-cover"
                       />
-                    </button>
+                    </PhotoView>
                   ))}
                 </div>
               )}
