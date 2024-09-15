@@ -893,6 +893,7 @@ function CommentComponent({
           <div className="space-y-1 pl-5 sm:pl-10">
             {fullCommentQuery.data.comment.replies.map((reply) => (
               <CommentComponent
+                key={reply.id}
                 userId={userId}
                 comment={reply}
                 post_id={post_id}
