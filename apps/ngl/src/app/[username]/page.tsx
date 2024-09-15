@@ -26,7 +26,7 @@ export async function generateMetadata({
   };
 
   return {
-    title: `${user.username}'s NGL`,
+    title: `Kabsu.me NGL`,
     description: `Send anonymous messages to ${user.username} on NGL`,
     openGraph: {
       title: `${user.username}'s NGL`,
@@ -42,7 +42,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${user.username}'s NGL`,
+      title: `Kabsu.me NGL`,
       description: `Send anonymous messages to ${user.username} on NGL`,
       images: [
         {
