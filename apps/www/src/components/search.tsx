@@ -3,15 +3,17 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { api } from "@/lib/trpc/client";
+import debounce from "lodash.debounce";
 import { Search as SearchIcon } from "lucide-react";
-import { useDebouncedCallback } from "use-debounce";
 
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { ScrollArea } from "./ui/scroll-area";
-import { Skeleton } from "./ui/skeleton";
+import { Button } from "@kabsu.me/ui/button";
+import { Input } from "@kabsu.me/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@kabsu.me/ui/popover";
+import { ScrollArea } from "@kabsu.me/ui/scroll-area";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
+
+import { api } from "~/lib/trpc/client";
 import VerifiedBadge from "./verified-badge";
 
 export default function Search() {
@@ -19,7 +21,7 @@ export default function Search() {
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
 
-  const debounced = useDebouncedCallback((value: string) => {
+  const debounced = debounce((value: string) => {
     setValue(value);
   }, 500);
 
@@ -29,6 +31,7 @@ export default function Search() {
     } else {
       searchMutation.reset();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   useEffect(() => {
@@ -36,19 +39,29 @@ export default function Search() {
       setValue("");
       searchMutation.reset();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button size="icon" variant="ghost" className="h-9 w-9 rounded-full">
-          <SearchIcon size="1rem" className="" />
-        </Button>
-      </PopoverTrigger>
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <PopoverTrigger asChild>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-9 w-9 rounded-full"
+            >
+              <SearchIcon size="1rem" className="" />
+            </Button>
+          </PopoverTrigger>
+        </TooltipTrigger>
+
+        <TooltipContent>Search</TooltipContent>
+      </Tooltip>
       <PopoverContent asChild>
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-x-2">
-            {/* <SearchIcon className="w-5" /> */}
             <Input
               className="h-10 flex-1 rounded-full"
               placeholder="Search"
@@ -78,24 +91,28 @@ export default function Search() {
               <div className="flex flex-col gap-y-1">
                 {searchMutation.data.map((user) => (
                   <Link
-                    href={`/${user.username}`}
                     key={user.id}
+                    href={`/${user.username}`}
                     className="flex gap-x-2 rounded p-3 hover:bg-primary-foreground"
                     onClick={() => setOpen(false)}
                   >
                     <div className="min-w-max">
                       <Image
-                        src={user.imageUrl ?? "/default-avatar.jpg"}
+                        src={
+                          user.image_name
+                            ? user.image_url
+                            : "/default-avatar.jpg"
+                        }
                         alt=""
                         width={40}
                         height={40}
-                        className="aspect-square rounded-full object-cover"
+                        className="aspect-square rounded-full object-cover object-center"
                       />
                     </div>
                     <div>
                       <div className="flex items-center gap-x-1">
                         <p className="line-clamp-1 flex-1">{user.name} </p>
-                        {user.isVerified && <VerifiedBadge size="sm" />}
+                        {user.is_verified && <VerifiedBadge size="sm" />}
                       </div>
                       <p className="line-clamp-1 text-sm text-muted-foreground">
                         @{user.username}

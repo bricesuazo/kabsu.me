@@ -1,12 +1,11 @@
-import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
-
-import { adminRouter } from "./routers/admin";
 import { authRouter } from "./routers/auth";
+import { chatsRouter } from "./routers/chats";
 import { commentsRouter } from "./routers/comments";
+import { nglRouter } from "./routers/ngl";
 import { notificationsRouter } from "./routers/notifications";
 import { postsRouter } from "./routers/posts";
 import { usersRouter } from "./routers/users";
-import { router } from "./trpc";
+import { createCallerFactory, router } from "./trpc";
 
 export const appRouter = router({
   users: usersRouter,
@@ -14,9 +13,10 @@ export const appRouter = router({
   comments: commentsRouter,
   notifications: notificationsRouter,
   auth: authRouter,
-  admin: adminRouter,
+  chats: chatsRouter,
+  ngl: nglRouter,
 });
 
 export type AppRouter = typeof appRouter;
-export type RouterInput = inferRouterInputs<AppRouter>;
-export type RouterOutput = inferRouterOutputs<AppRouter>;
+
+export const createCaller = createCallerFactory(appRouter);

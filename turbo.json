@@ -1,35 +1,55 @@
 {
-  "$schema": "https://turbo.build/schema.json",
+  "$schema": "https://turborepo.org/schema.json",
+  "ui": "tui",
   "globalDependencies": ["**/.env.*local", "**/.env"],
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        ".cache/tsbuildinfo.json",
+        "dist/**"
+      ]
     },
     "lint": {},
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": false
     },
     "start": {},
     "db:push": {},
     "db:studio": {},
     "db:seed": {},
     "db:generate": {},
-    "email:dev": {}
+    "email:dev": {},
+    "ui-add": {
+      "cache": false,
+      "interactive": true
+    },
+    "magicui-add": {
+      "cache": false,
+      "interactive": true
+    }
   },
   "globalEnv": [
-    "DATABASE_URL",
-    "QSTASH_CURRENT_SIGNING_KEY",
-    "QSTASH_NEXT_SIGNING_KEY",
-    "PUSHER_APP_ID",
-    "PUSHER_KEY",
-    "PUSHER_SECRET",
-    "PUSHER_CLUSTER",
-    "AUTH_SECRET",
-    "AUTH_GOOGLE_ID",
-    "AUTH_GOOGLE_SECRET",
-    "AUTH_URL",
-    "AUTH_REDIRECT_PROXY_URL"
+    "NODE_ENV",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "CI",
+    "SKIP_ENV_VALIDATION",
+    "ENV",
+    "STAGING_TEST_EMAILS",
+    "NEXT_PUBLIC_SUPERADMIN_EMAIL",
+    "UPSTASH_REDIS_REST_URL",
+    "UPSTASH_REDIS_REST_TOKEN",
+    "npm_lifecycle_event",
+    "NEXT_PUBLIC_WWW_URL",
+    "NEXT_PUBLIC_NGL_URL",
+    "NEXT_RUNTIME",
+    "NEXT_PUBLIC_SENTRY_DSN",
+    "SENTRY_AUTH_TOKEN",
+    "SENTRY_ORG",
+    "SENTRY_PROJECT"
   ]
 }

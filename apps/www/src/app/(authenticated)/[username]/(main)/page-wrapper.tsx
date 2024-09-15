@@ -3,10 +3,21 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import EditProfile from "@/components/edit-profile";
-import FollowButton from "@/components/follow-button";
-import { Icons } from "@/components/icons";
-import PostForm from "@/components/post-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Album,
+  Briefcase,
+  Flag,
+  GraduationCap,
+  MessageCircle,
+  VenetianMask,
+} from "lucide-react";
+import { useForm } from "react-hook-form";
+import { PhotoProvider, PhotoView } from "react-photo-view";
+import { toast } from "sonner";
+import { z } from "zod";
+
+import type { RouterOutputs } from "@kabsu.me/api";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -16,10 +27,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+} from "@kabsu.me/ui/alert-dialog";
+import { Badge } from "@kabsu.me/ui/badge";
+import { Button } from "@kabsu.me/ui/button";
 import {
   Form,
   FormControl,
@@ -28,29 +38,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { toast } from "@/components/ui/use-toast";
-import VerifiedBadge from "@/components/verified-badge";
-import { api } from "@/lib/trpc/client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { RouterOutput } from "@kabsu.me/api/root";
-import { Album, Briefcase, Flag, GraduationCap } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+} from "@kabsu.me/ui/form";
+import { Textarea } from "@kabsu.me/ui/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 
+import EditProfile from "~/components/edit-profile";
+import FollowButton from "~/components/follow-button";
+import { Icons } from "~/components/icons";
+import PostForm from "~/components/post-form";
+import VerifiedBadge from "~/components/verified-badge";
+import { env } from "~/env";
+import { api } from "~/lib/trpc/client";
 import PostsWrapper from "./posts-wrapper";
 
 export default function UserPageWrapper({
   profile,
   username,
 }: {
-  profile: RouterOutput["users"]["getUserProfile"];
+  profile: RouterOutputs["users"]["getUserProfile"];
   username: string;
 }) {
   const profileQuery = api.users.getUserProfile.useQuery(
@@ -66,7 +71,7 @@ export default function UserPageWrapper({
   }>({
     resolver: zodResolver(
       z.object({
-        reason: z.string().nonempty("Please provide a reason for your report."),
+        reason: z.string().min(1, "Please provide a reason for your report."),
       }),
     ),
     defaultValues: {
@@ -77,8 +82,7 @@ export default function UserPageWrapper({
   const reportUserMutation = api.users.report.useMutation({
     onSuccess: () => {
       setOpenReport(false);
-      toast({
-        title: "User reported",
+      toast.success("User reported", {
         description: "Your report has been submitted",
       });
     },
@@ -86,7 +90,26 @@ export default function UserPageWrapper({
 
   useEffect(() => {
     if (openReport) reportForm.reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openReport]);
+
+  const MessageNgl = () => (
+    <div className="flex items-center gap-x-2">
+      <Button size="sm" variant="outline" className="" asChild>
+        <Link href={`/chat/user/${profileQuery.data.user.id}`}>
+          <MessageCircle className="mr-2 size-4" /> Message
+        </Link>
+      </Button>
+      <Button size="sm" variant="outline" className="" asChild>
+        <Link
+          href={env.NEXT_PUBLIC_NGL_URL + "/" + profileQuery.data.user.username}
+          target="_blank"
+        >
+          <VenetianMask className="mr-2 size-4" /> NGL
+        </Link>
+      </Button>
+    </div>
+  );
 
   return (
     <div className="relative min-h-screen space-y-4 border-b">
@@ -97,22 +120,22 @@ export default function UserPageWrapper({
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge>
-                    {profileQuery.data.user.program!.college.campus.slug.toUpperCase()}
+                    {profileQuery.data.user.programs?.colleges?.campuses?.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-60">
-                  {profileQuery.data.user.program!.college.campus.name}
+                  {profileQuery.data.user.programs?.colleges?.campuses?.name}
                 </TooltipContent>
               </Tooltip>
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger className="">
                   <Badge variant="outline">
-                    {profileQuery.data.user.program!.slug.toUpperCase()}
+                    {profileQuery.data.user.programs?.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-60">
-                  {profileQuery.data.user.program!.name}
+                  {profileQuery.data.user.programs?.name}
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -128,9 +151,7 @@ export default function UserPageWrapper({
                 )}
               </div>
 
-              <p className="line-clamp-1  ">
-                @{profileQuery.data.user.username}
-              </p>
+              <p className="line-clamp-1">@{profileQuery.data.user.username}</p>
 
               <p className="break-words text-muted-foreground">
                 {profileQuery.data.user.bio ??
@@ -151,9 +172,15 @@ export default function UserPageWrapper({
             </div>
           </div>
 
-          <Dialog>
-            <DialogTrigger asChild className="hover:cursor-pointer">
-              <div className="relative aspect-square h-20 min-w-max overflow-clip rounded-full xs:h-32">
+          <PhotoProvider>
+            <PhotoView
+              src={
+                profileQuery.data.user.image_name
+                  ? profileQuery.data.user.image_url
+                  : "/default-avatar.jpg"
+              }
+            >
+              <div className="relative aspect-square h-28 cursor-pointer overflow-clip rounded-full xs:h-32">
                 <div className="absolute bottom-0 flex w-full justify-center bg-gradient-to-t from-black to-transparent p-2">
                   <Tooltip delayDuration={250}>
                     {(() => {
@@ -179,7 +206,7 @@ export default function UserPageWrapper({
                             </TooltipContent>
                           </>
                         );
-                      } else if (profileQuery.data.user.type === "faculty") {
+                      } else {
                         return (
                           <>
                             <TooltipTrigger>
@@ -196,51 +223,34 @@ export default function UserPageWrapper({
                 </div>
                 <Image
                   src={
-                    profileQuery.data.user.image
-                      ? typeof profileQuery.data.user.image === "string"
-                        ? profileQuery.data.user.image
-                        : profileQuery.data.user.image.url
+                    profileQuery.data.user.image_name
+                      ? profileQuery.data.user.image_url
                       : "/default-avatar.jpg"
                   }
                   alt={`${profileQuery.data.user.name} profile picture`}
-                  fill
-                  sizes="100%"
-                  className="-z-10 object-cover"
+                  width={200}
+                  height={200}
+                  className="aspect-square h-full rounded-full object-cover object-center"
                 />
               </div>
-            </DialogTrigger>
-
-            <DialogContent className="border-transparent bg-transparent">
-              <div className="inherit aspect-square">
-                <Image
-                  src={
-                    profileQuery.data.user.image
-                      ? typeof profileQuery.data.user.image === "string"
-                        ? profileQuery.data.user.image
-                        : profileQuery.data.user.image.url
-                      : "/default-avatar.jpg"
-                  }
-                  alt={`${profileQuery.data.user.name} profile picture`}
-                  fill
-                  sizes="100%"
-                  className="rounded-full object-cover object-center p-8"
-                />
-              </div>
-            </DialogContent>
-          </Dialog>
+            </PhotoView>
+          </PhotoProvider>
         </div>
 
-        <div className="flex flex-col items-start gap-x-4 gap-y-2 border-b px-4 pb-4 sm:flex-row sm:items-center">
+        <div className="flex flex-col items-start gap-x-4 gap-y-2 border-b px-4 pb-4">
           <div className="flex items-center gap-x-2">
-            {profileQuery.data.isFollower !== undefined ? (
+            {profileQuery.data.user.id !== profileQuery.data.user_id ? (
               <div className="flex items-center gap-x-2">
                 <FollowButton
-                  isFollower={profileQuery.data.isFollower}
+                  isFollower={profileQuery.data.is_follower}
                   user_id={profileQuery.data.user.id}
                 />
+                <div className="hidden xs:inline-flex">
+                  <MessageNgl />
+                </div>
                 <AlertDialog open={openReport} onOpenChange={setOpenReport}>
                   <AlertDialogTrigger asChild>
-                    <Button variant="outline" size="icon">
+                    <Button variant="outline" size="icon" className="size-9">
                       <Flag className="h-4 w-4" />
                     </Button>
                   </AlertDialogTrigger>
@@ -308,8 +318,13 @@ export default function UserPageWrapper({
                 </AlertDialog>
               </div>
             ) : (
-              <EditProfile user={profileQuery.data.user} data-superjson />
+              <EditProfile user={profileQuery.data.user} />
             )}
+          </div>
+
+          {/* Mobile */}
+          <div className="xs:hidden">
+            <MessageNgl />
           </div>
 
           <div className="flex items-center gap-x-4">
@@ -342,10 +357,12 @@ export default function UserPageWrapper({
               </TabsTrigger>
             </TabsList>
           </Tabs> */}
-        {profileQuery.data.user.id === profileQuery.data.userId && <PostForm />}
+        {profileQuery.data.user.id === profileQuery.data.user_id && (
+          <PostForm />
+        )}
       </div>
 
-      <PostsWrapper user={profileQuery.data.user} data-superjson />
+      <PostsWrapper user={profileQuery.data.user} />
     </div>
   );
 }

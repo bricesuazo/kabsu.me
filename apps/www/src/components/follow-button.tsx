@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { api } from "@/lib/trpc/client";
 
-import { Icons } from "./icons";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -14,8 +12,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "./ui/alert-dialog";
-import { Button } from "./ui/button";
+} from "@kabsu.me/ui/alert-dialog";
+import { Button } from "@kabsu.me/ui/button";
+
+import { api } from "~/lib/trpc/client";
+import { Icons } from "./icons";
 
 export default function FollowButton({
   isFollower,

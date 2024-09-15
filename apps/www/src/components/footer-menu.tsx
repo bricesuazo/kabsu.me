@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Bell, Home, MessageSquare, Search } from "lucide-react";
 
-import { Button } from "./ui/button";
+import { Button } from "@kabsu.me/ui/button";
 
 export default function FooterMenu() {
   return (

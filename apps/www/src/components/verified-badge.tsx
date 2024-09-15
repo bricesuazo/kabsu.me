@@ -1,6 +1,5 @@
-import { cn } from "@/lib/utils";
-
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { cn } from "@kabsu.me/ui";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 
 export default function VerifiedBadge({
   size = "md",

@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { POST_TYPE_TABS } from "@kabsu.me/constants";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@kabsu.me/ui/tabs";
+
+import { api } from "~/lib/trpc/client";
 
 export default function PostTypeTab() {
   const searchParams = useSearchParams();
@@ -12,6 +15,7 @@ export default function PostTypeTab() {
   const [tab, setTab] = useState(
     searchParams.get("tab") ?? POST_TYPE_TABS[4]?.id,
   );
+  const getMyUniversityStatusQuery = api.auth.getMyUniversityStatus.useQuery();
 
   useEffect(() => {
     setTab(searchParams.get("tab") ?? POST_TYPE_TABS[4]?.id);
@@ -24,85 +28,54 @@ export default function PostTypeTab() {
         defaultValue={tab}
         value={tab}
         onValueChange={(value) => {
-          setTab(value);
           router.push(value !== "following" ? `/?tab=${value}` : "/");
+          setTab(value);
         }}
       >
-        <TabsList className="flex h-auto w-full justify-between rounded-none bg-transparent p-0">
+        <TabsList className="flex h-auto w-full items-stretch justify-between rounded-none bg-background p-0 dark:bg-black sm:dark:bg-[#121212]">
           {POST_TYPE_TABS.map((select) => (
             <TabsTrigger
               key={select.id}
-              className="flex w-full gap-x-2 rounded-none border-b-4 border-transparent py-4 hover:text-foreground data-[state=active]:rounded-none data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=active]:bg-transparent data-[state=active]:text-primary"
+              className="flex w-full flex-col rounded-none border-b-4 border-transparent py-4 hover:text-foreground data-[state=active]:rounded-none data-[state=active]:border-b-primary data-[state=active]:bg-transparent data-[state=active]:text-primary md:data-[state=active]:border-b-4"
               value={select.id}
+              onClick={() => {
+                if (
+                  select.id === searchParams.get("tab") ||
+                  (select.id === "following" && !searchParams.has("tab"))
+                )
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
             >
-              <div className="block sm:hidden md:block">
-                <select.icon size="20" />
+              <div className="flex gap-x-2">
+                <div className="block sm:hidden md:block">
+                  <select.icon size="20" />
+                </div>
+
+                {select.id == "all" || select.id === "following" ? (
+                  <p className="hidden sm:block">{select.name}</p>
+                ) : getMyUniversityStatusQuery.isLoading ? (
+                  <Skeleton className="hidden h-4 w-10 sm:block" />
+                ) : (
+                  getMyUniversityStatusQuery.data && (
+                    <p className="hidden sm:block">
+                      {(() => {
+                        switch (select.id) {
+                          case "campus":
+                            return getMyUniversityStatusQuery.data.programs?.colleges?.campuses?.slug.toUpperCase();
+                          case "college":
+                            return getMyUniversityStatusQuery.data.programs?.colleges?.slug.toUpperCase();
+                          case "program":
+                            return getMyUniversityStatusQuery.data.programs?.slug.toUpperCase();
+                        }
+                      })()}
+                    </p>
+                  )
+                )}
               </div>
-              <p className="hidden sm:block">{select.name}</p>
             </TabsTrigger>
           ))}
         </TabsList>
       </Tabs>
-
-      {/* <Select
-      defaultValue={tab}
-      value={tab}
-      required
-      onValueChange={(value) => {
-        setTab(value);
-        router.push(value !== "following" ? `/?tab=${value}` : "/");
-      }}
-    >
-      <SelectTrigger>
-        <SelectValue placeholder="Post" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectLabel>Post</SelectLabel>
-          {POST_TYPE_TABS.map((tab) => (
-            <SelectItem key={tab.id} value={tab.id}>
-              {tab.name}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select> */}
     </div>
   );
-
-  // return (
-  //   <Tabs
-  //     value={tab}
-  //     onValueChange={(value) => {
-  //       setTab(value);
-  //       router.push(value !== "following" ? `/?tab=${value}` : "/");
-  //     }}
-  //   >
-  //     <TabsList className="w-full sm:w-auto">
-  //       {POST_TYPE_TABS.map((tab) => (
-  //         <TabsTrigger key={tab.id} value={tab.id} className="w-full">
-  //           <div className="hidden sm:block">{tab.name}</div>
-  //           <div className="sm:hidden">
-  //             {(() => {
-  //               switch (tab.id) {
-  //                 case "all":
-  //                   return <School size="1.25rem" />;
-  //                 case "campus":
-  //                   return <School2 size="1.25rem" />;
-  //                 case "program":
-  //                   return <Users2 size="1.25rem" />;
-  //                 case "college":
-  //                   return <Component size="1.25rem" />;
-  //                 case "following":
-  //                   return <UserCheck2 size="1.25rem" />;
-  //                 default:
-  //                   return null;
-  //               }
-  //             })()}
-  //           </div>
-  //         </TabsTrigger>
-  //       ))}
-  //     </TabsList>
-  //   </Tabs>
-  // );
 }

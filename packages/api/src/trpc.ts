@@ -1,34 +1,36 @@
+import type { User } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 import { initTRPC, TRPCError } from "@trpc/server";
+import { Redis } from "@upstash/redis";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import type { Session } from "@kabsu.me/auth";
-import { auth } from "@kabsu.me/auth";
-import { db } from "@kabsu.me/db";
+import type { Database } from "./../../../supabase/types";
+import { env } from "./../../../apps/www/src/env";
 
-interface CreateContextOptions {
-  session: Session | null;
-}
-
-const createInnerTRPCContext = (opts: CreateContextOptions) => {
-  return {
-    session: opts.session,
-    db,
-  };
-};
-
-export const createTRPCContext = async (opts: {
-  req?: Request;
-  auth: Session | null;
+export const createTRPCContext = (opts: {
+  headers: Headers;
+  auth: { user: User } | null;
 }) => {
-  const session = opts.auth ?? (await auth());
-  const source = opts.req?.headers.get("x-trpc-source") ?? "unknown";
+  const auth = opts.auth;
+  const source = opts.headers.get("x-trpc-source") ?? "unknown";
 
-  console.log(">>> tRPC Request from", source, "by", session?.user);
+  console.log(">>> tRPC Request from", source, "by", auth?.user.email);
 
-  return createInnerTRPCContext({
-    session,
+  const supabase = createClient<Database>(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY,
+  );
+  const redis = new Redis({
+    url: env.UPSTASH_REDIS_REST_URL,
+    token: env.UPSTASH_REDIS_REST_TOKEN,
   });
+
+  return {
+    supabase,
+    redis,
+    ...opts,
+  };
 };
 
 export type Context = Awaited<ReturnType<typeof createTRPCContext>>;
@@ -57,17 +59,28 @@ export const router = t.router;
 export const publicProcedure = t.procedure;
 
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session) {
+  if (!ctx.auth) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
     ctx: {
       ...ctx,
-      session: {
-        ...ctx.session,
+      auth: {
+        ...ctx.auth,
       },
     },
   });
 });
 
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+export const adminProcedure = t.procedure
+  .use(enforceUserIsAuthed)
+  .use(({ ctx, next }) => {
+    if (ctx.auth.user.email !== env.NEXT_PUBLIC_SUPERADMIN_EMAIL) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    return next({ ctx });
+  });
+export const createCallerFactory = t.createCallerFactory;

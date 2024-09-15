@@ -6,16 +6,24 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "eslint.rules.customizations": [{ "rule": "*", "severity": "warn" }],
+  "eslint.useFlatConfig": true,
   "eslint.workingDirectories": [
     { "pattern": "apps/*/" },
     { "pattern": "packages/*/" },
     { "pattern": "tooling/*/" }
   ],
-  "tailwindCSS.experimental.configFile": "./tooling/tailwind/index.ts",
-  "typescript.tsdk": "node_modules/typescript/lib",
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
+  "tailwindCSS.experimental.configFile": "./tooling/tailwind/base.ts",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.preferences.autoImportFileExcludePatterns": [
     "next/router.d.ts",
     "next/dist/client/router.d.ts"
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "vscode_vibrancy.enableAutoTheme": false,
+  "vscode_vibrancy.preferedLightTheme": "Default Dark",
+  "vscode_vibrancy.type": "ultra-dark"
 }

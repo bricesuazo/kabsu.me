@@ -1,18 +1,18 @@
-import "@kabsu.me/tailwind-config/globals.css";
+import "~/globals.css";
+import "react-photo-view/dist/react-photo-view.css";
 
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import { headers } from "next/headers";
-import FooterMenu from "@/components/footer-menu";
-import QueryProvider from "@/components/query-provider";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import TRPCProvider from "@/lib/trpc/Provider";
-import { cn } from "@/lib/utils";
-import { auth } from "@kabsu.me/auth";
 import { Analytics } from "@vercel/analytics/react";
-import { SessionProvider } from "next-auth/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
+import { cn } from "@kabsu.me/ui";
+import { Toaster } from "@kabsu.me/ui/sonner";
+import { TooltipProvider } from "@kabsu.me/ui/tooltip";
+
+import NotificationProvider from "~/components/notification-provider";
+import { ThemeProvider } from "~/components/theme-provider";
+import { TRPCReactProvider } from "~/lib/trpc/client";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -20,7 +20,7 @@ const font = Poppins({
 });
 
 // export const runtime = "edge";
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: {
@@ -32,32 +32,28 @@ export const metadata: Metadata = {
     name: "Brice Suazo",
     url: "https://bricesuazo.com",
   },
-  metadataBase: new URL("https://cvsu.me/"),
+  metadataBase: new URL("https://kabsu.me/"),
 };
 
-export default async function RootLayout({
-  children,
-}: React.PropsWithChildren) {
-  const session = await auth();
+export default function RootLayout({ children }: React.PropsWithChildren) {
   return (
-    <SessionProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={cn(font.className)}>
-          <QueryProvider>
-            <ThemeProvider attribute="class" defaultTheme="light">
-              <TooltipProvider>
-                <TRPCProvider headers={headers()}>
-                  {children}
-                  <Analytics />
-                  {session && <FooterMenu />}
-                </TRPCProvider>
-              </TooltipProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={cn(font.className)}>
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <TooltipProvider>
+            <TRPCReactProvider>
+              {children}
 
               <Toaster />
-            </ThemeProvider>
-          </QueryProvider>
-        </body>
-      </html>
-    </SessionProvider>
+              <NotificationProvider />
+              <Analytics />
+              <SpeedInsights />
+              {/* TODO: */}
+              {/* {session && <FooterMenu />} */}
+            </TRPCReactProvider>
+          </TooltipProvider>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

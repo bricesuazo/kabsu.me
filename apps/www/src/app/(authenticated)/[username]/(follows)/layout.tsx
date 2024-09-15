@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+
+import { Button } from "@kabsu.me/ui/button";
 
 export default function FollowsLayout({
   children,

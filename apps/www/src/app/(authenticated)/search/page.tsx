@@ -3,17 +3,19 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
-import VerifiedBadge from "@/components/verified-badge";
-import { api } from "@/lib/trpc/client";
-import { useDebouncedCallback } from "use-debounce";
+import debounce from "lodash.debounce";
+
+import { Input } from "@kabsu.me/ui/input";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
+
+import VerifiedBadge from "~/components/verified-badge";
+import { api } from "~/lib/trpc/client";
 
 export default function SearchPage() {
   const searchMutation = api.users.search.useMutation();
   const [value, setValue] = useState("");
 
-  const debounced = useDebouncedCallback((value: string) => {
+  const debounced = debounce((value: string) => {
     setValue(value);
   }, 500);
 
@@ -23,6 +25,7 @@ export default function SearchPage() {
     } else {
       searchMutation.reset();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
   return (
     <div className="p-4">
@@ -63,17 +66,19 @@ export default function SearchPage() {
                 >
                   <div className="min-w-max">
                     <Image
-                      src={user.imageUrl ?? "/default-avatar.jpg"}
+                      src={
+                        user.image_name ? user.image_url : "/default-avatar.jpg"
+                      }
                       alt=""
                       width={40}
                       height={40}
-                      className="aspect-square rounded-full object-cover"
+                      className="aspect-square rounded-full object-cover object-center"
                     />
                   </div>
                   <div>
                     <div className="flex items-center gap-x-1">
                       <p className="line-clamp-1 flex-1">{user.name} </p>
-                      {user.isVerified && <VerifiedBadge size="sm" />}
+                      {user.is_verified && <VerifiedBadge size="sm" />}
                     </div>
                     <p className="line-clamp-1 text-sm text-muted-foreground">
                       @{user.username}

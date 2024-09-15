@@ -1,4 +1,4 @@
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "@kabsu.me/ui/skeleton";
 
 export default function UserFollowsSkeleton() {
   return (

@@ -1,4 +1,4 @@
-import UserFollowsSkeleton from "@/components/user-follows-skeleton";
+import UserFollowsSkeleton from "~/components/user-follows-skeleton";
 
 export default function FollowersLoading() {
   return (

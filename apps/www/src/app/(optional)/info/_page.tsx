@@ -1,4 +1,4 @@
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@kabsu.me/ui/separator";
 
 export default function InformationCenterPage() {
   return (
@@ -14,7 +14,7 @@ export default function InformationCenterPage() {
 
       <div className="mx-auto max-w-md">
         <h4 className="text-xl font-semibold text-primary">CvSU Mission</h4>
-        <p className="[text-wrap:balance]">
+        <p className="text-balance">
           Cavite State University shall provide excellent, equitable, and
           relevant educational opportunities in the arts, sciences and
           technology through quality instruction and responsive research and
@@ -23,7 +23,7 @@ export default function InformationCenterPage() {
       </div>
       <div className="mx-auto max-w-md">
         <h4 className="text-xl font-semibold text-primary">CvSU Vision</h4>
-        <p className="[text-wrap:balance]">
+        <p className="text-balance">
           The Premier University in historic Cavite globally recognized for
           excellence in character development, academics, research, innovation
           and sustainable community engagement.
@@ -41,7 +41,7 @@ export default function InformationCenterPage() {
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
         />
-        <p className="[text-wrap:balance]">
+        <p className="text-balance">
           Hail Alma Mater Dear
           <br />
           CvSU all the way through

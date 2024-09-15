@@ -1,25 +1,30 @@
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { auth } from "@kabsu.me/auth";
+
 import { DEVS_INFO } from "@kabsu.me/constants";
 
-export default async function AboutPage() {
-  const session = await auth();
+import { createClient } from "~/supabase/server";
 
-  if (!session) redirect("/");
+export default async function AboutPage() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) redirect("/");
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-center text-4xl font-bold text-primary">About</h1>
-        <p className="text-center text-base [text-wrap:balance] sm:text-lg">
+        <p className="text-balance text-center text-base sm:text-lg">
           We believe that having this platform is essential for bringing
           together Cavite State University students, faculty, and alumni in a
           way that&apos;s exclusive and focused.
         </p>
       </div>
       <div>
-        <h4 className=" text-center text-xl font-semibold text-primary">
+        <h4 className="text-center text-xl font-semibold text-primary">
           Who are we?
         </h4>
         <p className="mx-auto max-w-lg text-center">
@@ -32,12 +37,12 @@ export default async function AboutPage() {
           return (
             <div
               key={dev.index}
-              className="flex flex-col items-center gap-y-4 rounded-lg border-2 p-3 "
+              className="flex flex-col items-center gap-y-4 rounded-lg border-2 p-3"
             >
               <Image
                 src={dev.image}
                 alt={dev.name}
-                className="rounded-full saturate-0"
+                className="aspect-square rounded-full object-cover object-center"
                 width="80"
                 height="80"
               />

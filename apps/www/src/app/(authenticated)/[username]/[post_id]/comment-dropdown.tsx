@@ -2,40 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { api } from "@/lib/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { REPORT_POST_REASONS } from "@kabsu.me/constants";
 import { MoreVertical } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
-import { Icons } from "../../../../components/icons";
+import { REPORT_POST_REASONS } from "@kabsu.me/constants";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -44,15 +17,45 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "../../../../components/ui/alert-dialog";
-import { toast } from "../../../../components/ui/use-toast";
+} from "@kabsu.me/ui/alert-dialog";
+import { Button } from "@kabsu.me/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@kabsu.me/ui/dropdown-menu";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@kabsu.me/ui/form";
+import { Input } from "@kabsu.me/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@kabsu.me/ui/select";
+
+import { Icons } from "~/components/icons";
+import { api } from "~/lib/trpc/client";
 
 export default function CommentDropdown({
   comment_id,
   isMyComment,
+  level,
 }: {
   comment_id: string;
   isMyComment: boolean;
+  level: number;
 }) {
   const params = useParams();
   const context = api.useUtils();
@@ -64,8 +67,7 @@ export default function CommentDropdown({
   const reportCommentMutation = api.comments.report.useMutation({
     onSuccess: () => {
       setOpenReport(false);
-      toast({
-        title: "Comment reported",
+      toast.success("Comment reported", {
         description: "Your report has been submitted",
       });
     },
@@ -77,7 +79,7 @@ export default function CommentDropdown({
   }>({
     resolver: zodResolver(
       z.object({
-        id: z.string().nonempty("Please select a reason for your report."),
+        id: z.string().min(1, "Please select a reason for your report."),
         reason: z.string(),
       }),
     ),
@@ -88,6 +90,7 @@ export default function CommentDropdown({
 
   useEffect(() => {
     if (openReport) reportForm.reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openReport]);
 
   return (
@@ -111,14 +114,30 @@ export default function CommentDropdown({
                   await deleteCommentMutation.mutateAsync({ comment_id });
                   setLoading(false);
                   setOpenDelete(false);
-                  toast({
-                    title: "Comment deleted",
+                  toast("Comment deleted", {
                     description: "Your comment has been deleted.",
                   });
 
                   await context.posts.getPost.invalidate({
                     post_id: params.post_id as string,
                   });
+
+                  // context.comments.getFullComment.setData(
+                  //   { comment_id },
+                  //   (updater) => {
+                  //     if (!updater) return;
+
+                  //     return {
+                  //       ...updater,
+                  //       comment: {
+                  //         ...updater.comment,
+                  //         replies: updater.comment.replies.filter(
+                  //           (reply) => reply.thread_id !== comment_id,
+                  //         ),
+                  //       },
+                  //     };
+                  //   },
+                  // );
                 }}
                 disabled={loading}
               >
@@ -244,7 +263,9 @@ export default function CommentDropdown({
           </DropdownMenuTrigger>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuLabel>Comment</DropdownMenuLabel>
+          <DropdownMenuLabel>
+            {level === 0 ? "Comment" : "Reply"}
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           {isMyComment ? (
             <DropdownMenuItem

@@ -1,7 +1,11 @@
 "use client";
 
-import { Button } from "./ui/button";
-import { Icons } from "./icons";
+import { useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { Button } from "@kabsu.me/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,9 +13,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "./ui/dialog";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from "@kabsu.me/ui/dialog";
 import {
   Form,
   FormControl,
@@ -20,12 +22,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Textarea } from "./ui/textarea";
-import type { Post } from "@kabsu.me/db/schema";
-import { useEffect } from "react";
-import { z } from "zod";
-import { api } from "@/lib/trpc/client";
+} from "@kabsu.me/ui/form";
+import { Textarea } from "@kabsu.me/ui/textarea";
+
+import type { Database } from "../../../../supabase/types";
+import { api } from "~/lib/trpc/client";
+import { Icons } from "./icons";
 
 const Schema = z.object({
   post_id: z.string().min(1),
@@ -38,7 +40,7 @@ export default function UpdatePost({
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
-  post: Post;
+  post: Database["public"]["Tables"]["posts"]["Row"];
 }) {
   const updatePostMutation = api.posts.update.useMutation();
 
@@ -57,7 +59,8 @@ export default function UpdatePost({
         post_id: post.id,
       });
     }
-  }, [open, form, post.content, post.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   async function onSubmit(values: z.infer<typeof Schema>) {
     if (!form.formState.isDirty) return;

@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { api } from "@/lib/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { REPORT_POST_REASONS } from "@kabsu.me/constants";
 import { MoreHorizontal } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
-import { Icons } from "./icons";
+import { REPORT_POST_REASONS } from "@kabsu.me/constants";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -18,8 +17,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "./ui/alert-dialog";
-import { Button } from "./ui/button";
+} from "@kabsu.me/ui/alert-dialog";
+import { Button } from "@kabsu.me/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,7 +26,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "@kabsu.me/ui/dropdown-menu";
 import {
   Form,
   FormControl,
@@ -36,16 +35,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Input } from "./ui/input";
+} from "@kabsu.me/ui/form";
+import { Input } from "@kabsu.me/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { toast } from "./ui/use-toast";
+} from "@kabsu.me/ui/select";
+
+import { env } from "~/env";
+import { api } from "~/lib/trpc/client";
+import { Icons } from "./icons";
 
 export default function PostDropdown({
   post_id,
@@ -59,12 +61,16 @@ export default function PostDropdown({
   const context = api.useUtils();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
   const deletePostMutation = api.posts.delete.useMutation({
     onSuccess: async () => {
       if (successUrl) {
         router.push(successUrl);
       } else {
-        await context.posts.getUserPosts.reset();
+        await Promise.all([
+          context.posts.getUserPosts.reset(),
+          context.posts.getPosts.reset(),
+        ]);
         // router.refresh();
       }
     },
@@ -72,10 +78,28 @@ export default function PostDropdown({
   const reportPostMutation = api.posts.report.useMutation({
     onSuccess: () => {
       setOpenReport(false);
-      toast({
-        title: "Post reported",
+      toast.success("Post reported", {
         description: "Your report has been submitted",
       });
+    },
+  });
+  const strikePostMutation = api.posts.strike.useMutation({
+    onSuccess: async () => {
+      setOpenStrike(false);
+      toast.success("Post striked", {
+        description: "The post has been striked",
+      });
+      await Promise.all([
+        context.posts.getUserPosts.invalidate(),
+        context.posts.getPosts.invalidate({
+          type:
+            (searchParams.get("tab") as
+              | "all"
+              | "program"
+              | "college"
+              | undefined) ?? "following",
+        }),
+      ]);
     },
   });
   const reportForm = useForm<{
@@ -84,7 +108,7 @@ export default function PostDropdown({
   }>({
     resolver: zodResolver(
       z.object({
-        id: z.string().nonempty("Please select a reason for your report."),
+        id: z.string().min(1, "Please select a reason for your report."),
         reason: z.string(),
       }),
     ),
@@ -96,9 +120,11 @@ export default function PostDropdown({
   const [openDelete, setOpenDelete] = useState(false);
   const [openReport, setOpenReport] = useState(false);
   // const [openUpdate, setOpenUpdate] = useState(false);
+  const [openStrike, setOpenStrike] = useState(false);
 
   useEffect(() => {
     if (openReport) reportForm.reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openReport]);
 
   return (
@@ -109,8 +135,8 @@ export default function PostDropdown({
             <AlertDialogHeader>
               <AlertDialogTitle>Delete Post</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete your
-                account and remove your data from our servers.
+                This action cannot be undone. Are you sure you want to delete
+                this post?
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -122,8 +148,7 @@ export default function PostDropdown({
                 onClick={async () => {
                   await deletePostMutation.mutateAsync({ post_id });
                   setOpenDelete(false);
-                  toast({
-                    title: "Post deleted",
+                  toast.success("Post deleted", {
                     description: "Your post has been deleted.",
                   });
                   await context.posts.getUserPosts.invalidate();
@@ -247,6 +272,39 @@ export default function PostDropdown({
           </AlertDialogContent>
         </AlertDialog>
       )}
+      {getCurrentUserQuery.data?.email === env.NEXT_PUBLIC_SUPERADMIN_EMAIL && (
+        <AlertDialog open={openStrike} onOpenChange={setOpenStrike}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Strike Post</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. Are you sure you want to strike
+                this post?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={strikePostMutation.isPending}>
+                Cancel
+              </AlertDialogCancel>
+
+              <Button
+                variant="destructive"
+                onClick={async () =>
+                  strikePostMutation.mutateAsync({ post_id })
+                }
+                disabled={strikePostMutation.isPending}
+              >
+                {strikePostMutation.isPending && (
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Strike
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div className="">
@@ -284,6 +342,16 @@ export default function PostDropdown({
               Report post
             </DropdownMenuItem>
           )}
+          {!isMyPost &&
+            getCurrentUserQuery.data?.email ===
+              env.NEXT_PUBLIC_SUPERADMIN_EMAIL && (
+              <DropdownMenuItem
+                className="!text-red-500"
+                onClick={() => setOpenStrike(true)}
+              >
+                Strike post
+              </DropdownMenuItem>
+            )}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
