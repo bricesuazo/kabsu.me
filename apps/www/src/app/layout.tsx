@@ -1,4 +1,5 @@
 import "~/globals.css";
+import "react-photo-view/dist/react-photo-view.css";
 
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
@@ -10,6 +11,7 @@ import { Toaster } from "@kabsu.me/ui/sonner";
 import { TooltipProvider } from "@kabsu.me/ui/tooltip";
 
 import NotificationProvider from "~/components/notification-provider";
+import Providers from "~/components/providers";
 import { ThemeProvider } from "~/components/theme-provider";
 import { TRPCReactProvider } from "~/lib/trpc/client";
 
@@ -41,7 +43,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
         <ThemeProvider attribute="class" defaultTheme="light">
           <TooltipProvider>
             <TRPCReactProvider>
-              {children}
+              <Providers>{children}</Providers>
 
               <Toaster />
               <NotificationProvider />
