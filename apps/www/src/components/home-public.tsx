@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { AlertCircle, Github } from "lucide-react";
 
-import { DEVS_INFO, NEW_FEATURES } from "@kabsu.me/constants";
+import { DEVS_INFO, NEW_FEATURES, THESIS_INFO } from "@kabsu.me/constants";
 import { Alert, AlertDescription, AlertTitle } from "@kabsu.me/ui/alert";
 import { Button } from "@kabsu.me/ui/button";
 import { BentoCard, BentoGrid } from "@kabsu.me/ui/magicui/bento-grid";
@@ -22,155 +22,6 @@ import Footer from "./footer";
 import NGLPanel from "./ngl-panel";
 import SigninButton from "./signin-button";
 import { ToggleTheme } from "./toggle-theme";
-
-const THESIS_INFO = [
-  {
-    Icon: (
-      <Image
-        alt="adventura-logo-img"
-        src="/thesis-pics/adventura-logo.png"
-        width={1000}
-        height={1000}
-      />
-    ),
-    name: "Adventura 360°",
-    description:
-      "An Interactive Campus Tour for Cavite State University Don Severino Delas Alas Campus.",
-    className: "col-span-5 lg:col-span-2",
-    href: "https://adventura360.kabsu.me/",
-    cta: "Learn more",
-    background: (
-      <Image
-        alt="adventura-background-img"
-        src="/thesis-pics/adventura-background.png"
-        width={1000}
-        height={1000}
-        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
-      />
-    ),
-  },
-  {
-    Icon: (
-      <Image
-        alt="arctec-logo-img"
-        src="/thesis-pics/arctec-logo.png"
-        width={1000}
-        height={1000}
-      />
-    ),
-    name: "ARCTEC",
-    description: "Augmented Reality for CvSU Ladislao N. Diwa Memorial Library",
-    className: "col-span-5 lg:col-span-2",
-    href: "https://arctec.kabsu.me/",
-    cta: "Learn more",
-    background: (
-      <Image
-        alt="arctec-background-img"
-        src="/thesis-pics/arctec-background.png"
-        width={1000}
-        height={1000}
-        className="absolute top-0 h-full w-full object-cover [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
-      />
-    ),
-  },
-  {
-    Icon: (
-      <Image
-        alt="chromia-logo-img"
-        src="/thesis-pics/chromia-logo.png"
-        width={1000}
-        height={1000}
-      />
-    ),
-    name: "CHROMIA",
-    description: "A Speech Command HCI Design for Google Chrome",
-    className: "col-span-5 lg:col-span-1",
-    href: "https://chromia.kabsu.me/",
-    cta: "Learn more",
-    background: (
-      <Image
-        alt="chromia-background-img"
-        src="/thesis-pics/chromia-background.png"
-        width={1000}
-        height={1000}
-        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
-      />
-    ),
-  },
-  {
-    Icon: (
-      <Image
-        alt="ebnoto-logo-img"
-        src="/thesis-pics/eboto-logo.png"
-        width={1000}
-        height={1000}
-      />
-    ),
-    name: "eBoto",
-    description: "One Stop Online Voting Solution",
-    className: "col-span-5 lg:col-span-1",
-    href: "https://eboto.app/",
-    cta: "Learn more",
-    background: (
-      <Image
-        alt="eboto-background-img"
-        src="/thesis-pics/eboto-background.png"
-        width={1000}
-        height={1000}
-        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
-      />
-    ),
-  },
-  {
-    Icon: (
-      <Image
-        alt="odyssey-logo-img"
-        src="/thesis-pics/odyssey-logo.png"
-        width={1000}
-        height={1000}
-      />
-    ),
-    name: "Odyssey",
-    description:
-      "An Android-Based Mobile Augmented Reality Application for Interactive Experience at CvSU Historical and Cultural Museum",
-    className: "col-span-5 lg:col-span-2",
-    href: "https://odyssey.kabsu.me/",
-    cta: "Learn more",
-    background: (
-      <Image
-        alt="odyssey-background-img"
-        src="/thesis-pics/odyssey-background.png"
-        width={1000}
-        height={1000}
-        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
-      />
-    ),
-  },
-  {
-    Icon: (
-      <Image
-        alt="swardify-logo-img"
-        src="/thesis-pics/swardify-logo.png"
-        width={1000}
-        height={1000}
-      />
-    ),
-    name: "SWARDify",
-    description: "A Bidirectional Swardspeak and Tagalog Translator",
-    className: "col-span-5 lg:col-span-2",
-    href: "https://swardify.kabsu.me/",
-    cta: "Learn more",
-    background: (
-      <Image
-        alt="swardify-background-img"
-        src="/thesis-pics/swardify-background.png"
-        width={1000}
-        height={1000}
-        className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
-      />
-    ),
-  },
-];
 
 export default function HomePublic({
   error,
@@ -361,11 +212,32 @@ export default function HomePublic({
           Partnerships
         </h1>
 
-        <div className="">
+        {/* THESIS BENTO */}
+        <div>
           <BentoGrid className="grid grid-cols-5">
-            {THESIS_INFO.map((thesis) => {
-              return <BentoCard key={thesis.href} {...thesis} />;
-            })}
+            {THESIS_INFO.map((thesis) => (
+              <BentoCard
+                key={thesis.name}
+                {...thesis}
+                Icon={
+                  <Image
+                    src={thesis.icon.src}
+                    alt={thesis.icon.alt}
+                    width={1000}
+                    height={1000}
+                  />
+                }
+                background={
+                  <Image
+                    src={thesis.background.src}
+                    alt={thesis.background.alt}
+                    width={1000}
+                    height={1000}
+                    className={thesis.background.className}
+                  />
+                }
+              />
+            ))}
           </BentoGrid>
         </div>
 
@@ -419,8 +291,11 @@ export default function HomePublic({
           </div>
         </div>
 
+        {/* NGL PANEL COMPONENT */}
         <NGLPanel />
+        {/* FACEBOOK PAGE COMPONENT */}
         <FacebookPage />
+        {/* CONTACT FORM COMPONENT */}
         <ContactForm />
 
         <div>

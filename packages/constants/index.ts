@@ -1,10 +1,12 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  AtSignIcon,
   BadgeCheck,
   Blocks,
   Book,
   BookOpenCheck,
   Clock,
+  Earth,
   Github,
   Globe,
   Globe2,
@@ -17,13 +19,15 @@ import {
   Lock,
   Mail,
   MapPin,
+  MessageCircle,
   MessageSquareText,
-  RefreshCw,
   School,
   School2,
   Twitter,
   Users2,
+  UserSearch,
   UserSquare2,
+  VenetianMask,
 } from "lucide-react";
 import { v4 as uuid } from "uuid";
 
@@ -570,44 +574,71 @@ export const NEW_FEATURES = [
     icon: MapPin,
     title: "Exclusive",
     description:
-      "You can see posts and chats exclusive to your campus, college, and program.",
+      "Access posts and chats exclusive to your campus, college, and program.",
   },
   {
     index: 1,
     icon: BadgeCheck,
     title: "Be Authentic",
     description:
-      "Kabsu.me verification can be applied to individuals and organizations.",
+      "Apply for Kabsu.me verification as an individual or organization.",
   },
   {
     index: 2,
     icon: Image,
-    title: "Picture Perfect",
-    description: "You can now upload a picture.",
+    title: "Upload Photos",
+    description: "Easily upload photos up to 5MB.",
   },
   {
     index: 3,
     icon: Clock,
     title: "Improved loading speed",
-    description: "Kabsu.me prioritizes your time on our website.",
+    description:
+      "Kabsu.me ensures a faster and more efficient browsing experience.",
   },
   {
     index: 4,
     icon: Lock,
     title: "Secured",
-    description: "Your information is always secured to us",
+    description: "Your information is securely stored and protected with us.",
   },
   {
     index: 5,
     icon: MessageSquareText,
     title: "Replies",
-    description: "You can now reply driectly to a comment.",
+    description:
+      "Engage in better conversations by replying directly to comments.",
   },
   {
     index: 6,
-    icon: RefreshCw,
-    title: "Repost.me",
-    description: "Share another content to other users.",
+    icon: MessageCircle,
+    title: "Private Messaging",
+    description: "Chat privately with other users.",
+  },
+  {
+    index: 7,
+    icon: Earth,
+    title: "Global & Campus Chats",
+    description: "Join discussions across all campuses, or just your own.",
+  },
+  {
+    index: 8,
+    icon: AtSignIcon,
+    title: "User Tagging",
+    description:
+      "Tag other users in posts to boost engagement and interaction.",
+  },
+  {
+    index: 9,
+    icon: VenetianMask,
+    title: "NGL Feature",
+    description: "Send anonymous messages with our NGL feature.",
+  },
+  {
+    index: 10,
+    icon: UserSearch,
+    title: "Prof Finder",
+    description: "Easily find professors and instructors at CvSU.",
   },
 ];
 
@@ -770,5 +801,165 @@ export const REPORT_POST_REASONS = [
   {
     id: "other",
     reason: "Other",
+  },
+];
+
+export const ONBOARDING_PAGES: {
+  title: string;
+  content: string;
+  image?: string;
+  video?: string;
+}[] = [
+  {
+    title: "Welcome to Kabsu.me",
+    content: "Connect, share, and explore new features with Kabsu.me!",
+    image: "/onboarding-pics/Promotion 1.png",
+  },
+  {
+    title: "Upload Photos",
+    content: "Easily upload photos up to 5MB.",
+    image: "/onboarding-pics/Promotion 2.png",
+  },
+  {
+    title: "Comment Replies",
+    content: "Reply directly to comments for better conversations.",
+    image: "/onboarding-pics/Promotion 3.png",
+  },
+  {
+    title: "Private Messaging",
+    content: "Chat privately with other users.",
+    image: "/onboarding-pics/Promotion 4.png",
+  },
+  {
+    title: "Global & Campus Chats",
+    content: "Join discussions across all campuses, or just your own.",
+    image: "/onboarding-pics/Promotion 5.png",
+  },
+  {
+    title: "User Tagging",
+    content: "Tag other users in your posts for better engagement.",
+    image: "/onboarding-pics/Promotion 13.png",
+  },
+  {
+    title: "NGL Feature",
+    content: "Send anonymous messages with our NGL feature.",
+    image: "/onboarding-pics/Promotion 11.png",
+  },
+  {
+    title: "Partners",
+    content: "Proud partnerships.",
+    image: "/onboarding-pics/Promotion 16.png",
+  },
+  {
+    title: "Video Launch",
+    content: "Kabsu.me - Video Launch",
+    video: "https://www.facebook.com/kabsu.me/videos/1054042366085577",
+  },
+];
+
+export const THESIS_INFO = [
+  {
+    icon: {
+      src: "/thesis-pics/adventura-logo.png",
+      alt: "adventura-logo-img",
+    },
+    name: "Adventura 360°",
+    description:
+      "An Interactive Campus Tour for Cavite State University Don Severino Delas Alas Campus.",
+    className: "col-span-5 lg:col-span-2",
+    href: "https://adventura360.kabsu.me/",
+    cta: "Learn more",
+    background: {
+      src: "/thesis-pics/adventura-background.png",
+      alt: "adventura-background-img",
+      className:
+        "absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
+    },
+  },
+  {
+    icon: {
+      src: "/thesis-pics/arctec-logo.png",
+      alt: "arctec-logo-img",
+    },
+    name: "ARCTEC",
+    description: "Augmented Reality for CvSU Ladislao N. Diwa Memorial Library",
+    className: "col-span-5 lg:col-span-2",
+    href: "https://arctec.kabsu.me/",
+    cta: "Learn more",
+    background: {
+      src: "/thesis-pics/arctec-background.png",
+      alt: "arctec-background-img",
+      className:
+        "absolute top-0 h-full w-full object-cover [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
+    },
+  },
+  {
+    icon: {
+      src: "/thesis-pics/chromia-logo.png",
+      alt: "chromia-logo-img",
+    },
+    name: "CHROMIA",
+    description: "A Speech Command HCI Design for Google Chrome",
+    className: "col-span-5 lg:col-span-1",
+    href: "https://chromia.kabsu.me/",
+    cta: "Learn more",
+    background: {
+      src: "/thesis-pics/chromia-background.png",
+      alt: "chromia-background-img",
+      className:
+        "absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
+    },
+  },
+  {
+    icon: {
+      src: "/thesis-pics/eboto-logo.png",
+      alt: "eboto-logo-img",
+    },
+    name: "eBoto",
+    description: "One Stop Online Voting Solution",
+    className: "col-span-5 lg:col-span-1",
+    href: "https://eboto.app/",
+    cta: "Learn more",
+    background: {
+      src: "/thesis-pics/eboto-background.png",
+      alt: "eboto-background-img",
+      className:
+        "absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
+    },
+  },
+  {
+    icon: {
+      src: "/thesis-pics/odyssey-logo.png",
+      alt: "odyssey-logo-img",
+    },
+    name: "Odyssey",
+    description:
+      "An Android-Based Mobile Augmented Reality Application for Interactive Experience at CvSU Historical and Cultural Museum",
+    className: "col-span-5 lg:col-span-2",
+    href: "https://odyssey.kabsu.me/",
+    cta: "Learn more",
+    background: {
+      src: "/thesis-pics/odyssey-background.png",
+      alt: "odyssey-background-img",
+      className:
+        "absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
+    },
+  },
+  {
+    icon: {
+      src: "/thesis-pics/swardify-logo.png",
+      alt: "swardify-logo-img",
+    },
+    name: "SWARDify",
+    description: "A Bidirectional Swardspeak and Tagalog Translator",
+    className: "col-span-5 lg:col-span-2",
+    href: "https://swardify.kabsu.me/",
+    cta: "Learn more",
+    background: {
+      src: "/thesis-pics/swardify-background.png",
+      alt: "swardify-background-img",
+      className:
+        "absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
+    },
   },
 ];

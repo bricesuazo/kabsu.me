@@ -42,7 +42,7 @@ export default async function AboutPage() {
               <Image
                 src={dev.image}
                 alt={dev.name}
-                className="aspect-square rounded-full object-cover object-center saturate-0"
+                className="aspect-square rounded-full object-cover object-center"
                 width="80"
                 height="80"
               />

@@ -12,6 +12,7 @@
   "aliases": {
     "utils": "@kabsu.me/ui",
     "components": "src/",
-    "ui": "src/"
+    "ui": "src/",
+    "magicui": "src/magicui/"
   }
 }

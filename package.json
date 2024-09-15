@@ -26,7 +26,8 @@
     "migration:up": "supabase migration up",
     "email:dev": "pnpm turbo --filter=@kabsu.me/email email:dev",
     "typecheck": "turbo run typecheck",
-    "ui-add": "turbo run ui-add"
+    "ui-add": "turbo run ui-add",
+    "magicui-add": "turbo run magicui-add"
   },
   "devDependencies": {
     "@kabsu.me/eslint-config": "workspace:*",
