@@ -14,7 +14,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { PhotoView } from "react-photo-view";
+import { PhotoProvider, PhotoView } from "react-photo-view";
 import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
 
@@ -272,32 +272,34 @@ export default function PostPageComponent({
                 />
               </div>
 
-              {postQuery.data.post.posts_images.length > 0 && (
-                <div
-                  className={cn(
-                    "grid grid-cols-3 gap-2",
-                    postQuery.data.post.posts_images.length === 1 &&
-                      "grid-cols-1",
-                    postQuery.data.post.posts_images.length === 2 &&
-                      "grid-cols-2",
-                    postQuery.data.post.posts_images.length > 3 &&
-                      "grid-cols-3",
-                  )}
-                >
-                  {postQuery.data.post.posts_images.map((image) => (
-                    <PhotoView key={image.id} src={image.signed_url}>
-                      <Image
-                        src={image.signed_url}
-                        alt={image.name}
-                        width={400}
-                        height={400}
-                        priority
-                        className="aspect-square rounded-lg object-cover"
-                      />
-                    </PhotoView>
-                  ))}
-                </div>
-              )}
+              <PhotoProvider>
+                {postQuery.data.post.posts_images.length > 0 && (
+                  <div
+                    className={cn(
+                      "grid grid-cols-3 gap-2",
+                      postQuery.data.post.posts_images.length === 1 &&
+                        "grid-cols-1",
+                      postQuery.data.post.posts_images.length === 2 &&
+                        "grid-cols-2",
+                      postQuery.data.post.posts_images.length > 3 &&
+                        "grid-cols-3",
+                    )}
+                  >
+                    {postQuery.data.post.posts_images.map((image) => (
+                      <PhotoView key={image.id} src={image.signed_url}>
+                        <Image
+                          src={image.signed_url}
+                          alt={image.name}
+                          width={400}
+                          height={400}
+                          priority
+                          className="aspect-square rounded-lg object-cover"
+                        />
+                      </PhotoView>
+                    ))}
+                  </div>
+                )}
+              </PhotoProvider>
 
               <div className="space-y-2">
                 <div className="flex gap-x-1">

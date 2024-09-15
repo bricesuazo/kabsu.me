@@ -11,7 +11,6 @@ import { Toaster } from "@kabsu.me/ui/sonner";
 import { TooltipProvider } from "@kabsu.me/ui/tooltip";
 
 import NotificationProvider from "~/components/notification-provider";
-import Providers from "~/components/providers";
 import { ThemeProvider } from "~/components/theme-provider";
 import { TRPCReactProvider } from "~/lib/trpc/client";
 
@@ -43,7 +42,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
         <ThemeProvider attribute="class" defaultTheme="light">
           <TooltipProvider>
             <TRPCReactProvider>
-              <Providers>{children}</Providers>
+              {children}
 
               <Toaster />
               <NotificationProvider />

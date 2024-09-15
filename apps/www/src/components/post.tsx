@@ -13,7 +13,7 @@ import {
   Heart,
   MessageCircle,
 } from "lucide-react";
-import { PhotoView } from "react-photo-view";
+import { PhotoProvider, PhotoView } from "react-photo-view";
 import { v4 as uuid } from "uuid";
 
 import type { RouterOutputs } from "@kabsu.me/api";
@@ -223,29 +223,33 @@ export default function Post({
           />
         </div>
 
-        {getPostQuery.data.post.posts_images.length > 0 && (
-          <div
-            className={cn(
-              "grid grid-cols-3 gap-2",
-              getPostQuery.data.post.posts_images.length === 1 && "grid-cols-1",
-              getPostQuery.data.post.posts_images.length === 2 && "grid-cols-2",
-              getPostQuery.data.post.posts_images.length > 3 && "grid-cols-3",
-            )}
-          >
-            {getPostQuery.data.post.posts_images.map((image) => (
-              <PhotoView key={image.id} src={image.signed_url}>
-                <Image
-                  src={image.signed_url}
-                  alt={image.name}
-                  width={400}
-                  height={400}
-                  className="aspect-square rounded-lg object-cover"
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </PhotoView>
-            ))}
-          </div>
-        )}
+        <PhotoProvider>
+          {getPostQuery.data.post.posts_images.length > 0 && (
+            <div
+              className={cn(
+                "grid grid-cols-3 gap-2",
+                getPostQuery.data.post.posts_images.length === 1 &&
+                  "grid-cols-1",
+                getPostQuery.data.post.posts_images.length === 2 &&
+                  "grid-cols-2",
+                getPostQuery.data.post.posts_images.length > 3 && "grid-cols-3",
+              )}
+            >
+              {getPostQuery.data.post.posts_images.map((image) => (
+                <PhotoView key={image.id} src={image.signed_url}>
+                  <Image
+                    src={image.signed_url}
+                    alt={image.name}
+                    width={400}
+                    height={400}
+                    className="aspect-square rounded-lg object-cover"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </PhotoView>
+              ))}
+            </div>
+          )}
+        </PhotoProvider>
 
         <div className="space-y-2">
           <div className="flex gap-x-1">
