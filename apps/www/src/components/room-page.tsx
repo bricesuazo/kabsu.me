@@ -249,10 +249,10 @@ export default function RoomPageClient(
                       ? props.getRoomChats.room.to.image_url
                       : "/default-avatar.jpg"
                   }
-                  width={44}
-                  height={44}
+                  width={150}
+                  height={150}
                   alt="Profile picture"
-                  className="rounded-full"
+                  className="h-12 w-12 rounded-full object-cover"
                 />
               </Link>
               <div>
@@ -331,7 +331,7 @@ export default function RoomPageClient(
                           width={96}
                           height={96}
                           alt="Profile picture"
-                          className="mx-auto mb-2 rounded-full"
+                          className="mx-auto mb-2 h-28 w-28 rounded-full object-cover"
                         />
                         <h4 className="text-xl font-semibold text-foreground">
                           {props.getRoomChats.room.to?.name}
@@ -386,7 +386,7 @@ export default function RoomPageClient(
                           width={32}
                           height={32}
                           alt="Profile picture"
-                          className="rounded-full"
+                          className="h-10 w-10 rounded-full object-cover"
                         />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
