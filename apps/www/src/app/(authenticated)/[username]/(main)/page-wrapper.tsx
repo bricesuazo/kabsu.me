@@ -13,6 +13,7 @@ import {
   VenetianMask,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { PhotoView } from "react-photo-view";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -29,7 +30,6 @@ import {
 } from "@kabsu.me/ui/alert-dialog";
 import { Badge } from "@kabsu.me/ui/badge";
 import { Button } from "@kabsu.me/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@kabsu.me/ui/dialog";
 import {
   Form,
   FormControl,
@@ -172,79 +172,67 @@ export default function UserPageWrapper({
             </div>
           </div>
 
-          <Dialog>
-            <DialogTrigger asChild className="hover:cursor-pointer">
-              <div className="relative aspect-square h-28 overflow-clip rounded-full xs:h-32">
-                <div className="absolute bottom-0 flex w-full justify-center bg-gradient-to-t from-black to-transparent p-2">
-                  <Tooltip delayDuration={250}>
-                    {(() => {
-                      if (profileQuery.data.user.type === "student") {
-                        return (
-                          <>
-                            <TooltipTrigger>
-                              <Album className="h-5 w-5 text-white xs:h-8 xs:w-8" />
-                            </TooltipTrigger>
-                            <TooltipContent className="z-50">
-                              Student
-                            </TooltipContent>
-                          </>
-                        );
-                      } else if (profileQuery.data.user.type === "alumni") {
-                        return (
-                          <>
-                            <TooltipTrigger>
-                              <GraduationCap className="h-5 w-5 text-white xs:h-8 xs:w-8" />
-                            </TooltipTrigger>
-                            <TooltipContent className="z-50">
-                              Alumni
-                            </TooltipContent>
-                          </>
-                        );
-                      } else {
-                        return (
-                          <>
-                            <TooltipTrigger>
-                              <Briefcase className="h-5 w-5 text-white xs:h-8 xs:w-8" />
-                            </TooltipTrigger>
-                            <TooltipContent className="z-50">
-                              Faculty
-                            </TooltipContent>
-                          </>
-                        );
-                      }
-                    })()}
-                  </Tooltip>
-                </div>
-                <Image
-                  src={
-                    profileQuery.data.user.image_name
-                      ? profileQuery.data.user.image_url
-                      : "/default-avatar.jpg"
-                  }
-                  alt={`${profileQuery.data.user.name} profile picture`}
-                  width={200}
-                  height={200}
-                  className="aspect-square h-full rounded-full object-cover object-center"
-                />
+          <PhotoView
+            src={
+              profileQuery.data.user.image_name
+                ? profileQuery.data.user.image_url
+                : "/default-avatar.jpg"
+            }
+          >
+            <div className="relative aspect-square h-28 cursor-pointer overflow-clip rounded-full xs:h-32">
+              <div className="absolute bottom-0 flex w-full justify-center bg-gradient-to-t from-black to-transparent p-2">
+                <Tooltip delayDuration={250}>
+                  {(() => {
+                    if (profileQuery.data.user.type === "student") {
+                      return (
+                        <>
+                          <TooltipTrigger>
+                            <Album className="h-5 w-5 text-white xs:h-8 xs:w-8" />
+                          </TooltipTrigger>
+                          <TooltipContent className="z-50">
+                            Student
+                          </TooltipContent>
+                        </>
+                      );
+                    } else if (profileQuery.data.user.type === "alumni") {
+                      return (
+                        <>
+                          <TooltipTrigger>
+                            <GraduationCap className="h-5 w-5 text-white xs:h-8 xs:w-8" />
+                          </TooltipTrigger>
+                          <TooltipContent className="z-50">
+                            Alumni
+                          </TooltipContent>
+                        </>
+                      );
+                    } else {
+                      return (
+                        <>
+                          <TooltipTrigger>
+                            <Briefcase className="h-5 w-5 text-white xs:h-8 xs:w-8" />
+                          </TooltipTrigger>
+                          <TooltipContent className="z-50">
+                            Faculty
+                          </TooltipContent>
+                        </>
+                      );
+                    }
+                  })()}
+                </Tooltip>
               </div>
-            </DialogTrigger>
-
-            <DialogContent className="border-transparent bg-transparent">
-              <div className="inherit aspect-square">
-                <Image
-                  src={
-                    profileQuery.data.user.image_name
-                      ? profileQuery.data.user.image_url
-                      : "/default-avatar.jpg"
-                  }
-                  alt={`${profileQuery.data.user.name} profile picture`}
-                  width={800}
-                  height={800}
-                  className="aspect-square size-full rounded-full object-cover object-center p-8"
-                />
-              </div>
-            </DialogContent>
-          </Dialog>
+              <Image
+                src={
+                  profileQuery.data.user.image_name
+                    ? profileQuery.data.user.image_url
+                    : "/default-avatar.jpg"
+                }
+                alt={`${profileQuery.data.user.name} profile picture`}
+                width={200}
+                height={200}
+                className="aspect-square h-full rounded-full object-cover object-center"
+              />
+            </div>
+          </PhotoView>
         </div>
 
         <div className="flex flex-col items-start gap-x-4 gap-y-2 border-b px-4 pb-4">
