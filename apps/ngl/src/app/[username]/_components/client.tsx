@@ -146,7 +146,7 @@ export default function UserPageClient({
                     }}
                     text="NGL"
                     className="text-center"
-                    textClassName="dark:from-primary-ngl from-primary dark:to-secondary-ngl to-secondary-ngl bg-gradient-to-b bg-clip-text text-6xl font-extrabold leading-none text-transparent"
+                    textClassName="dark:from-primary-ngl from-primary dark:to-secondary-ngl to-secondary-ngl bg-gradient-to-b bg-clip-text text-2xl font-extrabold leading-none text-transparent"
                   />
                   <p className="text-md leading-none">Kabsu.me</p>
                 </Link>
@@ -281,7 +281,7 @@ export default function UserPageClient({
             </p>
 
             <Button
-              className="shake bg-primary-ngl mx-auto w-full max-w-md rounded-full border-black py-7 text-lg shadow-md sm:text-xl"
+              className="shake bg-primary-ngl mx-auto w-full max-w-md rounded-full border-black text-lg shadow-md"
               asChild
             >
               <Link href={env.NEXT_PUBLIC_WWW_URL}>Join kabsu.me!</Link>
@@ -301,7 +301,7 @@ export default function UserPageClient({
               }}
               text="REPLIES"
               className="text-center"
-              textClassName="dark:from-primary-ngl from-primary to-secondary-ngl dark:to-secondary-ngl bg-gradient-to-b bg-clip-text text-5xl font-extrabold leading-none text-transparent"
+              textClassName="dark:from-primary-ngl from-primary to-secondary-ngl dark:to-secondary-ngl bg-gradient-to-b bg-clip-text text-2xl font-extrabold leading-none text-transparent"
             />
 
             {getAllMessagesQuery.isLoading ||

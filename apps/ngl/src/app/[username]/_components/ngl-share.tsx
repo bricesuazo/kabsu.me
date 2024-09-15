@@ -81,16 +81,19 @@ const NglShare = ({
             <Loader className="absolute bottom-0 left-0 right-0 top-0 m-auto animate-spin opacity-50" />
           )}
           <Image
-            width={1080 / 3}
-            height={1920 / 3}
+            width={1080 / 4}
+            height={1920 / 4}
             src={getImageUrl()}
             alt="Share Image Ngl"
             onLoad={() => {
               setLoading(false);
             }}
-            className={cn("opacity-0 transition-all duration-300 ease-in-out", {
-              "opacity-100": !loading,
-            })}
+            className={cn(
+              "mx-auto opacity-0 transition-all duration-300 ease-in-out",
+              {
+                "opacity-100": !loading,
+              },
+            )}
           />
         </div>
 
