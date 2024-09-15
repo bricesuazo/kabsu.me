@@ -161,14 +161,14 @@ export default function NewChat({
                   ...prev,
                   {
                     id: String(prev.length + 1),
-                    content: values.message,
+                    content: values.message.trim(),
                     created_at: new Date().toISOString(),
                   },
                 ]);
                 form.reset();
                 await sendNewMessageMutation.mutateAsync({
                   user_id: user.id,
-                  content: values.message,
+                  content: values.message.trim(),
                 });
               })}
               className="w-full gap-x-2"

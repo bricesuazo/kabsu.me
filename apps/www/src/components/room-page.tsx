@@ -171,7 +171,7 @@ export default function RoomPageClient(
       ...prev,
       {
         id,
-        content: values.message,
+        content: values.message.trim(),
         created_at: new Date().toISOString(),
         user_id: props.current_user.id,
         user: props.current_user,
@@ -179,7 +179,7 @@ export default function RoomPageClient(
         reply: values.reply
           ? {
               id: values.reply.id,
-              content: values.reply.content,
+              content: values.reply.content.trim(),
               user_id: props.current_user.id,
               created_at: new Date().toISOString(),
               users: {
@@ -200,13 +200,13 @@ export default function RoomPageClient(
               id,
               type: props.type,
               room_id: props.getRoomChats.room.id,
-              content: values.message,
+              content: values.message.trim(),
               reply_id: values.reply?.id,
             }
           : {
               id,
               type: props.type,
-              content: values.message,
+              content: values.message.trim(),
               reply_id: values.reply?.id,
             },
       );
