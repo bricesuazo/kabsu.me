@@ -117,6 +117,10 @@ export async function GET(request: Request) {
                 wordBreak: "break-word",
                 overflowWrap: "break-word",
                 color: "white",
+                maxWidth: "900px",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
               }}
             >
               /{data.username}
