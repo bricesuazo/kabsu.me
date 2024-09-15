@@ -7,7 +7,6 @@ import {
   BookOpenCheck,
   Clock,
   Earth,
-  Facebook,
   Github,
   Globe,
   Globe2,
@@ -22,7 +21,6 @@ import {
   MapPin,
   MessageCircle,
   MessageSquareText,
-  RefreshCw,
   School,
   School2,
   Twitter,
@@ -806,12 +804,12 @@ export const REPORT_POST_REASONS = [
   },
 ];
 
-export const ONBOARDING_PAGES: Array<{
+export const ONBOARDING_PAGES: {
   title: string;
   content: string;
   image?: string;
   video?: string;
-}> = [
+}[] = [
   {
     title: "Welcome to Kabsu.me",
     content: "Connect, share, and explore new features with Kabsu.me!",
@@ -854,9 +852,8 @@ export const ONBOARDING_PAGES: Array<{
   },
   {
     title: "Video Launch",
-    content: "Proud partnerships.",
-    video:
-      "https://www.facebook.com/FacebookDevelopers/videos/10152454700553553/",
+    content: "Kabsu.me - Video Launch",
+    video: "https://www.facebook.com/kabsu.me/videos/1054042366085577",
   },
 ];
 

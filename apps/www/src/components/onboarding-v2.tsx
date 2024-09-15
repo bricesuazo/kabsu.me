@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import confetti from "canvas-confetti";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -29,17 +29,6 @@ const PageContent = ({
   image?: string;
   video?: string;
 }) => {
-  useEffect(() => {
-    if (video) {
-      const script = document.createElement("script");
-      script.src =
-        "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2";
-      script.async = true;
-      script.defer = true;
-      document.body.appendChild(script);
-    }
-  }, [video]);
-
   return (
     <div className="text-center">
       {image && (
@@ -48,15 +37,16 @@ const PageContent = ({
         </div>
       )}
       {video && (
-        <div className="flex h-[375px] items-center justify-center">
-          <div
-            className="fb-video"
-            data-href={video}
-            data-height="375"
-            data-allowfullscreen="true"
-            data-autoplay="true"
-            data-show-text="false"
-          ></div>
+        <div className="grid aspect-square place-items-center">
+          <iframe
+            src={`https://www.facebook.com/plugins/video.php?href=${new URL(video).toString()}&show_text=false&appId`}
+            className="aspect-video overflow-hidden border-none"
+            width="100%"
+            scrolling="no"
+            frameBorder={0}
+            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+            allowFullScreen
+          ></iframe>
         </div>
       )}
       <h2 className="my-2 text-lg font-semibold">{title}</h2>
@@ -141,7 +131,7 @@ export default function OnboardingV2() {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-center">
-            Anong bago sa Kabsu.me v2?
+            Anong bago sa Kabsu.me?
           </DialogTitle>
         </DialogHeader>
         <div className="flex w-full items-center justify-between gap-2">
