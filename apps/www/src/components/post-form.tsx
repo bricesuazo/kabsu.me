@@ -344,9 +344,21 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                           singleLine={false}
                           maxLength={256}
                           onKeyDown={async (e) => {
+                            async function isValid() {
+                              if (form.formState.isValid) {
+                                e.preventDefault();
+                                await handleSubmit();
+                              } else {
+                                form.setError("content", {
+                                  type: "manual",
+                                  message:
+                                    "Post content cannot be empty or only whitespace",
+                                });
+                              }
+                            }
+
                             if (e.key === "Enter" && e.ctrlKey) {
-                              e.preventDefault();
-                              await handleSubmit();
+                              await isValid();
                             }
                           }}
                           className="w-full break-all"
