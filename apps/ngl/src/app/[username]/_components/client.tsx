@@ -5,8 +5,8 @@ import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formatDistanceToNow } from "date-fns";
-import { AlertCircle, Loader2, Send, Share, VenetianMask } from "lucide-react";
+import { AlertCircle, Loader2, Send, VenetianMask } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { toast } from "sonner";
@@ -34,6 +34,7 @@ import ClientOnly from "~/components/client-only";
 import { env } from "~/env";
 import { api } from "~/lib/trpc/client";
 import { createClient } from "~/supabase/client";
+import NglMessage from "./ngl-message";
 
 const FormSchema = z
   .object({
@@ -66,6 +67,7 @@ export default function UserPageClient({
   totalUsers: number;
   session: User | undefined;
 }) {
+  const { theme } = useTheme();
   const getUserQuery = api.ngl.getUser.useQuery(
     { username: user.username },
     { initialData: user },
@@ -84,6 +86,7 @@ export default function UserPageClient({
       form.resetField("content");
     },
   });
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -317,57 +320,12 @@ export default function UserPageClient({
                 <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 640: 2 }}>
                   <Masonry gutter="16px">
                     {getAllMessagesQuery.data.map((message) => (
-                      <div
+                      <NglMessage
                         key={message.id}
-                        className="from-primary-ngl to-secondary-ngl/50 group relative space-y-2 overflow-hidden rounded-3xl bg-gradient-to-br p-4 drop-shadow-md"
-                      >
-                        <Image
-                          src="/kabsu.webp"
-                          alt="Kabsu.me logo"
-                          width={300}
-                          height={300}
-                          className="absolute right-0 top-0 z-[0] h-full translate-x-1/2 object-cover opacity-10"
-                        />
-                        <div className="relative z-10 space-y-3">
-                          <p className="break-words text-center text-lg font-bold text-white">
-                            {message.content}
-                          </p>
-
-                          {message.answers.map((answer) => (
-                            <div
-                              key={answer.id}
-                              className="relative rounded-xl bg-white/50 p-4 text-center font-semibold text-black dark:bg-white/30"
-                            >
-                              <p className="break-words">
-                                {answer.content} dseadwasd wasdwawsd wawd wa
-                                dasdwasd
-                              </p>
-                            </div>
-                          ))}
-
-                          <div className="mx-auto flex w-fit items-center justify-center gap-2">
-                            <p className="break-words text-center text-xs transition-all duration-300 ease-in-out dark:text-white">
-                              {message.code_name ? (
-                                <span className="text-[10px] font-medium">
-                                  {message.code_name} •{" "}
-                                </span>
-                              ) : null}
-                              {formatDistanceToNow(message.created_at, {
-                                includeSeconds: true,
-                                addSuffix: true,
-                              })}
-                            </p>
-                            {user.id === session?.id && (
-                              <Button
-                                variant={"outline"}
-                                className="bottom-0 right-1 top-0 mx-auto my-auto flex h-fit w-4 scale-100 border-transparent bg-transparent px-0 transition-transform duration-300 hover:bg-transparent lg:w-0 lg:scale-0 lg:group-hover:w-4 lg:group-hover:scale-100"
-                              >
-                                <Share size={14} className="" />
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
+                        message={message}
+                        isAuthor={user.id === session?.id}
+                        theme={theme}
+                      />
                     ))}
                   </Masonry>
                 </ResponsiveMasonry>
