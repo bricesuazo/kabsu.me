@@ -551,7 +551,7 @@ export default function RoomPageClient(
                               if (message === true) {
                                 return;
                               }
-                              console.log("first");
+
                               await handleSubmit(form.getValues());
                             }
                           }}
