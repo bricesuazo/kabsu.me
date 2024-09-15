@@ -323,7 +323,6 @@ export default function UserPageClient({
                       <NglMessage
                         key={message.id}
                         message={message}
-                        isAuthor={user.id === session?.id}
                         theme={theme}
                       />
                     ))}

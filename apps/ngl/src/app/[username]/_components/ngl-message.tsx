@@ -10,11 +10,9 @@ import NglShare from "./ngl-share";
 
 const NglMessage = ({
   message,
-  isAuthor,
   theme,
 }: {
   message: RouterOutputs["ngl"]["getAllMessages"][0];
-  isAuthor: boolean;
   theme: string | undefined;
 }) => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -58,23 +56,21 @@ const NglMessage = ({
             })}
           </p>
 
-          {isAuthor && (
-            <>
-              <Button
-                onClick={() => setDialogOpen(true)}
-                variant={"outline"}
-                className="bottom-0 right-1 top-0 mx-auto my-auto flex h-fit w-4 border-transparent bg-transparent px-0 transition-transform duration-300 hover:bg-transparent"
-              >
-                <Share size={14} className="" />
-              </Button>
-              <NglShare
-                dialogOpen={dialogOpen}
-                setDialogOpen={setDialogOpen}
-                message={message}
-                theme={theme}
-              />
-            </>
-          )}
+          <>
+            <Button
+              onClick={() => setDialogOpen(true)}
+              variant={"outline"}
+              className="bottom-0 right-1 top-0 mx-auto my-auto flex h-fit w-4 border-transparent bg-transparent px-0 transition-transform duration-300 hover:bg-transparent"
+            >
+              <Share size={14} className="" />
+            </Button>
+            <NglShare
+              dialogOpen={dialogOpen}
+              setDialogOpen={setDialogOpen}
+              message={message}
+              theme={theme}
+            />
+          </>
         </div>
       </div>
     </div>
