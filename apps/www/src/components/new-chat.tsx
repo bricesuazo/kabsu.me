@@ -1,12 +1,12 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { formatDistanceToNow } from "date-fns";
-import { Send } from "lucide-react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { formatDistanceToNow } from "date-fns";
+import { Send } from "lucide-react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
@@ -95,7 +95,7 @@ export default function NewChat({
                 width={120}
                 height={120}
                 alt="Profile picture"
-                className="mx-auto rounded-full border-4 border-primary/10"
+                className="mx-auto h-28 w-28 rounded-full border-4 border-primary/10 object-cover object-center"
               />
               <div>
                 <h4 className="text-2xl font-bold text-foreground">

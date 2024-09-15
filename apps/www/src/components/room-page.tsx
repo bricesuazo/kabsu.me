@@ -32,7 +32,12 @@ import {
 } from "@kabsu.me/ui/form";
 import { ScrollArea } from "@kabsu.me/ui/scroll-area";
 import { Separator } from "@kabsu.me/ui/separator";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@kabsu.me/ui/tooltip";
 
 import type { Database } from "../../../../supabase/types";
 import { Icons } from "~/components/icons";
@@ -249,10 +254,10 @@ export default function RoomPageClient(
                       ? props.getRoomChats.room.to.image_url
                       : "/default-avatar.jpg"
                   }
-                  width={44}
-                  height={44}
+                  width={150}
+                  height={150}
                   alt="Profile picture"
-                  className="rounded-full"
+                  className="h-12 w-12 rounded-full object-cover"
                 />
               </Link>
               <div>
@@ -331,7 +336,7 @@ export default function RoomPageClient(
                           width={96}
                           height={96}
                           alt="Profile picture"
-                          className="mx-auto mb-2 rounded-full"
+                          className="mx-auto mb-2 h-28 w-28 rounded-full object-cover"
                         />
                         <h4 className="text-xl font-semibold text-foreground">
                           {props.getRoomChats.room.to?.name}
@@ -361,7 +366,7 @@ export default function RoomPageClient(
                 </div>
               </div>
               <div ref={scrollRef} />
-              {chats.map((chat) => (
+              {chats.map((chat, i) => (
                 <div
                   key={chat.id}
                   className={cn(
@@ -372,22 +377,28 @@ export default function RoomPageClient(
                 >
                   {chat.user_id !== props.current_user.id && (
                     <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <Image
-                          src={
-                            props.current_user.id === chat.user_id
-                              ? props.current_user.image_name
-                                ? props.current_user.image_url
-                                : "/default-avatar.jpg"
-                              : chat.user.image_name
-                                ? chat.user.image_url
-                                : "/default-avatar.jpg"
-                          }
-                          width={32}
-                          height={32}
-                          alt="Profile picture"
-                          className="rounded-full"
-                        />
+                      <DropdownMenuTrigger asChild>
+                        {chats[i + 1]?.user_id !== chat.user_id ? (
+                          <button>
+                            <Image
+                              src={
+                                props.current_user.id === chat.user_id
+                                  ? props.current_user.image_name
+                                    ? props.current_user.image_url
+                                    : "/default-avatar.jpg"
+                                  : chat.user.image_name
+                                    ? chat.user.image_url
+                                    : "/default-avatar.jpg"
+                              }
+                              width={32}
+                              height={32}
+                              alt="Profile picture"
+                              className="h-10 w-10 rounded-full object-cover"
+                            />
+                          </button>
+                        ) : (
+                          <div className="pointer-events-none h-10 w-10 bg-transparent"></div>
+                        )}
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
                         <DropdownMenuItem asChild>
@@ -407,13 +418,6 @@ export default function RoomPageClient(
                         : "items-start",
                     )}
                   >
-                    <Link
-                      href={`/${chat.user.username}`}
-                      className="max-w-52 truncate text-xs text-muted-foreground opacity-0 group-hover:opacity-100 xs:max-w-60"
-                    >
-                      {chat.user.name} — {chat.user.username}
-                    </Link>
-
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div
@@ -458,6 +462,7 @@ export default function RoomPageClient(
                                 {chat.content}
                               </p>
                             </div>
+
                             {chat.status === "success" ? (
                               <div className="opacity-0 group-hover:opacity-100">
                                 <Button
