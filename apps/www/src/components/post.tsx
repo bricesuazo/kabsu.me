@@ -13,6 +13,7 @@ import {
   Heart,
   MessageCircle,
 } from "lucide-react";
+import { PhotoView } from "react-photo-view";
 import { v4 as uuid } from "uuid";
 
 import type { RouterOutputs } from "@kabsu.me/api";
@@ -23,7 +24,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 
 import { api } from "~/lib/trpc/client";
 import { FormattedContent, FormattedContentTextOnly } from "~/lib/utils";
-import { ImagesViewer } from "./images-viewer";
 import PostDropdown from "./post-dropdown";
 import PostShare from "./post-share";
 import { PostSkeletonNoRandom } from "./post-skeleton";
@@ -34,8 +34,6 @@ export default function Post({
 }: {
   post: RouterOutputs["posts"]["getPosts"]["posts"][number];
 }) {
-  const [openImagesViewer, setOpenImagesViewer] = useState(false);
-  const [scrollTo, setScrollTo] = useState(0);
   const getPostQuery = api.posts.getPost.useQuery({ post_id: post.id });
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -89,15 +87,6 @@ export default function Post({
 
   return (
     <>
-      <ImagesViewer
-        open={openImagesViewer}
-        setOpen={setOpenImagesViewer}
-        images={getPostQuery.data.post.posts_images.map((image) => ({
-          id: image.id,
-          url: image.signed_url,
-        }))}
-        scrollTo={scrollTo}
-      />
       <div
         onClick={(e) => {
           e.stopPropagation();
@@ -243,24 +232,17 @@ export default function Post({
               getPostQuery.data.post.posts_images.length > 3 && "grid-cols-3",
             )}
           >
-            {getPostQuery.data.post.posts_images.map((image, index) => (
-              <button
-                key={image.id}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenImagesViewer(true);
-                  setScrollTo(index);
-                }}
-                className="w-fit"
-              >
+            {getPostQuery.data.post.posts_images.map((image) => (
+              <PhotoView key={image.id} src={image.signed_url}>
                 <Image
                   src={image.signed_url}
                   alt={image.name}
                   width={400}
                   height={400}
                   className="aspect-square rounded-lg object-cover"
+                  onClick={(e) => e.stopPropagation()}
                 />
-              </button>
+              </PhotoView>
             ))}
           </div>
         )}
