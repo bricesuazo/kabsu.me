@@ -853,7 +853,7 @@ export const ONBOARDING_PAGES: {
   {
     title: "Video Launch",
     content: "Kabsu.me - Video Launch",
-    video: "https://www.facebook.com/kabsu.me/videos/1054042366085577",
+    video: "https://www.facebook.com/kabsu.me/videos/755260903340962",
   },
 ];
 
