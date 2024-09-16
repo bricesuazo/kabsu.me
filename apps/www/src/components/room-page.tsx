@@ -133,19 +133,45 @@ export default function RoomPageClient(
   });
 
   useEffect(() => {
-    utils.chats.getAllRooms.setData(undefined, (prev) =>
-      prev?.map((room) => ({
-        ...room,
-        rooms_users: room.rooms_users.map((room_user) =>
-          room_user.room_id === props.getRoomChats.room.id
+    if (props.type === "room") {
+      utils.chats.getAllRooms.setData(undefined, (prev) =>
+        prev?.map((room) => ({
+          ...room,
+          rooms_users: room.rooms_users.map((room_user) =>
+            room_user.room_id === props.getRoomChats.room.id
+              ? {
+                  ...room_user,
+                  unread_messages_length: 0,
+                }
+              : room_user,
+          ),
+        })),
+      );
+    } else {
+      utils.chats.getGlobalChatsCounts.setData(undefined, (prev) =>
+        prev
+          ? props.type === "all"
             ? {
-                ...room_user,
-                unread_messages_length: 0,
+                ...prev,
+                all_length: 0,
               }
-            : room_user,
-        ),
-      })),
-    );
+            : props.type === "campus"
+              ? {
+                  ...prev,
+                  campus_length: 0,
+                }
+              : props.type === "college"
+                ? {
+                    ...prev,
+                    college_length: 0,
+                  }
+                : {
+                    ...prev,
+                    program_length: 0,
+                  }
+          : prev,
+      );
+    }
 
     messagesEndRef.current?.scrollIntoView(false);
 

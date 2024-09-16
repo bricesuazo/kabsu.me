@@ -28,6 +28,7 @@ export default function ChatsPage() {
   const getAllRoomsQuery = api.chats.getAllRooms.useQuery();
 
   const getMyUniversityStatusQuery = api.auth.getMyUniversityStatus.useQuery();
+  const getGlobalChatsCountsQuery = api.chats.getGlobalChatsCounts.useQuery();
 
   const debounced = debounce((value: string) => {
     setSearch(value);
@@ -60,6 +61,7 @@ export default function ChatsPage() {
               sublabel: "Global",
               Icon: Globe2,
               tooltip: "Global chatrooms",
+              unread_count: getGlobalChatsCountsQuery.data?.all_length ?? 0,
             },
             {
               id: "campus",
@@ -71,6 +73,7 @@ export default function ChatsPage() {
               tooltip:
                 getMyUniversityStatusQuery.data?.programs?.colleges?.campuses
                   ?.name,
+              unread_count: getGlobalChatsCountsQuery.data?.campus_length ?? 0,
             },
             {
               id: "college",
@@ -80,6 +83,7 @@ export default function ChatsPage() {
               Icon: School,
               tooltip:
                 getMyUniversityStatusQuery.data?.programs?.colleges?.name,
+              unread_count: getGlobalChatsCountsQuery.data?.college_length ?? 0,
             },
             {
               id: "program",
@@ -87,6 +91,7 @@ export default function ChatsPage() {
               sublabel: getMyUniversityStatusQuery.data?.programs?.slug,
               Icon: Book,
               tooltip: getMyUniversityStatusQuery.data?.programs?.name,
+              unread_count: getGlobalChatsCountsQuery.data?.program_length ?? 0,
             },
           ].map((type) => (
             <Tooltip key={type.id} delayDuration={0}>
@@ -108,6 +113,13 @@ export default function ChatsPage() {
                       </p>
                     )}
                   </div>
+                  {type.unread_count > 0 && (
+                    <div className="flex aspect-square items-center justify-center rounded-full bg-primary p-1">
+                      <p className="text-xs">
+                        {type.unread_count.toLocaleString()}
+                      </p>
+                    </div>
+                  )}
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-60">

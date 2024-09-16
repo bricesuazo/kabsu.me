@@ -364,6 +364,69 @@ export type Database = {
           },
         ]
       }
+      global_chats_last_seen: {
+        Row: {
+          all: string | null
+          campus: string | null
+          college: string | null
+          id: string
+          program: string | null
+          user_id: string | null
+        }
+        Insert: {
+          all?: string | null
+          campus?: string | null
+          college?: string | null
+          id?: string
+          program?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          all?: string | null
+          campus?: string | null
+          college?: string | null
+          id?: string
+          program?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "global_chats_last_seen_all_fkey"
+            columns: ["all"]
+            isOneToOne: false
+            referencedRelation: "global_chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "global_chats_last_seen_campus_fkey"
+            columns: ["campus"]
+            isOneToOne: false
+            referencedRelation: "global_chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "global_chats_last_seen_college_fkey"
+            columns: ["college"]
+            isOneToOne: false
+            referencedRelation: "global_chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "global_chats_last_seen_program_fkey"
+            columns: ["program"]
+            isOneToOne: false
+            referencedRelation: "global_chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "global_chats_last_seen_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       likes: {
         Row: {
           created_at: string

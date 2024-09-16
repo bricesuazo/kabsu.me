@@ -664,6 +664,15 @@ export const chatsRouter = router({
             message: error.message,
           });
 
+        const chat = messages[0];
+
+        if (chat) {
+          await ctx.supabase
+            .from("global_chats_last_seen")
+            .update({ [input.type]: chat.id })
+            .eq("user_id", ctx.auth.user.id);
+        }
+
         const { data: replies } = await ctx.supabase
           .from("global_chats")
           .select("id, content")
@@ -977,4 +986,84 @@ export const chatsRouter = router({
         };
       }
     }),
+  getGlobalChatsCounts: protectedProcedure.query(async ({ ctx }) => {
+    const { data: user, error: user_error } = await ctx.supabase
+      .from("users")
+      .select(
+        "program_id, program:programs(college_id, college:colleges(campus_id)), global_chats_last_seen(*)",
+      )
+      .eq("id", ctx.auth.user.id)
+      .single();
+
+    if (user_error)
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: user_error.message,
+      });
+
+    if (!user.program?.college?.campus_id)
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Campus not found",
+      });
+
+    const global_chats_last_seen = user.global_chats_last_seen[0];
+
+    const { data: chats, error: chats_error } = await ctx.supabase
+      .from("global_chats")
+      .select()
+      .or(
+        `program_id.eq.${user.program_id},college_id.eq.${user.program.college_id},campus_id.eq.${user.program.college.campus_id},type.eq.all`,
+      )
+      .order("created_at", { ascending: false });
+
+    if (chats_error)
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: chats_error.message,
+      });
+
+    const all = chats.filter((chat) => chat.type === "all");
+    const programs = chats.filter(
+      (chat) => chat.program_id === user.program_id,
+    );
+    const colleges = chats.filter(
+      (chat) => chat.college_id === user.program?.college_id,
+    );
+    const campuses = chats.filter(
+      (chat) => chat.campus_id === user.program?.college?.campus_id,
+    );
+
+    if (!global_chats_last_seen) {
+      await ctx.supabase.from("global_chats_last_seen").insert({
+        user_id: ctx.auth.user.id,
+      });
+
+      return {
+        all_length: all.length,
+        program_length: programs.length,
+        college_length: colleges.length,
+        campus_length: campuses.length,
+      };
+    } else {
+      const allIndex = all.findIndex(
+        (chat) => chat.id === global_chats_last_seen.all,
+      );
+      const programsIndex = programs.findIndex(
+        (chat) => chat.id === global_chats_last_seen.program,
+      );
+      const collegesIndex = colleges.findIndex(
+        (chat) => chat.id === global_chats_last_seen.college,
+      );
+      const campusesIndex = campuses.findIndex(
+        (chat) => chat.id === global_chats_last_seen.campus,
+      );
+      return {
+        all_length: allIndex === -1 ? all.length : allIndex,
+        program_length: programsIndex === -1 ? programs.length : programsIndex,
+        college_length: collegesIndex === -1 ? colleges.length : collegesIndex,
+        campus_length: campusesIndex === -1 ? campuses.length : campusesIndex,
+      };
+    }
+  }),
 });

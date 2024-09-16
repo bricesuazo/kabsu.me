@@ -296,6 +296,19 @@ CREATE TABLE IF NOT EXISTS "public"."global_chats" (
 ALTER TABLE "public"."global_chats" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."global_chats_last_seen" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "user_id" "uuid",
+    "all" "uuid",
+    "campus" "uuid",
+    "college" "uuid",
+    "program" "uuid"
+);
+
+
+ALTER TABLE "public"."global_chats_last_seen" OWNER TO "postgres";
+
+
 CREATE TABLE IF NOT EXISTS "public"."likes" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "user_id" "uuid" NOT NULL,
@@ -534,6 +547,11 @@ ALTER TABLE ONLY "public"."followers"
 
 
 
+ALTER TABLE ONLY "public"."global_chats_last_seen"
+    ADD CONSTRAINT "global_chats_last_seen_pkey" PRIMARY KEY ("id");
+
+
+
 ALTER TABLE ONLY "public"."global_chats"
     ADD CONSTRAINT "global_chats_pkey" PRIMARY KEY ("id");
 
@@ -758,6 +776,31 @@ CREATE INDEX "programs_college_id_idx" ON "public"."programs" USING "btree" ("co
 
 
 CREATE INDEX "programs_slug_idx" ON "public"."programs" USING "btree" ("slug");
+
+
+
+ALTER TABLE ONLY "public"."global_chats_last_seen"
+    ADD CONSTRAINT "global_chats_last_seen_all_fkey" FOREIGN KEY ("all") REFERENCES "public"."global_chats"("id");
+
+
+
+ALTER TABLE ONLY "public"."global_chats_last_seen"
+    ADD CONSTRAINT "global_chats_last_seen_campus_fkey" FOREIGN KEY ("campus") REFERENCES "public"."global_chats"("id");
+
+
+
+ALTER TABLE ONLY "public"."global_chats_last_seen"
+    ADD CONSTRAINT "global_chats_last_seen_college_fkey" FOREIGN KEY ("college") REFERENCES "public"."global_chats"("id");
+
+
+
+ALTER TABLE ONLY "public"."global_chats_last_seen"
+    ADD CONSTRAINT "global_chats_last_seen_program_fkey" FOREIGN KEY ("program") REFERENCES "public"."global_chats"("id");
+
+
+
+ALTER TABLE ONLY "public"."global_chats_last_seen"
+    ADD CONSTRAINT "global_chats_last_seen_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
 
 
 
@@ -997,6 +1040,9 @@ ALTER TABLE "public"."followers" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."global_chats" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."global_chats_last_seen" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."likes" ENABLE ROW LEVEL SECURITY;
@@ -1332,6 +1378,12 @@ GRANT ALL ON TABLE "public"."followers" TO "service_role";
 GRANT ALL ON TABLE "public"."global_chats" TO "anon";
 GRANT ALL ON TABLE "public"."global_chats" TO "authenticated";
 GRANT ALL ON TABLE "public"."global_chats" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."global_chats_last_seen" TO "anon";
+GRANT ALL ON TABLE "public"."global_chats_last_seen" TO "authenticated";
+GRANT ALL ON TABLE "public"."global_chats_last_seen" TO "service_role";
 
 
 
