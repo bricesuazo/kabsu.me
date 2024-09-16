@@ -23,7 +23,6 @@ import NGLPanel from "./ngl-panel";
 import SigninButton from "./signin-button";
 import { ToggleTheme } from "./toggle-theme";
 
-// TODO: AYUSIN MO TO KEVIN
 const THESIS_INFO = [
   {
     Icon: (
@@ -372,36 +371,7 @@ export default function HomePublic({
           Partnerships
         </h1>
 
-        {/* THESIS BENTO */}
-        {/* <div>
-          <BentoGrid className="grid grid-cols-5">
-            {THESIS_INFO.map((thesis) => (
-              <BentoCard
-                key={thesis.name}
-                {...thesis}
-                Icon={
-                  <Image
-                    src={thesis.icon.src}
-                    alt={thesis.icon.alt}
-                    width={1000}
-                    height={1000}
-                  />
-                }
-                background={
-                  <Image
-                    src={thesis.background.src}
-                    alt={thesis.background.alt}
-                    width={1000}
-                    height={1000}
-                    className={thesis.background.className}
-                  />
-                }
-              />
-            ))}
-          </BentoGrid>
-        </div> */}
-
-        <div className="">
+        <div>
           <BentoGrid className="grid grid-cols-5">
             {THESIS_INFO.map((thesis) => {
               return <BentoCard key={thesis.href} {...thesis} />;
@@ -420,10 +390,10 @@ export default function HomePublic({
           </p>
 
           <div className="mx-auto mt-4 grid grid-cols-1 gap-4 rounded-lg border-2 p-4 md:grid-cols-3 lg:grid-cols-5">
-            {DEVS_INFO.map((dev) => {
+            {DEVS_INFO.map((dev, index) => {
               return (
                 <div
-                  key={dev.index}
+                  key={index}
                   className="flex flex-col items-center gap-y-4 rounded-lg p-3"
                 >
                   <Image
