@@ -278,11 +278,21 @@ export default function HomePublic({
               <span className="">By signing in, you agree to our </span>
               <br />
               <Button asChild variant="link" className="h-auto p-0">
-                <Link href="/terms">Terms of Service</Link>
+                <Link 
+                  href="/terms"
+                  target="_blank"
+                >
+                  Terms of Service
+                </Link>
               </Button>
               <span> and </span>
               <Button asChild variant="link" className="h-auto p-0">
-                <Link href="/privacy">Privacy Policy</Link>
+                <Link 
+                  href="/privacy"
+                  target="_blank"
+                >
+                  Privacy Policy
+                </Link>
               </Button>
               <span>.</span>
             </p>
