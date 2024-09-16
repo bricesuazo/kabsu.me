@@ -223,7 +223,7 @@ export const postsRouter = router({
           .limit(limit)
           .is("users.banned_at", null)
           .is("users.deactivated_at", null)
-          .range((input.cursor - 1) * limit, input.cursor * limit)
+          .range((input.cursor - 1) * (limit + 1), input.cursor * limit)
           .then((res) => {
             if (res.error)
               throw new TRPCError({
@@ -256,7 +256,7 @@ export const postsRouter = router({
           .is("deleted_at", null)
           .order("created_at", { ascending: false })
           .limit(limit)
-          .range((input.cursor - 1) * limit, input.cursor * limit)
+          .range((input.cursor - 1) * (limit + 1), input.cursor * limit)
           .is("users.banned_at", null)
           .is("users.deactivated_at", null)
           .then((res) => {
@@ -294,7 +294,7 @@ export const postsRouter = router({
           .is("users.banned_at", null)
           .is("users.deactivated_at", null)
           .limit(limit)
-          .range((input.cursor - 1) * 10, input.cursor * limit)
+          .range((input.cursor - 1) * (limit + 1), input.cursor * limit)
           .then((res) => {
             if (res.error)
               throw new TRPCError({
@@ -328,7 +328,7 @@ export const postsRouter = router({
           .is("users.deactivated_at", null)
           .order("created_at", { ascending: false })
           .limit(limit)
-          .range((input.cursor - 1) * limit, input.cursor * limit)
+          .range((input.cursor - 1) * (limit + 1), input.cursor * limit)
           .then((res) => {
             if (res.error)
               throw new TRPCError({
@@ -372,7 +372,7 @@ export const postsRouter = router({
           .limit(limit)
           .is("users.banned_at", null)
           .is("users.deactivated_at", null)
-          .range((input.cursor - 1) * limit, input.cursor * limit)
+          .range((input.cursor - 1) * (limit + 1), input.cursor * limit)
           .then((res) => {
             if (res.error)
               throw new TRPCError({
