@@ -387,6 +387,24 @@ CREATE TABLE IF NOT EXISTS "public"."posts_images" (
 ALTER TABLE "public"."posts_images" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."posts_last_seen" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "user_id" "uuid",
+    "all" "uuid",
+    "campus" "uuid",
+    "college" "uuid",
+    "program" "uuid",
+    "following" "uuid"
+);
+
+
+ALTER TABLE "public"."posts_last_seen" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."posts_last_seen" IS 'This is a duplicate of global_chats_last_seen';
+
+
+
 CREATE TABLE IF NOT EXISTS "public"."programs" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "name" "text" NOT NULL,
@@ -579,6 +597,11 @@ ALTER TABLE ONLY "public"."notifications"
 
 ALTER TABLE ONLY "public"."posts_images"
     ADD CONSTRAINT "posts_images_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."posts_last_seen"
+    ADD CONSTRAINT "posts_last_seen_pkey" PRIMARY KEY ("id");
 
 
 
@@ -816,6 +839,36 @@ ALTER TABLE ONLY "public"."ngl_questions"
 
 ALTER TABLE ONLY "public"."notifications"
     ADD CONSTRAINT "notifications_ngl_question_id_fkey" FOREIGN KEY ("ngl_question_id") REFERENCES "public"."ngl_questions"("id");
+
+
+
+ALTER TABLE ONLY "public"."posts_last_seen"
+    ADD CONSTRAINT "posts_last_seen_all_fkey" FOREIGN KEY ("all") REFERENCES "public"."posts"("id");
+
+
+
+ALTER TABLE ONLY "public"."posts_last_seen"
+    ADD CONSTRAINT "posts_last_seen_campus_fkey" FOREIGN KEY ("campus") REFERENCES "public"."posts"("id");
+
+
+
+ALTER TABLE ONLY "public"."posts_last_seen"
+    ADD CONSTRAINT "posts_last_seen_college_fkey" FOREIGN KEY ("college") REFERENCES "public"."posts"("id");
+
+
+
+ALTER TABLE ONLY "public"."posts_last_seen"
+    ADD CONSTRAINT "posts_last_seen_following_fkey" FOREIGN KEY ("following") REFERENCES "public"."posts"("id");
+
+
+
+ALTER TABLE ONLY "public"."posts_last_seen"
+    ADD CONSTRAINT "posts_last_seen_program_fkey" FOREIGN KEY ("program") REFERENCES "public"."posts"("id");
+
+
+
+ALTER TABLE ONLY "public"."posts_last_seen"
+    ADD CONSTRAINT "posts_last_seen_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id");
 
 
 
@@ -1061,6 +1114,9 @@ ALTER TABLE "public"."posts" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."posts_images" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."posts_last_seen" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."programs" ENABLE ROW LEVEL SECURITY;
@@ -1420,6 +1476,12 @@ GRANT ALL ON TABLE "public"."posts" TO "service_role";
 GRANT ALL ON TABLE "public"."posts_images" TO "anon";
 GRANT ALL ON TABLE "public"."posts_images" TO "authenticated";
 GRANT ALL ON TABLE "public"."posts_images" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."posts_last_seen" TO "anon";
+GRANT ALL ON TABLE "public"."posts_last_seen" TO "authenticated";
+GRANT ALL ON TABLE "public"."posts_last_seen" TO "service_role";
 
 
 

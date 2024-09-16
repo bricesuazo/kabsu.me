@@ -658,6 +658,79 @@ export type Database = {
           },
         ]
       }
+      posts_last_seen: {
+        Row: {
+          all: string | null
+          campus: string | null
+          college: string | null
+          following: string | null
+          id: string
+          program: string | null
+          user_id: string | null
+        }
+        Insert: {
+          all?: string | null
+          campus?: string | null
+          college?: string | null
+          following?: string | null
+          id?: string
+          program?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          all?: string | null
+          campus?: string | null
+          college?: string | null
+          following?: string | null
+          id?: string
+          program?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_last_seen_all_fkey"
+            columns: ["all"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_last_seen_campus_fkey"
+            columns: ["campus"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_last_seen_college_fkey"
+            columns: ["college"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_last_seen_following_fkey"
+            columns: ["following"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_last_seen_program_fkey"
+            columns: ["program"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_last_seen_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       programs: {
         Row: {
           college_id: string

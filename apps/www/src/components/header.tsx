@@ -27,7 +27,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -307,10 +306,10 @@ export default function Header() {
 
                   <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
-                      <div className="flex flex-1 items-center justify-between">
+                      <div className="flex flex-1 items-center">
                         <Sun className="mr-2 block dark:hidden" size="1rem" />
                         <Moon className="mr-2 hidden dark:block" size="1rem" />
-                        Theme <DropdownMenuShortcut>⌘ T</DropdownMenuShortcut>
+                        Theme
                       </div>
                     </DropdownMenuSubTrigger>
                     <DropdownMenuSubContent>

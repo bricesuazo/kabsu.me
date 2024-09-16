@@ -1007,7 +1007,7 @@ export const chatsRouter = router({
         message: "Campus not found",
       });
 
-    const global_chats_last_seen = user.global_chats_last_seen[0];
+    const global_chat_last_seen = user.global_chats_last_seen[0];
 
     const { data: chats, error: chats_error } = await ctx.supabase
       .from("global_chats")
@@ -1034,7 +1034,7 @@ export const chatsRouter = router({
       (chat) => chat.campus_id === user.program?.college?.campus_id,
     );
 
-    if (!global_chats_last_seen) {
+    if (!global_chat_last_seen) {
       await ctx.supabase.from("global_chats_last_seen").insert({
         user_id: ctx.auth.user.id,
       });
@@ -1047,16 +1047,16 @@ export const chatsRouter = router({
       };
     } else {
       const allIndex = all.findIndex(
-        (chat) => chat.id === global_chats_last_seen.all,
+        (chat) => chat.id === global_chat_last_seen.all,
       );
       const programsIndex = programs.findIndex(
-        (chat) => chat.id === global_chats_last_seen.program,
+        (chat) => chat.id === global_chat_last_seen.program,
       );
       const collegesIndex = colleges.findIndex(
-        (chat) => chat.id === global_chats_last_seen.college,
+        (chat) => chat.id === global_chat_last_seen.college,
       );
       const campusesIndex = campuses.findIndex(
-        (chat) => chat.id === global_chats_last_seen.campus,
+        (chat) => chat.id === global_chat_last_seen.campus,
       );
       return {
         all_length: allIndex === -1 ? all.length : allIndex,

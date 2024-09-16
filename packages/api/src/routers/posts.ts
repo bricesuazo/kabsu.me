@@ -401,6 +401,29 @@ export const postsRouter = router({
         nextCursor = input.cursor + 1;
       }
 
+      const first_post = posts[0];
+      if (input.cursor === 1 && first_post) {
+        const { data: post_last_seen } = await ctx.supabase
+          .from("posts_last_seen")
+          .select()
+          .eq("user_id", ctx.auth.user.id)
+          .single();
+
+        if (!post_last_seen) {
+          await ctx.supabase.from("posts_last_seen").insert({
+            user_id: ctx.auth.user.id,
+            [input.type]: first_post.id,
+          });
+        } else {
+          await ctx.supabase
+            .from("posts_last_seen")
+            .update({
+              [input.type]: first_post.id,
+            })
+            .eq("user_id", ctx.auth.user.id);
+        }
+      }
+
       return {
         posts,
         userId: ctx.auth.user.id,
@@ -848,4 +871,102 @@ export const postsRouter = router({
         };
       });
     }),
+
+  getPostsUnreadCounts: protectedProcedure.query(async ({ ctx }) => {
+    const { data: user, error: user_error } = await ctx.supabase
+      .from("users")
+      .select(
+        "program_id, program:programs(college_id, college:colleges(campus_id)), posts_last_seen(*)",
+      )
+      .eq("id", ctx.auth.user.id)
+      .single();
+
+    if (user_error)
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: user_error.message,
+      });
+
+    if (!user.program?.college?.campus_id)
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Campus not found",
+      });
+
+    const { data: posts, error: posts_error } = await ctx.supabase
+      .from("posts")
+      .select(
+        "id, type, deleted_at, created_at, users(program_id, programs(college_id, colleges(campus_id)))",
+      )
+      // .not("user_id", "eq", ctx.auth.user.id)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false });
+
+    if (posts_error)
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: posts_error.message,
+      });
+
+    const all = posts.filter((post) => post.type === "all");
+    const campus = posts.filter(
+      (post) =>
+        post.users?.programs?.colleges?.campus_id ===
+          user.program?.college?.campus_id && post.type === "campus",
+    );
+    const college = posts.filter(
+      (post) =>
+        post.users?.programs?.college_id === user.program?.college_id &&
+        post.type === "college",
+    );
+    const program = posts.filter(
+      (post) =>
+        post.users?.program_id === user.program_id && post.type === "program",
+    );
+    const following = posts.filter(
+      (post) =>
+        post.type == "following" &&
+        (post.users?.program_id === user.program_id ||
+          post.users?.programs?.college_id === user.program?.college_id ||
+          post.users?.programs?.colleges?.campus_id ===
+            user.program?.college?.campus_id),
+    );
+
+    const post_last_seen = user.posts_last_seen[0];
+
+    if (!post_last_seen) {
+      return {
+        all: all.length,
+        campus: campus.length,
+        college: college.length,
+        program: program.length,
+        following: following.length,
+      };
+    } else {
+      const all_unread = all.findIndex(
+        (post) => post.id === post_last_seen.all,
+      );
+      const campus_unread = campus.findIndex(
+        (post) => post.id === post_last_seen.campus,
+      );
+      const college_unread = college.findIndex(
+        (post) => post.id === post_last_seen.college,
+      );
+      const program_unread = program.findIndex(
+        (post) => post.id === post_last_seen.program,
+      );
+      const following_unread = following.findIndex(
+        (post) => post.id === post_last_seen.following,
+      );
+
+      return {
+        all: all_unread === -1 ? all.length : all_unread,
+        campus: campus_unread === -1 ? campus.length : campus_unread,
+        college: college_unread === -1 ? college.length : college_unread,
+        program: program_unread === -1 ? program.length : program_unread,
+        following:
+          following_unread === -1 ? following.length : following_unread,
+      };
+    }
+  }),
 });
