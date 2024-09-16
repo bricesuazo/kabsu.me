@@ -69,10 +69,16 @@ const formSchema = z.object({
     .min(1, { message: "Username is required." })
     .max(64, { message: "Username must be at most 64 characters long." })
     .transform((value) => value.trim())
-    .refine((value) => /^[a-zA-Z0-9_-]+$/.test(value), {
-      message:
-        "Username can only contain letters, numbers, dashes, and underscores.",
-    }),
+    .refine(
+      (value) =>
+        /^(?=[a-zA-Z0-9_-]+$)(?!.*[-_]{2})[a-zA-Z0-9]+([-_]?[a-zA-Z0-9]+)*$/.test(
+          value,
+        ),
+      {
+        message:
+          "Username can only contain letters, numbers, dashes, and underscores.",
+      },
+    ),
   link: z
     .string()
     .max(64, { message: "Link must be less than 64 characters" })
