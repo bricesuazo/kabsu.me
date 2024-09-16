@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MoreHorizontal } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -322,14 +322,14 @@ export default function PostDropdown({
             e.stopPropagation();
           }}
         >
-          <DropdownMenuLabel>Post</DropdownMenuLabel>
+          <DropdownMenuLabel>Options</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {/* <DropdownMenuItem onClick={() => setOpenUpdate(true)}>
                   Edit
                 </DropdownMenuItem> */}
           {isMyPost ? (
             <DropdownMenuItem
-              className="!text-red-500"
+              className="!text-red-500 cursor-pointer"
               onClick={() => setOpenDelete(true)}
             >
               Delete
