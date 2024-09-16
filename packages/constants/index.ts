@@ -683,7 +683,7 @@ export const DEVS_INFO = [
   },
   {
     name: "Alexis Ken Alvarez",
-    role: "Associate Full-stack Developer",
+    role: "Full-stack Developer",
     image: "/dev-pics/aki.jpg",
     username: "@alexisken_alvarez",
     link: "https://kabsu.me/alexisken_alvarez",
