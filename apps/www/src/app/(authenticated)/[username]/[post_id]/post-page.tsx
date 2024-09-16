@@ -1,9 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatDistanceToNow } from "date-fns";
 import {
@@ -13,6 +9,10 @@ import {
   Heart,
   MessageCircle,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import TextareaAutosize from "react-textarea-autosize";
@@ -822,7 +822,7 @@ function CommentComponent({
             />
           </div>
           <div className="whitespace-pre-wrap break-words text-sm">
-            {formatText(fullCommentQuery.data.comment.content)}
+            {formatText(fullCommentQuery.data.comment.content.trim())}
           </div>
 
           <div className="flex gap-x-1">
