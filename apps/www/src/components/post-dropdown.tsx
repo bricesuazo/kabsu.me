@@ -336,7 +336,7 @@ export default function PostDropdown({
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem
-              className="!text-red-500"
+              className="!text-red-500 cursor-pointer"
               onClick={() => setOpenReport(true)}
             >
               Report post
@@ -346,7 +346,7 @@ export default function PostDropdown({
             getCurrentUserQuery.data?.email ===
               env.NEXT_PUBLIC_SUPERADMIN_EMAIL && (
               <DropdownMenuItem
-                className="!text-red-500"
+                className="!text-red-500 cursor-pointer"
                 onClick={() => setOpenStrike(true)}
               >
                 Strike post
