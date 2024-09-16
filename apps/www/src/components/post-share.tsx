@@ -124,7 +124,7 @@ export default function PostShare({
         />
       </div>
       <Button
-        className="mt-2 md:mt-0"
+        className="mt-2 w-full md:mt-0"
         onClick={() => {
           const link = document.createElement("a");
           link.href = post_image_url;
