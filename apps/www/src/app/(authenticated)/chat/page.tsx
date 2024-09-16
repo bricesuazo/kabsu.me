@@ -229,20 +229,27 @@ export default function ChatsPage() {
                     className="rounded-full"
                   />
                   <div className="flex flex-1 flex-col">
-                    <p className="line-clamp-1 break-all text-sm">
+                    <p className="line-clamp-1 break-all text-sm font-normal">
                       {room.rooms_users
                         .map((user) => `@${user.users.username}`)
                         .join(", ")}
                     </p>
-                    {room.chats[0] && (
+                    {room.last_chat && (
                       <p className="line-clamp-1 break-all text-xs text-muted-foreground">
-                        {room.chats[0].content} -{" "}
-                        {formatDistanceToNow(room.chats[0].created_at, {
+                        {room.last_chat.content} -{" "}
+                        {formatDistanceToNow(room.last_chat.created_at, {
                           addSuffix: true,
                         })}
                       </p>
                     )}
                   </div>
+                  {(room.rooms_users[0]?.unread_messages_length ?? 0) > 0 && (
+                    <div className="flex size-5 items-center justify-center rounded-full bg-primary p-2">
+                      <p className="text-xs">
+                        {room.rooms_users[0]?.unread_messages_length}
+                      </p>
+                    </div>
+                  )}
                 </Link>
               </Button>
             ))

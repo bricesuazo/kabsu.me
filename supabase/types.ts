@@ -799,14 +799,17 @@ export type Database = {
       }
       rooms_users: {
         Row: {
+          last_seen_chat_id: string | null
           room_id: string
           user_id: string
         }
         Insert: {
+          last_seen_chat_id?: string | null
           room_id: string
           user_id: string
         }
         Update: {
+          last_seen_chat_id?: string | null
           room_id?: string
           user_id?: string
         }
@@ -823,6 +826,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rooms_users_last_seen_chat_id_fkey"
+            columns: ["last_seen_chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
             referencedColumns: ["id"]
           },
         ]

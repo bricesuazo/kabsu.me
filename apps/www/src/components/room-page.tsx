@@ -133,6 +133,20 @@ export default function RoomPageClient(
   });
 
   useEffect(() => {
+    utils.chats.getAllRooms.setData(undefined, (prev) =>
+      prev?.map((room) => ({
+        ...room,
+        rooms_users: room.rooms_users.map((room_user) =>
+          room_user.room_id === props.getRoomChats.room.id
+            ? {
+                ...room_user,
+                unread_messages_length: 0,
+              }
+            : room_user,
+        ),
+      })),
+    );
+
     messagesEndRef.current?.scrollIntoView(false);
 
     const channel = supabase.channel(
