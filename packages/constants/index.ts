@@ -644,9 +644,8 @@ export const NEW_FEATURES = [
 
 export const DEVS_INFO = [
   {
-    index: 0,
     name: "Brice Suazo",
-    role: "Full Stack Developer",
+    role: "Lead Full-stack Developer",
     image: "/dev-pics/brice.jpg",
     username: "@bricesuazo",
     link: "https://kabsu.me/bricesuazo",
@@ -659,37 +658,8 @@ export const DEVS_INFO = [
     ],
   },
   {
-    index: 1,
-    name: "Alexis Ken Alvarez",
-    role: "Full Stack Developer",
-    image: "/dev-pics/aki.jpg",
-    username: "@alexisken_alvarez",
-    link: "https://kabsu.me/alexisken_alvarez",
-    links: [
-      { icon: Mail, url: "mailto:alexisken.alvarez@cvsu.edu.ph" },
-      { icon: Globe, url: "https://www.akialvarez.com/" },
-      { icon: Github, url: "https://github.com/AlexisKenAlvarez" },
-      { icon: Instagram, url: "https://www.instagram.com/alexiskenalvarez/" },
-    ],
-  },
-  {
-    index: 2,
-    name: "Kevin Roi Nuesca",
-    role: "Frontend Developer",
-    image: "/dev-pics/kevin.jpg",
-    username: "@tfudoinkebs",
-    link: "https://kabsu.me/tfudoinkebs",
-    links: [
-      { icon: Mail, url: "mailto:kevinroi.nuesca@cvsu.edu.ph" },
-      { icon: Globe, url: "https://www.kevinnuesca.me/" },
-      { icon: Github, url: "https://github.com/tfudoinkebs" },
-      { icon: Instagram, url: "https://www.instagram.com/tfudoinkebs/" },
-    ],
-  },
-  {
-    index: 3,
     name: "Gabriel Luis Astilla",
-    role: "UI/UX Designer",
+    role: "Lead UI/UX Designer",
     image: "/dev-pics/gab.jpg",
     username: "@gabriel",
     link: "https://kabsu.me/gabriel",
@@ -701,9 +671,45 @@ export const DEVS_INFO = [
     ],
   },
   {
-    index: 4,
+    name: "Alex Buenviaje",
+    role: "Lead Project Manager",
+    image: "/dev-pics/lex.jpg",
+    username: "@lxbnvj",
+    link: "https://kabsu.me/lxbnvj",
+    links: [
+      { icon: Mail, url: "mailto:alexkal-el.buenviaje@cvsu.edu.ph" },
+      { icon: Instagram, url: "https://www.instagram.com/lxbnvj/" },
+    ],
+  },
+  {
+    name: "Alexis Ken Alvarez",
+    role: "Associate Full-stack Developer",
+    image: "/dev-pics/aki.jpg",
+    username: "@alexisken_alvarez",
+    link: "https://kabsu.me/alexisken_alvarez",
+    links: [
+      { icon: Mail, url: "mailto:alexisken.alvarez@cvsu.edu.ph" },
+      { icon: Globe, url: "https://www.akialvarez.com/" },
+      { icon: Github, url: "https://github.com/AlexisKenAlvarez" },
+      { icon: Instagram, url: "https://www.instagram.com/alexiskenalvarez/" },
+    ],
+  },
+  {
+    name: "Kevin Roi Nuesca",
+    role: "Front-end Developer",
+    image: "/dev-pics/kevin.jpg",
+    username: "@tfudoinkebs",
+    link: "https://kabsu.me/tfudoinkebs",
+    links: [
+      { icon: Mail, url: "mailto:kevinroi.nuesca@cvsu.edu.ph" },
+      { icon: Globe, url: "https://www.kevinnuesca.me/" },
+      { icon: Github, url: "https://github.com/tfudoinkebs" },
+      { icon: Instagram, url: "https://www.instagram.com/tfudoinkebs/" },
+    ],
+  },
+  {
     name: "Rod Cotines",
-    role: "Frontend Developer",
+    role: "Front-end Developer",
     image: "/dev-pics/rod.jpg",
     username: "@rodcotines",
     link: "https://kabsu.me/rodcotines",
@@ -715,9 +721,8 @@ export const DEVS_INFO = [
     ],
   },
   {
-    index: 5,
     name: "AJ Espinosa",
-    role: "Frontend Developer",
+    role: "Front-end Developer",
     image: "/dev-pics/aj.jpg",
     username: "@eyrooonnn",
     link: "https://kabsu.me/eyrooonnn",
@@ -727,22 +732,10 @@ export const DEVS_INFO = [
       { icon: Github, url: "https://github.com/aaronjoshuaespinosa" },
     ],
   },
+
   {
-    index: 6,
-    name: "Alex Buenviaje",
-    role: "Project Manager",
-    image: "/dev-pics/lex.jpg",
-    username: "@lxbnvj",
-    link: "https://kabsu.me/lxbnvj",
-    links: [
-      { icon: Mail, url: "mailto:alexkal-el.buenviaje@cvsu.edu.ph" },
-      { icon: Instagram, url: "https://www.instagram.com/lxbnvj/" },
-    ],
-  },
-  {
-    index: 7,
     name: "Aries Dela Peña",
-    role: "UI/UX Designer",
+    role: "UI/UX Designer Assistant",
     image: "/dev-pics/aryas.jpg",
     username: "@aryasss",
     link: "https://kabsu.me/aryasss",
@@ -752,7 +745,6 @@ export const DEVS_INFO = [
     ],
   },
   {
-    index: 8,
     name: "Bernard Sarroca",
     role: "Project Manager Assistant",
     image: "/dev-pics/bernard.jpg",
@@ -766,7 +758,6 @@ export const DEVS_INFO = [
     ],
   },
   {
-    index: 9,
     name: "Rey Anthony de Luna",
     role: "Social Media Manager",
     image: "/dev-pics/rey.jpg",
@@ -857,109 +848,83 @@ export const ONBOARDING_PAGES: {
   },
 ];
 
-export const THESIS_INFO = [
+export const THESIS_INFO: {
+  name: string;
+  description: string;
+  className: string;
+  href: string;
+  cta: string;
+  iconSrc: string;
+  iconAlt: string;
+  backgroundSrc: string;
+  backgroundAlt: string;
+}[] = [
   {
-    icon: {
-      src: "/thesis-pics/adventura-logo.png",
-      alt: "adventura-logo-img",
-    },
     name: "Adventura 360°",
     description:
       "An Interactive Campus Tour for Cavite State University Don Severino Delas Alas Campus.",
     className: "col-span-5 lg:col-span-2",
     href: "https://adventura360.kabsu.me/",
     cta: "Learn more",
-    background: {
-      src: "/thesis-pics/adventura-background.png",
-      alt: "adventura-background-img",
-      className:
-        "absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
-    },
+    iconSrc: "/thesis-pics/adventura-logo.png",
+    iconAlt: "adventura-logo-img",
+    backgroundSrc: "/thesis-pics/adventura-background.png",
+    backgroundAlt: "adventura-background-img",
   },
   {
-    icon: {
-      src: "/thesis-pics/arctec-logo.png",
-      alt: "arctec-logo-img",
-    },
     name: "ARCTEC",
     description: "Augmented Reality for CvSU Ladislao N. Diwa Memorial Library",
     className: "col-span-5 lg:col-span-2",
     href: "https://arctec.kabsu.me/",
     cta: "Learn more",
-    background: {
-      src: "/thesis-pics/arctec-background.png",
-      alt: "arctec-background-img",
-      className:
-        "absolute top-0 h-full w-full object-cover [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
-    },
+    iconSrc: "/thesis-pics/arctec-logo.png",
+    iconAlt: "arctec-logo-img",
+    backgroundSrc: "/thesis-pics/arctec-background.png",
+    backgroundAlt: "arctec-background-img",
   },
   {
-    icon: {
-      src: "/thesis-pics/chromia-logo.png",
-      alt: "chromia-logo-img",
-    },
     name: "CHROMIA",
     description: "A Speech Command HCI Design for Google Chrome",
     className: "col-span-5 lg:col-span-1",
     href: "https://chromia.kabsu.me/",
     cta: "Learn more",
-    background: {
-      src: "/thesis-pics/chromia-background.png",
-      alt: "chromia-background-img",
-      className:
-        "absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
-    },
+    iconSrc: "/thesis-pics/chromia-logo.png",
+    iconAlt: "chromia-logo-img",
+    backgroundSrc: "/thesis-pics/chromia-background.png",
+    backgroundAlt: "chromia-background-img",
   },
   {
-    icon: {
-      src: "/thesis-pics/eboto-logo.png",
-      alt: "eboto-logo-img",
-    },
     name: "eBoto",
     description: "One Stop Online Voting Solution",
     className: "col-span-5 lg:col-span-1",
     href: "https://eboto.app/",
     cta: "Learn more",
-    background: {
-      src: "/thesis-pics/eboto-background.png",
-      alt: "eboto-background-img",
-      className:
-        "absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
-    },
+    iconSrc: "/thesis-pics/eboto-logo.png",
+    iconAlt: "eboto-logo-img",
+    backgroundSrc: "/thesis-pics/eboto-background.png",
+    backgroundAlt: "eboto-background-img",
   },
   {
-    icon: {
-      src: "/thesis-pics/odyssey-logo.png",
-      alt: "odyssey-logo-img",
-    },
     name: "Odyssey",
     description:
       "An Android-Based Mobile Augmented Reality Application for Interactive Experience at CvSU Historical and Cultural Museum",
     className: "col-span-5 lg:col-span-2",
     href: "https://odyssey.kabsu.me/",
     cta: "Learn more",
-    background: {
-      src: "/thesis-pics/odyssey-background.png",
-      alt: "odyssey-background-img",
-      className:
-        "absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
-    },
+    iconSrc: "/thesis-pics/odyssey-logo.png",
+    iconAlt: "odyssey-logo-img",
+    backgroundSrc: "/thesis-pics/odyssey-background.png",
+    backgroundAlt: "odyssey-background-img",
   },
   {
-    icon: {
-      src: "/thesis-pics/swardify-logo.png",
-      alt: "swardify-logo-img",
-    },
     name: "SWARDify",
     description: "A Bidirectional Swardspeak and Tagalog Translator",
     className: "col-span-5 lg:col-span-2",
     href: "https://swardify.kabsu.me/",
     cta: "Learn more",
-    background: {
-      src: "/thesis-pics/swardify-background.png",
-      alt: "swardify-background-img",
-      className:
-        "absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]",
-    },
+    iconSrc: "/thesis-pics/swardify-logo.png",
+    iconAlt: "swardify-logo-img",
+    backgroundSrc: "/thesis-pics/swardify-background.png",
+    backgroundAlt: "swardify-background-img",
   },
 ];
