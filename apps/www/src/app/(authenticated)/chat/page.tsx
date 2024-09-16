@@ -223,10 +223,10 @@ export default function ChatsPage() {
                         ? room.rooms_users[0]?.users.image_url
                         : "/default-avatar.jpg"
                     }
-                    width={36}
-                    height={36}
+                    width={150}
+                    height={150}
                     alt="Profile picture"
-                    className="rounded-full"
+                    className="h-10 w-10 rounded-full object-cover"
                   />
                   <div className="flex flex-1 flex-col">
                     <p className="line-clamp-1 break-all text-sm">
