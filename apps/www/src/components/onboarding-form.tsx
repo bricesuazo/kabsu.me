@@ -50,19 +50,19 @@ import { ToggleTheme } from "./toggle-theme";
 
 const formSchema = z.object({
   page: z.number(),
-  name: z.string().min(1, { message: "Display name is required." }),
+  name: z
+    .string()
+    .min(1, { message: "Display name is required." })
+    .transform((value) => value.trim()),
   username: z
     .string()
     .min(4, { message: "Username must be at least 4 characters long." })
     .max(64, { message: "Username must be at most 64 characters long." })
-    .regex(
-      /^(?=[a-zA-Z0-9_-]+$)(?!.*[-_]{2})[a-zA-Z0-9]+([-_]?[a-zA-Z0-9]+)*$/,
-      {
-        message:
-          "Username must only contain letters, numbers, underscores, and dashes.",
-      },
-    )
-    .min(1, { message: "Username is required." }),
+    .transform((value) => value.trim())
+    .refine((value) => /^[a-zA-Z0-9_-]+$/.test(value), {
+      message:
+        "Username can only contain letters, numbers, dashes, and underscores.",
+    }),
   type: z.custom<Database["public"]["Enums"]["user_type"]>().optional(),
   campus_id: z
     .string({
