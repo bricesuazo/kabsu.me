@@ -33,10 +33,10 @@ export default async function AboutPage() {
         </p>
       </div>
       <div className="mx-auto mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {DEVS_INFO.map((dev) => {
+        {DEVS_INFO.map((dev, index) => {
           return (
             <div
-              key={dev.index}
+              key={index}
               className="flex flex-col items-center gap-y-4 rounded-lg border-2 p-3"
             >
               <Image
