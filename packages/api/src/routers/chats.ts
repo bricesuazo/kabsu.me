@@ -27,8 +27,7 @@ export const chatsRouter = router({
       )
       .in("id", [...new Set(users.map((u) => u.room_id))])
       .order("created_at", { ascending: false, referencedTable: "chats" })
-      .is("deleted_at", null)
-      .eq("rooms_users.user_id", ctx.auth.user.id);
+      .is("deleted_at", null);
 
     return (rooms ?? [])
       .map((room) => {
@@ -37,54 +36,58 @@ export const chatsRouter = router({
           created_at: room.created_at,
           deleted_at: room.deleted_at,
         };
+
+        const user = room.rooms_users.find(
+          (user) => user.users?.id !== ctx.auth.user.id,
+        );
+        let avatar_url: string | null = null;
+
+        if (
+          user?.users?.image_name &&
+          !user.users.image_name.startsWith("https:")
+        ) {
+          avatar_url = ctx.supabase.storage
+            .from("avatars")
+            .getPublicUrl(
+              "users/" + user.users.id + "/" + user.users.image_name,
+            ).data.publicUrl;
+        }
+
+        // Calculate unread messages
+        const lastSeenChatId = user?.last_seen_chat_id;
+        const lastChatIndex = room.chats.findIndex(
+          (chat) => chat.id === lastSeenChatId,
+        );
+        const unreadMessagesLength =
+          lastChatIndex === -1 ? room.chats.length : lastChatIndex;
+
         return {
           ...room_without_chats,
           last_chat: room.chats[0],
-          rooms_users: room.rooms_users.map((user) => {
-            let avatar_url: string | null = null;
+          rooms_user: user
+            ? {
+                ...user,
+                unread_messages_length: unreadMessagesLength,
+                users: {
+                  id: user.users?.id,
+                  username: user.users?.username,
 
-            if (
-              user.users?.image_name &&
-              !user.users.image_name.startsWith("https:")
-            ) {
-              avatar_url = ctx.supabase.storage
-                .from("avatars")
-                .getPublicUrl(
-                  "users/" + user.users.id + "/" + user.users.image_name,
-                ).data.publicUrl;
-            }
-
-            // Calculate unread messages
-            const lastSeenChatId = user.last_seen_chat_id;
-            const lastChatIndex = room.chats.findIndex(
-              (chat) => chat.id === lastSeenChatId,
-            );
-            const unreadMessagesLength =
-              lastChatIndex === -1 ? room.chats.length : lastChatIndex;
-
-            return {
-              ...user,
-              unread_messages_length: unreadMessagesLength,
-              users: {
-                id: user.users?.id,
-                username: user.users?.username,
-
-                ...(user.users?.image_name?.startsWith("https:")
-                  ? {
-                      image_name: user.users.image_name,
-                      image_url: user.users.image_name,
-                    }
-                  : user.users?.image_name && avatar_url
+                  ...(user.users?.image_name?.startsWith("https:")
                     ? {
                         image_name: user.users.image_name,
-                        image_url: avatar_url,
+                        image_url: user.users.image_name,
                       }
-                    : {
-                        image_name: null,
-                      }),
-              },
-            };
-          }),
+                    : user.users?.image_name && avatar_url
+                      ? {
+                          image_name: user.users.image_name,
+                          image_url: avatar_url,
+                        }
+                      : {
+                          image_name: null,
+                        }),
+                },
+              }
+            : null,
         };
       })
       .sort(

@@ -77,7 +77,7 @@ export default function Header() {
 
   const messagesCount =
     getAllRoomsQuery.data?.filter(
-      (room) => (room.rooms_users[0]?.unread_messages_length ?? 0) > 0,
+      (room) => (room.rooms_user?.unread_messages_length ?? 0) > 0,
     ).length ?? 0;
 
   return (

@@ -137,14 +137,13 @@ export default function RoomPageClient(
       utils.chats.getAllRooms.setData(undefined, (prev) =>
         prev?.map((room) => ({
           ...room,
-          rooms_users: room.rooms_users.map((room_user) =>
-            room_user.room_id === props.getRoomChats.room.id
+          rooms_user:
+            room.rooms_user?.room_id === props.getRoomChats.room.id
               ? {
-                  ...room_user,
+                  ...room.rooms_user,
                   unread_messages_length: 0,
                 }
-              : room_user,
-          ),
+              : room.rooms_user,
         })),
       );
     } else {

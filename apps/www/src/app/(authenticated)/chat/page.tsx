@@ -231,8 +231,8 @@ export default function ChatsPage() {
                 >
                   <Image
                     src={
-                      room.rooms_users[0]?.users.image_name
-                        ? room.rooms_users[0]?.users.image_url
+                      room.rooms_user?.users.image_name
+                        ? room.rooms_user.users.image_url
                         : "/default-avatar.jpg"
                     }
                     width={36}
@@ -242,9 +242,7 @@ export default function ChatsPage() {
                   />
                   <div className="flex flex-1 flex-col">
                     <p className="line-clamp-1 break-all text-sm font-normal">
-                      {room.rooms_users
-                        .map((user) => `@${user.users.username}`)
-                        .join(", ")}
+                      {room.rooms_user?.users.username}
                     </p>
                     {room.last_chat && (
                       <p className="line-clamp-1 break-all text-xs text-muted-foreground">
@@ -255,10 +253,10 @@ export default function ChatsPage() {
                       </p>
                     )}
                   </div>
-                  {(room.rooms_users[0]?.unread_messages_length ?? 0) > 0 && (
+                  {(room.rooms_user?.unread_messages_length ?? 0) > 0 && (
                     <div className="flex size-5 items-center justify-center rounded-full bg-primary p-2">
                       <p className="text-xs">
-                        {room.rooms_users[0]?.unread_messages_length}
+                        {room.rooms_user?.unread_messages_length}
                       </p>
                     </div>
                   )}
