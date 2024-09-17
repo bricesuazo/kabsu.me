@@ -102,7 +102,7 @@ export default function ChatsPage() {
                 >
                   <div className="relative rounded-full bg-accent p-2 transition-colors group-hover:bg-primary group-hover:text-white">
                     {type.unread_count > 0 && (
-                      <p className="absolute -right-3 -top-3 flex aspect-square size-5 items-center justify-center rounded-full bg-primary text-xs xs:size-6">
+                      <p className="absolute -right-3 -top-3 flex aspect-square size-5 items-center justify-center rounded-full bg-primary text-xs text-white xs:size-6">
                         {type.unread_count.toLocaleString()}
                       </p>
                     )}
@@ -253,7 +253,7 @@ export default function ChatsPage() {
                   </div>
                   {(room.rooms_user?.unread_messages_length ?? 0) > 0 && (
                     <div className="flex size-5 items-center justify-center rounded-full bg-primary p-2">
-                      <p className="text-xs">
+                      <p className="text-xs text-white">
                         {room.rooms_user?.unread_messages_length}
                       </p>
                     </div>

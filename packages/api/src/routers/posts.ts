@@ -925,14 +925,7 @@ export const postsRouter = router({
       (post) =>
         post.users?.program_id === user.program_id && post.type === "program",
     );
-    const following = posts.filter(
-      (post) =>
-        post.type == "following" &&
-        (post.users?.program_id === user.program_id ||
-          post.users?.programs?.college_id === user.program?.college_id ||
-          post.users?.programs?.colleges?.campus_id ===
-            user.program?.college?.campus_id),
-    );
+    const following = posts.filter((post) => post.type === "following");
 
     const post_last_seen = user.posts_last_seen[0];
 

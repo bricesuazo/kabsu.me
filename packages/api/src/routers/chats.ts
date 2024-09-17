@@ -37,24 +37,30 @@ export const chatsRouter = router({
           deleted_at: room.deleted_at,
         };
 
-        const user = room.rooms_users.find(
+        const other_user = room.rooms_users.find(
           (user) => user.users?.id !== ctx.auth.user.id,
+        );
+        const me = room.rooms_users.find(
+          (user) => user.users?.id === ctx.auth.user.id,
         );
         let avatar_url: string | null = null;
 
         if (
-          user?.users?.image_name &&
-          !user.users.image_name.startsWith("https:")
+          other_user?.users?.image_name &&
+          !other_user.users.image_name.startsWith("https:")
         ) {
           avatar_url = ctx.supabase.storage
             .from("avatars")
             .getPublicUrl(
-              "users/" + user.users.id + "/" + user.users.image_name,
+              "users/" +
+                other_user.users.id +
+                "/" +
+                other_user.users.image_name,
             ).data.publicUrl;
         }
 
         // Calculate unread messages
-        const lastSeenChatId = user?.last_seen_chat_id;
+        const lastSeenChatId = me?.last_seen_chat_id;
         const lastChatIndex = room.chats.findIndex(
           (chat) => chat.id === lastSeenChatId,
         );
@@ -64,22 +70,22 @@ export const chatsRouter = router({
         return {
           ...room_without_chats,
           last_chat: room.chats[0],
-          rooms_user: user
+          rooms_user: other_user
             ? {
-                ...user,
+                ...other_user,
                 unread_messages_length: unreadMessagesLength,
                 users: {
-                  id: user.users?.id,
-                  username: user.users?.username,
+                  id: other_user.users?.id,
+                  username: other_user.users?.username,
 
-                  ...(user.users?.image_name?.startsWith("https:")
+                  ...(other_user.users?.image_name?.startsWith("https:")
                     ? {
-                        image_name: user.users.image_name,
-                        image_url: user.users.image_name,
+                        image_name: other_user.users.image_name,
+                        image_url: other_user.users.image_name,
                       }
-                    : user.users?.image_name && avatar_url
+                    : other_user.users?.image_name && avatar_url
                       ? {
-                          image_name: user.users.image_name,
+                          image_name: other_user.users.image_name,
                           image_url: avatar_url,
                         }
                       : {
