@@ -697,7 +697,7 @@ export const DEVS_INFO = [
   },
   {
     name: "Kevin Roi Nuesca",
-    role: "Front-end Developer",
+    role: "Lead Front-end Developer",
     image: "/dev-pics/kevin.jpg",
     username: "@tfudoinkebs",
     link: "https://kabsu.me/tfudoinkebs",
