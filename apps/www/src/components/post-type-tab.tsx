@@ -11,12 +11,15 @@ import { Tabs, TabsList, TabsTrigger } from "@kabsu.me/ui/tabs";
 import { api } from "~/lib/trpc/client";
 
 function UnreadCount({ number, Icon }: { number: number; Icon: LucideIcon }) {
-  return number ? (
-    <div className="flex aspect-square size-5 items-center justify-center rounded-full bg-primary">
-      <p className="text-xs text-white">{number.toLocaleString()}</p>
+  return (
+    <div className="relative block sm:hidden md:block">
+      {number > 0 && (
+        <div className="absolute -left-2.5 -top-2.5 flex aspect-square size-5 items-center justify-center rounded-full bg-primary">
+          <p className="text-xs text-white">{number.toLocaleString()}</p>
+        </div>
+      )}
+      <Icon size="20" />
     </div>
-  ) : (
-    <div className="block sm:hidden md:block">{<Icon size="20" />}</div>
   );
 }
 
@@ -35,6 +38,15 @@ export default function PostTypeTab() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.toString()]);
+  useEffect(() => {
+    if (getPostsUnreadCountsQuery.data) {
+      utils.posts.getPostsUnreadCounts.setData(undefined, (prev) =>
+        prev ? { ...prev, [tab ?? "following"]: 0 } : prev,
+      );
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.toString(), getPostsUnreadCountsQuery.data]);
 
   return (
     <div className="z-50 w-full border-b">
@@ -45,10 +57,6 @@ export default function PostTypeTab() {
         onValueChange={(value) => {
           router.push(value !== "following" ? `/?tab=${value}` : "/");
           setTab(value);
-
-          utils.posts.getPostsUnreadCounts.setData(undefined, (prev) =>
-            prev ? { ...prev, [value]: 0 } : prev,
-          );
         }}
       >
         <TabsList className="flex h-auto w-full items-stretch justify-between rounded-none bg-background p-0 dark:bg-black sm:dark:bg-[#121212]">
