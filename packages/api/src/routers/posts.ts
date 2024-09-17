@@ -148,7 +148,7 @@ export const postsRouter = router({
         .is("deleted_at", null)
         .order("created_at", { ascending: false })
         .limit(limit)
-        .range((input.cursor - 1) * limit, input.cursor * limit);
+        .range((input.cursor - 1) * (limit + 1), input.cursor * limit);
 
       const [
         { data: current_user_from_db },
@@ -165,7 +165,9 @@ export const postsRouter = router({
           .select("*, programs(college_id, colleges(campus_id))")
           .eq("id", input.user_id)
           .single(),
-        follower ? post_query : post_query.neq("type", "following"),
+        follower || input.user_id === ctx.auth.user.id
+          ? post_query
+          : post_query.neq("type", "following"),
       ]);
 
       if (!current_user_from_db || !user_of_post)
