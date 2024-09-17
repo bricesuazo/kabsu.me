@@ -12,7 +12,7 @@ import { api } from "~/lib/trpc/client";
 
 function UnreadCount({ number, Icon }: { number: number; Icon: LucideIcon }) {
   return (
-    <div className="relative block sm:hidden md:block">
+    <div className="relative">
       {number > 0 && (
         <p className="absolute -left-2 -top-2 flex aspect-square size-4 items-center justify-center rounded-full bg-primary text-[0.5rem] text-white">
           {number.toLocaleString()}
@@ -46,7 +46,7 @@ export default function PostTypeTab() {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams.toString(), getPostsUnreadCountsQuery.data]);
+  }, [searchParams, getPostsUnreadCountsQuery.data]);
 
   return (
     <div className="z-50 w-full border-b">
