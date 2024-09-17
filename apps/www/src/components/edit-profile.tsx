@@ -57,15 +57,28 @@ const formSchema = z.object({
   bio: z
     .string()
     .max(128, "Bio must be at most 128 characters long.")
-    .optional(),
+    .optional()
+    .transform((value) => value?.trim()),
   name: z
     .string()
     .min(1, { message: "First name is required." })
-    .max(64, { message: "Name must be at most 64 characters long." }),
+    .max(64, { message: "Name must be at most 64 characters long." })
+    .transform((value) => value.trim()),
   username: z
     .string()
     .min(1, { message: "Username is required." })
-    .max(64, { message: "Username must be at most 64 characters long." }),
+    .max(64, { message: "Username must be at most 64 characters long." })
+    .transform((value) => value.trim())
+    .refine(
+      (value) =>
+        /^(?=[a-zA-Z0-9_-]+$)(?!.*[-_]{2})[a-zA-Z0-9]+([-_]?[a-zA-Z0-9]+)*$/.test(
+          value,
+        ),
+      {
+        message:
+          "Username can only contain letters, numbers, dashes, and underscores.",
+      },
+    ),
   link: z
     .string()
     .max(64, { message: "Link must be less than 64 characters" })
@@ -77,6 +90,7 @@ const formSchema = z.object({
       if (value === undefined) return true;
       if (value.length) return value.includes(".");
     }, "Invalid URL")
+    .transform((value) => value?.trim())
     .optional(),
   images: z.instanceof(File).array().or(z.string()).nullish(),
 });
@@ -292,7 +306,7 @@ function EditProfileForm({
     return (Math.min(128, Math.max(0, value)) / 128) * 100;
   }
 
-  const bioLength = form.watch("bio")?.length ?? 0;
+  const bioLength = form.watch("bio")?.trim().length ?? 0;
 
   return (
     <ScrollArea viewportClassName={cn("max-h-[40rem]", className)}>

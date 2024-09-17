@@ -32,7 +32,7 @@ export default function UserFollows({
         </div>
       </Link>
       <div className="flex flex-1 justify-between gap-x-2">
-        <div className="">
+        <div>
           <Link
             href={`/${user.username}`}
             className="line-clamp-1 flex-1 break-all font-semibold"
@@ -42,7 +42,7 @@ export default function UserFollows({
           <p className="line-clamp-1 text-sm text-muted-foreground">
             {user.name}
           </p>
-          <p className="line-clamp-1 text-sm text-muted-foreground">
+          <p className="line-clamp-2 break-all text-sm text-muted-foreground">
             {user.bio}
           </p>
         </div>
