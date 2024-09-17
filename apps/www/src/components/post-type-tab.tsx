@@ -14,9 +14,9 @@ function UnreadCount({ number, Icon }: { number: number; Icon: LucideIcon }) {
   return (
     <div className="relative block sm:hidden md:block">
       {number > 0 && (
-        <div className="absolute -left-2.5 -top-2.5 flex aspect-square size-5 items-center justify-center rounded-full bg-primary">
-          <p className="text-xs text-white">{number.toLocaleString()}</p>
-        </div>
+        <p className="absolute -left-2 -top-2 flex aspect-square size-4 items-center justify-center rounded-full bg-primary text-[0.5rem] text-white">
+          {number.toLocaleString()}
+        </p>
       )}
       <Icon size="20" />
     </div>

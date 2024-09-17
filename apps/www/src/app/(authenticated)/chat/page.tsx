@@ -100,7 +100,12 @@ export default function ChatsPage() {
                   href={`/chat/${type.id}`}
                   className="group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md px-2 py-4 hover:bg-muted"
                 >
-                  <div className="rounded-full bg-accent p-2 transition-colors group-hover:bg-primary group-hover:text-white">
+                  <div className="relative rounded-full bg-accent p-2 transition-colors group-hover:bg-primary group-hover:text-white">
+                    {type.unread_count > 0 && (
+                      <p className="absolute -right-3 -top-3 flex aspect-square size-5 items-center justify-center rounded-full bg-primary text-xs xs:size-6">
+                        {type.unread_count.toLocaleString()}
+                      </p>
+                    )}
                     <type.Icon className="size-5" />
                   </div>
                   <div>
@@ -113,13 +118,6 @@ export default function ChatsPage() {
                       </p>
                     )}
                   </div>
-                  {type.unread_count > 0 && (
-                    <div className="flex aspect-square items-center justify-center rounded-full bg-primary p-1">
-                      <p className="text-xs">
-                        {type.unread_count.toLocaleString()}
-                      </p>
-                    </div>
-                  )}
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-60">

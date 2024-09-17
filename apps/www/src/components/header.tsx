@@ -172,7 +172,7 @@ export default function Header() {
 
                       {getAllMyMessagesQuery.data &&
                         getAllMyMessagesQuery.data.length > 0 && (
-                          <p className="absolute right-0 top-0 flex aspect-square h-4 w-4 items-center justify-center rounded-full bg-primary text-[0.5rem] text-white">
+                          <p className="absolute right-0 top-0 flex aspect-square size-4 items-center justify-center rounded-full bg-primary text-[0.5rem] text-white">
                             {getAllMyMessagesQuery.data.length}
                           </p>
                         )}
