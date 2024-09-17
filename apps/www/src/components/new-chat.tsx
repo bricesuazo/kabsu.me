@@ -69,7 +69,7 @@ export default function NewChat({
               width={44}
               height={44}
               alt="Profile picture"
-              className="rounded-full"
+              className="h-12 w-12 rounded-full object-cover"
             />
           </div>
           <div>
