@@ -332,14 +332,14 @@ export default function PostDropdown({
               className="!text-red-500 cursor-pointer"
               onClick={() => setOpenDelete(true)}
             >
-              Delete
+              Delete Post
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem
               className="!text-red-500 cursor-pointer"
               onClick={() => setOpenReport(true)}
             >
-              Report post
+              Report Post
             </DropdownMenuItem>
           )}
           {!isMyPost &&
@@ -357,3 +357,4 @@ export default function PostDropdown({
     </div>
   );
 }
+
