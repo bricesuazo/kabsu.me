@@ -219,21 +219,21 @@ export function CommentComponent({
               <span className="text-xs">{likes.length}</span>
             </Toggle>
 
-            {(level === 0 || level === 1) && (
-            <Toggle
-            size="sm"
-            className="h-8 px-2"
-            pressed={form.watch("is_comment_enabled")}
-            onPressedChange={(pressed) => {
-                form.setValue("is_comment_enabled", pressed);
-                form.resetField("reply");
-            }}
-            >
-            <MessageCircle className="mr-1.5 size-4" />
-            <span className="text-xs">
-                {fullCommentQuery.data.comment.replies.length}
-            </span>
-            </Toggle>
+            {level === 0 && (
+              <Toggle
+              size="sm"
+              className="h-8 px-2"
+              pressed={form.watch("is_comment_enabled")}
+              onPressedChange={(pressed) => {
+                  form.setValue("is_comment_enabled", pressed);
+                  form.resetField("reply");
+              }}
+              >
+              <MessageCircle className="mr-1.5 size-4" />
+              <span className="text-xs">
+                  {fullCommentQuery.data.comment.replies.length}
+              </span>
+              </Toggle>
             )}
           </div>
           <div className="space-y-1 pl-5 sm:pl-10">
