@@ -852,35 +852,44 @@ export const ONBOARDING_PAGES: {
 export const FAQ_ITEMS = [
   {
     value: "item-1",
-    question: "Is it accessible?",
-    answer: "Yes. It adheres to the WAI-ARIA design pattern.",
+    question:
+      "How can freshmen create an account if we don't have a CvSU Gmail yet?",
+    answer:
+      "You can only log in using a CvSU email address that ends with @cvsu.edu.ph. If you haven’t received your CvSU email yet, please wait until it is provided.",
   },
   {
     value: "item-2",
-    question: "Is it styled?",
-    answer:
-      "Yes. It comes with default styles that match the other components' aesthetic.",
+    question: "When will Kabsu.me add other campuses?",
+    answer: "Other campuses will be added soon, and it is a priority for us.",
   },
   {
     value: "item-3",
-    question: "Is it animated?",
+    question: "Where can I suggest a feature or report a problem?",
     answer:
-      "Yes. It's animated by default, but you can disable it if you prefer.",
+      'Sign in to your account, go to the upper right corner of your screen, click the profile icon, and choose "Suggest a Feature" or "Report a Problem."',
   },
   {
     value: "item-4",
-    question: "Can I customize the components?",
+    question: "Where can I ask inquiries, express concerns, or access FAQs?",
     answer:
-      "Absolutely! All components are fully customizable to fit your needs.",
+      "You can submit inquiries or concerns at the bottom of our homepage. Alternatively, sign in to your account, open the side navigation bar in the upper left corner of your screen, and find the Frequently Asked Questions bu.",
   },
   {
     value: "item-5",
-    question: "Is there support available?",
-    answer: "Yes, you can reach out to our support team anytime.",
+    question: "How can I disable my NGL in my profile?",
+    answer:
+      'Sign in to your account, go to the upper right corner, click the profile icon, then click "Account Settings." Uncheck the "Display my NGL page" option. You can enable it again by re-checking the box in the same settings.',
   },
   {
     value: "item-6",
-    question: "Are there any usage limits?",
-    answer: "No, there are no usage limits. Enjoy unlimited access!",
+    question: "How can I change my roles in my account?",
+    answer:
+      'Sign in to your account, click the profile icon in the upper right corner, and select "Account Settings." You can change your role, campus, college, and program there. Note that you can only make these changes once every 3 months.',
+  },
+  {
+    value: "item-7",
+    question: "How can I report a post or ban users posting malicious content?",
+    answer:
+      "You can report a user by clicking the three dots (kebab button) in the upper right corner of the post. Reported users are reviewed by the team, and there is a strike system. After three strikes, the user will be banned from the platform.",
   },
 ];
