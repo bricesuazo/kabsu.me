@@ -61,7 +61,7 @@ export const commentsRouter = router({
     .input(
       z.object({
         post_id: z.string().min(1),
-        content: z.string().min(1, { message: "Comment cannot be empty." }),
+        content: z.string().trim().min(1, { message: "Comment cannot be empty." }),
       }),
     )
     .mutation(async ({ ctx, input }) => {
