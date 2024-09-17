@@ -105,7 +105,7 @@ export default function CommentDropdown({
               <AlertDialogDescription>
                 {/* This action cannot be undone. This will permanently delete your
                 account and remove your data from our servers. */}
-                {`This action cannot be undone. This will permanently delete your ${level === 0 ? "comment" : "reply"} and remove it's data from our servers.`}
+                {`This action cannot be undone. This will permanently delete your ${level === 0 ? "comment" : "reply"} and remove its data from our servers.`}
                 {/* This acction cannot be undone. This will permanently delete your
                 {level === 0 ? "comment" : "reply"} and remove it's data from our servers. */}
               </AlertDialogDescription>
