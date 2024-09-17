@@ -364,6 +364,69 @@ export type Database = {
           },
         ]
       }
+      global_chats_last_seen: {
+        Row: {
+          all: string | null
+          campus: string | null
+          college: string | null
+          id: string
+          program: string | null
+          user_id: string | null
+        }
+        Insert: {
+          all?: string | null
+          campus?: string | null
+          college?: string | null
+          id?: string
+          program?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          all?: string | null
+          campus?: string | null
+          college?: string | null
+          id?: string
+          program?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "global_chats_last_seen_all_fkey"
+            columns: ["all"]
+            isOneToOne: false
+            referencedRelation: "global_chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "global_chats_last_seen_campus_fkey"
+            columns: ["campus"]
+            isOneToOne: false
+            referencedRelation: "global_chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "global_chats_last_seen_college_fkey"
+            columns: ["college"]
+            isOneToOne: false
+            referencedRelation: "global_chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "global_chats_last_seen_program_fkey"
+            columns: ["program"]
+            isOneToOne: false
+            referencedRelation: "global_chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "global_chats_last_seen_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       likes: {
         Row: {
           created_at: string
@@ -595,6 +658,79 @@ export type Database = {
           },
         ]
       }
+      posts_last_seen: {
+        Row: {
+          all: string | null
+          campus: string | null
+          college: string | null
+          following: string | null
+          id: string
+          program: string | null
+          user_id: string | null
+        }
+        Insert: {
+          all?: string | null
+          campus?: string | null
+          college?: string | null
+          following?: string | null
+          id?: string
+          program?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          all?: string | null
+          campus?: string | null
+          college?: string | null
+          following?: string | null
+          id?: string
+          program?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_last_seen_all_fkey"
+            columns: ["all"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_last_seen_campus_fkey"
+            columns: ["campus"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_last_seen_college_fkey"
+            columns: ["college"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_last_seen_following_fkey"
+            columns: ["following"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_last_seen_program_fkey"
+            columns: ["program"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_last_seen_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       programs: {
         Row: {
           college_id: string
@@ -799,14 +935,17 @@ export type Database = {
       }
       rooms_users: {
         Row: {
+          last_seen_chat_id: string | null
           room_id: string
           user_id: string
         }
         Insert: {
+          last_seen_chat_id?: string | null
           room_id: string
           user_id: string
         }
         Update: {
+          last_seen_chat_id?: string | null
           room_id?: string
           user_id?: string
         }
@@ -823,6 +962,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rooms_users_last_seen_chat_id_fkey"
+            columns: ["last_seen_chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
             referencedColumns: ["id"]
           },
         ]

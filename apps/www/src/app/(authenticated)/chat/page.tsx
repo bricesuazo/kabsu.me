@@ -28,6 +28,7 @@ export default function ChatsPage() {
   const getAllRoomsQuery = api.chats.getAllRooms.useQuery();
 
   const getMyUniversityStatusQuery = api.auth.getMyUniversityStatus.useQuery();
+  const getGlobalChatsCountsQuery = api.chats.getGlobalChatsCounts.useQuery();
 
   const debounced = debounce((value: string) => {
     setSearch(value);
@@ -60,6 +61,7 @@ export default function ChatsPage() {
               sublabel: "Global",
               Icon: Globe2,
               tooltip: "Global chatrooms",
+              unread_count: getGlobalChatsCountsQuery.data?.all_length ?? 0,
             },
             {
               id: "campus",
@@ -71,6 +73,7 @@ export default function ChatsPage() {
               tooltip:
                 getMyUniversityStatusQuery.data?.programs?.colleges?.campuses
                   ?.name,
+              unread_count: getGlobalChatsCountsQuery.data?.campus_length ?? 0,
             },
             {
               id: "college",
@@ -80,6 +83,7 @@ export default function ChatsPage() {
               Icon: School,
               tooltip:
                 getMyUniversityStatusQuery.data?.programs?.colleges?.name,
+              unread_count: getGlobalChatsCountsQuery.data?.college_length ?? 0,
             },
             {
               id: "program",
@@ -87,6 +91,7 @@ export default function ChatsPage() {
               sublabel: getMyUniversityStatusQuery.data?.programs?.slug,
               Icon: Book,
               tooltip: getMyUniversityStatusQuery.data?.programs?.name,
+              unread_count: getGlobalChatsCountsQuery.data?.program_length ?? 0,
             },
           ].map((type) => (
             <Tooltip key={type.id} delayDuration={0}>
@@ -95,7 +100,12 @@ export default function ChatsPage() {
                   href={`/chat/${type.id}`}
                   className="group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md px-2 py-4 hover:bg-muted"
                 >
-                  <div className="rounded-full bg-accent p-2 transition-colors group-hover:bg-primary group-hover:text-white">
+                  <div className="relative rounded-full bg-accent p-2 transition-colors group-hover:bg-primary group-hover:text-white">
+                    {type.unread_count > 0 && (
+                      <p className="absolute -right-3 -top-3 flex aspect-square size-5 items-center justify-center rounded-full bg-primary text-xs xs:size-6">
+                        {type.unread_count.toLocaleString()}
+                      </p>
+                    )}
                     <type.Icon className="size-5" />
                   </div>
                   <div>
@@ -219,8 +229,8 @@ export default function ChatsPage() {
                 >
                   <Image
                     src={
-                      room.rooms_users[0]?.users.image_name
-                        ? room.rooms_users[0]?.users.image_url
+                      room.rooms_user?.users.image_name
+                        ? room.rooms_user.users.image_url
                         : "/default-avatar.jpg"
                     }
                     width={150}
@@ -229,20 +239,25 @@ export default function ChatsPage() {
                     className="h-10 w-10 rounded-full object-cover"
                   />
                   <div className="flex flex-1 flex-col">
-                    <p className="line-clamp-1 break-all text-sm">
-                      {room.rooms_users
-                        .map((user) => `@${user.users.username}`)
-                        .join(", ")}
+                    <p className="line-clamp-1 break-all text-sm font-normal">
+                      {room.rooms_user?.users.username}
                     </p>
-                    {room.chats[0] && (
+                    {room.last_chat && (
                       <p className="line-clamp-1 break-all text-xs text-muted-foreground">
-                        {room.chats[0].content} -{" "}
-                        {formatDistanceToNow(room.chats[0].created_at, {
+                        {room.last_chat.content} -{" "}
+                        {formatDistanceToNow(room.last_chat.created_at, {
                           addSuffix: true,
                         })}
                       </p>
                     )}
                   </div>
+                  {(room.rooms_user?.unread_messages_length ?? 0) > 0 && (
+                    <div className="flex size-5 items-center justify-center rounded-full bg-primary p-2">
+                      <p className="text-xs">
+                        {room.rooms_user?.unread_messages_length}
+                      </p>
+                    </div>
+                  )}
                 </Link>
               </Button>
             ))
