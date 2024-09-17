@@ -103,11 +103,7 @@ export default function CommentDropdown({
                 {level === 0 ? "Delete Comment" : "Delete Reply"}
               </AlertDialogTitle>
               <AlertDialogDescription>
-                {/* This action cannot be undone. This will permanently delete your
-                account and remove your data from our servers. */}
                 {`This action cannot be undone. This will permanently delete your ${level === 0 ? "comment" : "reply"} and remove its data from our servers.`}
-                {/* This acction cannot be undone. This will permanently delete your
-                {level === 0 ? "comment" : "reply"} and remove it's data from our servers. */}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -269,7 +265,6 @@ export default function CommentDropdown({
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuLabel>
-            {/* {level === 0 ? "Comment" : "Reply"} */}
             Options
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
@@ -285,7 +280,6 @@ export default function CommentDropdown({
               className="!text-red-500 cursor-pointer"
               onClick={() => setOpenReport(true)}
             >
-              {/* Not too sure if you can report replies so this might need to be adjusted */}
               {level === 0 ? "Report Comment" : "Report Reply"}
             </DropdownMenuItem>
           )}
