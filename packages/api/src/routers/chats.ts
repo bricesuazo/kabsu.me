@@ -23,58 +23,77 @@ export const chatsRouter = router({
     const { data: rooms } = await ctx.supabase
       .from("rooms")
       .select(
-        "*, rooms_users(users(id, username, image_name)), chats(content, created_at)",
+        "*, rooms_users(room_id, last_seen_chat_id, users(id, username, image_name)), chats(id, content, created_at)",
       )
       .in("id", [...new Set(users.map((u) => u.room_id))])
       .order("created_at", { ascending: false, referencedTable: "chats" })
-      .limit(1, { referencedTable: "chats" })
-      .is("deleted_at", null)
-      .neq("rooms_users.user_id", ctx.auth.user.id);
+      .is("deleted_at", null);
 
     return (rooms ?? [])
-      .map((room) => ({
-        ...room,
-        rooms_users: room.rooms_users.map((user) => {
-          let avatar_url: string | null = null;
+      .map((room) => {
+        const room_without_chats = {
+          id: room.id,
+          created_at: room.created_at,
+          deleted_at: room.deleted_at,
+        };
 
-          if (
-            user.users?.image_name &&
-            !user.users.image_name.startsWith("https:")
-          ) {
-            avatar_url = ctx.supabase.storage
-              .from("avatars")
-              .getPublicUrl(
-                "users/" + user.users.id + "/" + user.users.image_name,
-              ).data.publicUrl;
-          }
+        const user = room.rooms_users.find(
+          (user) => user.users?.id !== ctx.auth.user.id,
+        );
+        let avatar_url: string | null = null;
 
-          return {
-            ...user,
-            users: {
-              id: user.users?.id,
-              username: user.users?.username,
+        if (
+          user?.users?.image_name &&
+          !user.users.image_name.startsWith("https:")
+        ) {
+          avatar_url = ctx.supabase.storage
+            .from("avatars")
+            .getPublicUrl(
+              "users/" + user.users.id + "/" + user.users.image_name,
+            ).data.publicUrl;
+        }
 
-              ...(user.users?.image_name?.startsWith("https:")
-                ? {
-                    image_name: user.users.image_name,
-                    image_url: user.users.image_name,
-                  }
-                : user.users?.image_name && avatar_url
-                  ? {
-                      image_name: user.users.image_name,
-                      image_url: avatar_url,
-                    }
-                  : {
-                      image_name: null,
-                    }),
-            },
-          };
-        }),
-      }))
+        // Calculate unread messages
+        const lastSeenChatId = user?.last_seen_chat_id;
+        const lastChatIndex = room.chats.findIndex(
+          (chat) => chat.id === lastSeenChatId,
+        );
+        const unreadMessagesLength =
+          lastChatIndex === -1 ? room.chats.length : lastChatIndex;
+
+        return {
+          ...room_without_chats,
+          last_chat: room.chats[0],
+          rooms_user: user
+            ? {
+                ...user,
+                unread_messages_length: unreadMessagesLength,
+                users: {
+                  id: user.users?.id,
+                  username: user.users?.username,
+
+                  ...(user.users?.image_name?.startsWith("https:")
+                    ? {
+                        image_name: user.users.image_name,
+                        image_url: user.users.image_name,
+                      }
+                    : user.users?.image_name && avatar_url
+                      ? {
+                          image_name: user.users.image_name,
+                          image_url: avatar_url,
+                        }
+                      : {
+                          image_name: null,
+                        }),
+                },
+              }
+            : null,
+        };
+      })
       .sort(
         (a, b) =>
-          new Date(b.chats[0]?.created_at ?? "").getTime() -
-          new Date(a.chats[0]?.created_at ?? "").getTime(),
+          new Date(b.last_chat?.created_at ?? "").getTime() -
+          new Date(a.last_chat?.created_at ?? "").getTime(),
       );
   }),
   sendMessage: protectedProcedure
@@ -353,21 +372,21 @@ export const chatsRouter = router({
 
       let signed_url: string | null = null;
 
-      if (user?.image_name && !user?.image_name.startsWith("https:")) {
+      if (user.image_name && !user.image_name.startsWith("https:")) {
         const { data } = ctx.supabase.storage
           .from("avatars")
-          .getPublicUrl("users/" + user.id + "/" + user?.image_name);
+          .getPublicUrl("users/" + user.id + "/" + user.image_name);
         signed_url = data.publicUrl;
       }
       return {
         user: {
           ...user,
-          ...(user?.image_name?.startsWith("https://")
+          ...(user.image_name?.startsWith("https://")
             ? {
                 image_name: user.image_name,
                 image_url: user.image_name,
               }
-            : user?.image_name && signed_url
+            : user.image_name && signed_url
               ? {
                   image_name: user.image_name,
                   image_url: signed_url,
@@ -459,7 +478,7 @@ export const chatsRouter = router({
         const { data: room } = await ctx.supabase
           .from("rooms")
           .select(
-            "*, chats!inner(id, content, user_id, created_at, reply_id, users(name, username, image_name)), rooms_users!inner(user_id, users(id, username, image_name, name, type))",
+            "*, chats!inner(id, content, user_id, created_at, reply_id, users(name, username, image_name)), rooms_users!inner(last_seen_chat_id, user_id, users(id, username, image_name, name, type))",
           )
           .eq("id", input.room_id)
           .neq("rooms_users.user_id", ctx.auth.user.id)
@@ -469,6 +488,19 @@ export const chatsRouter = router({
           .single();
 
         if (!room?.rooms_users[0]?.users) return null;
+
+        const chat = room.chats[0];
+        const user = room.rooms_users.find(
+          (user) => user.user_id === ctx.auth.user.id,
+        );
+
+        if (chat && chat.id !== user?.last_seen_chat_id) {
+          await ctx.supabase
+            .from("rooms_users")
+            .update({ last_seen_chat_id: chat.id })
+            .eq("room_id", input.room_id)
+            .eq("user_id", ctx.auth.user.id);
+        }
 
         const [{ data: followers }, { data: followees }] = await Promise.all([
           ctx.supabase
@@ -634,6 +666,15 @@ export const chatsRouter = router({
             code: "INTERNAL_SERVER_ERROR",
             message: error.message,
           });
+
+        const chat = messages[0];
+
+        if (chat) {
+          await ctx.supabase
+            .from("global_chats_last_seen")
+            .update({ [input.type]: chat.id })
+            .eq("user_id", ctx.auth.user.id);
+        }
 
         const { data: replies } = await ctx.supabase
           .from("global_chats")
@@ -948,4 +989,84 @@ export const chatsRouter = router({
         };
       }
     }),
+  getGlobalChatsCounts: protectedProcedure.query(async ({ ctx }) => {
+    const { data: user, error: user_error } = await ctx.supabase
+      .from("users")
+      .select(
+        "program_id, program:programs(college_id, college:colleges(campus_id)), global_chats_last_seen(*)",
+      )
+      .eq("id", ctx.auth.user.id)
+      .single();
+
+    if (user_error)
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: user_error.message,
+      });
+
+    if (!user.program?.college?.campus_id)
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Campus not found",
+      });
+
+    const global_chat_last_seen = user.global_chats_last_seen[0];
+
+    const { data: chats, error: chats_error } = await ctx.supabase
+      .from("global_chats")
+      .select()
+      .or(
+        `program_id.eq.${user.program_id},college_id.eq.${user.program.college_id},campus_id.eq.${user.program.college.campus_id},type.eq.all`,
+      )
+      .order("created_at", { ascending: false });
+
+    if (chats_error)
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: chats_error.message,
+      });
+
+    const all = chats.filter((chat) => chat.type === "all");
+    const programs = chats.filter(
+      (chat) => chat.program_id === user.program_id,
+    );
+    const colleges = chats.filter(
+      (chat) => chat.college_id === user.program?.college_id,
+    );
+    const campuses = chats.filter(
+      (chat) => chat.campus_id === user.program?.college?.campus_id,
+    );
+
+    if (!global_chat_last_seen) {
+      await ctx.supabase.from("global_chats_last_seen").insert({
+        user_id: ctx.auth.user.id,
+      });
+
+      return {
+        all_length: all.length,
+        program_length: programs.length,
+        college_length: colleges.length,
+        campus_length: campuses.length,
+      };
+    } else {
+      const allIndex = all.findIndex(
+        (chat) => chat.id === global_chat_last_seen.all,
+      );
+      const programsIndex = programs.findIndex(
+        (chat) => chat.id === global_chat_last_seen.program,
+      );
+      const collegesIndex = colleges.findIndex(
+        (chat) => chat.id === global_chat_last_seen.college,
+      );
+      const campusesIndex = campuses.findIndex(
+        (chat) => chat.id === global_chat_last_seen.campus,
+      );
+      return {
+        all_length: allIndex === -1 ? all.length : allIndex,
+        program_length: programsIndex === -1 ? programs.length : programsIndex,
+        college_length: collegesIndex === -1 ? colleges.length : collegesIndex,
+        campus_length: campusesIndex === -1 ? campuses.length : campusesIndex,
+      };
+    }
+  }),
 });

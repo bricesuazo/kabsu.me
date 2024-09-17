@@ -63,19 +63,12 @@ export default async function UserPage({
 }: {
   params: { username: string };
 }) {
-  const [user, getTotalUsersQuery, session] = await Promise.all([
+  const [user, getTotalUsersQuery] = await Promise.all([
     api.ngl.getUser({ username }),
     api.users.getTotalUsers(),
-    api.auth.getCurrentSession(),
   ]);
 
   if (!user?.is_ngl_displayed) notFound();
 
-  return (
-    <UserPageClient
-      user={user}
-      totalUsers={getTotalUsersQuery}
-      session={session?.user}
-    />
-  );
+  return <UserPageClient user={user} totalUsers={getTotalUsersQuery} />;
 }
