@@ -860,19 +860,20 @@ export const FAQ_ITEMS = [
   {
     value: "item-2",
     question: "When will Kabsu.me add other campuses?",
-    answer: "Other campuses will be added soon, and it is a priority for us.",
+    answer:
+      "We’re excited to add other campuses soon—it’s definitely on our to-do list!",
   },
   {
     value: "item-3",
     question: "Where can I suggest a feature or report a problem?",
     answer:
-      'Sign in to your account, go to the upper right corner of your screen, click the profile icon, and choose "Suggest a Feature" or "Report a Problem."',
+      'After signing in, head to the upper right corner, click your profile icon, and you’ll find options to "Suggest a Feature" or "Report a Problem."',
   },
   {
     value: "item-4",
     question: "Where can I ask inquiries, express concerns, or access FAQs?",
     answer:
-      "You can submit inquiries or concerns at the bottom of our homepage. Alternatively, sign in to your account, open the side navigation bar in the upper left corner of your screen, and find the Frequently Asked Questions bu.",
+      "You can submit inquiries or concerns at the bottom of our homepage. Alternatively, sign in to your account, open the side navigation bar in the upper left corner of your screen, and find the Frequently Asked Questions button.",
   },
   {
     value: "item-5",
@@ -890,6 +891,6 @@ export const FAQ_ITEMS = [
     value: "item-7",
     question: "How can I report a post or ban users posting malicious content?",
     answer:
-      "You can report a user by clicking the three dots (kebab button) in the upper right corner of the post. Reported users are reviewed by the team, and there is a strike system. After three strikes, the user will be banned from the platform.",
+      "If you spot something inappropiate, click the three dots (kebab button) on the post to report it. We review all reports and have a strike system—three strikes and the user will be banned from the platform.",
   },
 ];
