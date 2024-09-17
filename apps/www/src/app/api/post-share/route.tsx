@@ -95,7 +95,12 @@ export async function GET(request: Request) {
               width={80}
               height={80}
               src={data.image}
-              style={{ borderRadius: "50%" }}
+              style={{
+                borderRadius: "50%",
+                width: "80px",
+                height: "80px",
+                objectFit: "cover",
+              }}
             />
 
             <div
