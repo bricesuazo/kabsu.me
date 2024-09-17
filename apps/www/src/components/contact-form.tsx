@@ -55,12 +55,6 @@ export default function ContactForm() {
 
   return (
     <div className="mx-auto flex max-w-[750px] flex-col gap-4">
-      <h1 className="text-center text-4xl font-bold tracking-[-0.03em] text-primary duration-300 motion-reduce:transition-none">
-        Contact Us
-      </h1>
-      <p className="mx-auto text-balance text-center">
-        Have any questions or concerns? Feel free to reach out to us!
-      </p>
       <div className="flex w-full flex-col">
         <Form {...form}>
           <form
@@ -157,7 +151,7 @@ export default function ContactForm() {
                 href="mailto:kabsu.me@gmail.com?subject=Mail from your website&body=Hello there,"
                 className="group text-left"
               >
-                <MailIcon className="size-5" />
+                <MailIcon className="size-5 duration-300 group-hover:text-red-600" />
               </Link>
             </Button>
             <Button

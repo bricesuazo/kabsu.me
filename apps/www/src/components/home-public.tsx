@@ -277,19 +277,13 @@ export default function HomePublic({
               <span className="">By signing in, you agree to our </span>
               <br />
               <Button asChild variant="link" className="h-auto p-0">
-                <Link 
-                  href="/terms"
-                  target="_blank"
-                >
+                <Link href="/terms" target="_blank">
                   Terms of Service
                 </Link>
               </Button>
               <span> and </span>
               <Button asChild variant="link" className="h-auto p-0">
-                <Link 
-                  href="/privacy"
-                  target="_blank"
-                >
+                <Link href="/privacy" target="_blank">
                   Privacy Policy
                 </Link>
               </Button>
@@ -434,7 +428,15 @@ export default function HomePublic({
         {/* FACEBOOK PAGE COMPONENT */}
         <FacebookPage />
         {/* CONTACT FORM COMPONENT */}
-        <ContactForm />
+        <div className="mx-auto flex flex-col gap-4">
+          <h1 className="text-center text-4xl font-bold tracking-[-0.03em] text-primary duration-300 motion-reduce:transition-none">
+            Contact Us
+          </h1>
+          <p className="mx-auto mb-4 text-balance text-center">
+            Have any questions or concerns? Feel free to reach out to us!
+          </p>
+          <ContactForm />
+        </div>
 
         <div>
           <Separator className="mx-auto w-8" />

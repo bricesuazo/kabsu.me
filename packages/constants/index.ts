@@ -18,6 +18,7 @@ import {
   Instagram,
   Lock,
   Mail,
+  MailQuestionIcon,
   MapPin,
   MessageCircle,
   MessageSquareText,
@@ -455,13 +456,13 @@ export const NAVBAR_LINKS = [
     icon: HelpCircle,
     name: "About Kabsu.me",
     url: "/about",
+  },
+  {
+    icon: MailQuestionIcon,
+    name: "Frequently Asked Questions",
+    url: "/faq",
     hasSeparator: true,
   },
-  // {
-  //   icon: Info,
-  //   name: "CvSU Information Center",
-  //   url: "/info",
-  // },
   {
     icon: BookOpenCheck,
     name: "University Registrar",
@@ -845,5 +846,41 @@ export const ONBOARDING_PAGES: {
     title: "Video Launch",
     content: "Kabsu.me - Video Launch",
     video: "https://www.facebook.com/kabsu.me/videos/755260903340962",
+  },
+];
+
+export const FAQ_ITEMS = [
+  {
+    value: "item-1",
+    question: "Is it accessible?",
+    answer: "Yes. It adheres to the WAI-ARIA design pattern.",
+  },
+  {
+    value: "item-2",
+    question: "Is it styled?",
+    answer:
+      "Yes. It comes with default styles that match the other components' aesthetic.",
+  },
+  {
+    value: "item-3",
+    question: "Is it animated?",
+    answer:
+      "Yes. It's animated by default, but you can disable it if you prefer.",
+  },
+  {
+    value: "item-4",
+    question: "Can I customize the components?",
+    answer:
+      "Absolutely! All components are fully customizable to fit your needs.",
+  },
+  {
+    value: "item-5",
+    question: "Is there support available?",
+    answer: "Yes, you can reach out to our support team anytime.",
+  },
+  {
+    value: "item-6",
+    question: "Are there any usage limits?",
+    answer: "No, there are no usage limits. Enjoy unlimited access!",
   },
 ];
