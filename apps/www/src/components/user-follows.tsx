@@ -23,7 +23,7 @@ export default function UserFollows({
       <Link href={`/${user.username}`}>
         <div className="min-w-max">
           <Image
-            src={user.image_name ? user.image_url : "/default-avatar.jpg"}
+            src={user.image_name ? user.image_url : "/default-avatar.webp"}
             alt={`${user.name} profile picture`}
             width={40}
             height={40}

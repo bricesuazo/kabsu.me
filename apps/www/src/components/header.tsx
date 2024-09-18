@@ -244,7 +244,7 @@ export default function Header() {
                           src={
                             getCurrentUserQuery.data.image_name
                               ? getCurrentUserQuery.data.image_url
-                              : "/default-avatar.jpg"
+                              : "/default-avatar.webp"
                           }
                           alt="Image"
                           width={40}

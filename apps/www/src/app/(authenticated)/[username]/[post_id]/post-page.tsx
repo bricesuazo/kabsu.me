@@ -29,12 +29,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@kabsu.me/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from "@kabsu.me/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@kabsu.me/ui/form";
 import { ScrollArea } from "@kabsu.me/ui/scroll-area";
 import { Separator } from "@kabsu.me/ui/separator";
 import { Skeleton } from "@kabsu.me/ui/skeleton";
@@ -47,10 +42,7 @@ import PostDropdown from "~/components/post-dropdown";
 import PostShare from "~/components/post-share";
 import VerifiedBadge from "~/components/verified-badge";
 import { api } from "~/lib/trpc/client";
-import {
-  FormattedContent,
-  FormattedContentTextOnly,
-} from "~/lib/utils";
+import { FormattedContent, FormattedContentTextOnly } from "~/lib/utils";
 
 export default function PostPageComponent({
   getPost,
@@ -161,7 +153,7 @@ export default function PostPageComponent({
                       src={
                         postQuery.data.post.user.image_name
                           ? postQuery.data.post.user.image_url
-                          : "/default-avatar.jpg"
+                          : "/default-avatar.webp"
                       }
                       alt={`${postQuery.data.post.user.name} profile picture`}
                       width={56}
@@ -439,7 +431,7 @@ export default function PostPageComponent({
                                   src={
                                     like.user.image_name
                                       ? like.user.image_url
-                                      : "/default-avatar.jpg"
+                                      : "/default-avatar.webp"
                                   }
                                   alt={`${like.user.name} profile picture`}
                                   width={40}
@@ -613,7 +605,7 @@ export default function PostPageComponent({
                   src={
                     getCurrentUserQuery.data.image_name
                       ? getCurrentUserQuery.data.image_url
-                      : "/default-avatar.jpg"
+                      : "/default-avatar.webp"
                   }
                   alt="Image"
                   width={36}

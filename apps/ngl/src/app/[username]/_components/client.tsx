@@ -120,7 +120,7 @@ export default function UserPageClient({
             src={
               getUserQuery.data.image_name
                 ? getUserQuery.data.image_url
-                : "/default-avatar.jpg"
+                : "/default-avatar.webp"
             }
             alt="Avatar"
             width={100}
@@ -155,7 +155,7 @@ export default function UserPageClient({
                   src={
                     getUserQuery.data.image_name
                       ? getUserQuery.data.image_url
-                      : "/default-avatar.jpg"
+                      : "/default-avatar.webp"
                   }
                   alt="Avatar"
                   width={300}

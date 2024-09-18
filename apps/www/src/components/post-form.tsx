@@ -260,7 +260,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
             src={
               getCurrentUserQuery.data.image_name
                 ? getCurrentUserQuery.data.image_url
-                : "/default-avatar.jpg"
+                : "/default-avatar.webp"
             }
             alt="Profile picture"
             width={40}
@@ -614,8 +614,8 @@ const MentionSuggestion = (suggestion: SuggestionDataItem) => {
           <Image
             src={
               suggestion.image_name
-                ? (suggestion.image_url ?? "/default-avatar.jpg")
-                : "/default-avatar.jpg"
+                ? (suggestion.image_url ?? "/default-avatar.webp")
+                : "/default-avatar.webp"
             }
             alt=""
             width={40}

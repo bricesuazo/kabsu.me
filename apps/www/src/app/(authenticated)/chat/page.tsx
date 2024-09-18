@@ -176,7 +176,7 @@ export default function ChatsPage() {
                           src={
                             user.image_name
                               ? user.image_url
-                              : "/default-avatar.jpg"
+                              : "/default-avatar.webp"
                           }
                           alt=""
                           width={40}
@@ -231,7 +231,7 @@ export default function ChatsPage() {
                     src={
                       room.rooms_user?.users.image_name
                         ? room.rooms_user.users.image_url
-                        : "/default-avatar.jpg"
+                        : "/default-avatar.webp"
                     }
                     width={150}
                     height={150}

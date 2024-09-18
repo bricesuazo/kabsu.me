@@ -8,7 +8,7 @@ export const PostShareSchema = z.object({
   image: z
     .string()
     .transform((value) =>
-      value.length > 0 ? value : "https://kabsu.me/default-avatar.jpg",
+      value.length > 0 ? value : "https://kabsu.me/default-avatar.webp",
     ),
   name: z.string().default("Brice Suazo"),
   username: z.string().default("bricesuazo"),

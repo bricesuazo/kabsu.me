@@ -183,7 +183,7 @@ export function CommentComponent({
             />
           </div>
           <div className="whitespace-pre-wrap break-words text-sm">
-            {formatText(fullCommentQuery.data.comment.content)}
+            {formatText(fullCommentQuery.data.comment.content.trim())}
           </div>
 
           <div className="flex gap-x-1">

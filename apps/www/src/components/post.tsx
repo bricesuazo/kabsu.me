@@ -107,7 +107,7 @@ export default function Post({
                 src={
                   getPostQuery.data.post.user.image_name
                     ? getPostQuery.data.post.user.image_url
-                    : "/default-avatar.jpg"
+                    : "/default-avatar.webp"
                 }
                 alt={`${getPostQuery.data.post.user.name} profile picture`}
                 width={40}

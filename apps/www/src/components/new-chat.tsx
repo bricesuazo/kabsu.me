@@ -65,7 +65,7 @@ export default function NewChat({
         <div className="flex items-center gap-2">
           <div>
             <Image
-              src={user.image_name ? user.image_url : "/default-avatar.jpg"}
+              src={user.image_name ? user.image_url : "/default-avatar.webp"}
               width={44}
               height={44}
               alt="Profile picture"
@@ -75,11 +75,6 @@ export default function NewChat({
           <div>
             <p className="text-xl font-semibold">{user.name}</p>
             <p className="text-sm">@{user.username}</p>
-
-            {/* <div className="flex items-center gap-2">
-              <div className="size-2 rounded-full bg-green-500 text-lg" />
-              <p className="text-xs text-muted-foreground">Online</p>
-            </div> */}
           </div>
         </div>
       </div>
@@ -91,7 +86,7 @@ export default function NewChat({
           <div className="flex w-full flex-col items-center justify-center p-8 text-center">
             <div className="max-w-md space-y-2">
               <Image
-                src={user.image_name ? user.image_url : "/default-avatar.jpg"}
+                src={user.image_name ? user.image_url : "/default-avatar.webp"}
                 width={120}
                 height={120}
                 alt="Profile picture"
@@ -127,7 +122,7 @@ export default function NewChat({
                 >
                   <div>
                     <Image
-                      src="/default-avatar.jpg"
+                      src="/default-avatar.webp"
                       width={28}
                       height={28}
                       alt="Profile picture"
