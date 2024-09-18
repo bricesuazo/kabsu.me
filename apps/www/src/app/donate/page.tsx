@@ -8,7 +8,7 @@ export default function DonatePage() {
     <main>
       <div className="w-full">
         <Image
-          src="/donate-header.png"
+          src="/donate-header.webp"
           alt=""
           width="1000"
           height="1000"

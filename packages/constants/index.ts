@@ -647,7 +647,7 @@ export const DEVS_INFO = [
   {
     name: "Brice Suazo",
     role: "Lead Full-stack Developer",
-    image: "/dev-pics/brice.jpg",
+    image: "/dev-pics/brice.webp",
     username: "@bricesuazo",
     link: "https://kabsu.me/bricesuazo",
     links: [
@@ -661,7 +661,7 @@ export const DEVS_INFO = [
   {
     name: "Gabriel Luis Astilla",
     role: "Lead UI/UX Designer",
-    image: "/dev-pics/gab.jpg",
+    image: "/dev-pics/gab.webp",
     username: "@gabriel",
     link: "https://kabsu.me/gabriel",
     links: [
@@ -674,7 +674,7 @@ export const DEVS_INFO = [
   {
     name: "Alex Buenviaje",
     role: "Lead Project Manager",
-    image: "/dev-pics/lex.jpg",
+    image: "/dev-pics/lex.webp",
     username: "@lxbnvj",
     link: "https://kabsu.me/lxbnvj",
     links: [
@@ -685,7 +685,7 @@ export const DEVS_INFO = [
   {
     name: "Alexis Ken Alvarez",
     role: "Full-stack Developer",
-    image: "/dev-pics/aki.jpg",
+    image: "/dev-pics/aki.webp",
     username: "@alexisken_alvarez",
     link: "https://kabsu.me/alexisken_alvarez",
     links: [
@@ -698,7 +698,7 @@ export const DEVS_INFO = [
   {
     name: "Kevin Roi Nuesca",
     role: "Lead Front-end Developer",
-    image: "/dev-pics/kevin.jpg",
+    image: "/dev-pics/kevin.webp",
     username: "@tfudoinkebs",
     link: "https://kabsu.me/tfudoinkebs",
     links: [
@@ -711,7 +711,7 @@ export const DEVS_INFO = [
   {
     name: "Rod Cotines",
     role: "Front-end Developer",
-    image: "/dev-pics/rod.jpg",
+    image: "/dev-pics/rod.webp",
     username: "@rodcotines",
     link: "https://kabsu.me/rodcotines",
     links: [
@@ -724,7 +724,7 @@ export const DEVS_INFO = [
   {
     name: "AJ Espinosa",
     role: "Front-end Developer",
-    image: "/dev-pics/aj.jpg",
+    image: "/dev-pics/aj.webp",
     username: "@eyrooonnn",
     link: "https://kabsu.me/eyrooonnn",
     links: [
@@ -737,7 +737,7 @@ export const DEVS_INFO = [
   {
     name: "Aries Dela Peña",
     role: "UI/UX Designer Assistant",
-    image: "/dev-pics/aryas.jpg",
+    image: "/dev-pics/aryas.webp",
     username: "@aryasss",
     link: "https://kabsu.me/aryasss",
     links: [
@@ -748,7 +748,7 @@ export const DEVS_INFO = [
   {
     name: "Bernard Sarroca",
     role: "Project Manager Assistant",
-    image: "/dev-pics/bernard.jpg",
+    image: "/dev-pics/bernard.webp",
     username: "@iamnards",
     link: "https://kabsu.me/iamnards",
     links: [
@@ -761,7 +761,7 @@ export const DEVS_INFO = [
   {
     name: "Rey Anthony de Luna",
     role: "Social Media Manager",
-    image: "/dev-pics/rey.jpg",
+    image: "/dev-pics/rey.webp",
     username: "@reydeluna",
     link: "https://kabsu.me/reydeluna",
     links: [
@@ -805,42 +805,42 @@ export const ONBOARDING_PAGES: {
   {
     title: "Welcome to Kabsu.me",
     content: "Connect, share, and explore new features with Kabsu.me!",
-    image: "/onboarding-pics/Promotion 1.png",
+    image: "/onboarding-pics/Promotion 1.webp",
   },
   {
     title: "Upload Photos",
     content: "Easily upload photos up to 5MB.",
-    image: "/onboarding-pics/Promotion 2.png",
+    image: "/onboarding-pics/Promotion 2.webp",
   },
   {
     title: "Comment Replies",
     content: "Reply directly to comments for better conversations.",
-    image: "/onboarding-pics/Promotion 3.png",
+    image: "/onboarding-pics/Promotion 3.webp",
   },
   {
     title: "Private Messaging",
     content: "Chat privately with other users.",
-    image: "/onboarding-pics/Promotion 4.png",
+    image: "/onboarding-pics/Promotion 4.webp",
   },
   {
     title: "Global & Campus Chats",
     content: "Join discussions across all campuses, or just your own.",
-    image: "/onboarding-pics/Promotion 5.png",
+    image: "/onboarding-pics/Promotion 5.webp",
   },
   {
     title: "User Tagging",
     content: "Tag other users in your posts for better engagement.",
-    image: "/onboarding-pics/Promotion 13.png",
+    image: "/onboarding-pics/Promotion 13.webp",
   },
   {
     title: "NGL Feature",
     content: "Send anonymous messages with our NGL feature.",
-    image: "/onboarding-pics/Promotion 11.png",
+    image: "/onboarding-pics/Promotion 11.webp",
   },
   {
     title: "Partners",
     content: "Proud partnerships.",
-    image: "/onboarding-pics/Promotion 16.png",
+    image: "/onboarding-pics/Promotion 16.webp",
   },
   {
     title: "Video Launch",
@@ -853,7 +853,7 @@ export const FAQ_ITEMS = [
   {
     value: "item-1",
     question:
-      "How can freshmen create an account if we don't have a CvSU Gmail yet?",
+      "How can freshmen create an account if we don't have a CvSU email yet?",
     answer:
       "You can only log in using a CvSU email address that ends with @cvsu.edu.ph. If you haven’t received your CvSU email yet, please wait until it is provided.",
   },

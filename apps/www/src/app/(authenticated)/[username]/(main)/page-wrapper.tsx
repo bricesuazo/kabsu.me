@@ -177,7 +177,7 @@ export default function UserPageWrapper({
               src={
                 profileQuery.data.user.image_name
                   ? profileQuery.data.user.image_url
-                  : "/default-avatar.jpg"
+                  : "/default-avatar.webp"
               }
             >
               <div className="relative aspect-square h-28 cursor-pointer overflow-clip rounded-full xs:h-32">
@@ -225,7 +225,7 @@ export default function UserPageWrapper({
                   src={
                     profileQuery.data.user.image_name
                       ? profileQuery.data.user.image_url
-                      : "/default-avatar.jpg"
+                      : "/default-avatar.webp"
                   }
                   alt={`${profileQuery.data.user.name} profile picture`}
                   width={200}

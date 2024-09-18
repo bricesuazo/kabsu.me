@@ -252,7 +252,7 @@ export default function RoomPageClient(
                   src={
                     props.getRoomChats.room.to?.image_name
                       ? props.getRoomChats.room.to.image_url
-                      : "/default-avatar.jpg"
+                      : "/default-avatar.webp"
                   }
                   width={150}
                   height={150}
@@ -331,7 +331,7 @@ export default function RoomPageClient(
                           src={
                             props.getRoomChats.room.to?.image_name
                               ? props.getRoomChats.room.to.image_url
-                              : "/default-avatar.jpg"
+                              : "/default-avatar.webp"
                           }
                           width={96}
                           height={96}
@@ -385,10 +385,10 @@ export default function RoomPageClient(
                                 props.current_user.id === chat.user_id
                                   ? props.current_user.image_name
                                     ? props.current_user.image_url
-                                    : "/default-avatar.jpg"
+                                    : "/default-avatar.webp"
                                   : chat.user.image_name
                                     ? chat.user.image_url
-                                    : "/default-avatar.jpg"
+                                    : "/default-avatar.webp"
                               }
                               width={32}
                               height={32}

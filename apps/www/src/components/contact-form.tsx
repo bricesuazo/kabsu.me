@@ -54,7 +54,7 @@ export default function ContactForm() {
   });
 
   return (
-    <div className="mx-auto flex max-w-[750px] flex-col gap-4">
+    <div className="mx-auto flex w-full max-w-screen-md flex-col gap-4">
       <div className="flex w-full flex-col">
         <Form {...form}>
           <form

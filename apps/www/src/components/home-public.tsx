@@ -15,6 +15,7 @@ import { Separator } from "@kabsu.me/ui/separator";
 import { Skeleton } from "@kabsu.me/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 
+import FAQ from "~/components/faq";
 import { api } from "~/lib/trpc/server";
 import ContactForm from "./contact-form";
 import { FacebookPage } from "./facebook-page";
@@ -28,7 +29,7 @@ const THESIS_INFO = [
     Icon: (
       <Image
         alt="adventura-logo-img"
-        src="/thesis-pics/adventura-logo.png"
+        src="/thesis-pics/adventura-logo.webp"
         width={1000}
         height={1000}
       />
@@ -42,7 +43,7 @@ const THESIS_INFO = [
     background: (
       <Image
         alt="adventura-background-img"
-        src="/thesis-pics/adventura-background.png"
+        src="/thesis-pics/adventura-background.webp"
         width={1000}
         height={1000}
         className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
@@ -53,7 +54,7 @@ const THESIS_INFO = [
     Icon: (
       <Image
         alt="arctec-logo-img"
-        src="/thesis-pics/arctec-logo.png"
+        src="/thesis-pics/arctec-logo.webp"
         width={1000}
         height={1000}
       />
@@ -66,7 +67,7 @@ const THESIS_INFO = [
     background: (
       <Image
         alt="arctec-background-img"
-        src="/thesis-pics/arctec-background.png"
+        src="/thesis-pics/arctec-background.webp"
         width={1000}
         height={1000}
         className="absolute top-0 h-full w-full object-cover [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
@@ -77,7 +78,7 @@ const THESIS_INFO = [
     Icon: (
       <Image
         alt="chromia-logo-img"
-        src="/thesis-pics/chromia-logo.png"
+        src="/thesis-pics/chromia-logo.webp"
         width={1000}
         height={1000}
       />
@@ -90,7 +91,7 @@ const THESIS_INFO = [
     background: (
       <Image
         alt="chromia-background-img"
-        src="/thesis-pics/chromia-background.png"
+        src="/thesis-pics/chromia-background.webp"
         width={1000}
         height={1000}
         className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
@@ -101,7 +102,7 @@ const THESIS_INFO = [
     Icon: (
       <Image
         alt="ebnoto-logo-img"
-        src="/thesis-pics/eboto-logo.png"
+        src="/thesis-pics/eboto-logo.webp"
         width={1000}
         height={1000}
       />
@@ -114,7 +115,7 @@ const THESIS_INFO = [
     background: (
       <Image
         alt="eboto-background-img"
-        src="/thesis-pics/eboto-background.png"
+        src="/thesis-pics/eboto-background.webp"
         width={1000}
         height={1000}
         className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
@@ -125,7 +126,7 @@ const THESIS_INFO = [
     Icon: (
       <Image
         alt="odyssey-logo-img"
-        src="/thesis-pics/odyssey-logo.png"
+        src="/thesis-pics/odyssey-logo.webp"
         width={1000}
         height={1000}
       />
@@ -139,7 +140,7 @@ const THESIS_INFO = [
     background: (
       <Image
         alt="odyssey-background-img"
-        src="/thesis-pics/odyssey-background.png"
+        src="/thesis-pics/odyssey-background.webp"
         width={1000}
         height={1000}
         className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
@@ -150,7 +151,7 @@ const THESIS_INFO = [
     Icon: (
       <Image
         alt="swardify-logo-img"
-        src="/thesis-pics/swardify-logo.png"
+        src="/thesis-pics/swardify-logo.webp"
         width={1000}
         height={1000}
       />
@@ -163,7 +164,7 @@ const THESIS_INFO = [
     background: (
       <Image
         alt="swardify-background-img"
-        src="/thesis-pics/swardify-background.png"
+        src="/thesis-pics/swardify-background.webp"
         width={1000}
         height={1000}
         className="absolute h-full w-full object-cover object-top [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]"
@@ -427,6 +428,20 @@ export default function HomePublic({
         <NGLPanel />
         {/* FACEBOOK PAGE COMPONENT */}
         <FacebookPage />
+
+        {/* FAQ COMPONENT */}
+        <div className="mx-auto flex max-w-screen-md flex-col space-y-5">
+          <div className="flex flex-col gap-4 text-center">
+            <h1 className="text-4xl font-bold tracking-[-0.03em] text-primary duration-300 motion-reduce:transition-none">
+              Frequently Asked Questions
+            </h1>
+            <h2 className="text-muted-foreground">
+              Have questions? We&apos;re here to help.
+            </h2>
+          </div>
+          <FAQ />
+        </div>
+
         {/* CONTACT FORM COMPONENT */}
         <div className="mx-auto flex flex-col gap-4">
           <h1 className="text-center text-4xl font-bold tracking-[-0.03em] text-primary duration-300 motion-reduce:transition-none">

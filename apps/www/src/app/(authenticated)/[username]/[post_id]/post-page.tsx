@@ -163,7 +163,7 @@ export default function PostPageComponent({
                       src={
                         postQuery.data.post.user.image_name
                           ? postQuery.data.post.user.image_url
-                          : "/default-avatar.jpg"
+                          : "/default-avatar.webp"
                       }
                       alt={`${postQuery.data.post.user.name} profile picture`}
                       width={56}
@@ -441,7 +441,7 @@ export default function PostPageComponent({
                                   src={
                                     like.user.image_name
                                       ? like.user.image_url
-                                      : "/default-avatar.jpg"
+                                      : "/default-avatar.webp"
                                   }
                                   alt={`${like.user.name} profile picture`}
                                   width={40}
@@ -615,7 +615,7 @@ export default function PostPageComponent({
                   src={
                     getCurrentUserQuery.data.image_name
                       ? getCurrentUserQuery.data.image_url
-                      : "/default-avatar.jpg"
+                      : "/default-avatar.webp"
                   }
                   alt="Image"
                   width={36}
@@ -764,7 +764,7 @@ function CommentComponent({
                   src={
                     fullCommentQuery.data.comment.users.image_name
                       ? fullCommentQuery.data.comment.users.image_url
-                      : "/default-avatar.jpg"
+                      : "/default-avatar.webp"
                   }
                   alt={`${fullCommentQuery.data.comment.users.name} profile picture`}
                   width={32}
