@@ -3,7 +3,7 @@ import React from "react";
 import ContactForm from "~/components/contact-form";
 import FAQ from "~/components/faq";
 
-const faq = () => {
+export default function faq() {
   return (
     <div className="mx-4 my-10 flex flex-col gap-10 sm:m-10">
       <div className="flex flex-col space-y-5">
@@ -29,6 +29,4 @@ const faq = () => {
       </div>
     </div>
   );
-};
-
-export default faq;
+}
