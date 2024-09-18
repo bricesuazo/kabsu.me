@@ -10,14 +10,13 @@ export const notificationsRouter = router({
       const { data: notifications } = await ctx.supabase
         .from("notifications")
         .select(
-          "id, read, type, content_id, ngl_question_id, created_at, from_id, from:users!public_notifications_from_id_fkey(username, image_name), to:users!public_notifications_to_id_fkey(username, image_name)",
+          "id, read, type, content_id, ngl_question_id, ngl_question:ngl_questions(deleted_at), created_at, from_id, from:users!public_notifications_from_id_fkey(username, image_name), to:users!public_notifications_to_id_fkey(username, image_name)",
         )
         .eq("to_id", ctx.auth.user.id)
         .eq("trash", false)
         .order("created_at", { ascending: false })
-        // .is("ngl_questions.deleted_at", null)
+        .is("ngl_questions.deleted_at", null)
         .limit(input.all ? Infinity : 8);
-      console.log("🚀 ~ .query ~ notifications:", notifications);
 
       if (notifications === null)
         throw new TRPCError({

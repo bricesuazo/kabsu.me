@@ -20,10 +20,12 @@ export async function generateMetadata({
 
   const getImageUrl = () => {
     const share_image_url = new URL("/api/user-og", env.NEXT_PUBLIC_NGL_URL);
-    share_image_url.searchParams.append("username", user.username);
+    share_image_url.searchParams.append("username", username);
 
     return share_image_url.toString();
   };
+
+  console.log("Image link", getImageUrl());
 
   return {
     title: `Kabsu.me NGL`,
@@ -61,19 +63,12 @@ export default async function UserPage({
 }: {
   params: { username: string };
 }) {
-  const [user, getTotalUsersQuery, session] = await Promise.all([
+  const [user, getTotalUsersQuery] = await Promise.all([
     api.ngl.getUser({ username }),
     api.users.getTotalUsers(),
-    api.auth.getCurrentSession(),
   ]);
 
   if (!user?.is_ngl_displayed) notFound();
 
-  return (
-    <UserPageClient
-      user={user}
-      totalUsers={getTotalUsersQuery}
-      session={session?.user}
-    />
-  );
+  return <UserPageClient user={user} totalUsers={getTotalUsersQuery} />;
 }

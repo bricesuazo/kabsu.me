@@ -169,13 +169,15 @@ export function NotificationItems({
                 className="flex items-center justify-between gap-x-2 rounded p-2 hover:bg-muted"
               >
                 <div className="flex gap-x-2">
-                  <Image
-                    src="/logo.svg"
-                    alt="System"
-                    width={32}
-                    height={32}
-                    className="aspect-square object-contain object-center"
-                  />
+                  <div>
+                    <Image
+                      src="/logo.svg"
+                      alt="System"
+                      width={28}
+                      height={28}
+                      className="aspect-square object-contain object-center"
+                    />
+                  </div>
                   <div className="flex flex-col gap-1">
                     <p className="line-clamp-2 text-xs font-medium">
                       {(() => {
@@ -222,7 +224,7 @@ export function NotificationItems({
               >
                 <div className="flex gap-x-2">
                   <div>
-                    <div className="rounded-full bg-muted p-2">
+                    <div className="grid size-7 place-items-center rounded-full bg-muted">
                       <VenetianMask className="size-5" />
                     </div>
                   </div>
@@ -264,22 +266,24 @@ export function NotificationItems({
                 });
                 if (setOpen) setOpen(false);
               }}
-              className="flex items-center justify-between gap-x-2 rounded p-2 hover:bg-muted"
+              className="flex items-center gap-x-2 rounded p-2 hover:bg-muted"
             >
-              <div className="flex gap-x-2">
-                <Link href={`/${notification.from.username}`}>
-                  <Image
-                    src={
-                      notification.from.image_name
-                        ? notification.from.image_url
-                        : "/default-avatar.webp"
-                    }
-                    alt={`${notification.from.username} profile picture`}
-                    width={32}
-                    height={32}
-                    className="aspect-square rounded-full object-cover object-center"
-                  />
-                </Link>
+              <div className="flex flex-1 gap-x-2">
+                <div>
+                  <div className="size-7">
+                    <Image
+                      src={
+                        notification.from.image_name
+                          ? notification.from.image_url
+                          : "/default-avatar.webp"
+                      }
+                      alt={`${notification.from.username} profile picture`}
+                      width={28}
+                      height={28}
+                      className="aspect-square rounded-full object-cover object-center"
+                    />
+                  </div>
+                </div>
                 <div className="flex flex-col gap-1">
                   <p className="line-clamp-2 text-xs font-medium">
                     @{notification.from.username}{" "}

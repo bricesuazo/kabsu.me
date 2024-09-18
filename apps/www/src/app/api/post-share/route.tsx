@@ -40,22 +40,22 @@ export async function GET(request: Request) {
     Object.fromEntries(searchParams.entries()),
   );
 
-  const [openSansRegular, openSansBold, openSansSemiBold] = await Promise.all([
+  const [poppinsRegular, poppinsBold, poppinsSemiBold] = await Promise.all([
     fetch(
       new URL(
-        "../../../../public/fonts/open-sans/OpenSans-Regular.ttf",
+        "../../../../public/fonts/poppins/Poppins-Regular.ttf",
         import.meta.url,
       ),
     ).then((res) => res.arrayBuffer()),
     fetch(
       new URL(
-        "../../../../public/fonts/open-sans/OpenSans-Bold.ttf",
+        "../../../../public/fonts/poppins/Poppins-Bold.ttf",
         import.meta.url,
       ),
     ).then((res) => res.arrayBuffer()),
     fetch(
       new URL(
-        "../../../../public/fonts/open-sans/OpenSans-SemiBold.ttf",
+        "../../../../public/fonts/poppins/Poppins-SemiBold.ttf",
         import.meta.url,
       ),
     ).then((res) => res.arrayBuffer()),
@@ -95,7 +95,12 @@ export async function GET(request: Request) {
               width={80}
               height={80}
               src={data.image}
-              style={{ borderRadius: "50%" }}
+              style={{
+                borderRadius: "50%",
+                width: "80px",
+                height: "80px",
+                objectFit: "cover",
+              }}
             />
 
             <div
@@ -123,7 +128,7 @@ export async function GET(request: Request) {
                 >
                   <h1
                     style={{
-                      fontFamily: '"Open Sans - Bold"',
+                      fontFamily: '"Poppins - Bold"',
                       fontSize: "2rem",
                       fontWeight: "bold",
                       margin: 0,
@@ -149,7 +154,16 @@ export async function GET(request: Request) {
                   )}
                 </div>
 
-                <img width={40} height={40} src="https://kabsu.me/logo.svg" />
+                <img
+                  width={40}
+                  height={40}
+                  src="https://kabsu.me/logo.svg"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    objectFit: "contain",
+                  }}
+                />
               </div>
               <div
                 style={{
@@ -168,6 +182,7 @@ export async function GET(request: Request) {
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
                     maxWidth: 320,
+                    fontFamily: '"Poppins"',
                   }}
                 >
                   @{data.username}
@@ -175,8 +190,8 @@ export async function GET(request: Request) {
 
                 <p
                   style={{
-                    fontFamily: '"Open Sans - Semi Bold"',
-                    paddingTop: 2,
+                    fontFamily: '"Poppins - Semi Bold"',
+                    paddingTop: 5,
                     paddingBottom: 2,
                     paddingLeft: 16,
                     paddingRight: 16,
@@ -191,8 +206,8 @@ export async function GET(request: Request) {
                 </p>
                 <p
                   style={{
-                    fontFamily: '"Open Sans - Semi Bold"',
-                    paddingTop: 2,
+                    fontFamily: '"Poppins - Semi Bold"',
+                    paddingTop: 5,
                     paddingBottom: 2,
                     paddingLeft: 16,
                     paddingRight: 16,
@@ -217,6 +232,7 @@ export async function GET(request: Request) {
           >
             <p
               style={{
+                fontFamily: '"Poppins"',
                 fontSize:
                   data.images.length < 0 &&
                   (data.ratio === "portrait" || data.content.length < 60)
@@ -308,7 +324,7 @@ export async function GET(request: Request) {
               <div
                 style={{
                   display: "flex",
-                  paddingTop: 4,
+                  paddingTop: 6,
                   paddingBottom: 4,
                   paddingLeft: 16,
                   paddingRight: 16,
@@ -317,7 +333,13 @@ export async function GET(request: Request) {
                   borderColor: getColors(data.theme).border,
                 }}
               >
-                <p style={{ fontSize: "1.5rem", margin: 0 }}>
+                <p
+                  style={{
+                    fontFamily: '"Poppins"',
+                    fontSize: "1.5rem",
+                    margin: 0,
+                  }}
+                >
                   Privacy:{" "}
                   {data.privacy === "following"
                     ? "Follower"
@@ -329,7 +351,7 @@ export async function GET(request: Request) {
 
             <h2
               style={{
-                fontFamily: '"Open Sans - Semi Bold',
+                fontFamily: '"Poppins - Semi Bold',
                 fontSize: "1.5rem",
                 margin: 0,
               }}
@@ -347,18 +369,18 @@ export async function GET(request: Request) {
       // debug: true,
       fonts: [
         {
-          name: "Open Sans",
-          data: openSansRegular,
+          name: "Poppins",
+          data: poppinsRegular,
           style: "normal",
         },
         {
-          name: "Open Sans - Bold",
-          data: openSansBold,
+          name: "Poppins - Bold",
+          data: poppinsBold,
           style: "normal",
         },
         {
-          name: "Open Sans - Semi Bold",
-          data: openSansSemiBold,
+          name: "Poppins - Semi Bold",
+          data: poppinsSemiBold,
           style: "normal",
         },
       ],

@@ -138,6 +138,45 @@ export default function RoomPageClient(
   });
 
   useEffect(() => {
+    if (props.type === "room") {
+      utils.chats.getAllRooms.setData(undefined, (prev) =>
+        prev?.map((room) => ({
+          ...room,
+          rooms_user:
+            room.rooms_user?.room_id === props.getRoomChats.room.id
+              ? {
+                  ...room.rooms_user,
+                  unread_messages_length: 0,
+                }
+              : room.rooms_user,
+        })),
+      );
+    } else {
+      utils.chats.getGlobalChatsCounts.setData(undefined, (prev) =>
+        prev
+          ? props.type === "all"
+            ? {
+                ...prev,
+                all_length: 0,
+              }
+            : props.type === "campus"
+              ? {
+                  ...prev,
+                  campus_length: 0,
+                }
+              : props.type === "college"
+                ? {
+                    ...prev,
+                    college_length: 0,
+                  }
+                : {
+                    ...prev,
+                    program_length: 0,
+                  }
+          : prev,
+      );
+    }
+
     messagesEndRef.current?.scrollIntoView(false);
 
     const channel = supabase.channel(

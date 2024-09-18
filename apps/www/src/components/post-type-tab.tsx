@@ -1,5 +1,6 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -9,17 +10,43 @@ import { Tabs, TabsList, TabsTrigger } from "@kabsu.me/ui/tabs";
 
 import { api } from "~/lib/trpc/client";
 
+function UnreadCount({ number, Icon }: { number: number; Icon: LucideIcon }) {
+  return (
+    <div className="relative">
+      {number > 0 && (
+        <p className="absolute -left-2 -top-2 flex aspect-square size-4 items-center justify-center rounded-full bg-primary text-[0.5rem] text-white">
+          {number.toLocaleString()}
+        </p>
+      )}
+      <Icon size="20" />
+    </div>
+  );
+}
+
 export default function PostTypeTab() {
+  const utils = api.useUtils();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [tab, setTab] = useState(
     searchParams.get("tab") ?? POST_TYPE_TABS[4]?.id,
   );
   const getMyUniversityStatusQuery = api.auth.getMyUniversityStatus.useQuery();
+  const getPostsUnreadCountsQuery = api.posts.getPostsUnreadCounts.useQuery();
 
   useEffect(() => {
     setTab(searchParams.get("tab") ?? POST_TYPE_TABS[4]?.id);
-  }, [searchParams]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.toString()]);
+  useEffect(() => {
+    if (getPostsUnreadCountsQuery.data) {
+      utils.posts.getPostsUnreadCounts.setData(undefined, (prev) =>
+        prev ? { ...prev, [tab ?? "following"]: 0 } : prev,
+      );
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, getPostsUnreadCountsQuery.data]);
 
   return (
     <div className="z-50 w-full border-b">
@@ -47,9 +74,47 @@ export default function PostTypeTab() {
               }}
             >
               <div className="flex gap-x-2">
-                <div className="block sm:hidden md:block">
-                  <select.icon size="20" />
-                </div>
+                {(() => {
+                  switch (select.id) {
+                    case "all":
+                      return (
+                        <UnreadCount
+                          number={getPostsUnreadCountsQuery.data?.all ?? 0}
+                          Icon={select.icon}
+                        />
+                      );
+                    case "campus":
+                      return (
+                        <UnreadCount
+                          number={getPostsUnreadCountsQuery.data?.campus ?? 0}
+                          Icon={select.icon}
+                        />
+                      );
+                    case "college":
+                      return (
+                        <UnreadCount
+                          number={getPostsUnreadCountsQuery.data?.college ?? 0}
+                          Icon={select.icon}
+                        />
+                      );
+                    case "program":
+                      return (
+                        <UnreadCount
+                          number={getPostsUnreadCountsQuery.data?.program ?? 0}
+                          Icon={select.icon}
+                        />
+                      );
+                    case "following":
+                      return (
+                        <UnreadCount
+                          number={
+                            getPostsUnreadCountsQuery.data?.following ?? 0
+                          }
+                          Icon={select.icon}
+                        />
+                      );
+                  }
+                })()}
 
                 {select.id == "all" || select.id === "following" ? (
                   <p className="hidden sm:block">{select.name}</p>

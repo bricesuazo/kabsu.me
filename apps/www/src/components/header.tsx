@@ -27,7 +27,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -62,6 +61,11 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<"bug" | "feature">("bug");
   const getCurrentUserQuery = api.auth.getCurrentUser.useQuery();
+  const getAllRoomsQuery = api.chats.getAllRooms.useQuery();
+  const getAllMyMessagesQuery = api.ngl.getAllMyMessages.useQuery(
+    { tab: "messages" },
+    { enabled: getCurrentUserQuery.data?.is_ngl_displayed },
+  );
 
   const [openFeedbackForm, setOpenFeedbackForm] = useState(false);
   const router = useRouter();
@@ -70,6 +74,11 @@ export default function Header() {
     setType(feedbackType);
     setOpenFeedbackForm(true);
   };
+
+  const messagesCount =
+    getAllRoomsQuery.data?.filter(
+      (room) => (room.rooms_user?.unread_messages_length ?? 0) > 0,
+    ).length ?? 0;
 
   return (
     <>
@@ -155,8 +164,18 @@ export default function Header() {
                     className="h-9 w-9 rounded-full"
                     asChild
                   >
-                    <Link href="/ngl" className="flex w-full items-center">
+                    <Link
+                      href="/ngl"
+                      className="relative flex w-full items-center"
+                    >
                       <VenetianMask size="1rem" />
+
+                      {getAllMyMessagesQuery.data &&
+                        getAllMyMessagesQuery.data.length > 0 && (
+                          <p className="absolute right-0 top-0 flex aspect-square size-4 items-center justify-center rounded-full bg-primary text-[0.5rem] text-white">
+                            {getAllMyMessagesQuery.data.length}
+                          </p>
+                        )}
                     </Link>
                   </Button>
                 </TooltipTrigger>
@@ -197,6 +216,12 @@ export default function Header() {
               >
                 <Link href="/chat">
                   <MessageCircle className="size-5" />
+
+                  {messagesCount > 0 && (
+                    <p className="absolute right-0 top-0 flex aspect-square h-4 w-4 items-center justify-center rounded-full bg-primary text-[0.5rem] text-white">
+                      {messagesCount}
+                    </p>
+                  )}
                 </Link>
               </Button>
             </TooltipTrigger>
@@ -281,10 +306,10 @@ export default function Header() {
 
                   <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
-                      <div className="flex flex-1 items-center justify-between">
+                      <div className="flex flex-1 items-center">
                         <Sun className="mr-2 block dark:hidden" size="1rem" />
                         <Moon className="mr-2 hidden dark:block" size="1rem" />
-                        Theme <DropdownMenuShortcut>⌘ T</DropdownMenuShortcut>
+                        Theme
                       </div>
                     </DropdownMenuSubTrigger>
                     <DropdownMenuSubContent>

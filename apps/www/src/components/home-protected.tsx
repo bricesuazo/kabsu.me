@@ -33,7 +33,7 @@ export default function HomeProtected({
   return (
     <>
       <OnboardingV2 />
-      
+
       <div className="border-x">
         <div className="sticky top-0 z-50">
           <Header />

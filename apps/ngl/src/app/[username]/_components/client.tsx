@@ -1,6 +1,5 @@
 "use client";
 
-import type { User } from "@supabase/supabase-js";
 import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -61,11 +60,9 @@ const FormSchema = z
 export default function UserPageClient({
   user,
   totalUsers,
-  session,
 }: {
   user: NonNullable<RouterOutputs["ngl"]["getUser"]>;
   totalUsers: number;
-  session: User | undefined;
 }) {
   const { theme } = useTheme();
   const getUserQuery = api.ngl.getUser.useQuery(
