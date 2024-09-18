@@ -275,7 +275,7 @@ export function NotificationItems({
                       src={
                         notification.from.image_name
                           ? notification.from.image_url
-                          : "/default-avatar.jpg"
+                          : "/default-avatar.webp"
                       }
                       alt={`${notification.from.username} profile picture`}
                       width={28}

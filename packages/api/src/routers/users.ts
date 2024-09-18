@@ -34,7 +34,7 @@ export const usersRouter = router({
             {
               title: `Contact form submission - ${env.ENV.toUpperCase()}`,
               description: `You have received a new message from the contact form.`,
-              color: 0x007205,
+              color: 0x00ff00,
               fields: [
                 { name: "👤  Name:", value: input.name, inline: true },
                 { name: "📧  Email:", value: input.email, inline: true },
@@ -439,9 +439,28 @@ export const usersRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const userId = ctx.auth.user.id;
+
+      const { data: user, error } = await ctx.supabase
+        .from("users")
+        .select("username")
+        .eq("id", userId)
+        .single();
+
+      if (error || !user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      const username = user.username;
+      const userEmail = ctx.auth.user.email;
+
       await ctx.supabase.from("reported_problems").insert({
         problem: input.content,
-        reported_by_id: ctx.auth.user.id,
+        reported_by_id: userId,
+        reported_by_email: userEmail,
       });
 
       await fetch(env.DISCORD_WEBHOOK_URL, {
@@ -455,7 +474,18 @@ export const usersRouter = router({
               title: `Problem Report - ${env.ENV.toUpperCase()}`,
               description: `A new problem has been reported.`,
               color: 0xff0000,
-              fields: [{ name: "📝  Problem", value: `"${input.content}"` }],
+              fields: [
+                {
+                  name: "👤 User Info",
+                  value: `**name**: ${username}  **email**: ${userEmail}`,
+                  inline: false,
+                },
+                {
+                  name: "📝 Problem",
+                  value: `"${input.content}"`,
+                  inline: false,
+                },
+              ],
               footer: { text: "Reported" },
               timestamp: new Date().toISOString(),
             },
@@ -471,9 +501,28 @@ export const usersRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const userId = ctx.auth.user.id;
+
+      const { data: user, error } = await ctx.supabase
+        .from("users")
+        .select("username")
+        .eq("id", userId)
+        .single();
+
+      if (error || !user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      const username = user.username;
+      const userEmail = ctx.auth.user.email;
+
       await ctx.supabase.from("suggested_features").insert({
         feature: input.content,
         suggested_by_id: ctx.auth.user.id,
+        suggested_by_email: userEmail,
       });
 
       await fetch(env.DISCORD_WEBHOOK_URL, {
@@ -486,8 +535,18 @@ export const usersRouter = router({
             {
               title: `Feature Suggestion - ${env.ENV.toUpperCase()}`,
               description: `A new feature has been suggested.`,
-              color: 0xff0000,
-              fields: [{ name: "📝  Feature", value: `"${input.content}"` }],
+              color: 0x0000ff,
+              fields: [
+                {
+                  name: "👤 User Info",
+                  value: `**name**: ${username}  **email**: ${userEmail}`,
+                },
+                {
+                  name: "📝 Problem",
+                  value: `"${input.content}"`,
+                  inline: false,
+                },
+              ],
               footer: { text: "Suggested" },
               timestamp: new Date().toISOString(),
             },

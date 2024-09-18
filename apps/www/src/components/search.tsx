@@ -101,7 +101,7 @@ export default function Search() {
                         src={
                           user.image_name
                             ? user.image_url
-                            : "/default-avatar.jpg"
+                            : "/default-avatar.webp"
                         }
                         alt=""
                         width={40}

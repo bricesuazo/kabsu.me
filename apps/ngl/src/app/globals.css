@@ -69,7 +69,7 @@
   }
 
   .noise-background {
-    background-image: url('/noise-light.png');
+    background-image: url("/noise-light.webp");
   }
 
   .shadow-effect {

@@ -26,7 +26,7 @@ export default function VerifiedBadge({
             size === "sm" ? "h-4 w-4" : size === "md" ? "h-6 w-6" : "h-8 w-8",
           )}
         /> */}
-        {/* <Image src="/logo.png" alt="Logo" width={32} height={32} /> */}
+        {/* <Image src="/logo.webp" alt="Logo" width={32} height={32} /> */}
       </TooltipTrigger>
       <TooltipContent>Kabsu.me Verified</TooltipContent>
     </Tooltip>
