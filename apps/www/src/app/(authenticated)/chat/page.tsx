@@ -229,8 +229,8 @@ export default function ChatsPage() {
                 >
                   <Image
                     src={
-                      room.rooms_users[0]?.users.image_name
-                        ? room.rooms_users[0]?.users.image_url
+                      room.rooms_user?.users.image_name
+                        ? room.rooms_user.users.image_url
                         : "/default-avatar.webp"
                     }
                     width={150}
