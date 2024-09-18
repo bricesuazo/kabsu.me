@@ -486,10 +486,10 @@ export default function RoomPageClient(
                                     : chat.user.name}{" "}
                                   replied to{" "}
                                   {chat.reply.user_id === props.current_user.id
-                                    ? "yourself"
+                                    ? "your message."
                                     : chat.reply.user_id === chat.user_id
-                                      ? "themselves"
-                                      : chat.reply.user_id}
+                                      ? "their message."
+                                      : chat.reply.user_id + "'s message."}
                                 </p>
                               </div>
                               <Link
