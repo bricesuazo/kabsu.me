@@ -477,16 +477,32 @@ export default function RoomPageClient(
                           )}
                         >
                           {chat.reply && (
-                            <Link
-                              href={{
-                                query: { chat_id: chat.reply.id },
-                              }}
-                              className="max-w-40 rounded-full bg-muted/50 p-2 text-start"
-                            >
-                              <p className="truncate text-sm text-muted-foreground">
-                                {chat.reply.content}
-                              </p>
-                            </Link>
+                            <>
+                              <div className="flex items-center gap-x-1 py-1 text-xs text-muted-foreground">
+                                <Reply className="size-4" />
+                                <p>
+                                  {chat.user_id === props.current_user.id
+                                    ? "You"
+                                    : chat.user.name}{" "}
+                                  replied to{" "}
+                                  {chat.reply.user_id === props.current_user.id
+                                    ? "yourself"
+                                    : chat.reply.user_id === chat.user_id
+                                      ? "themselves"
+                                      : chat.reply.user_id}
+                                </p>
+                              </div>
+                              <Link
+                                href={{
+                                  query: { chat_id: chat.reply.id },
+                                }}
+                                className="max-w-40 rounded-full bg-muted/50 p-2 text-start"
+                              >
+                                <p className="truncate text-sm text-muted-foreground">
+                                  {chat.reply.content}
+                                </p>
+                              </Link>
+                            </>
                           )}
                           <div
                             className={cn(
