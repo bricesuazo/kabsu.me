@@ -220,7 +220,7 @@ export const commentsRouter = router({
     .input(
       z.object({
         comment_id: z.string().min(1),
-        content: z.string().min(1, { message: "Reply cannot be empty." }),
+        content: z.string().trim().min(1, { message: "Reply cannot be empty." }),
         post_id: z.string().min(1),
         level: z.number().int().nonnegative(),
       }),
