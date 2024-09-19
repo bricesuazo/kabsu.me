@@ -1043,6 +1043,7 @@ export type Database = {
           is_ngl_displayed: boolean
           link: string | null
           name: string
+          pinned_post: string | null
           program_changed_at: string | null
           program_id: string
           type: Database["public"]["Enums"]["user_type"]
@@ -1060,6 +1061,7 @@ export type Database = {
           is_ngl_displayed?: boolean
           link?: string | null
           name: string
+          pinned_post?: string | null
           program_changed_at?: string | null
           program_id: string
           type: Database["public"]["Enums"]["user_type"]
@@ -1077,6 +1079,7 @@ export type Database = {
           is_ngl_displayed?: boolean
           link?: string | null
           name?: string
+          pinned_post?: string | null
           program_changed_at?: string | null
           program_id?: string
           type?: Database["public"]["Enums"]["user_type"]
@@ -1088,6 +1091,13 @@ export type Database = {
             foreignKeyName: "public_users_id_fkey"
             columns: ["id"]
             isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_users_pinned_post_fkey"
+            columns: ["pinned_post"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },

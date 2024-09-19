@@ -521,7 +521,7 @@ export const chatsRouter = router({
 
         const { data: replies } = await ctx.supabase
           .from("chats")
-          .select("id, content")
+          .select("id, content, user_id")
           .in(
             "id",
             room.chats
@@ -608,9 +608,19 @@ export const chatsRouter = router({
                   content: message.content,
                   created_at: message.created_at,
                   user_id: message.user_id,
-                  reply:
-                    replies?.find((reply) => reply.id === message.reply_id) ??
-                    null,
+                  reply: replies?.find((reply) => reply.id === message.reply_id)
+                    ? {
+                        id: replies.find(
+                          (reply) => reply.id === message.reply_id,
+                        )!.id,
+                        content: replies.find(
+                          (reply) => reply.id === message.reply_id,
+                        )!.content,
+                        user_id: replies.find(
+                          (reply) => reply.id === message.reply_id,
+                        )!.user_id,
+                      }
+                    : null,
                   user: {
                     name: message.users?.name ?? "",
                     username: message.users?.username ?? "",
@@ -684,7 +694,7 @@ export const chatsRouter = router({
 
         const { data: replies } = await ctx.supabase
           .from("global_chats")
-          .select("id, content")
+          .select("id, content, user_id")
           .in(
             "id",
             messages
@@ -725,9 +735,19 @@ export const chatsRouter = router({
                   content: message.content,
                   created_at: message.created_at,
                   user_id: message.user_id,
-                  reply:
-                    replies?.find((reply) => reply.id === message.reply_id) ??
-                    null,
+                  reply: replies?.find((reply) => reply.id === message.reply_id)
+                    ? {
+                        id: replies.find(
+                          (reply) => reply.id === message.reply_id,
+                        )!.id,
+                        content: replies.find(
+                          (reply) => reply.id === message.reply_id,
+                        )!.content,
+                        user_id: replies.find(
+                          (reply) => reply.id === message.reply_id,
+                        )!.user_id,
+                      }
+                    : null,
                   user: {
                     name: message.users.name,
                     username: message.users.username,
@@ -784,7 +804,7 @@ export const chatsRouter = router({
 
         const { data: replies } = await ctx.supabase
           .from("chats")
-          .select("id, content")
+          .select("id, content, user_id")
           .in(
             "id",
             room.chats
@@ -860,9 +880,19 @@ export const chatsRouter = router({
                   content: message.content,
                   created_at: message.created_at,
                   user_id: message.user_id,
-                  reply:
-                    replies?.find((reply) => reply.id === message.reply_id) ??
-                    null,
+                  reply: replies?.find((reply) => reply.id === message.reply_id)
+                    ? {
+                        id: replies.find(
+                          (reply) => reply.id === message.reply_id,
+                        )!.id,
+                        content: replies.find(
+                          (reply) => reply.id === message.reply_id,
+                        )!.content,
+                        user_id: replies.find(
+                          (reply) => reply.id === message.reply_id,
+                        )!.user_id,
+                      }
+                    : null,
                   user: {
                     name: message.users?.name ?? "",
                     username: message.users?.username ?? "",
@@ -874,7 +904,7 @@ export const chatsRouter = router({
                       : message.users?.image_name && image_url
                         ? {
                             image_name: message.users.image_name,
-                            image_url,
+                            image_url: image_url,
                           }
                         : {
                             image_name: null,
@@ -928,7 +958,7 @@ export const chatsRouter = router({
 
         const { data: replies } = await ctx.supabase
           .from("global_chats")
-          .select("id, content")
+          .select("id, content, user_id")
           .in(
             "id",
             messages
@@ -969,9 +999,19 @@ export const chatsRouter = router({
                   content: message.content,
                   created_at: message.created_at,
                   user_id: message.user_id,
-                  reply:
-                    replies?.find((reply) => reply.id === message.reply_id) ??
-                    null,
+                  reply: replies?.find((reply) => reply.id === message.reply_id)
+                    ? {
+                        id: replies.find(
+                          (reply) => reply.id === message.reply_id,
+                        )!.id,
+                        content: replies.find(
+                          (reply) => reply.id === message.reply_id,
+                        )!.content,
+                        user_id: replies.find(
+                          (reply) => reply.id === message.reply_id,
+                        )!.user_id,
+                      }
+                    : null,
                   user: {
                     name: message.users.name,
                     username: message.users.username,

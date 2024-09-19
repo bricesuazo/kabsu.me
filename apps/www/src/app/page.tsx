@@ -34,7 +34,6 @@ export default async function Home({
     api.auth.getCurrentUserPublic(),
     api.auth.getCurrentSession(),
   ]);
-
   return (
     <>
       {!getCurrentUserPublic && getCurrentSession ? (
