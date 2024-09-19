@@ -6,7 +6,18 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { ChevronLeft, Reply, Send, X } from "lucide-react";
+import {
+  Book,
+  Building2,
+  ChevronLeft,
+  Globe2,
+  GraduationCap,
+  Reply,
+  School,
+  School2,
+  Send,
+  X,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useInView } from "react-intersection-observer";
 import TextareaAutosize from "react-textarea-autosize";
@@ -320,23 +331,40 @@ export default function RoomPageClient(
               </div>
             </>
           ) : (
-            <p className="text-lg">
-              {props.type === "all"
-                ? "All campuses"
-                : props.type.charAt(0).toUpperCase() +
-                  props.type.slice(1) +
-                  `${
-                    getMyUniversityStatusQuery.data
-                      ? ` (${
-                          props.type === "campus"
-                            ? getMyUniversityStatusQuery.data.programs?.colleges?.campuses?.slug.toUpperCase()
-                            : props.type === "college"
-                              ? getMyUniversityStatusQuery.data.programs?.colleges?.slug.toUpperCase()
-                              : getMyUniversityStatusQuery.data.programs?.slug.toUpperCase()
-                        })`
-                      : ""
-                  }`}
-            </p>
+            <div className="text-lg font-semibold">
+              {props.type === "all" ? (
+                <div className="flex items-center gap-x-2">
+                  <Globe2 /> <p>All Campuses</p>
+                </div>
+              ) : (
+                <div className="flex items-center gap-x-2">
+                  {props.type === "campus" ? (
+                    <School2 />
+                  ) : props.type === "college" ? (
+                    <School />
+                  ) : props.type === "program" ? (
+                    <Book />
+                  ) : (
+                    <Globe2 />
+                  )}{" "}
+                  <p>
+                    {props.type.charAt(0).toUpperCase() +
+                      props.type.slice(1) +
+                      `${
+                        getMyUniversityStatusQuery.data
+                          ? ` (${
+                              props.type === "campus"
+                                ? getMyUniversityStatusQuery.data.programs?.colleges?.campuses?.slug.toUpperCase()
+                                : props.type === "college"
+                                  ? getMyUniversityStatusQuery.data.programs?.colleges?.slug.toUpperCase()
+                                  : getMyUniversityStatusQuery.data.programs?.slug.toUpperCase()
+                            })`
+                          : ""
+                      }`}
+                  </p>
+                </div>
+              )}
+            </div>
           )}
         </div>
         {/* <DropdownMenu>
