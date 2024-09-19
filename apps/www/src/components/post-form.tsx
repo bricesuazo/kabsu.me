@@ -7,6 +7,7 @@ import {
   Suspense,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -153,7 +154,6 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
   });
 
   const [isFocused, setIsFocused] = useState(false);
-  const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
   const mentionsInputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const fetchUsers = async (
@@ -201,6 +201,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
   const LazyEmojiPicker = lazy(() => import("emoji-picker-react"));
   const handleEmojiClick = useCallback(
     (emojiData: EmojiClickData, event: MouseEvent) => {

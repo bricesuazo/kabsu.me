@@ -1,6 +1,6 @@
 "use client";
 
-import {
+import React, {
   lazy,
   Suspense,
   useCallback,
@@ -618,7 +618,6 @@ export default function PostPageComponent({
 
             <Separator orientation="horizontal" />
           </div>
-
           <div className="space-y-4 p-4 pb-40">
             {postQuery.data.post.comments.length === 0 ? (
               <div className="flex justify-center">
@@ -636,114 +635,113 @@ export default function PostPageComponent({
             )}
           </div>
 
-          <div className="container fixed bottom-0 flex items-center gap-x-2 bg-card p-4">
-            <div className="min-w-max">
-              {getCurrentUserQuery.data ? (
-                <Image
-                  src={
-                    getCurrentUserQuery.data.image_name
-                      ? getCurrentUserQuery.data.image_url
-                      : "/default-avatar.webp"
+          <div className="container sticky bottom-0 flex flex-col gap-x-2 bg-card p-4">
+            {emojiPickerOpen && (
+              <div className="absolute bottom-16 right-3 hidden sm:block">
+                <Suspense
+                  fallback={
+                    <Loader className="bottom-0 m-auto animate-spin opacity-50" />
                   }
-                  alt="Image"
-                  width={36}
-                  height={36}
-                  className="aspect-square rounded-full object-cover object-center"
-                />
-              ) : (
-                <Skeleton className="size-9 rounded-full object-cover object-center" />
-              )}
-            </div>
+                >
+                  <LazyEmojiPicker
+                    theme={resolvedTheme === "dark" ? Theme.DARK : Theme.LIGHT}
+                    onEmojiClick={handleEmojiClick}
+                    lazyLoadEmojis={true}
+                  />
+                </Suspense>
+              </div>
+            )}
+            <div className="flex gap-x-2">
+              <div className="min-w-max">
+                {getCurrentUserQuery.data ? (
+                  <Image
+                    src={
+                      getCurrentUserQuery.data.image_name
+                        ? getCurrentUserQuery.data.image_url
+                        : "/default-avatar.webp"
+                    }
+                    alt="Image"
+                    width={36}
+                    height={36}
+                    className="aspect-square rounded-full object-cover object-center"
+                  />
+                ) : (
+                  <Skeleton className="size-9 rounded-full object-cover object-center" />
+                )}
+              </div>
 
-            <Form {...form}>
-              <form onSubmit={handleSubmit} className="flex w-full gap-x-2">
-                <FormField
-                  control={form.control}
-                  name="comment"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-1 items-center gap-2 space-y-0">
-                      <FormControl>
-                        <TextareaAutosize
-                          {...field}
-                          ref={(e) => {
-                            field.ref(e);
-                            mentionsInputRef.current = e;
-                          }}
-                          placeholder="Write a comment..."
-                          autoFocus
-                          disabled={form.formState.isSubmitting}
-                          onKeyDown={async (e) => {
-                            async function isValid() {
-                              if (form.formState.isValid) {
+              <Form {...form}>
+                <form onSubmit={handleSubmit} className="flex w-full gap-x-2">
+                  <FormField
+                    control={form.control}
+                    name="comment"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-1 items-center gap-2 space-y-0">
+                        <FormControl>
+                          <TextareaAutosize
+                            {...field}
+                            ref={(e) => {
+                              field.ref(e);
+                              mentionsInputRef.current = e;
+                            }}
+                            placeholder="Write a comment..."
+                            autoFocus
+                            disabled={form.formState.isSubmitting}
+                            onKeyDown={async (e) => {
+                              async function isValid() {
+                                if (form.formState.isValid) {
+                                  e.preventDefault();
+                                  await handleSubmit();
+                                } else {
+                                  form.setError("comment", {
+                                    type: "manual",
+                                    message:
+                                      "Post content cannot be empty or only whitespace",
+                                  });
+                                }
+                              }
+                              if (e.key === "Enter" && e.ctrlKey) {
+                                await isValid();
                                 e.preventDefault();
                                 await handleSubmit();
-                              } else {
-                                form.setError("comment", {
-                                  type: "manual",
-                                  message:
-                                    "Post content cannot be empty or only whitespace",
-                                });
                               }
-                            }
-                            if (e.key === "Enter" && e.ctrlKey) {
-                              await isValid();
-                              e.preventDefault();
-                              await handleSubmit();
-                            }
-                          }}
-                          rows={1}
-                          maxRows={3}
-                          onClick={() => setEmojiPickerOpen(false)}
-                          className="flex w-full flex-1 resize-none rounded-md border border-input bg-background px-3 py-1.5 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        />
-                      </FormControl>
-                      {emojiPickerOpen && (
-                        <div className="absolute bottom-16 right-3 z-10 hidden sm:block">
-                          <Suspense
-                            fallback={
-                              <Loader className="absolute bottom-8 right-0 m-auto animate-spin opacity-50" />
-                            }
+                            }}
+                            rows={1}
+                            maxRows={3}
+                            onClick={() => setEmojiPickerOpen(false)}
+                            className="flex w-full flex-1 resize-none rounded-md border border-input bg-background px-3 py-1.5 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          />
+                        </FormControl>
+                        <div className="relative hidden sm:block">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setEmojiPickerOpen((prev) => !prev)}
                           >
-                            <LazyEmojiPicker
-                              theme={
-                                resolvedTheme === "dark"
-                                  ? Theme.DARK
-                                  : Theme.LIGHT
-                              }
-                              onEmojiClick={handleEmojiClick}
-                              lazyLoadEmojis={true}
-                            />
-                          </Suspense>
+                            <Smile className="h-5 w-5" />
+                          </Button>
                         </div>
-                      )}
-                      <div className="hidden sm:block">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setEmojiPickerOpen((prev) => !prev)}
-                        >
-                          <Smile className="h-5 w-5" />
-                        </Button>
-                      </div>
 
-                      <Button
-                        type="submit"
-                        size="sm"
-                        disabled={
-                          form.formState.isSubmitting || !form.formState.isValid
-                        }
-                      >
-                        {form.formState.isSubmitting && (
-                          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        Comment
-                      </Button>
-                    </FormItem>
-                  )}
-                />
-              </form>
-            </Form>
+                        <Button
+                          type="submit"
+                          size="sm"
+                          disabled={
+                            form.formState.isSubmitting ||
+                            !form.formState.isValid
+                          }
+                        >
+                          {form.formState.isSubmitting && (
+                            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                          )}
+                          Comment
+                        </Button>
+                      </FormItem>
+                    )}
+                  />
+                </form>
+              </Form>
+            </div>
           </div>
         </>
       )}
