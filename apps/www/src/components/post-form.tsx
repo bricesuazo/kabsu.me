@@ -15,9 +15,10 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import imageCompression from "browser-image-compression";
-import { EmojiClickData } from "emoji-picker-react";
+import { EmojiClickData, Theme } from "emoji-picker-react";
 import debounce from "lodash.debounce";
 import { ImageUp, Loader, Smile, Trash } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
 import { Mention, MentionsInput } from "react-mentions";
 import { v4 } from "uuid";
@@ -88,6 +89,7 @@ const Schema = z.object({
 });
 
 export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
+  const { resolvedTheme } = useTheme();
   const context = api.useUtils();
   const [mentionData, setMentionData] = useState<
     RouterOutputs["users"]["getToMentionUsers"]
@@ -419,7 +421,15 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                               <Loader className="absolute bottom-8 right-0 m-auto animate-spin opacity-50" />
                             }
                           >
-                            <LazyEmojiPicker onEmojiClick={handleEmojiClick} />
+                            <LazyEmojiPicker
+                              theme={
+                                resolvedTheme === "dark"
+                                  ? Theme.DARK
+                                  : Theme.LIGHT
+                              }
+                              onEmojiClick={handleEmojiClick}
+                              lazyLoadEmojis={true}
+                            />
                           </Suspense>
                         </div>
                       )}
