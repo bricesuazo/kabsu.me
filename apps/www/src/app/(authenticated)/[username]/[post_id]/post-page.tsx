@@ -1,18 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatDistanceToNow } from "date-fns";
+import { EmojiClickData, Theme } from "emoji-picker-react";
 import {
   Album,
   Briefcase,
   GraduationCap,
   Heart,
+  Loader,
   MessageCircle,
+  Smile,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import TextareaAutosize from "react-textarea-autosize";
@@ -95,6 +106,8 @@ export default function PostPageComponent({
     },
   });
 
+  const { setValue } = form;
+
   useEffect(() => {
     setLikes(postQuery.data.post.likes);
   }, [postQuery.data.post.likes]);
@@ -132,6 +145,31 @@ export default function PostPageComponent({
   });
 
   if (postQuery.error?.data?.code === "NOT_FOUND") notFound();
+
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
+  const LazyEmojiPicker = lazy(() => import("emoji-picker-react"));
+  const { resolvedTheme } = useTheme();
+  const mentionsInputRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const handleEmojiClick = useCallback(
+    (emojiData: EmojiClickData, event: MouseEvent) => {
+      const inputRef = mentionsInputRef.current;
+      if (inputRef) {
+        const cursorPosition = inputRef.selectionStart || 0;
+        const currentValue = form.getValues("comment");
+        const newValue =
+          currentValue.slice(0, cursorPosition) +
+          emojiData.emoji +
+          currentValue.slice(cursorPosition);
+        setValue("comment", newValue);
+        const newCursorPosition = cursorPosition + emojiData.emoji.length;
+        setTimeout(() => {
+          inputRef.setSelectionRange(newCursorPosition, newCursorPosition);
+        }, 0);
+      }
+    },
+    [setValue, form],
+  );
 
   return (
     <>
@@ -627,20 +665,68 @@ export default function PostPageComponent({
                       <FormControl>
                         <TextareaAutosize
                           {...field}
+                          ref={(e) => {
+                            field.ref(e);
+                            mentionsInputRef.current = e;
+                          }}
                           placeholder="Write a comment..."
                           autoFocus
                           disabled={form.formState.isSubmitting}
                           onKeyDown={async (e) => {
+                            async function isValid() {
+                              if (form.formState.isValid) {
+                                e.preventDefault();
+                                await handleSubmit();
+                              } else {
+                                form.setError("comment", {
+                                  type: "manual",
+                                  message:
+                                    "Post content cannot be empty or only whitespace",
+                                });
+                              }
+                            }
                             if (e.key === "Enter" && e.ctrlKey) {
+                              await isValid();
                               e.preventDefault();
                               await handleSubmit();
                             }
                           }}
                           rows={1}
                           maxRows={3}
+                          onClick={() => setEmojiPickerOpen(false)}
                           className="flex w-full flex-1 resize-none rounded-md border border-input bg-background px-3 py-1.5 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         />
                       </FormControl>
+                      {emojiPickerOpen && (
+                        <div className="absolute bottom-16 right-3 z-10 hidden sm:block">
+                          <Suspense
+                            fallback={
+                              <Loader className="absolute bottom-8 right-0 m-auto animate-spin opacity-50" />
+                            }
+                          >
+                            <LazyEmojiPicker
+                              theme={
+                                resolvedTheme === "dark"
+                                  ? Theme.DARK
+                                  : Theme.LIGHT
+                              }
+                              onEmojiClick={handleEmojiClick}
+                              lazyLoadEmojis={true}
+                            />
+                          </Suspense>
+                        </div>
+                      )}
+                      <div className="hidden sm:block">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setEmojiPickerOpen((prev) => !prev)}
+                        >
+                          <Smile className="h-5 w-5" />
+                        </Button>
+                      </div>
+
                       <Button
                         type="submit"
                         size="sm"
