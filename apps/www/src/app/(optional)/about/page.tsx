@@ -1,20 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 import { DEVS_INFO } from "@kabsu.me/constants";
 
-import { createClient } from "~/supabase/server";
-
-export default async function AboutPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/");
+export default function AboutPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 px-4 py-10">
       <div>
         <h1 className="text-center text-4xl font-bold text-primary">About</h1>
         <p className="text-balance text-center text-base sm:text-lg">

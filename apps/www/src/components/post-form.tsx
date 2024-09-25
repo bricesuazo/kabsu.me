@@ -2,14 +2,24 @@
 
 import type { UseFormReturn } from "react-hook-form";
 import type { SuggestionDataItem } from "react-mentions";
-import { useEffect, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import imageCompression from "browser-image-compression";
+import { EmojiClickData, Theme } from "emoji-picker-react";
 import debounce from "lodash.debounce";
-import { ImageUp, Trash } from "lucide-react";
+import { ImageUp, Loader, Smile, Trash } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
 import { Mention, MentionsInput } from "react-mentions";
 import { v4 } from "uuid";
@@ -80,6 +90,7 @@ const Schema = z.object({
 });
 
 export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
+  const { resolvedTheme } = useTheme();
   const context = api.useUtils();
   const [mentionData, setMentionData] = useState<
     RouterOutputs["users"]["getToMentionUsers"]
@@ -143,6 +154,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
   });
 
   const [isFocused, setIsFocused] = useState(false);
+  const mentionsInputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const fetchUsers = async (
     query: string,
@@ -188,6 +200,26 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
+
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
+  const LazyEmojiPicker = lazy(() => import("emoji-picker-react"));
+  const handleEmojiClick = useCallback(
+    (emojiData: EmojiClickData, event: MouseEvent) => {
+      const inputRef = mentionsInputRef.current;
+      const cursorPosition = inputRef?.selectionStart || 0;
+      const currentContent = form.getValues("content");
+      const updatedContent =
+        currentContent.slice(0, cursorPosition) +
+        emojiData.emoji +
+        currentContent.slice(cursorPosition);
+      form.setValue("content", updatedContent);
+      const newCursorPosition = cursorPosition + emojiData.emoji.length;
+      setTimeout(() => {
+        inputRef?.setSelectionRange(newCursorPosition, newCursorPosition);
+      }, 0);
+    },
+    [form],
+  );
 
   const handleSubmit = form.handleSubmit(async (values) => {
     try {
@@ -329,7 +361,7 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                 onFocus={() => setIsFocused(true)}
               />
             ) : (
-              <div className="flex-1">
+              <div className="relative flex-1">
                 <FormField
                   control={form.control}
                   name="content"
@@ -363,6 +395,8 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                           }}
                           className="w-full break-all"
                           style={defaultMentionStyle}
+                          inputRef={mentionsInputRef}
+                          onClick={() => setEmojiPickerOpen(false)}
                         >
                           <Mention
                             trigger="@"
@@ -381,10 +415,39 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                           />
                         </MentionsInput>
                       </FormControl>
+                      {emojiPickerOpen && (
+                        <div className="absolute right-0 top-10 z-10 hidden sm:block">
+                          <Suspense
+                            fallback={
+                              <Loader className="absolute bottom-8 right-0 m-auto animate-spin opacity-50" />
+                            }
+                          >
+                            <LazyEmojiPicker
+                              theme={
+                                resolvedTheme === "dark"
+                                  ? Theme.DARK
+                                  : Theme.LIGHT
+                              }
+                              onEmojiClick={handleEmojiClick}
+                              lazyLoadEmojis={true}
+                            />
+                          </Suspense>
+                        </div>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+                <div className="absolute right-2 top-0 hidden space-x-2 sm:block">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setEmojiPickerOpen((prev) => !prev)}
+                  >
+                    <Smile className="h-5 w-5" />
+                  </Button>
+                </div>
                 <ScrollArea className="w-full whitespace-nowrap">
                   <div className="flex gap-x-2">
                     {form.getValues("images").map((file, index) => (

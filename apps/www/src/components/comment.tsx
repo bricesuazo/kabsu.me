@@ -3,10 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatDistanceToNow } from "date-fns";
-import {
-  Heart,
-  MessageCircle,
-} from "lucide-react";
+import { Heart, MessageCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { z } from "zod";
@@ -25,13 +22,10 @@ import { Skeleton } from "@kabsu.me/ui/skeleton";
 import { Toggle } from "@kabsu.me/ui/toggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 
+import CommentDropdown from "~/app/(authenticated)/[username]/[post_id]/comment-dropdown";
 import VerifiedBadge from "~/components/verified-badge";
 import { api } from "~/lib/trpc/client";
-import {
-  formatText,
-} from "~/lib/utils";
-import CommentDropdown from "~/app/(authenticated)/[username]/[post_id]/comment-dropdown";
-
+import { formatText } from "~/lib/utils";
 
 export function CommentComponent({
   comment,
@@ -125,7 +119,7 @@ export function CommentComponent({
                   src={
                     fullCommentQuery.data.comment.users.image_name
                       ? fullCommentQuery.data.comment.users.image_url
-                      : "/default-avatar.jpg"
+                      : "/default-avatar.webp"
                   }
                   alt={`${fullCommentQuery.data.comment.users.name} profile picture`}
                   width={32}
@@ -221,18 +215,18 @@ export function CommentComponent({
 
             {level === 0 && (
               <Toggle
-              size="sm"
-              className="h-8 px-2"
-              pressed={form.watch("is_comment_enabled")}
-              onPressedChange={(pressed) => {
+                size="sm"
+                className="h-8 px-2"
+                pressed={form.watch("is_comment_enabled")}
+                onPressedChange={(pressed) => {
                   form.setValue("is_comment_enabled", pressed);
                   form.resetField("reply");
-              }}
+                }}
               >
-              <MessageCircle className="mr-1.5 size-4" />
-              <span className="text-xs">
+                <MessageCircle className="mr-1.5 size-4" />
+                <span className="text-xs">
                   {fullCommentQuery.data.comment.replies.length}
-              </span>
+                </span>
               </Toggle>
             )}
           </div>

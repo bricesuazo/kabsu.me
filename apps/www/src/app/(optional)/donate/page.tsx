@@ -9,13 +9,13 @@ export default function DonatePage() {
       <div className="w-full">
         <Image
           src="/donate-header.webp"
-          alt=""
+          alt="donate header"
           width="1000"
           height="1000"
           className="pointer-events-none w-full select-none object-contain"
         />
       </div>
-      <div className="space-y-4 p-6 text-muted-foreground">
+      <div className="space-y-4 px-6 pb-44 pt-6 text-muted-foreground">
         <h1 className="text-center text-4xl font-bold text-primary md:text-7xl">
           DONATE NOW!
         </h1>
@@ -35,7 +35,7 @@ export default function DonatePage() {
         <Separator />
 
         <div className="space-y-4 text-primary">
-          <p className="text-center text-white">
+          <p className="text-center">
             If you are interested, donate on the GCash Account below:
           </p>
           <div className="mx-auto max-w-xs">
@@ -51,7 +51,6 @@ export default function DonatePage() {
             <p>BR●●● BR●●● S.</p>
             <p>090● ●●●●421</p>
           </div>
-          <div className="h-64" />
         </div>
       </div>
     </main>
