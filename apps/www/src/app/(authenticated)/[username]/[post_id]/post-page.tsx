@@ -618,6 +618,7 @@ export default function PostPageComponent({
 
             <Separator orientation="horizontal" />
           </div>
+
           <div className="space-y-4 p-4 pb-40">
             {postQuery.data.post.comments.length === 0 ? (
               <div className="flex justify-center">
@@ -635,7 +636,7 @@ export default function PostPageComponent({
             )}
           </div>
 
-          <div className="container sticky bottom-0 flex flex-col gap-x-2 bg-card p-4">
+          <div className="container fixed bottom-0 flex flex-col gap-x-2 bg-card p-4">
             {emojiPickerOpen && (
               <div className="absolute bottom-16 right-3 hidden sm:block">
                 <Suspense
@@ -676,7 +677,7 @@ export default function PostPageComponent({
                     control={form.control}
                     name="comment"
                     render={({ field }) => (
-                      <FormItem className="flex flex-1 items-center gap-2 space-y-0">
+                      <FormItem className="fuix flex flex-1 items-center gap-2 space-y-0">
                         <FormControl>
                           <TextareaAutosize
                             {...field}
