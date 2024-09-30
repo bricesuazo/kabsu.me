@@ -20,19 +20,15 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
-          supabaseResponse = NextResponse.next({
-            request,
+          cookiesToSet.forEach(({ name, value, options }) => {
+            const cookieOptions: Partial<ResponseCookie> = {
+              ...options,
+              httpOnly: true, // Prevents access to cookie via JavaScript
+              secure: env.ENV === 'production', // Only send cookies over HTTPS in production
+            };
+            request.cookies.set(name, value);
+            supabaseResponse.cookies.set(name, value, cookieOptions);
           });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(
-              name,
-              value,
-              options as Partial<ResponseCookie> | undefined,
-            ),
-          );
         },
       },
     },
