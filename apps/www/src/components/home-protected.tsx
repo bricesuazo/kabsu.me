@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { useInView } from "react-intersection-observer";
@@ -99,16 +99,13 @@ function Posts({ tab }: { tab: (typeof POST_TYPE_TABS)[number]["id"] }) {
     },
   );
 
-  const { ref, inView } = useInView();
-
-  useEffect(() => {
-    void (async () => {
+  const { ref } = useInView({
+    onChange: (inView) => {
       if (inView) {
-        await posts.fetchNextPage();
+        void posts.fetchNextPage();
       }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inView]);
+    },
+  });
 
   return (
     <div className="">
