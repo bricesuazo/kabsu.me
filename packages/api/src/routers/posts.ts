@@ -216,7 +216,7 @@ export const postsRouter = router({
       let posts: { id: string }[] = [];
 
       const ranges = [
-        (input.cursor - 1) * (limit + 1),
+        (input.cursor - 1) * limit,
         input.cursor * limit,
       ] as const;
 
