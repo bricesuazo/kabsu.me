@@ -18,11 +18,11 @@ export const createClient = () => {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(
-              name,
-              value,
-              options as Partial<ResponseCookie> | undefined,
-            ),
+            cookieStore.set(name, value, {
+              ...options,
+              httpOnly: true,
+              secure: env.ENV === "production",
+            } as Partial<ResponseCookie> | undefined),
           );
         },
       },

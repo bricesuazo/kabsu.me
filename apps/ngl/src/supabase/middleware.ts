@@ -27,11 +27,11 @@ export async function updateSession(request: NextRequest) {
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(
-              name,
-              value,
-              options as Partial<ResponseCookie> | undefined,
-            ),
+            supabaseResponse.cookies.set(name, value, {
+              ...options,
+              httpOnly: true,
+              secure: env.ENV === "production",
+            } as Partial<ResponseCookie> | undefined),
           );
         },
       },
