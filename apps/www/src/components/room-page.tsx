@@ -485,6 +485,15 @@ export default function RoomPageClient(
                         : "items-start",
                     )}
                   >
+                    {chats[i - 1]?.user_id !== chat.user_id && (
+                      <Link
+                        href={`/${chat.user.username}`}
+                        className="mt-1 max-w-52 truncate text-xs text-muted-foreground opacity-100 xs:max-w-60"
+                      >
+                        {chat.user.name} — {chat.user.username}
+                      </Link>
+                    )}
+
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div
@@ -496,16 +505,32 @@ export default function RoomPageClient(
                           )}
                         >
                           {chat.reply && (
-                            <Link
-                              href={{
-                                query: { chat_id: chat.reply.id },
-                              }}
-                              className="max-w-40 rounded-full bg-muted/50 p-2 text-start"
-                            >
-                              <p className="truncate text-sm text-muted-foreground">
-                                {chat.reply.content}
-                              </p>
-                            </Link>
+                            <>
+                              <div className="flex items-center gap-x-1 py-1 text-xs text-muted-foreground">
+                                <Reply className="size-4" />
+                                <p>
+                                  {chat.user_id === props.current_user.id
+                                    ? "You"
+                                    : chat.user.name}{" "}
+                                  replied to{" "}
+                                  {chat.reply.user_id === props.current_user.id
+                                    ? "your message."
+                                    : chat.reply.user_id === chat.user_id
+                                      ? "their message."
+                                      : chat.reply.user_id + "'s message."}
+                                </p>
+                              </div>
+                              <Link
+                                href={{
+                                  query: { chat_id: chat.reply.id },
+                                }}
+                                className="max-w-40 rounded-full bg-muted/50 p-2 text-start"
+                              >
+                                <p className="truncate text-sm text-muted-foreground">
+                                  {chat.reply.content}
+                                </p>
+                              </Link>
+                            </>
                           )}
                           <div
                             className={cn(
@@ -517,12 +542,19 @@ export default function RoomPageClient(
                           >
                             <div
                               className={cn(
-                                "max-w-60 rounded-lg border bg-muted px-3 py-2 xs:max-w-72 sm:max-w-96",
+                                "max-w-60 rounded-br-lg rounded-tr-lg border bg-muted px-3 py-2 xs:max-w-72 sm:max-w-96",
+
                                 searchParams.get("chat_id") === chat.id &&
                                   "border-primary",
                                 chat.user_id === props.current_user.id
                                   ? "rounded-l-2xl rounded-br-none bg-primary text-white"
                                   : "rounded-r-2xl rounded-bl-none",
+                                {
+                                  "rounded-bl-lg":
+                                    chats[i + 1]?.user_id !== chat.user_id,
+                                  "rounded-tl-lg":
+                                    chats[i - 1]?.user_id !== chat.user_id,
+                                },
                               )}
                             >
                               <p className="whitespace-pre-wrap break-words">
