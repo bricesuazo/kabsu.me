@@ -1,25 +1,18 @@
 "use client";
 
-import React, {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatDistanceToNow } from "date-fns";
-import { EmojiClickData, Theme } from "emoji-picker-react";
 import {
   Album,
   Briefcase,
   GraduationCap,
   Heart,
-  Loader,
   MessageCircle,
   Smile,
 } from "lucide-react";
@@ -96,9 +89,13 @@ export default function PostPageComponent({
   const form = useForm<{ comment: string }>({
     resolver: zodResolver(
       z.object({
-        comment: z.string().min(1, {
-          message: "Comment cannot be empty.",
-        }),
+        comment: z
+          .string()
+          .trim()
+          .min(1, { message: "Comment cannot be empty." })
+          .max(512, {
+            message: "Comment cannot be longer than 512 characters.",
+          }),
       }),
     ),
     defaultValues: {
@@ -147,24 +144,27 @@ export default function PostPageComponent({
   if (postQuery.error?.data?.code === "NOT_FOUND") notFound();
 
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
-  const LazyEmojiPicker = lazy(() => import("emoji-picker-react"));
+  const handleCloseEmojiPicker = () => {
+    setEmojiPickerOpen(false);
+  };
   const { resolvedTheme } = useTheme();
   const mentionsInputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const handleEmojiClick = useCallback(
-    (emojiData: EmojiClickData, event: MouseEvent) => {
+    (emoji: any) => {
       const inputRef = mentionsInputRef.current;
       if (inputRef) {
         const cursorPosition = inputRef.selectionStart || 0;
         const currentValue = form.getValues("comment");
         const newValue =
           currentValue.slice(0, cursorPosition) +
-          emojiData.emoji +
+          emoji.native +
           currentValue.slice(cursorPosition);
         setValue("comment", newValue);
-        const newCursorPosition = cursorPosition + emojiData.emoji.length;
+        const newCursorPosition = cursorPosition + emoji.native.length;
         setTimeout(() => {
           inputRef.setSelectionRange(newCursorPosition, newCursorPosition);
+          form.trigger("comment");
         }, 0);
       }
     },
@@ -639,17 +639,12 @@ export default function PostPageComponent({
           <div className="container fixed bottom-0 flex flex-col gap-x-2 bg-card p-4">
             {emojiPickerOpen && (
               <div className="absolute bottom-16 right-3 hidden sm:block">
-                <Suspense
-                  fallback={
-                    <Loader className="bottom-0 m-auto animate-spin opacity-50" />
-                  }
-                >
-                  <LazyEmojiPicker
-                    theme={resolvedTheme === "dark" ? Theme.DARK : Theme.LIGHT}
-                    onEmojiClick={handleEmojiClick}
-                    lazyLoadEmojis={true}
-                  />
-                </Suspense>
+                <Picker
+                  onEmojiSelect={handleEmojiClick}
+                  data={data}
+                  theme={resolvedTheme}
+                  onClickOutside={handleCloseEmojiPicker}
+                />
               </div>
             )}
             <div className="flex gap-x-2">

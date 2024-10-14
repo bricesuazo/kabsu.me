@@ -2,23 +2,16 @@
 
 import type { UseFormReturn } from "react-hook-form";
 import type { SuggestionDataItem } from "react-mentions";
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import imageCompression from "browser-image-compression";
-import { EmojiClickData, Theme } from "emoji-picker-react";
 import debounce from "lodash.debounce";
-import { ImageUp, Loader, Smile, Trash } from "lucide-react";
+import { ImageUp, Smile, Trash } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
 import { Mention, MentionsInput } from "react-mentions";
@@ -74,6 +67,7 @@ import VerifiedBadge from "./verified-badge";
 const typeSchema = z
   .custom<Database["public"]["Enums"]["post_type"]>()
   .default("following");
+
 const contentSchema = z
   .string()
   .trim()
@@ -81,6 +75,7 @@ const contentSchema = z
   .max(512, {
     message: "Post cannot be longer than 512 characters.",
   });
+
 const imagesSchema = z.instanceof(File).array();
 
 const Schema = z.object({
@@ -202,20 +197,23 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
   }, [isFocused]);
 
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
-  const LazyEmojiPicker = lazy(() => import("emoji-picker-react"));
+  const handleCloseEmojiPicker = () => {
+    setEmojiPickerOpen(false);
+  };
   const handleEmojiClick = useCallback(
-    (emojiData: EmojiClickData, event: MouseEvent) => {
+    (emoji: any) => {
       const inputRef = mentionsInputRef.current;
       const cursorPosition = inputRef?.selectionStart || 0;
       const currentContent = form.getValues("content");
       const updatedContent =
         currentContent.slice(0, cursorPosition) +
-        emojiData.emoji +
+        emoji.native +
         currentContent.slice(cursorPosition);
       form.setValue("content", updatedContent);
-      const newCursorPosition = cursorPosition + emojiData.emoji.length;
+      const newCursorPosition = cursorPosition + emoji.native.length;
       setTimeout(() => {
         inputRef?.setSelectionRange(newCursorPosition, newCursorPosition);
+        form.trigger("content");
       }, 0);
     },
     [form],
@@ -362,91 +360,84 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
               />
             ) : (
               <div className="relative flex-1">
-                <FormField
-                  control={form.control}
-                  name="content"
-                  render={({ field }) => (
-                    <FormItem className="flex-1 py-2">
-                      {/* <FormLabel>Post</FormLabel> */}
-                      <FormControl>
-                        <MentionsInput
-                          {...field}
-                          placeholder="What's on your mind?"
-                          autoFocus
-                          singleLine={false}
-                          maxLength={256}
-                          onKeyDown={async (e) => {
-                            async function isValid() {
-                              if (form.formState.isValid) {
-                                e.preventDefault();
-                                await handleSubmit();
-                              } else {
-                                form.setError("content", {
-                                  type: "manual",
-                                  message:
-                                    "Post content cannot be empty or only whitespace",
-                                });
+                <div className="flex gap-2">
+                  <FormField
+                    control={form.control}
+                    name="content"
+                    render={({ field }) => (
+                      <FormItem className="flex-1 py-2">
+                        {/* <FormLabel>Post</FormLabel> */}
+                        <FormControl>
+                          <MentionsInput
+                            {...field}
+                            placeholder="What's on your mind?"
+                            autoFocus
+                            singleLine={false}
+                            maxLength={512}
+                            onKeyDown={async (e) => {
+                              async function isValid() {
+                                if (form.formState.isValid) {
+                                  e.preventDefault();
+                                  await handleSubmit();
+                                } else {
+                                  form.setError("content", {
+                                    type: "manual",
+                                    message:
+                                      "Post content cannot be empty or only whitespace",
+                                  });
+                                }
                               }
-                            }
 
-                            if (e.key === "Enter" && e.ctrlKey) {
-                              await isValid();
-                            }
-                          }}
-                          className="w-full break-all"
-                          style={defaultMentionStyle}
-                          inputRef={mentionsInputRef}
-                          onClick={() => setEmojiPickerOpen(false)}
-                        >
-                          <Mention
-                            trigger="@"
-                            markup={`@__id__ `}
-                            displayTransform={(id, display) =>
-                              `@${mentionData.find((user) => user.id === id)?.username ?? mentioned.find((user) => user.id === id)?.username ?? display}`
-                            }
-                            appendSpaceOnAdd
-                            key={currentMention + currentMention.length}
-                            data={fetchUsers}
-                            renderSuggestion={MentionSuggestion}
-                            className="bg-primary/10 dark:bg-primary/30"
-                            onAdd={(id) => {
-                              setCurrentMention(id as string);
-                            }}
-                          />
-                        </MentionsInput>
-                      </FormControl>
-                      {emojiPickerOpen && (
-                        <div className="absolute right-0 top-10 z-10 hidden sm:block">
-                          <Suspense
-                            fallback={
-                              <Loader className="absolute bottom-8 right-0 m-auto animate-spin opacity-50" />
-                            }
-                          >
-                            <LazyEmojiPicker
-                              theme={
-                                resolvedTheme === "dark"
-                                  ? Theme.DARK
-                                  : Theme.LIGHT
+                              if (e.key === "Enter" && e.ctrlKey) {
+                                await isValid();
                               }
-                              onEmojiClick={handleEmojiClick}
-                              lazyLoadEmojis={true}
+                            }}
+                            className="w-full break-all"
+                            style={defaultMentionStyle}
+                            inputRef={mentionsInputRef}
+                            onClick={() => setEmojiPickerOpen(false)}
+                          >
+                            <Mention
+                              trigger="@"
+                              markup={`@__id__ `}
+                              displayTransform={(id, display) =>
+                                `@${mentionData.find((user) => user.id === id)?.username ?? mentioned.find((user) => user.id === id)?.username ?? display}`
+                              }
+                              appendSpaceOnAdd
+                              key={currentMention + currentMention.length}
+                              data={fetchUsers}
+                              renderSuggestion={MentionSuggestion}
+                              className="bg-primary/10 dark:bg-primary/30"
+                              onAdd={(id) => {
+                                setCurrentMention(id as string);
+                              }}
                             />
-                          </Suspense>
-                        </div>
-                      )}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="absolute right-2 top-0 hidden space-x-2 sm:block">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setEmojiPickerOpen((prev) => !prev)}
-                  >
-                    <Smile className="h-5 w-5" />
-                  </Button>
+                          </MentionsInput>
+                        </FormControl>
+                        {emojiPickerOpen && (
+                          <div className="absolute right-0 top-10 z-10 hidden sm:block">
+                            <Picker
+                              onEmojiSelect={handleEmojiClick}
+                              data={data}
+                              theme={resolvedTheme}
+                              onClickOutside={handleCloseEmojiPicker} // close when clicked outside
+                            />
+                          </div>
+                        )}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="hidden space-x-2 sm:block">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setEmojiPickerOpen((prev) => !prev)}
+                    >
+                      <Smile className="h-5 w-5" />
+                    </Button>
+                  </div>
                 </div>
                 <ScrollArea className="w-full whitespace-nowrap">
                   <div className="flex gap-x-2">
