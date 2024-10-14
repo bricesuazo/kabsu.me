@@ -32,7 +32,7 @@ export function FacebookPage() {
             />
 
             <Image
-              src="/facebook-page.webp"
+              src="/facebook-page-logo.webp"
               height="120"
               width="100"
               className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-3/4 transform rounded-full border-2 border-white object-cover group-hover/card:shadow-xl dark:border-black"
