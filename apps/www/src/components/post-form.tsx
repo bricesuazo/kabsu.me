@@ -414,16 +414,6 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                             />
                           </MentionsInput>
                         </FormControl>
-                        {emojiPickerOpen && (
-                          <div className="absolute right-0 top-10 z-10 hidden sm:block">
-                            <Picker
-                              onEmojiSelect={handleEmojiClick}
-                              data={data}
-                              theme={resolvedTheme}
-                              onClickOutside={handleCloseEmojiPicker} // close when clicked outside
-                            />
-                          </div>
-                        )}
                         <FormMessage />
                       </FormItem>
                     )}
@@ -437,6 +427,17 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                     >
                       <Smile className="h-5 w-5" />
                     </Button>
+
+                    {emojiPickerOpen && (
+                      <div className="absolute right-0 top-10 z-10 hidden pt-2 sm:block">
+                        <Picker
+                          onEmojiSelect={handleEmojiClick}
+                          data={data}
+                          theme={resolvedTheme}
+                          onClickOutside={handleCloseEmojiPicker} // close when clicked outside
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
                 <ScrollArea className="w-full whitespace-nowrap">
