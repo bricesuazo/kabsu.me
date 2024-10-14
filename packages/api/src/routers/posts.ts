@@ -215,17 +215,22 @@ export const postsRouter = router({
       const limit = 10;
       let posts: { id: string }[] = [];
 
+      const ranges = [
+        (input.cursor - 1) * limit,
+        input.cursor * limit,
+      ] as const;
+
       if (input.type === "all") {
         await ctx.supabase
           .from("posts")
           .select("id, users!inner(banned_at, deactivated_at)")
           .eq("type", "all")
           .is("deleted_at", null)
-          .order("created_at", { ascending: false })
-          .limit(limit)
           .is("users.banned_at", null)
           .is("users.deactivated_at", null)
-          .range((input.cursor - 1) * (limit + 1), input.cursor * limit)
+          .range(ranges[0], ranges[1])
+          .limit(limit)
+          .order("created_at", { ascending: false })
           .then((res) => {
             if (res.error)
               throw new TRPCError({
@@ -238,7 +243,7 @@ export const postsRouter = router({
       } else if (input.type === "campus") {
         const { data: user } = await ctx.supabase
           .from("users")
-          .select("*, programs(*, colleges(campus_id))")
+          .select("*, programs!inner(*, colleges!inner(campus_id))")
           .eq("id", ctx.auth.user.id)
           .single();
 
@@ -253,14 +258,14 @@ export const postsRouter = router({
           .eq("type", "campus")
           .eq(
             "users.programs.colleges.campus_id",
-            user.programs?.colleges?.campus_id ?? "",
+            user.programs.colleges.campus_id,
           )
           .is("deleted_at", null)
-          .order("created_at", { ascending: false })
-          .limit(limit)
-          .range((input.cursor - 1) * (limit + 1), input.cursor * limit)
           .is("users.banned_at", null)
           .is("users.deactivated_at", null)
+          .range(ranges[0], ranges[1])
+          .limit(limit)
+          .order("created_at", { ascending: false })
           .then((res) => {
             if (res.error)
               throw new TRPCError({
@@ -268,16 +273,12 @@ export const postsRouter = router({
                 message: res.error.message,
               });
 
-            return res.data.filter(
-              (post) =>
-                post.users.programs.colleges?.campus_id ===
-                user.programs?.colleges?.campus_id,
-            );
+            return res.data;
           });
       } else if (input.type === "college") {
         const { data: user } = await ctx.supabase
           .from("users")
-          .select("programs(college_id)")
+          .select("programs!inner(college_id)")
           .eq("id", ctx.auth.user.id)
           .single();
 
@@ -287,16 +288,16 @@ export const postsRouter = router({
         posts = await ctx.supabase
           .from("posts")
           .select(
-            "id, users!inner(banned_at, deactivated_at, programs(college_id))",
+            "id, users!inner(banned_at, deactivated_at, programs!inner(college_id))",
           )
           .eq("type", "college")
-          .eq("users.programs.college_id", user.programs?.college_id ?? "")
+          .eq("users.programs.college_id", user.programs.college_id)
           .is("deleted_at", null)
-          .order("created_at", { ascending: false })
           .is("users.banned_at", null)
           .is("users.deactivated_at", null)
+          .range(ranges[0], ranges[1])
           .limit(limit)
-          .range((input.cursor - 1) * (limit + 1), input.cursor * limit)
+          .order("created_at", { ascending: false })
           .then((res) => {
             if (res.error)
               throw new TRPCError({
@@ -304,10 +305,7 @@ export const postsRouter = router({
                 message: res.error.message,
               });
 
-            return res.data.filter(
-              (post) =>
-                post.users.programs?.college_id === user.programs?.college_id,
-            );
+            return res.data;
           });
       } else if (input.type === "program") {
         const { data: user } = await ctx.supabase
@@ -328,9 +326,9 @@ export const postsRouter = router({
           .is("deleted_at", null)
           .is("users.banned_at", null)
           .is("users.deactivated_at", null)
-          .order("created_at", { ascending: false })
+          .range(ranges[0], ranges[1])
           .limit(limit)
-          .range((input.cursor - 1) * (limit + 1), input.cursor * limit)
+          .order("created_at", { ascending: false })
           .then((res) => {
             if (res.error)
               throw new TRPCError({
@@ -338,14 +336,12 @@ export const postsRouter = router({
                 message: res.error.message,
               });
 
-            return res.data.filter(
-              (post) => post.users.program_id === user.program_id,
-            );
+            return res.data;
           });
       } else {
         const { data: user } = await ctx.supabase
           .from("users")
-          .select("*, programs(college_id, colleges(campus_id))")
+          .select("*, programs!inner(college_id, colleges!inner(campus_id))")
           .eq("id", ctx.auth.user.id)
           .single();
 
@@ -360,7 +356,7 @@ export const postsRouter = router({
         posts = await ctx.supabase
           .from("posts")
           .select(
-            "id, type, users!inner(program_id, programs(*, colleges(campus_id)))",
+            "id, type, users!inner(program_id, programs!inner(*, colleges!inner(campus_id)))",
           )
           .in("user_id", [
             ...new Set([
@@ -370,11 +366,11 @@ export const postsRouter = router({
           ])
           .eq("type", "following")
           .is("deleted_at", null)
-          .order("created_at", { ascending: false })
-          .limit(limit)
           .is("users.banned_at", null)
           .is("users.deactivated_at", null)
-          .range((input.cursor - 1) * (limit + 1), input.cursor * limit)
+          .range(ranges[0], ranges[1])
+          .limit(limit)
+          .order("created_at", { ascending: false })
           .then((res) => {
             if (res.error)
               throw new TRPCError({
@@ -386,11 +382,10 @@ export const postsRouter = router({
               (post) =>
                 (post.users.program_id === user.program_id &&
                   post.type === "program") ||
-                (post.users.programs?.college_id ===
-                  user.programs?.college_id &&
+                (post.users.programs.college_id === user.programs.college_id &&
                   post.type === "college") ||
-                (post.users.programs?.colleges?.campus_id ===
-                  user.programs?.colleges?.campus_id &&
+                (post.users.programs.colleges.campus_id ===
+                  user.programs.colleges.campus_id &&
                   post.type === "campus") ||
                 post.type === "all" ||
                 post.type === "following",

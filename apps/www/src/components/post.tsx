@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { format, formatDistanceToNow } from "date-fns";
-// import UpdatePost from "./update-post";
 import {
   Album,
   Briefcase,
@@ -34,7 +33,14 @@ export default function Post({
 }: {
   post: RouterOutputs["posts"]["getPosts"]["posts"][number];
 }) {
-  const getPostQuery = api.posts.getPost.useQuery({ post_id: post.id });
+  const getPostQuery = api.posts.getPost.useQuery(
+    { post_id: post.id },
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    },
+  );
   const router = useRouter();
   const searchParams = useSearchParams();
   const [likes, setLikes] = useState<
