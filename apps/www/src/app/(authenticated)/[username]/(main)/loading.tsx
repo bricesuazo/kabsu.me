@@ -40,7 +40,7 @@ export default function UserLoading() {
       </div>
 
       <div className="">
-        {[...(Array(6) as number[])].map((i) => (
+        {[...(Array(6) as number[])].map((_, i) => (
           <PostSkeletonNoRandom key={i} />
         ))}
       </div>

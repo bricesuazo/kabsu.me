@@ -74,6 +74,7 @@
   "devDependencies": {
     "@kabsu.me/eslint-config": "workspace:*",
     "@kabsu.me/prettier-config": "workspace:*",
+    "@kabsu.me/tailwind-config": "workspace:*",
     "@kabsu.me/tsconfig": "workspace:*",
     "@types/canvas-confetti": "1.6.4",
     "@types/react": "catalog:",

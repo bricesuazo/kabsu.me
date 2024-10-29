@@ -5,7 +5,7 @@ export default function FollowersLoading() {
     <div>
       <p className="text-center text-sm text-muted-foreground">Followers</p>
 
-      {[...(Array(10) as number[])].map((i) => (
+      {[...(Array(10) as number[])].map((_, i) => (
         <UserFollowsSkeleton key={i} />
       ))}
     </div>

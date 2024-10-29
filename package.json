@@ -1,6 +1,7 @@
 {
   "name": "kabsu.me",
   "type": "module",
+  "private": true,
   "engines": {
     "node": ">=20.15.0"
   },

@@ -689,6 +689,9 @@ importers:
       '@kabsu.me/prettier-config':
         specifier: workspace:*
         version: link:../../tooling/prettier
+      '@kabsu.me/tailwind-config':
+        specifier: workspace:*
+        version: link:../../tooling/tailwind
       '@kabsu.me/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/typescript
