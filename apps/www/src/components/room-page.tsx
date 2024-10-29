@@ -8,10 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import {
   Book,
-  Building2,
   ChevronLeft,
   Globe2,
-  GraduationCap,
   Reply,
   School,
   School2,
@@ -26,6 +24,8 @@ import { v4 } from "uuid";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
+import type { Database } from "@kabsu.me/supabase/types";
+import { createClient } from "@kabsu.me/supabase/client/client";
 import { cn } from "@kabsu.me/ui";
 import { Button } from "@kabsu.me/ui/button";
 import {
@@ -43,17 +43,10 @@ import {
 } from "@kabsu.me/ui/form";
 import { ScrollArea } from "@kabsu.me/ui/scroll-area";
 import { Separator } from "@kabsu.me/ui/separator";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@kabsu.me/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 
-import type { Database } from "../../../../supabase/types";
 import { Icons } from "~/components/icons";
 import { api } from "~/lib/trpc/client";
-import { createClient } from "~/supabase/client";
 
 const FormSchema = z.object({
   message: z.string().max(512, {
@@ -191,7 +184,7 @@ export default function RoomPageClient(
     messagesEndRef.current?.scrollIntoView(false);
 
     const channel = supabase.channel(
-      `chat_${props.type}_${props.type === "room" ? props.getRoomChats.room.id : props.type === "all" ? "all" : props.type === "campus" ? getMyUniversityStatusQuery.data?.programs?.colleges?.campuses?.id : props.type === "college" ? getMyUniversityStatusQuery.data?.programs?.colleges?.id : getMyUniversityStatusQuery.data?.programs?.id}`,
+      `chat_${props.type}_${props.type === "room" ? props.getRoomChats.room.id : props.type === "all" ? "all" : props.type === "campus" ? getMyUniversityStatusQuery.data?.program.college.campus.id : props.type === "college" ? getMyUniversityStatusQuery.data?.program.college.id : getMyUniversityStatusQuery.data?.program.id}`,
     );
 
     channel
@@ -342,7 +335,8 @@ export default function RoomPageClient(
                     <School2 />
                   ) : props.type === "college" ? (
                     <School />
-                  ) : props.type === "program" ? (
+                  ) : // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                  props.type === "program" ? (
                     <Book />
                   ) : (
                     <Globe2 />
@@ -354,10 +348,10 @@ export default function RoomPageClient(
                         getMyUniversityStatusQuery.data
                           ? ` (${
                               props.type === "campus"
-                                ? getMyUniversityStatusQuery.data.programs?.colleges?.campuses?.slug.toUpperCase()
+                                ? getMyUniversityStatusQuery.data.program.college.campus.slug.toUpperCase()
                                 : props.type === "college"
-                                  ? getMyUniversityStatusQuery.data.programs?.colleges?.slug.toUpperCase()
-                                  : getMyUniversityStatusQuery.data.programs?.slug.toUpperCase()
+                                  ? getMyUniversityStatusQuery.data.program.college.slug.toUpperCase()
+                                  : getMyUniversityStatusQuery.data.program.slug.toUpperCase()
                             })`
                           : ""
                       }`}

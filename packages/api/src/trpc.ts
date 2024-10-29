@@ -1,12 +1,12 @@
 import type { User } from "@supabase/supabase-js";
-import { createClient } from "@supabase/supabase-js";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { Redis } from "@upstash/redis";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import type { Database } from "./../../../supabase/types";
-import { env } from "./../../../apps/www/src/env";
+import { createClient } from "@kabsu.me/supabase/client/admin";
+
+import { env } from "./env";
 
 export const createTRPCContext = (opts: {
   headers: Headers;
@@ -17,10 +17,7 @@ export const createTRPCContext = (opts: {
 
   console.log(">>> tRPC Request from", source, "by", auth?.user.email);
 
-  const supabase = createClient<Database>(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.SUPABASE_SERVICE_ROLE_KEY,
-  );
+  const supabase = createClient();
   const redis = new Redis({
     url: env.UPSTASH_REDIS_REST_URL,
     token: env.UPSTASH_REDIS_REST_TOKEN,

@@ -46,7 +46,7 @@ export const notificationsRouter = router({
         let image_url: string | null = null;
 
         if (
-          notification.from?.image_name &&
+          notification.from.image_name &&
           !notification.from.image_name.startsWith("https:")
         ) {
           const { data } = ctx.supabase.storage
@@ -63,9 +63,9 @@ export const notificationsRouter = router({
         return {
           ...notification,
           content: posts.find((post) => post.id === notification.content_id),
-          from: notification.from?.image_name?.startsWith("https://")
+          from: notification.from.image_name?.startsWith("https://")
             ? { ...notification.from, image_url: notification.from.image_name }
-            : notification.from?.image_name && image_url
+            : notification.from.image_name && image_url
               ? { ...notification.from, image_url }
               : {
                   ...notification.from,

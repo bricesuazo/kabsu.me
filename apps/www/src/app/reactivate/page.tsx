@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 
-import { createClient } from "~/supabase/server";
+import { createClient } from "@kabsu.me/supabase/client/server";
+
 import Reactivate from "./_components/reactivate";
 
 export default async function ReactivatePage() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },

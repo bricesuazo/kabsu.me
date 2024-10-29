@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { createClient } from "@kabsu.me/supabase/client/client";
+
 import { api } from "~/lib/trpc/client";
-import { createClient } from "~/supabase/client";
 
 export default function NotificationProvider() {
   const router = useRouter();

@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import type { Database } from "@kabsu.me/supabase/types";
 import { Button } from "@kabsu.me/ui/button";
 import {
   Dialog,
@@ -25,7 +26,6 @@ import {
 } from "@kabsu.me/ui/form";
 import { Textarea } from "@kabsu.me/ui/textarea";
 
-import type { Database } from "../../../../supabase/types";
 import { api } from "~/lib/trpc/client";
 import { Icons } from "./icons";
 

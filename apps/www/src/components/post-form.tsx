@@ -16,7 +16,9 @@ import { v4 } from "uuid";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
+import type { Database } from "@kabsu.me/supabase/types";
 import { POST_TYPE_TABS } from "@kabsu.me/constants";
+import { createClient } from "@kabsu.me/supabase/client/client";
 import { Button } from "@kabsu.me/ui/button";
 import {
   Dialog,
@@ -52,11 +54,9 @@ import {
 import { Skeleton } from "@kabsu.me/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 
-import type { Database } from "../../../../supabase/types";
 import { useMediaQuery } from "~/hooks/use-media-query";
 import defaultMentionStyle from "~/lib/MentionDefaultStyle";
 import { api } from "~/lib/trpc/client";
-import { createClient } from "~/supabase/client";
 import { FileUploader } from "./file-uploader";
 import { Icons } from "./icons";
 import VerifiedBadge from "./verified-badge";
@@ -470,11 +470,11 @@ export default function PostForm({ hasRedirect }: { hasRedirect?: boolean }) {
                                       {(() => {
                                         switch (type.id) {
                                           case "program":
-                                            return getMyUniversityStatusQuery.data?.programs?.slug.toUpperCase();
+                                            return getMyUniversityStatusQuery.data?.program.slug.toUpperCase();
                                           case "college":
-                                            return getMyUniversityStatusQuery.data?.programs?.colleges?.slug.toUpperCase();
+                                            return getMyUniversityStatusQuery.data?.program.college.slug.toUpperCase();
                                           case "campus":
-                                            return getMyUniversityStatusQuery.data?.programs?.colleges?.campuses?.slug.toUpperCase();
+                                            return getMyUniversityStatusQuery.data?.program.college.campus.slug.toUpperCase();
                                         }
                                       })()}
                                       )

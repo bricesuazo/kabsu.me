@@ -254,7 +254,7 @@ export function NotificationItems({
                 if (notification.type === "follow") {
                   return `/${notification.from.username}`;
                 } else {
-                  return `/${notification.content?.user?.username}/${notification.content_id}`;
+                  return `/${notification.content?.user.username}/${notification.content_id}`;
                 }
               })()}
               onClick={(e) => {

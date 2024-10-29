@@ -185,26 +185,25 @@ export default function Post({
                   <TooltipTrigger>
                     <Badge>
                       {searchParams.get("tab") === "college"
-                        ? getPostQuery.data.post.user.programs?.colleges?.slug.toUpperCase()
-                        : getPostQuery.data.post.user.programs?.colleges?.campuses?.slug.toUpperCase()}
+                        ? getPostQuery.data.post.user.program.college.slug.toUpperCase()
+                        : getPostQuery.data.post.user.program.college.campus.slug.toUpperCase()}
                     </Badge>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-[12rem]">
                     {searchParams.get("tab") === "college"
-                      ? getPostQuery.data.post.user.programs?.colleges?.name
-                      : getPostQuery.data.post.user.programs?.colleges?.campuses
-                          ?.name}
+                      ? getPostQuery.data.post.user.program.college.name
+                      : getPostQuery.data.post.user.program.college.campus.name}
                   </TooltipContent>
                 </Tooltip>
 
                 <Tooltip delayDuration={250}>
                   <TooltipTrigger>
                     <Badge variant="outline">
-                      {getPostQuery.data.post.user.programs?.slug.toUpperCase()}
+                      {getPostQuery.data.post.user.program.slug.toUpperCase()}
                     </Badge>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-[12rem]">
-                    {getPostQuery.data.post.user.programs?.name}
+                    {getPostQuery.data.post.user.program.name}
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -322,9 +321,8 @@ export default function Post({
                   comments: getPostQuery.data.post.comments.length.toString(),
                   privacy: getPostQuery.data.post.type,
                   campus:
-                    getPostQuery.data.post.user.programs?.colleges?.campuses
-                      ?.slug ?? "",
-                  program: getPostQuery.data.post.user.programs?.slug ?? "",
+                    getPostQuery.data.post.user.program.college.campus.slug,
+                  program: getPostQuery.data.post.user.program.slug,
                   verified: !!getPostQuery.data.post.user.verified_at,
                   images: getPostQuery.data.post.posts_images.map(
                     (image) => image.signed_url,

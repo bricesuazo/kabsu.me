@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 
+import { createClient } from "@kabsu.me/supabase/client/server";
+
 import HomeProtected from "~/components/home-protected";
 import HomePublic from "~/components/home-public";
 import OnboardingForm from "~/components/onboarding-form";
 import { api } from "~/lib/trpc/server";
-import { createClient } from "~/supabase/server";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -20,16 +21,17 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home({
-  searchParams: { tab, error, status },
+  searchParams,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     tab?: "all" | "campus" | "program" | "college";
     callback_url?: string;
     error?: string;
     status?: string;
     [key: string]: string | string[] | undefined;
-  };
+  }>;
 }) {
+  const { tab, error, status } = await searchParams;
   const [getCurrentUserPublic, getCurrentSession] = await Promise.all([
     api.auth.getCurrentUserPublic(),
     api.auth.getCurrentSession(),

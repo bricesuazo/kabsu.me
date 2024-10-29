@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { createClient } from "@kabsu.me/supabase/client/client";
 import { Button } from "@kabsu.me/ui/button";
 import {
   Form,
@@ -21,7 +22,6 @@ import { Input } from "@kabsu.me/ui/input";
 
 import { DialogAndDrawer } from "~/components/dialog-and-drawer";
 import { api } from "~/lib/trpc/client";
-import { createClient } from "~/supabase/client";
 
 const FormSchema = z.object({
   username: z.string().min(1, {

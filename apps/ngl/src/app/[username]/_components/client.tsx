@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
+import { createClient } from "@kabsu.me/supabase/client/client";
 import { Alert, AlertDescription, AlertTitle } from "@kabsu.me/ui/alert";
 import { Button } from "@kabsu.me/ui/button";
 import { Checkbox } from "@kabsu.me/ui/checkbox";
@@ -32,7 +33,6 @@ import { Textarea } from "@kabsu.me/ui/textarea";
 import ClientOnly from "~/components/client-only";
 import { env } from "~/env";
 import { api } from "~/lib/trpc/client";
-import { createClient } from "~/supabase/client";
 import NglMessage from "./ngl-message";
 
 const FormSchema = z

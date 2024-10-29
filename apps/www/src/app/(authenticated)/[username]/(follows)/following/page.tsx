@@ -1,26 +1,29 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { createClient as createClientServer } from "@kabsu.me/supabase/client/server";
+
 import { api } from "~/lib/trpc/server";
-import { createClient as createClientServer } from "~/supabase/server";
 import Following from "./following";
 
-export function generateMetadata({
-  params: { username },
+export async function generateMetadata({
+  params,
 }: {
-  params: { username: string };
-}): Metadata {
+  params: Promise<{ username: string }>;
+}): Promise<Metadata> {
+  const { username } = await params;
   return {
     title: `Following - @${username}`,
   };
 }
 
 export default async function FollowingPage({
-  params: { username },
+  params,
 }: {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }) {
-  const supabaseServer = createClientServer();
+  const { username } = await params;
+  const supabaseServer = await createClientServer();
   const {
     data: { user },
   } = await supabaseServer.auth.getUser();

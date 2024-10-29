@@ -1,19 +1,21 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { createClient as createClientAdmin } from "@kabsu.me/supabase/client/admin";
+import { createClient as createClientServer } from "@kabsu.me/supabase/client/server";
+
 import DeactivatedBanned from "~/components/deactivated-banned";
 import { api } from "~/lib/trpc/server";
 import { extractAllMentions, REGEX } from "~/lib/utils";
-import { createClient as createClientAdmin } from "~/supabase/admin";
-import { createClient as createClientServer } from "~/supabase/server";
 import PostPageComponent from "./post-page";
 
 export async function generateMetadata({
   params,
 }: {
-  params: { username: string; post_id: string };
+  params: Promise<{ username: string; post_id: string }>;
 }): Promise<Metadata> {
-  const supabaseServer = createClientServer();
+  const { username, post_id } = await params;
+  const supabaseServer = await createClientServer();
   const {
     data: { user },
   } = await supabaseServer.auth.getUser();
@@ -25,7 +27,7 @@ export async function generateMetadata({
   const { data: post } = await supabaseAdmin
     .from("posts")
     .select("content, type, user_id")
-    .eq("id", params.post_id)
+    .eq("id", post_id)
     .is("deleted_at", null)
     .single();
 
@@ -66,15 +68,14 @@ export async function generateMetadata({
 
   if (
     post.type === "college" &&
-    current_user_in_db.programs?.college_id !==
-      user_of_post.programs?.college_id
+    current_user_in_db.programs.college_id !== user_of_post.programs.college_id
   )
     notFound();
 
   if (
     post.type === "campus" &&
-    current_user_in_db.programs?.colleges?.campus_id !==
-      user_of_post.programs?.colleges?.campus_id
+    current_user_in_db.programs.colleges.campus_id !==
+      user_of_post.programs.colleges.campus_id
   )
     notFound();
 
@@ -99,22 +100,23 @@ export async function generateMetadata({
     };
 
     return {
-      title: `${formatMentions(post.content)} - @${params.username}`,
+      title: `${formatMentions(post.content)} - @${username}`,
     };
   } catch (error) {
     console.log(error);
   }
 
   return {
-    title: `${post.content} - @${params.username}`,
+    title: `${post.content} - @${username}`,
   };
 }
 
 export default async function PostPage({
-  params: { username, post_id },
+  params,
 }: {
-  params: { username: string; post_id: string };
+  params: Promise<{ username: string; post_id: string }>;
 }) {
+  const { username, post_id } = await params;
   const getPost = await api.posts.getPost({ username, post_id });
 
   if (getPost.post.user.banned_at) return <DeactivatedBanned type="banned" />;

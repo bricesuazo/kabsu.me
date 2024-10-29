@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 
+import { createClient } from "@kabsu.me/supabase/client/client";
 import { Button } from "@kabsu.me/ui/button";
 
 import { env } from "~/env";
-import { createClient } from "~/supabase/client";
 import { Icons } from "./icons";
 
 export default function SigninButton() {

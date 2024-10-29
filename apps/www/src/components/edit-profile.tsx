@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
+import { createClient } from "@kabsu.me/supabase/client/client";
 import { cn } from "@kabsu.me/ui";
 import { AlertDialogHeader } from "@kabsu.me/ui/alert-dialog";
 import { Button } from "@kabsu.me/ui/button";
@@ -49,7 +50,6 @@ import { Textarea } from "@kabsu.me/ui/textarea";
 
 import { useMediaQuery } from "~/hooks/use-media-query";
 import { api } from "~/lib/trpc/client";
-import { createClient } from "~/supabase/client";
 import { FileUploader } from "./file-uploader";
 import { Icons } from "./icons";
 

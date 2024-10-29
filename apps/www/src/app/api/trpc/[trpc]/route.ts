@@ -3,12 +3,12 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { appRouter } from "@kabsu.me/api/root";
 import { createTRPCContext } from "@kabsu.me/api/trpc";
+import { createClient } from "@kabsu.me/supabase/client/server";
 
 import { env } from "~/env";
-import { createClient } from "~/supabase/server";
 
 const createContext = async (req: NextRequest) => {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

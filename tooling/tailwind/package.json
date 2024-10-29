@@ -12,17 +12,17 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "postcss": "^8.4.44",
-    "tailwindcss": "^3.4.10",
-    "tailwindcss-animate": "^1.0.7"
+    "postcss": "catalog:",
+    "tailwindcss": "catalog:",
+    "tailwindcss-animate": "1.0.7"
   },
   "devDependencies": {
     "@kabsu.me/eslint-config": "workspace:*",
     "@kabsu.me/prettier-config": "workspace:*",
     "@kabsu.me/tsconfig": "workspace:*",
-    "eslint": "^9.9.1",
-    "prettier": "^3.3.3",
-    "typescript": "^5.5.4"
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
   },
   "prettier": "@kabsu.me/prettier-config"
 }

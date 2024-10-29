@@ -5,15 +5,15 @@ import { createHydrationHelpers } from "@trpc/react-query/rsc";
 import type { AppRouter } from "@kabsu.me/api/root";
 import { createTRPCContext } from "@kabsu.me/api";
 import { createCaller } from "@kabsu.me/api/root";
+import { createClient as createClientServer } from "@kabsu.me/supabase/client/server";
 
-import { createClient as createClientServer } from "~/supabase/server";
 import { createQueryClient } from "./query-client";
 
 const createContext = cache(async () => {
-  const heads = new Headers(headers());
+  const heads = new Headers(await headers());
   heads.set("x-trpc-source", "rsc");
 
-  const supabase = createClientServer();
+  const supabase = await createClientServer();
   const {
     data: { user },
   } = await supabase.auth.getUser();

@@ -67,30 +67,26 @@ export default function ChatsPage() {
               id: "campus",
               label: "My Campus",
               sublabel:
-                getMyUniversityStatusQuery.data?.programs?.colleges?.campuses
-                  ?.slug,
+                getMyUniversityStatusQuery.data?.program.college.campus.slug,
               Icon: School2,
               tooltip:
-                getMyUniversityStatusQuery.data?.programs?.colleges?.campuses
-                  ?.name,
+                getMyUniversityStatusQuery.data?.program.college.campus.name,
               unread_count: getGlobalChatsCountsQuery.data?.campus_length ?? 0,
             },
             {
               id: "college",
               label: "My College",
-              sublabel:
-                getMyUniversityStatusQuery.data?.programs?.colleges?.slug,
+              sublabel: getMyUniversityStatusQuery.data?.program.college.slug,
               Icon: School,
-              tooltip:
-                getMyUniversityStatusQuery.data?.programs?.colleges?.name,
+              tooltip: getMyUniversityStatusQuery.data?.program.college.name,
               unread_count: getGlobalChatsCountsQuery.data?.college_length ?? 0,
             },
             {
               id: "program",
               label: "My Program",
-              sublabel: getMyUniversityStatusQuery.data?.programs?.slug,
+              sublabel: getMyUniversityStatusQuery.data?.program.slug,
               Icon: Book,
-              tooltip: getMyUniversityStatusQuery.data?.programs?.name,
+              tooltip: getMyUniversityStatusQuery.data?.program.name,
               unread_count: getGlobalChatsCountsQuery.data?.program_length ?? 0,
             },
           ].map((type) => (

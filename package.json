@@ -20,25 +20,26 @@
     "db:cli": "pnpm db:dump && pnpm db:gen && pnpm db:diff",
     "db:push": "supabase db push --include-all",
     "db:diff": "supabase db diff --local -f",
-    "db:gen": "supabase gen types typescript --local --schema public > supabase/types.ts",
+    "db:gen": "supabase gen types typescript --local --schema public > packages/supabase/src/types.ts",
     "db:reset": "supabase db reset --local",
     "db:dump": "supabase db dump -f supabase/schema.sql --local",
     "migration:up": "supabase migration up",
     "email:dev": "pnpm turbo --filter=@kabsu.me/email email:dev",
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add",
-    "magicui-add": "turbo run magicui-add"
+    "magicui-add": "turbo run magicui-add",
+    "otd": "pnpm outdated --filter=*"
   },
   "devDependencies": {
     "@kabsu.me/eslint-config": "workspace:*",
     "@kabsu.me/prettier-config": "workspace:*",
     "@kabsu.me/tsconfig": "workspace:*",
-    "@turbo/gen": "^2.1.1",
-    "dotenv-cli": "^7.4.2",
-    "eslint": "^9.9.1",
-    "prettier": "^3.3.3",
-    "turbo": "^2.1.1",
-    "typescript": "^5.5.4"
+    "@turbo/gen": "2.1.1",
+    "dotenv-cli": "catalog:",
+    "eslint": "9.13.0",
+    "prettier": "catalog:",
+    "turbo": "2.1.1",
+    "typescript": "catalog:"
   },
   "prettier": "@kabsu.me/prettier-config"
 }
