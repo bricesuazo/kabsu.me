@@ -5,7 +5,7 @@ import { z } from "zod";
 import type { Database } from "@kabsu.me/supabase/types";
 import { BLOCKED_USERNAMES } from "@kabsu.me/constants";
 
-import { env } from "../../../../apps/www/src/env";
+import { env } from "../env";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const usersRouter = router({

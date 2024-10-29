@@ -1,9 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MoreHorizontal } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -329,14 +329,14 @@ export default function PostDropdown({
                 </DropdownMenuItem> */}
           {isMyPost ? (
             <DropdownMenuItem
-              className="!text-red-500 cursor-pointer"
+              className="cursor-pointer !text-red-500"
               onClick={() => setOpenDelete(true)}
             >
               Delete Post
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem
-              className="!text-red-500 cursor-pointer"
+              className="cursor-pointer !text-red-500"
               onClick={() => setOpenReport(true)}
             >
               Report Post
@@ -346,7 +346,7 @@ export default function PostDropdown({
             getCurrentUserQuery.data?.email ===
               env.NEXT_PUBLIC_SUPERADMIN_EMAIL && (
               <DropdownMenuItem
-                className="!text-red-500 cursor-pointer"
+                className="cursor-pointer !text-red-500"
                 onClick={() => setOpenStrike(true)}
               >
                 Strike post
@@ -357,4 +357,3 @@ export default function PostDropdown({
     </div>
   );
 }
-

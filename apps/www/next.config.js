@@ -28,7 +28,12 @@ const config = {
       },
     ],
   },
-  transpilePackages: ["@kabsu.me/api", "@kabsu.me/supabase", "@kabsu.me/ui"],
+  transpilePackages: [
+    "@kabsu.me/api",
+    "@kabsu.me/supabase",
+    "@kabsu.me/contants",
+    "@kabsu.me/ui",
+  ],
 };
 
 export default withSentryConfig(config, {

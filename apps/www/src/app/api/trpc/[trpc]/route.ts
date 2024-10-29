@@ -1,8 +1,7 @@
 import type { NextRequest } from "next/server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
-import { appRouter } from "@kabsu.me/api/root";
-import { createTRPCContext } from "@kabsu.me/api/trpc";
+import { appRouter, createTRPCContext } from "@kabsu.me/api";
 import { createClient } from "@kabsu.me/supabase/client/server";
 
 import { env } from "~/env";

@@ -2,7 +2,7 @@
   "name": "www",
   "type": "module",
   "scripts": {
-    "dev": "pnpm with-env next dev --turbo",
+    "dev": "pnpm with-env next dev",
     "build": "pnpm with-env next build",
     "start": "pnpm with-env next start",
     "lint": "eslint",

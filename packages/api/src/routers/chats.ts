@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import type { Database } from "@kabsu.me/supabase/types";
 
-import { env } from "../../../../apps/www/src/env";
+import { env } from "../env";
 import { protectedProcedure, router } from "../trpc";
 
 export const chatsRouter = router({

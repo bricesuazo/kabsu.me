@@ -3,8 +3,20 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
-    "clean": "rm -rf .turbo node_modules",
-    "lint": "eslint"
+    "lint:fix": "pnpm lint --fix",
+    "type-check": "tsc --noEmit",
+    "build": "tsc",
+    "clean": "rm -rf .turbo dist node_modules",
+    "dev": "tsc",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./src/index.ts"
+    }
   },
   "dependencies": {
     "lucide-react": "catalog:",

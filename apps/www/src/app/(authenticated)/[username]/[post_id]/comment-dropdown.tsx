@@ -264,20 +264,18 @@ export default function CommentDropdown({
           </DropdownMenuTrigger>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuLabel>
-            Options
-          </DropdownMenuLabel>
+          <DropdownMenuLabel>Options</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {isMyComment ? (
             <DropdownMenuItem
-              className="!text-red-500 cursor-pointer"
+              className="cursor-pointer !text-red-500"
               onClick={() => setOpenDelete(true)}
             >
               {level === 0 ? "Delete Comment" : "Delete Reply"}
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem
-              className="!text-red-500 cursor-pointer"
+              className="cursor-pointer !text-red-500"
               onClick={() => setOpenReport(true)}
             >
               {level === 0 ? "Report Comment" : "Report Reply"}

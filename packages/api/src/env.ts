@@ -14,6 +14,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPERADMIN_EMAIL: z.string().email(),
   },
   server: {
+    DISCORD_WEBHOOK_URL: z.string().url(),
     UPSTASH_REDIS_REST_URL: z.string().url(),
     UPSTASH_REDIS_REST_TOKEN: z.string(),
     SENTRY_AUTH_TOKEN: z.string(),

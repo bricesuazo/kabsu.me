@@ -27,7 +27,12 @@ const config = {
       },
     ],
   },
-  transpilePackages: ["@kabsu.me/api", "@kabsu.me/supabase", "@kabsu.me/ui"],
+  transpilePackages: [
+    "@kabsu.me/api",
+    "@kabsu.me/supabase",
+    "@kabsu.me/constants",
+    "@kabsu.me/ui",
+  ],
 };
 
 export default config;
