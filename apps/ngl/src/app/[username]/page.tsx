@@ -6,10 +6,11 @@ import { api } from "~/lib/trpc/server";
 import UserPageClient from "./_components/client";
 
 export async function generateMetadata({
-  params: { username },
+  params,
 }: {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }): Promise<Metadata> {
+  const { username } = await params;
   const user = await api.ngl.getUser({ username });
 
   if (!user) {
@@ -59,10 +60,11 @@ export async function generateMetadata({
 }
 
 export default async function UserPage({
-  params: { username },
+  params,
 }: {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }) {
+  const { username } = await params;
   const [user, getTotalUsersQuery] = await Promise.all([
     api.ngl.getUser({ username }),
     api.users.getTotalUsers(),

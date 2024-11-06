@@ -156,7 +156,7 @@ export const nglRouter = router({
         .select("question:ngl_questions(user:users(username))")
         .single();
 
-      if (error_answer || !answer.question?.user)
+      if (error_answer)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to answer message",

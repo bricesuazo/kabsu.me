@@ -220,13 +220,13 @@ export default function PostPageComponent({
                         <Tooltip delayDuration={250}>
                           <TooltipTrigger>
                             <Badge>
-                              {postQuery.data.post.user.programs?.colleges?.campuses?.slug.toUpperCase()}
+                              {postQuery.data.post.user.program.college.campus.slug.toUpperCase()}
                             </Badge>
                           </TooltipTrigger>
                           <TooltipContent className="max-w-[12rem]">
                             {
-                              postQuery.data.post.user.programs?.colleges
-                                ?.campuses?.name
+                              postQuery.data.post.user.program.college.campus
+                                .name
                             }
                           </TooltipContent>
                         </Tooltip>
@@ -234,11 +234,11 @@ export default function PostPageComponent({
                         <Tooltip delayDuration={250}>
                           <TooltipTrigger>
                             <Badge variant="outline">
-                              {postQuery.data.post.user.programs?.slug.toUpperCase()}
+                              {postQuery.data.post.user.program.slug.toUpperCase()}
                             </Badge>
                           </TooltipTrigger>
                           <TooltipContent className="max-w-[12rem]">
-                            {postQuery.data.post.user.programs?.name}
+                            {postQuery.data.post.user.program.name}
                           </TooltipContent>
                         </Tooltip>
                       </div>
@@ -368,9 +368,8 @@ export default function PostPageComponent({
                       comments: postQuery.data.post.comments.length.toString(),
                       privacy: postQuery.data.post.type,
                       campus:
-                        postQuery.data.post.user.programs?.colleges?.campuses
-                          ?.slug ?? "",
-                      program: postQuery.data.post.user.programs?.slug ?? "",
+                        postQuery.data.post.user.program.college.campus.slug,
+                      program: postQuery.data.post.user.program.slug,
                       verified: !!postQuery.data.post.user.verified_at,
                       images: postQuery.data.post.posts_images.map(
                         (image) => image.signed_url,
@@ -496,12 +495,12 @@ export default function PostPageComponent({
                                     <Tooltip delayDuration={250}>
                                       <TooltipTrigger>
                                         <Badge>
-                                          {like.user.programs?.colleges?.campuses?.slug.toUpperCase()}
+                                          {like.user.program.college.campus.slug.toUpperCase()}
                                         </Badge>
                                         <TooltipContent className="max-w-[12rem]">
                                           {
-                                            like.user.programs?.colleges
-                                              ?.campuses?.name
+                                            like.user.program.college.campus
+                                              .name
                                           }
                                         </TooltipContent>
                                       </TooltipTrigger>
@@ -509,10 +508,10 @@ export default function PostPageComponent({
                                     <Tooltip delayDuration={250}>
                                       <TooltipTrigger>
                                         <Badge variant="outline">
-                                          {like.user.programs?.slug.toUpperCase()}
+                                          {like.user.program.slug.toUpperCase()}
                                         </Badge>
                                         <TooltipContent className="max-w-[12rem]">
-                                          {like.user.programs?.name}
+                                          {like.user.program.name}
                                         </TooltipContent>
                                       </TooltipTrigger>
                                     </Tooltip>
@@ -526,12 +525,12 @@ export default function PostPageComponent({
                                     <Tooltip delayDuration={250}>
                                       <TooltipTrigger>
                                         <Badge className="hidden xs:block">
-                                          {like.user.programs?.colleges?.campuses?.slug.toUpperCase()}
+                                          {like.user.program.college.campus.slug.toUpperCase()}
                                         </Badge>
                                         <TooltipContent className="max-w-[12rem]">
                                           {
-                                            like.user.programs?.colleges
-                                              ?.campuses?.name
+                                            like.user.program.college.campus
+                                              .name
                                           }
                                         </TooltipContent>
                                       </TooltipTrigger>
@@ -539,10 +538,10 @@ export default function PostPageComponent({
                                     <Tooltip delayDuration={250}>
                                       <TooltipTrigger>
                                         <Badge variant="outline">
-                                          {like.user.programs?.slug.toUpperCase()}
+                                          {like.user.program.slug.toUpperCase()}
                                         </Badge>
                                         <TooltipContent className="max-w-[12rem]">
-                                          {like.user.programs?.name}
+                                          {like.user.program.name}
                                         </TooltipContent>
                                       </TooltipTrigger>
                                     </Tooltip>

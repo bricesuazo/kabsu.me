@@ -6,10 +6,12 @@ import { api } from "~/lib/trpc/server";
 export default async function MessagesPage({
   params,
 }: {
-  params: { user_id: string };
+  params: Promise<{ user_id: string }>;
 }) {
+  const { user_id } = await params;
+
   const room = await api.chats.getOrCreateRoom({
-    user_id: params.user_id,
+    user_id: user_id,
   });
 
   if (room.room_id) redirect(`/chat/${room.room_id}`);

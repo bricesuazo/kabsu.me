@@ -3,11 +3,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { DEVS_INFO } from "@kabsu.me/constants";
-
-import { createClient } from "~/supabase/server";
+import { createClient } from "@kabsu.me/supabase/client/server";
 
 export default async function AboutPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

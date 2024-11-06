@@ -4,10 +4,11 @@ import RoomPageClient from "~/components/room-page";
 import { api } from "~/lib/trpc/server";
 
 export default async function RoomPage({
-  params: { room_id },
+  params,
 }: {
-  params: { room_id: string };
+  params: Promise<{ room_id: string }>;
 }) {
+  const { room_id } = await params;
   if (
     room_id === "all" ||
     room_id === "campus" ||

@@ -3,12 +3,14 @@ import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@kabsu.me/ui/button";
 
-export default function FollowsLayout({
+export default async function FollowsLayout({
   children,
-  params: { username },
+  params,
 }: React.PropsWithChildren<{
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }>) {
+  const { username } = await params;
+
   return (
     <div className="p-4">
       <div className="flex items-center justify-between">

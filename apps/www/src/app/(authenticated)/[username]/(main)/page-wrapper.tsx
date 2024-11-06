@@ -120,22 +120,22 @@ export default function UserPageWrapper({
               <Tooltip delayDuration={250}>
                 <TooltipTrigger>
                   <Badge>
-                    {profileQuery.data.user.programs?.colleges?.campuses?.slug.toUpperCase()}
+                    {profileQuery.data.user.program.college.campus.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-60">
-                  {profileQuery.data.user.programs?.colleges?.campuses?.name}
+                  {profileQuery.data.user.program.college.campus.name}
                 </TooltipContent>
               </Tooltip>
 
               <Tooltip delayDuration={250}>
                 <TooltipTrigger className="">
                   <Badge variant="outline">
-                    {profileQuery.data.user.programs?.slug.toUpperCase()}
+                    {profileQuery.data.user.program.slug.toUpperCase()}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-60">
-                  {profileQuery.data.user.programs?.name}
+                  {profileQuery.data.user.program.name}
                 </TooltipContent>
               </Tooltip>
             </div>

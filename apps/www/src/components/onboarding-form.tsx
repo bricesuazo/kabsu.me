@@ -17,6 +17,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import type { Database } from "@kabsu.me/supabase/types";
+import { createClient } from "@kabsu.me/supabase/client/client";
 import { cn } from "@kabsu.me/ui";
 import { Button } from "@kabsu.me/ui/button";
 import { Card, CardFooter, CardHeader } from "@kabsu.me/ui/card";
@@ -42,9 +44,7 @@ import { Label } from "@kabsu.me/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@kabsu.me/ui/popover";
 import { ScrollArea } from "@kabsu.me/ui/scroll-area";
 
-import type { Database } from "../../../../supabase/types";
 import { api } from "~/lib/trpc/client";
-import { createClient } from "~/supabase/client";
 import { Icons } from "./icons";
 import { ToggleTheme } from "./toggle-theme";
 

@@ -5,7 +5,6 @@
     "jsx": "preserve",
     "rootDir": "."
   },
-  "moduleResolution": "node",
   "include": ["src"],
   "exclude": ["node_modules"]
 }

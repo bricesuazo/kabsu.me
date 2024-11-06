@@ -2,10 +2,10 @@ import { TRPCError } from "@trpc/server";
 import { addMonths, isAfter } from "date-fns";
 import { z } from "zod";
 
+import type { Database } from "@kabsu.me/supabase/types";
 import { BLOCKED_USERNAMES } from "@kabsu.me/constants";
 
-import type { Database } from "../../../../supabase/types";
-import { env } from "../../../../apps/www/src/env";
+import { env } from "../env";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const usersRouter = router({
@@ -178,7 +178,7 @@ export const usersRouter = router({
           .select("id, from:users!public_notifications_from_id_fkey(username)")
           .single();
 
-        if (new_notification?.from?.username) {
+        if (new_notification?.from.username) {
           const channel = ctx.supabase.channel(
             "notifications." + input.user_id,
           );
@@ -289,7 +289,7 @@ export const usersRouter = router({
       const { data: user_from_db } = await ctx.supabase
         .from("users")
         .select(
-          "id, name, username, image_name, type, bio, link, verified_at, deactivated_at, banned_at, programs(name, slug, colleges(name, slug, campuses(name, slug)))",
+          "id, name, username, image_name, type, bio, link, verified_at, deactivated_at, banned_at, program:programs!inner(name, slug, college_id, college:colleges!inner(name, slug, campus_id, campus:campuses!inner(name, slug)))",
         )
         .eq("username", input.username)
         .single();
@@ -447,7 +447,7 @@ export const usersRouter = router({
         .eq("id", userId)
         .single();
 
-      if (error || !user) {
+      if (error) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "User not found",
@@ -509,7 +509,7 @@ export const usersRouter = router({
         .eq("id", userId)
         .single();
 
-      if (error || !user) {
+      if (error) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "User not found",

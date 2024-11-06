@@ -126,11 +126,11 @@ export default function PostTypeTab() {
                       {(() => {
                         switch (select.id) {
                           case "campus":
-                            return getMyUniversityStatusQuery.data.programs?.colleges?.campuses?.slug.toUpperCase();
+                            return getMyUniversityStatusQuery.data.program.college.campus.slug.toUpperCase();
                           case "college":
-                            return getMyUniversityStatusQuery.data.programs?.colleges?.slug.toUpperCase();
+                            return getMyUniversityStatusQuery.data.program.college.slug.toUpperCase();
                           case "program":
-                            return getMyUniversityStatusQuery.data.programs?.slug.toUpperCase();
+                            return getMyUniversityStatusQuery.data.program.slug.toUpperCase();
                         }
                       })()}
                     </p>

@@ -20,6 +20,7 @@ import {
 import { useTheme } from "next-themes";
 
 import { HEADER_HEIGHT, NAVBAR_LINKS } from "@kabsu.me/constants";
+import { createClient } from "@kabsu.me/supabase/client/client";
 import { cn } from "@kabsu.me/ui";
 import { Button } from "@kabsu.me/ui/button";
 import {
@@ -48,7 +49,6 @@ import { Skeleton } from "@kabsu.me/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@kabsu.me/ui/tooltip";
 
 import { api } from "~/lib/trpc/client";
-import { createClient } from "~/supabase/client";
 import FeedbackForm from "./feedback-form";
 import { Icons } from "./icons";
 import Notifications from "./notifications";

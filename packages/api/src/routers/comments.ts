@@ -21,7 +21,7 @@ export const commentsRouter = router({
 
       let image_url: string | null = null;
       if (
-        full_comment.users?.image_name &&
+        full_comment.users.image_name &&
         !full_comment.users.image_name.startsWith("https://")
       ) {
         const { data } = ctx.supabase.storage
@@ -44,12 +44,12 @@ export const commentsRouter = router({
             thread_id: string | null;
             deleted_at: string | null;
           }[],
-          users: full_comment.users?.image_name?.startsWith("https://")
+          users: full_comment.users.image_name?.startsWith("https://")
             ? {
                 ...full_comment.users,
                 image_url: full_comment.users.image_name,
               }
-            : full_comment.users?.image_name && image_url
+            : full_comment.users.image_name && image_url
               ? { ...full_comment.users, image_url }
               : { ...full_comment.users, image_name: null },
         },
@@ -61,7 +61,10 @@ export const commentsRouter = router({
     .input(
       z.object({
         post_id: z.string().min(1),
-        content: z.string().trim().min(1, { message: "Comment cannot be empty." }),
+        content: z
+          .string()
+          .trim()
+          .min(1, { message: "Comment cannot be empty." }),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -100,7 +103,7 @@ export const commentsRouter = router({
           )
           .single();
 
-        if (new_notification?.from?.username && new_notification.to?.username) {
+        if (new_notification?.from.username && new_notification.to.username) {
           const channel = ctx.supabase.channel("notifications." + post.user_id);
           await channel.send({
             type: "broadcast",
@@ -220,7 +223,10 @@ export const commentsRouter = router({
     .input(
       z.object({
         comment_id: z.string().min(1),
-        content: z.string().trim().min(1, { message: "Reply cannot be empty." }),
+        content: z
+          .string()
+          .trim()
+          .min(1, { message: "Reply cannot be empty." }),
         post_id: z.string().min(1),
         level: z.number().int().nonnegative(),
       }),
@@ -269,7 +275,7 @@ export const commentsRouter = router({
           )
           .single();
 
-        if (new_notification?.from?.username && new_notification.to?.username) {
+        if (new_notification?.from.username && new_notification.to.username) {
           const channel = ctx.supabase.channel(
             "notifications." + comment.user_id,
           );
@@ -280,7 +286,7 @@ export const commentsRouter = router({
               notification_id: new_notification.id,
               from: new_notification.from.username,
               to: new_notification.to.username,
-              post_user_username: data.post?.user?.username,
+              post_user_username: data.post.user.username,
               post_id: input.post_id,
               comment_id: input.comment_id,
             },

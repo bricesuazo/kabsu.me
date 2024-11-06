@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
+import { createClient } from "@kabsu.me/supabase/client/server";
+
 import { env } from "~/env";
-import { createClient } from "~/supabase/server";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -9,7 +10,7 @@ export async function GET(request: Request) {
   const next = searchParams.get("next") ?? "/";
 
   if (code) {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (error) return NextResponse.json({ error }, { status: 500 });

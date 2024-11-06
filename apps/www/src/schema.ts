@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { Database } from "../../../supabase/types";
+import type { Database } from "@kabsu.me/supabase/types";
 
 export const PostShareSchema = z.object({
   theme: z.enum(["light", "dark"]).default("light"),

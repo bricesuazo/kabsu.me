@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { createClient } from "@kabsu.me/supabase/client/client";
 import { Button } from "@kabsu.me/ui/button";
 
 import { api } from "~/lib/trpc/client";
-import { createClient } from "~/supabase/client";
 
 export default function Reactivate() {
   const supabase = createClient();

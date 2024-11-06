@@ -3,8 +3,9 @@ import { TRPCError } from "@trpc/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { z } from "zod";
 
-import type { Database } from "../../../../supabase/types";
-import { env } from "../../../../apps/www/src/env";
+import type { Database } from "@kabsu.me/supabase/types";
+
+import { env } from "../env";
 import { protectedProcedure, router } from "../trpc";
 
 export const chatsRouter = router({
@@ -38,15 +39,15 @@ export const chatsRouter = router({
         };
 
         const other_user = room.rooms_users.find(
-          (user) => user.users?.id !== ctx.auth.user.id,
+          (user) => user.users.id !== ctx.auth.user.id,
         );
         const me = room.rooms_users.find(
-          (user) => user.users?.id === ctx.auth.user.id,
+          (user) => user.users.id === ctx.auth.user.id,
         );
         let avatar_url: string | null = null;
 
         if (
-          other_user?.users?.image_name &&
+          other_user?.users.image_name &&
           !other_user.users.image_name.startsWith("https:")
         ) {
           avatar_url = ctx.supabase.storage
@@ -75,15 +76,15 @@ export const chatsRouter = router({
                 ...other_user,
                 unread_messages_length: unreadMessagesLength,
                 users: {
-                  id: other_user.users?.id,
-                  username: other_user.users?.username,
+                  id: other_user.users.id,
+                  username: other_user.users.username,
 
-                  ...(other_user.users?.image_name?.startsWith("https:")
+                  ...(other_user.users.image_name?.startsWith("https:")
                     ? {
                         image_name: other_user.users.image_name,
                         image_url: other_user.users.image_name,
                       }
-                    : other_user.users?.image_name && avatar_url
+                    : other_user.users.image_name && avatar_url
                       ? {
                           image_name: other_user.users.image_name,
                           image_url: avatar_url,
@@ -177,7 +178,7 @@ export const chatsRouter = router({
         let signed_url: string | null = null;
 
         if (
-          chat.users?.image_name &&
+          chat.users.image_name &&
           !chat.users.image_name.startsWith("https:")
         ) {
           const { data } = ctx.supabase.storage
@@ -208,14 +209,14 @@ export const chatsRouter = router({
               user_id: chat.user_id,
               reply: chat.reply,
               user: {
-                name: chat.users?.name ?? "",
-                username: chat.users?.username ?? "",
-                ...(chat.users?.image_name?.startsWith("https://")
+                name: chat.users.name,
+                username: chat.users.username,
+                ...(chat.users.image_name?.startsWith("https://")
                   ? {
                       image_name: chat.users.image_name,
                       image_url: chat.users.image_name,
                     }
-                  : chat.users?.image_name && signed_url
+                  : chat.users.image_name && signed_url
                     ? {
                         image_name: chat.users.image_name,
                         image_url: signed_url,
@@ -233,7 +234,7 @@ export const chatsRouter = router({
               room_id: input.room_id,
               from_username: room.rooms_users.find(
                 (user) => user.user_id === ctx.auth.user.id,
-              )?.user?.username,
+              )?.user.username,
             },
           }),
         ]);
@@ -244,7 +245,7 @@ export const chatsRouter = router({
           .eq("id", ctx.auth.user.id)
           .single();
 
-        if (!user?.programs?.colleges)
+        if (!user?.programs.colleges)
           throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         const default_insert = {
@@ -288,7 +289,7 @@ export const chatsRouter = router({
         let signed_url: string | null = null;
 
         if (
-          chat.users?.image_name &&
+          chat.users.image_name &&
           !chat.users.image_name.startsWith("https:")
         ) {
           const { data } = ctx.supabase.storage
@@ -312,14 +313,14 @@ export const chatsRouter = router({
             user_id: chat.user_id,
             reply: chat.reply,
             user: {
-              name: chat.users?.name ?? "",
-              username: chat.users?.username ?? "",
-              ...(chat.users?.image_name?.startsWith("https://")
+              name: chat.users.name,
+              username: chat.users.username,
+              ...(chat.users.image_name?.startsWith("https://")
                 ? {
                     image_name: chat.users.image_name,
                     image_url: chat.users.image_name,
                   }
-                : chat.users?.image_name && signed_url
+                : chat.users.image_name && signed_url
                   ? {
                       image_name: chat.users.image_name,
                       image_url: signed_url,
@@ -588,7 +589,7 @@ export const chatsRouter = router({
                 let image_url: string | null = null;
 
                 if (
-                  message.users?.image_name &&
+                  message.users.image_name &&
                   !message.users.image_name.startsWith("https:")
                 ) {
                   const { data } = ctx.supabase.storage
@@ -612,14 +613,14 @@ export const chatsRouter = router({
                     replies?.find((reply) => reply.id === message.reply_id) ??
                     null,
                   user: {
-                    name: message.users?.name ?? "",
-                    username: message.users?.username ?? "",
-                    ...(message.users?.image_name?.startsWith("https://")
+                    name: message.users.name,
+                    username: message.users.username,
+                    ...(message.users.image_name?.startsWith("https://")
                       ? {
                           image_name: message.users.image_name,
                           image_url: message.users.image_name,
                         }
-                      : message.users?.image_name && image_url
+                      : message.users.image_name && image_url
                         ? {
                             image_name: message.users.image_name,
                             image_url: image_url,
@@ -641,7 +642,7 @@ export const chatsRouter = router({
           .eq("id", ctx.auth.user.id)
           .single();
 
-        if (!user?.programs?.colleges)
+        if (!user?.programs.colleges)
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "User not found",
@@ -841,7 +842,7 @@ export const chatsRouter = router({
                 let image_url: string | null = null;
 
                 if (
-                  message.users?.image_name &&
+                  message.users.image_name &&
                   !message.users.image_name.startsWith("https:")
                 ) {
                   const { data } = ctx.supabase.storage
@@ -864,14 +865,14 @@ export const chatsRouter = router({
                     replies?.find((reply) => reply.id === message.reply_id) ??
                     null,
                   user: {
-                    name: message.users?.name ?? "",
-                    username: message.users?.username ?? "",
-                    ...(message.users?.image_name?.startsWith("https://")
+                    name: message.users.name,
+                    username: message.users.username,
+                    ...(message.users.image_name?.startsWith("https://")
                       ? {
                           image_name: message.users.image_name,
                           image_url: message.users.image_name,
                         }
-                      : message.users?.image_name && image_url
+                      : message.users.image_name && image_url
                         ? {
                             image_name: message.users.image_name,
                             image_url,
@@ -893,7 +894,7 @@ export const chatsRouter = router({
           .eq("id", ctx.auth.user.id)
           .single();
 
-        if (!user?.programs?.colleges)
+        if (!user?.programs.colleges)
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "User not found",
@@ -1010,7 +1011,7 @@ export const chatsRouter = router({
         message: user_error.message,
       });
 
-    if (!user.program?.college?.campus_id)
+    if (!user.program.college.campus_id)
       throw new TRPCError({
         code: "NOT_FOUND",
         message: "Campus not found",
@@ -1037,10 +1038,10 @@ export const chatsRouter = router({
       (chat) => chat.program_id === user.program_id,
     );
     const colleges = chats.filter(
-      (chat) => chat.college_id === user.program?.college_id,
+      (chat) => chat.college_id === user.program.college_id,
     );
     const campuses = chats.filter(
-      (chat) => chat.campus_id === user.program?.college?.campus_id,
+      (chat) => chat.campus_id === user.program.college.campus_id,
     );
 
     if (!global_chat_last_seen) {

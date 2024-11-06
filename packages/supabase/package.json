@@ -1,0 +1,39 @@
+{
+  "name": "@kabsu.me/supabase",
+  "type": "module",
+  "exports": {
+    "./client/*": {
+      "types": "./dist/client/*.d.ts",
+      "default": "./src/client/*.ts"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "default": "./src/types.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf .turbo dist node_modules",
+    "dev": "tsc",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@supabase/ssr": "0.5.1",
+    "@supabase/supabase-js": "catalog:",
+    "@t3-oss/env-nextjs": "catalog:",
+    "next": "catalog:",
+    "server-only": "0.0.1",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@kabsu.me/eslint-config": "workspace:*",
+    "@kabsu.me/prettier-config": "workspace:*",
+    "@kabsu.me/tsconfig": "workspace:*",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@kabsu.me/prettier-config"
+}

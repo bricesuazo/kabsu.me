@@ -3,8 +3,9 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 
-import type { Database } from "../../../../supabase/types";
-import { env } from "../../../../apps/www/src/env";
+import type { Database } from "@kabsu.me/supabase/types";
+
+import { env } from "../env";
 import { adminProcedure, protectedProcedure, router } from "../trpc";
 
 export const postsRouter = router({
@@ -16,7 +17,7 @@ export const postsRouter = router({
       const query = ctx.supabase
         .from("posts")
         .select(
-          "id, content, type, user_id, created_at, posts_images(*), likes(post_id, user_id), comments(id, thread_id, deleted_at), user:users!inner(name, username, image_name, type, verified_at, deactivated_at, banned_at, programs(name, slug, college_id, colleges(name, slug, campus_id, campuses(name, slug))))",
+          "id, content, type, user_id, created_at, posts_images(*), likes(post_id, user_id), comments(id, thread_id, deleted_at), user:users!inner(name, username, image_name, type, verified_at, deactivated_at, banned_at, program:programs!inner(name, slug, college_id, college:colleges!inner(name, slug, campus_id, campus:campuses!inner(name, slug))))",
         )
         .eq("id", input.post_id)
         .is("deleted_at", null)
@@ -188,13 +189,13 @@ export const postsRouter = router({
       return {
         posts: posts.filter(
           (post) =>
-            (post.user?.program_id === current_user_from_db.program_id &&
+            (post.user.program_id === current_user_from_db.program_id &&
               post.type === "program") ||
-            (post.user?.programs?.college_id ===
-              current_user_from_db.programs?.college_id &&
+            (post.user.programs.college_id ===
+              current_user_from_db.programs.college_id &&
               post.type === "college") ||
-            (post.user?.programs?.colleges?.campus_id ===
-              current_user_from_db.programs?.colleges?.campus_id &&
+            (post.user.programs.colleges.campus_id ===
+              current_user_from_db.programs.colleges.campus_id &&
               post.type === "campus") ||
             post.type === "all" ||
             post.type === "following" ||
@@ -542,8 +543,6 @@ export const postsRouter = router({
       // TODO: don't send notifications to the user who is not same in program, college, campus
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       new_notifications.forEach(async (new_notification) => {
-        if (!new_notification.from || !new_notification.to) return;
-
         const channel = ctx.supabase.channel(
           "notifications." + new_notification.to.id,
         );
@@ -737,7 +736,7 @@ export const postsRouter = router({
           )
           .single();
 
-        if (new_notification?.from?.username && new_notification.to?.username) {
+        if (new_notification?.from.username && new_notification.to.username) {
           const channel = ctx.supabase.channel("notifications." + post.user_id);
           await channel.send({
             type: "broadcast",
@@ -821,7 +820,7 @@ export const postsRouter = router({
       const { data: likes } = await ctx.supabase
         .from("likes")
         .select(
-          "*, user: users(*, programs(name, slug, colleges(name, slug, campuses(name, slug))))",
+          "*, user: users(*, program:programs!inner(name, slug, college_id, college:colleges!inner(name, slug, campus_id, campus:campuses!inner(name, slug))))",
         )
         .eq("post_id", input.post_id)
         .order("created_at", { ascending: false })
@@ -839,7 +838,7 @@ export const postsRouter = router({
         let image_url: string | null = null;
 
         if (
-          like.user?.image_name &&
+          like.user.image_name &&
           !like.user.image_name.startsWith("https:")
         ) {
           const { data } = ctx.supabase.storage
@@ -851,12 +850,12 @@ export const postsRouter = router({
 
         return {
           ...like,
-          user: like.user?.image_name?.startsWith("https://")
+          user: like.user.image_name?.startsWith("https://")
             ? {
                 ...like.user,
                 image_url: like.user.image_name,
               }
-            : like.user?.image_name && image_url
+            : like.user.image_name && image_url
               ? {
                   ...like.user,
                   image_url,
@@ -884,7 +883,7 @@ export const postsRouter = router({
         message: user_error.message,
       });
 
-    if (!user.program?.college?.campus_id)
+    if (!user.program.college.campus_id)
       throw new TRPCError({
         code: "NOT_FOUND",
         message: "Campus not found",
@@ -910,17 +909,17 @@ export const postsRouter = router({
     const all = posts.filter((post) => post.type === "all");
     const campus = posts.filter(
       (post) =>
-        post.users?.programs?.colleges?.campus_id ===
-          user.program?.college?.campus_id && post.type === "campus",
+        post.users.programs.colleges.campus_id ===
+          user.program.college.campus_id && post.type === "campus",
     );
     const college = posts.filter(
       (post) =>
-        post.users?.programs?.college_id === user.program?.college_id &&
+        post.users.programs.college_id === user.program.college_id &&
         post.type === "college",
     );
     const program = posts.filter(
       (post) =>
-        post.users?.program_id === user.program_id && post.type === "program",
+        post.users.program_id === user.program_id && post.type === "program",
     );
     // TODO: fix following
     // const following = posts.filter((post) => post.type === "following");

@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import type { RouterOutputs } from "@kabsu.me/api";
+import type { Database } from "@kabsu.me/supabase/types";
 import { cn } from "@kabsu.me/ui";
 import { Button } from "@kabsu.me/ui/button";
 import { Card, CardHeader } from "@kabsu.me/ui/card";
@@ -33,7 +34,6 @@ import { Label } from "@kabsu.me/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@kabsu.me/ui/popover";
 import { ScrollArea } from "@kabsu.me/ui/scroll-area";
 
-import type { Database } from "../../../../../../../supabase/types";
 import { api } from "~/lib/trpc/client";
 
 const formSchema = z.object({
