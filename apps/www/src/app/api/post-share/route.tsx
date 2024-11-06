@@ -4,8 +4,7 @@ import { ImageResponse } from "@vercel/og";
 
 import { PostShareSchema } from "~/schema";
 
-// TODO: remove because of vercel error: Error: The Edge Function "api/ngl-share" size is 1 MB and your plan size limit is 1 MB. Learn More: https://vercel.link/edge-function-size
-// export const runtime = "edge";
+export const runtime = "edge";
 
 const COLORS = {
   primary: "#16a34a",

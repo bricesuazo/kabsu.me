@@ -8,7 +8,8 @@ const NGLShareSchema = z.object({
   code_name: z.string().nullish(),
 });
 
-export const runtime = "edge";
+// TODO: remove because of vercel error: Error: The Edge Function "api/ngl-share" size is 1 MB and your plan size limit is 1 MB. Learn More: https://vercel.link/edge-function-size
+// export const runtime = "edge";
 
 function getColors(theme: z.infer<typeof NGLShareSchema>["theme"]) {
   return theme === "light"
